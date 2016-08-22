@@ -1,0 +1,26 @@
+{
+  "name": "epiviz-charts",
+  "authors": [
+    "Jayaram Kancherla <jayaram.kancherla@gmail.com>"
+  ],
+  "description": "using epiviz code",
+  "main": "",
+  "keywords": [
+    "epiviz",
+    "charts",
+    "genomics",
+    "bioinformatics"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer#^1.6.1"
+  }
+}

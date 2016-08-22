@@ -1,0 +1,445 @@
+<!-- Polymer dependency -->
+<link rel="import" href="../polymer/polymer.html">
+
+<link href="src/css/fa/css/font-awesome.css" rel="stylesheet" />
+<!-- Icons -->
+<link href="src/css/icomoon/epiviz-icons.css" rel="stylesheet" />
+
+<!-- JQuery UI -->
+<link href="src/css/theme/jquery-ui-1.8.9.custom.css" rel="stylesheet" />
+<link href="src/css/theme/jquery.ui.selectmenu.css" rel="stylesheet" />
+<link href="src/css/theme/ui.panel.css" rel="stylesheet" />
+<link href="src/css/theme/ui.multiselect.css" rel="stylesheet" />
+<link href="src/css/farbtastic-color-picker/farbtastic.css" rel="stylesheet" />
+<link href="src/css/DataTables-1.9.4/media/css/demo_table.css" rel="stylesheet" />
+<link href="src/css/DataTables-1.9.4/media/css/demo_table_jui.css" rel="stylesheet" />
+<link href="src/js/lib/jquery/DataTables-1.9.4/extras/TableTools/media/css/TableTools.css" rel="stylesheet" />
+<link href="src/css/dropdown-check-list-1.4/css/ui.dropdownchecklist.standalone.css" rel="stylesheet" />
+<!-- Future tooltip: <link href="css/qtip/jquery.qtip.min.css" rel="stylesheet" />-->
+
+<!-- Code editor -->
+<link rel="stylesheet" href="src/css/codemirror-4.5/lib/codemirror.css">
+
+<!-- EpiViz CSS -->
+<link rel="stylesheet" type="text/css" href="src/css/main.css" />
+<link rel="stylesheet" type="text/css" href="src/css/svg.css" />
+
+<script src="src/js/lib/jquery/jquery-1.8.2.js"></script>
+<script src="src/js/lib/jquery/jquery-ui-1.9.1.custom.js"></script>
+<script src="src/js/lib/jquery/jquery.multi-accordion-1.5.3.js"></script>
+<script src="src/js/lib/jquery/jquery.ui.selectmenu.js"></script>
+<script src="src/js/lib/jquery/ui.panel.min.js"></script>
+<script src="src/js/lib/jquery/ui.multiselect.js"></script>
+<script src="src/js/lib/jquery/jquery.watermark.min.js"></script>
+<script src="src/js/lib/jquery/jquery.layout-latest.js"></script>
+<script src="src/js/lib/jquery/jquery.activity-indicator-1.0.0.min.js"></script>
+<script src="src/js/lib/jquery/farbtastic-color-picker/farbtastic.js"></script>
+<script src="src/js/lib/jquery/DataTables-1.9.4/media/js/jquery.dataTables.js"></script>
+<script src="src/js/lib/jquery/DataTables-1.9.4/extras/TableTools/media/js/ZeroClipboard.js"></script>
+<script src="src/js/lib/jquery/DataTables-1.9.4/extras/TableTools/media/js/TableTools.js"></script>
+<script src="src/js/lib/jquery/DataTables-1.9.4/extras/ColumnFilter/media/js/jquery.dataTables.columnFilter.js"></script>
+<script src="src/js/lib/jquery/dropdown-check-list-1.4/js/ui.dropdownchecklist.js"></script>
+
+<script src="src/js/lib/d3/d3.v3.js"></script>
+<script src="src/js/lib/closure/goog/base.js"></script>
+<script src="src/js/lib/sprintf-0.6.js"></script>
+
+<script src="src/js/epiviz/events/event-listener.js"></script>
+<script src="src/js/epiviz/events/event.js"></script>
+<script src="src/js/epiviz/events/event-result.js"></script>
+
+<script src="src/js/epiviz/deferred/deferred.js"></script>
+<script src="src/js/epiviz/deferred/promise.js"></script>
+<script src="src/js/epiviz/utils/utils.js"></script>
+<script src="src/js/epiviz/caja/caja-standalone.js"></script>
+<script src="src/js/epiviz/utils/expression-parser.js"></script>
+<script src="src/js/epiviz/utils/iterable.js"></script>
+<script src="src/js/epiviz/utils/iterable-array.js"></script>
+
+<script src="src/js/epiviz/measurements/measurement-set.js"></script>
+<script src="src/js/epiviz/measurements/measurement-hashtable.js"></script>
+<script src="src/js/epiviz/measurements/measurement.js"></script>
+
+<script src="src/js/epiviz/ui/charts/markers/measurement-aggregator.js"></script>
+<script src="src/js/epiviz/ui/charts/markers/visualization-marker.js"></script>
+
+<script src="src/js/epiviz/ui/charts/margins.js"></script>
+<script src="src/js/epiviz/ui/charts/color-palette.js"></script>
+<script src="src/js/epiviz/ui/charts/axis.js"></script>
+<script src="src/js/epiviz/ui/charts/custom-setting.js"></script>
+
+<script src="src/js/epiviz/ui/charts/vis-object.js"></script>
+<script src="src/js/epiviz/ui/charts/visualization-properties.js"></script>
+<script src="src/js/epiviz/ui/charts/vis-event-args.js"></script>
+<script src="src/js/epiviz/ui/charts/display-type.js"></script>
+<script src="src/js/epiviz/ui/charts/visualization.js"></script>
+<script src="src/js/epiviz/ui/charts/visualization-type.js"></script>
+
+<script src="src/js/epiviz/ui/charts/chart-object.js"></script>
+<script src="src/js/epiviz/ui/charts/chart.js"></script>
+<script src="src/js/epiviz/ui/charts/track.js"></script>
+<script src="src/js/epiviz/ui/charts/plot.js"></script>
+<script src="src/js/epiviz/ui/charts/data-structure-visualization.js"></script>
+<script src="src/js/epiviz/ui/charts/tree/hierarchy-visualization.js"></script>
+<script src="src/js/epiviz/ui/charts/chart-type.js"></script>
+<script src="src/js/epiviz/ui/charts/track-type.js"></script>
+<script src="src/js/epiviz/ui/charts/plot-type.js"></script>
+<script src="src/js/epiviz/ui/charts/data-structure-visualization-type.js"></script>
+<script src="src/js/epiviz/ui/charts/tree/hierarchy-visualization-type.js"></script>
+<script src="src/js/epiviz/ui/charts/chart-factory.js"></script>
+
+<script src="src/js/epiviz/ui/charts/decoration/visualization-decoration.js"></script>
+<script src="src/js/epiviz/ui/charts/decoration/chart-option-button.js"></script>
+<script src="src/js/epiviz/ui/charts/decoration/remove-chart-button.js"></script>
+<script src="src/js/epiviz/ui/charts/decoration/save-chart-button.js"></script>
+<script src="src/js/epiviz/ui/charts/decoration/chart-colors-button.js"></script>
+<script src="src/js/epiviz/ui/charts/decoration/custom-settings-button.js"></script>
+<script src="src/js/epiviz/ui/charts/decoration/toggle-tooltip-button.js"></script>
+<script src="src/js/epiviz/ui/charts/decoration/code-button.js"></script>
+<script src="src/js/epiviz/ui/charts/decoration/edit-code-button.js"></script>
+<script src="src/js/epiviz/ui/charts/decoration/marker-code-button.js"></script>
+<script src="src/js/epiviz/ui/charts/decoration/chart-filter-code-button.js"></script>
+<script src="src/js/epiviz/ui/charts/decoration/hierarchy-filter-code-button.js"></script>
+<script src="src/js/epiviz/ui/charts/decoration/chart-color-by-row-code-button.js"></script>
+<script src="src/js/epiviz/ui/charts/decoration/chart-order-by-measurements-code-button.js"></script>
+<script src="src/js/epiviz/ui/charts/decoration/chart-color-by-measurements-code-button.js"></script>
+<script src="src/js/epiviz/ui/charts/decoration/chart-group-by-measurements-code-button.js"></script>
+
+<script src="src/js/epiviz/ui/charts/decoration/chart-resize.js"></script>
+<script src="src/js/epiviz/ui/charts/decoration/chart-tooltip.js"></script>
+<script src="src/js/epiviz/ui/charts/decoration/chart-loader-animation.js"></script>
+<script src="src/js/epiviz/ui/controls/vis-config-selection.js"></script>
+
+<script src="src/js/epiviz/ui/print-manager.js"></script>
+<script src="src/js/epiviz/ui/charts/chart-manager.js"></script>
+
+<script src="src/js/epiviz/data/data-provider.js"></script>
+<script src="src/js/epiviz/data/data-provider-factory.js"></script>
+<script src="src/js/epiviz/data/data-manager.js"></script>
+<script src="src/js/epiviz/data/empty-response-data-provider.js"></script>
+<script src="src/js/epiviz/data/cache.js"></script>
+<script src="src/js/epiviz/data/epiviz-api-data-provider.js"></script>
+<script src="src/js/epiviz/data/message-type.js"></script>
+<script src="src/js/epiviz/data/request.js"></script>
+<script src="src/js/epiviz/data/request-stack.js"></script>
+<script src="src/js/epiviz/data/response.js"></script>
+<script src="src/js/epiviz/data/webserver-data-provider.js"></script>
+<script src="src/js/epiviz/data/websocket-data-provider.js"></script>
+<script src="src/js/epiviz/config.js"></script>
+
+<script src="src/js/epiviz/datatypes/seq-info.js"></script>
+<script src="src/js/epiviz/datatypes/genomic-array.js"></script>
+<script src="src/js/epiviz/datatypes/genomic-range-array.js"></script>
+<script src="src/js/epiviz/datatypes/feature-value-array.js"></script>
+<script src="src/js/epiviz/datatypes/partial-summarized-experiment.js"></script>
+<script src="src/js/epiviz/datatypes/measurement-genomic-data.js"></script>
+<script src="src/js/epiviz/datatypes/measurement-genomic-data-wrapper.js"></script>
+<script src="src/js/epiviz/datatypes/measurement-genomic-data-array-wrapper.js"></script>
+<script src="src/js/epiviz/datatypes/genomic-data.js"></script>
+<script src="src/js/epiviz/datatypes/row-item-impl.js"></script>
+<script src="src/js/epiviz/datatypes/map-genomic-data.js"></script>
+<script src="src/js/epiviz/datatypes/item-filtered-genomic-data.js"></script>
+<script src="src/js/epiviz/datatypes/measurement-ordered-genomic-data.js"></script>
+<script src="src/js/epiviz/datatypes/measurement-aggregated-genomic-data.js"></script>
+<script src="src/js/epiviz/datatypes/genomic-range.js"></script>
+
+<script src="src/js/epiviz/plugins/charts/scatter-plot.js"></script>
+<script src="src/js/epiviz/plugins/charts/scatter-plot-type.js"></script>
+
+<dom-module id="epiviz-scatter-plot">
+
+    <template>
+
+        <!-- local DOM goes here -->
+        <div id="chart"></div>
+    
+    </template>
+
+    <script>
+        Polymer({
+            /* Custom element html tag */
+            is: 'epiviz-scatter-plot',
+
+            /* Properties that can be defined on the element */
+            properties: {
+
+                data: {
+                    type: Object,
+                    notify: true,
+                    observer: '_dataChanged'
+                },
+
+                configSrc: {
+                    type: Object,
+                    notify: true,
+                    value: function() {
+
+                        epiviz.Config.SETTINGS = {
+                            dataProviders: [
+                                ["epiviz.data.WebServerDataProvider", "umd", "http://epiviz.cbcb.umd.edu/data/main.php"]
+                            ],
+                            workspacesDataProvider: sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''),
+                            useCache: true,
+
+                            chartSettings: {
+                                default: {
+                                    colors: 'd3-category10',
+                                    decorations: [
+                                        'epiviz.ui.charts.decoration.RemoveChartButton',
+                                        'epiviz.ui.charts.decoration.SaveChartButton',
+                                        'epiviz.ui.charts.decoration.CustomSettingsButton',
+                                        'epiviz.ui.charts.decoration.EditCodeButton',
+
+                                        'epiviz.ui.charts.decoration.ChartColorsButton',
+                                        'epiviz.ui.charts.decoration.ChartLoaderAnimation',
+                                        'epiviz.ui.charts.decoration.ChartResize'
+                                    ]
+                                },
+
+                                plot: {
+                                    width: 400,
+                                    height: 400,
+                                    margins: new epiviz.ui.charts.Margins(15, 30, 30, 15),
+                                    decorations: [
+                                        'epiviz.ui.charts.decoration.ToggleTooltipButton',
+
+                                        'epiviz.ui.charts.decoration.ChartTooltip',
+                                        'epiviz.ui.charts.decoration.ChartFilterCodeButton'
+                                    ]
+                                },
+
+                                track: {
+                                    width: '100%',
+                                    height: 90,
+                                    margins: new epiviz.ui.charts.Margins(25, 20, 23, 10),
+                                    decorations: [
+                                        'epiviz.ui.charts.decoration.ToggleTooltipButton',
+
+                                        'epiviz.ui.charts.decoration.ChartTooltip',
+                                        'epiviz.ui.charts.decoration.ChartFilterCodeButton'
+                                    ]
+                                },
+
+                                'epiviz.plugins.charts.ScatterPlot': {
+                                    margins: new epiviz.ui.charts.Margins(15, 50, 50, 15),
+                                    decorations: [
+                                        'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
+                                    ]
+                                }
+                            },
+
+                            chartCustomSettings: {
+                                'epiviz.plugins.charts.ScatterPlot': {
+                                    circleRadiusRatio: 0.01
+                                }
+                            },
+
+                            colorPalettes: [
+                                new epiviz.ui.charts.ColorPalette(
+                                    ['#025167', '#e7003e', '#ffcd00', '#057d9f', '#970026', '#ffe373', '#ff8100'],
+                                    'Epiviz v1.0 Colors', 'epiviz-v1'),
+                                new epiviz.ui.charts.ColorPalette(
+                                    ['#1859a9', '#ed2d2e', '#008c47', '#010101', '#f37d22', '#662c91', '#a11d20', '#b33893'],
+                                    'Epiviz v2.0 Bright', 'epiviz-v2-bright'),
+                                new epiviz.ui.charts.ColorPalette(
+                                    ['#b8d2eb', '#f2aeac', '#d8e4aa', '#cccccc', '#f2d1b0', '#d4b2d3', '#ddb8a9', '#ebbfd9'],
+                                    'Epiviz v2.0 Light', 'epiviz-v2-light'),
+                                new epiviz.ui.charts.ColorPalette(
+                                    ['#599ad3', '#f1595f', '#79c36a', '#727272', '#f9a65a', '#9e66ab', '#cd7058', '#d77fb3'],
+                                    'Epiviz v2.0 Medium', 'epiviz-v2-medium'),
+                                new epiviz.ui.charts.ColorPalette(
+                                    ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"],
+                                    'D3 Category 10', 'd3-category10'),
+                                new epiviz.ui.charts.ColorPalette(
+                                    ["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a", "#d62728", "#ff9896", "#9467bd", "#c5b0d5", "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f", "#c7c7c7", "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"],
+                                    'D3 Category 20', 'd3-category20'),
+                                new epiviz.ui.charts.ColorPalette(
+                                    ["#393b79", "#5254a3", "#6b6ecf", "#9c9ede", "#637939", "#8ca252", "#b5cf6b", "#cedb9c", "#8c6d31", "#bd9e39", "#e7ba52", "#e7cb94", "#843c39", "#ad494a", "#d6616b", "#e7969c", "#7b4173", "#a55194", "#ce6dbd", "#de9ed6"],
+                                    'D3 Category 20b', 'd3-category20b'),
+                                new epiviz.ui.charts.ColorPalette(
+                                    ["#3182bd", "#6baed6", "#9ecae1", "#c6dbef", "#e6550d", "#fd8d3c", "#fdae6b", "#fdd0a2", "#31a354", "#74c476", "#a1d99b", "#c7e9c0", "#756bb1", "#9e9ac8", "#bcbddc", "#dadaeb", "#636363", "#969696", "#bdbdbd", "#d9d9d9"],
+                                    'D3 Category 20c', 'd3-category20c'),
+                                new epiviz.ui.charts.ColorPalette(
+                                    ['#f9a65a', '#599ad3', '#79c36a', '#f1595f', '#727272', '#cd7058', '#d77fb3'],
+                                    'Genes Default', 'genes-default'),
+                                new epiviz.ui.charts.ColorPalette(
+                                    ['#1859a9', '#ed2d2e', '#008c47', '#010101', '#f37d22', '#662c91', '#a11d20', '#b33893'],
+                                    'Heatmap Default', 'heatmap-default')
+                            ]
+                        };
+
+                        return epiviz.Config.SETTINGS;
+                    }
+                },
+
+                plotId: {
+                    type: String,
+                    value: function() {
+                        var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                        var result = '';
+                        var size = 7;
+
+                        for (var i = 0; i < size; ++i) {
+                            result += chars[Math.round(Math.random() * (chars.length - 1))];
+                        }
+                        return result;
+                    }
+                },
+
+                measurements: {
+                    type: Array,
+                    value: function() {
+                        return [{
+                            'id': 'cancer',
+                            'name': 'Expression Colon Cancer',
+                            'type': 'feature',
+                            'datasourceId': 'gene_expression',
+                            'datasourceGroup': 'affymetrix_probeset',
+                            'dataprovider': 'umd',
+                            'formula': null,
+                            'defaultChartType': null,
+                            'annotation': null,
+                            'minValue': -3,
+                            'maxValue': 20,
+                            'metadata': ['probe']
+                        }, {
+                            'id': 'normal',
+                            'name': 'Expression Colon Normal',
+                            'type': 'feature',
+                            'datasourceId': 'gene_expression',
+                            'datasourceGroup': 'affymetrix_probeset',
+                            'dataprovider': 'umd',
+                            'formula': null,
+                            'defaultChartType': null,
+                            'annotation': null,
+                            'minValue': -3,
+                            'maxValue': 20,
+                            'metadata': ['probe']
+                        }];
+                    }
+                },
+
+                range: {
+                    type: Object,
+                    notify: true,
+                    value: function() {
+                        return new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000);
+                    }
+                }
+            },
+
+            _dataChanged: function() {
+                if (this.data != null && this.chart != null) {
+                    this._draw();
+                }
+            },
+
+            highlight: function(e) {
+                // self.plot.highlight(e);
+            },
+
+            unHighlight: function() {
+                // self.plot.highlight()
+            },
+
+            // Initialization that should happen or use FactoryImpl 
+            // created: function() {},
+
+            /* callback function after the element is initialized */
+            ready: function() {
+                var self = this;
+                // style observer on charts
+                self.scopeSubtree(self.$.chart, true);
+
+                var chartContainer = document.createElement('div');
+                chartContainer.id = self.plotId;
+
+                Polymer.dom(this.$.chart).appendChild(chartContainer);
+
+                // listen to events 
+                var parent = self.parentNode;
+                parent.addEventListener('hoverAllCharts', function(e) {
+                    self.highlight(e);
+                }.bind(self));
+
+                parent.addEventListener('unHoverAllCharts', function(e) {
+                    self.unHighlight(e);
+                }.bind(self));
+
+                self.config = new epiviz.Config(self.configSrc);
+
+                var mSet = new epiviz.measurements.MeasurementSet();
+
+                for (var i = 0; i < self.measurements.length; i++) {
+
+                    var measurement = self.measurements[i];
+
+                    mSet.add(new epiviz.measurements.Measurement(
+                        measurement.id,
+                        measurement.name,
+                        measurement.type,
+                        measurement.datasourceId,
+                        measurement.datasourceGroup,
+                        'umd',
+                        null,
+                        null,
+                        null,
+                        measurement.minValue,
+                        measurement.maxValue,
+                        measurement.metadata
+                    ));
+                }
+
+                self.visConfigSelection = new epiviz.ui.controls.VisConfigSelection(mSet);
+
+                self.chartType = new epiviz.plugins.charts.ScatterPlotType(self.config);
+
+                self.chartProperties = new epiviz.ui.charts.VisualizationProperties(
+                    self.chartType.defaultWidth(),
+                    self.chartType.defaultHeight(),
+                    self.chartType.defaultMargins(),
+                    self.visConfigSelection,
+                    self.chartType.defaultColors(),
+                    null,
+                    self.chartType.customSettingsValues(),
+                    self.chartType.customSettingsDefs(), [],
+                    null
+                );
+
+                self.chart = self.chartType.createNew(self.plotId, $(chartContainer), self.chartProperties);
+
+                // TODO: eventually comes from data source for testing only!!
+                // FROM HERE
+                var chartMeasMap = {};
+                chartMeasMap[self.plotId] = self.visConfigSelection.measurements;
+
+                var dataProviderFactory = new epiviz.data.DataProviderFactory(self.config);
+                var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);
+
+                dataManager.getData(self.range, chartMeasMap, function(id, data) {
+                    console.log(data);
+                    self.data = data;
+                    self._draw();
+                });
+                //TO HERE
+
+                //this._colorsChanged();
+                self._dataChanged();
+
+                // Listen to hover event on the chart
+                // self.plot.on("hover", function(data) {
+                //     console.log(data);
+                //     //fire polymer event
+                //     self.fire('hover', {
+
+                //         data: data
+                //     });
+                // });
+            },
+
+            _draw: function() {
+                this.chart.draw(this.range, this.data);
+            }
+        });
+    </script>
+</dom-module>
