@@ -17,7 +17,7 @@
 <link href="src/css/dropdown-check-list-1.4/css/ui.dropdownchecklist.standalone.css" rel="stylesheet" />
 <!-- Future tooltip: <link href="css/qtip/jquery.qtip.min.css" rel="stylesheet" />-->
 
-<!-- Code editor -->
+<!-- Code editor -->});
 <link rel="stylesheet" href="src/css/codemirror-4.5/lib/codemirror.css">
 
 <!-- EpiViz CSS -->
@@ -287,7 +287,7 @@
                         for (var i = 0; i < size; ++i) {
                             result += chars[Math.round(Math.random() * (chars.length - 1))];
                         }
-                        return result;
+                        return 'epiviz-' + result;
                     }
                 },
 
@@ -339,12 +339,12 @@
                 }
             },
 
-            highlight: function(e) {
-                // self.plot.highlight(e);
+            hover: function(data) {
+                this.chart.doHover(data);
             },
 
-            unHighlight: function() {
-                // self.plot.highlight()
+            unHover: function() {
+                this.chart.doUnhover();
             },
 
             // Initialization that should happen or use FactoryImpl 
@@ -364,11 +364,11 @@
                 // listen to events 
                 var parent = self.parentNode;
                 parent.addEventListener('hoverAllCharts', function(e) {
-                    self.highlight(e);
+                    self.hover(e.detail.data);
                 }.bind(self));
 
                 parent.addEventListener('unHoverAllCharts', function(e) {
-                    self.unHighlight(e);
+                    self.unHover();
                 }.bind(self));
 
                 self.config = new epiviz.Config(self.configSrc);
@@ -432,14 +432,24 @@
                 self._dataChanged();
 
                 // Listen to hover event on the chart
-                // self.plot.on("hover", function(data) {
-                //     console.log(data);
-                //     //fire polymer event
-                //     self.fire('hover', {
+                self.chart._dispatch.on("hover", function(id, data) {
+                    if (data == null) {
 
-                //         data: data
-                //     });
-                // });
+                        // self.unHover();
+
+                        self.fire('unHover', {
+                            id: id
+                        });
+                    } else {
+
+                        // self.hover(data);
+
+                        self.fire('hover', {
+                            id: id,
+                            data: data
+                        });
+                    }
+                });
             },
 
             _draw: function() {

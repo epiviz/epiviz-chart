@@ -89,7 +89,8 @@ epiviz.ui.charts.Track.prototype.draw = function(range, data, slide, zoom) {
  * @returns {epiviz.ui.charts.VisualizationType.DisplayType}
  */
 epiviz.ui.charts.Track.prototype.displayType = function() {
-    return epiviz.ui.charts.VisualizationType.DisplayType.TRACK; };
+    return epiviz.ui.charts.VisualizationType.DisplayType.TRACK;
+};
 
 /**
  * @param {epiviz.ui.charts.ChartObject} selectedObject
@@ -102,7 +103,8 @@ epiviz.ui.charts.Track.prototype.doHover = function(selectedObject) {
     }
 
     if (!this._lastRange) {
-        return; }
+        return;
+    }
 
     this._highlightGroup.selectAll('rect').remove();
     this._highlightGroup.attr('transform', 'translate(' + this.margins().left() + ', ' + 0 + ')');
@@ -124,7 +126,8 @@ epiviz.ui.charts.Track.prototype.doHover = function(selectedObject) {
 
     var minHighlightSize = 5;
     this._highlightGroup.selectAll('rect').data(items, function(d) {
-            return sprintf('%s-%s', d.start, d.end); })
+            return sprintf('%s-%s', d.start, d.end);
+        })
         .enter()
         .append('rect')
         .style('fill', this.colors().get(0))
@@ -135,7 +138,8 @@ epiviz.ui.charts.Track.prototype.doHover = function(selectedObject) {
             return xScale(d.start) + defaultWidth * 0.5 - width * 0.5;
         })
         .attr('width', function(d) {
-            return Math.max(minHighlightSize, xScale(d.end + 1) - xScale(d.start)); })
+            return Math.max(minHighlightSize, xScale(d.end + 1) - xScale(d.start));
+        })
         .attr('y', 0)
         .attr('height', this.height());
 };
@@ -153,7 +157,8 @@ epiviz.ui.charts.Track.prototype.doUnhover = function() {
  */
 epiviz.ui.charts.Track.prototype._captureMouseHover = function() {
     if (!this._lastRange) {
-        return; }
+        return;
+    }
     this._unhover.notify(new epiviz.ui.charts.VisEventArgs(this.id()));
     var inverseXScale = d3.scale.linear()
         .domain([0, this.width()])
@@ -163,6 +168,8 @@ epiviz.ui.charts.Track.prototype._captureMouseHover = function() {
 
     var selectedObject = new epiviz.ui.charts.ChartObject(sprintf('%s-highlight', this.id()), start, end);
     this._hover.notify(new epiviz.ui.charts.VisEventArgs(this.id(), selectedObject));
+
+    this._dispatch.hover(this.id(), selectedObject);
 };
 
 /**
@@ -174,7 +181,8 @@ epiviz.ui.charts.Track.prototype._drawLegend = function() {
     this._svg.selectAll('.chart-title-color ').remove();
 
     if (!this._lastData || !this._lastData.isReady()) {
-        return; }
+        return;
+    }
 
     var title = '';
     var measurements = this._lastData.measurements();
@@ -188,12 +196,14 @@ epiviz.ui.charts.Track.prototype._drawLegend = function() {
         .attr('font-weight', 'bold')
         .attr('fill', function(m, i) {
             if (!self._measurementColorLabels) {
-                return self.colors().get(i); }
+                return self.colors().get(i);
+            }
             return self.colors().getByKey(self._measurementColorLabels.get(m));
         })
         .attr('y', self.margins().top() - 5)
         .text(function(m, i) {
-            return m.name(); });
+            return m.name();
+        });
 
     var textLength = 0;
     var titleEntriesStartPosition = [];
@@ -215,14 +225,16 @@ epiviz.ui.charts.Track.prototype._drawLegend = function() {
         .append('circle')
         .attr('class', 'chart-title-color')
         .attr('cx', function(column, i) {
-            return self.margins().left() + 4 + titleEntriesStartPosition[i]; })
+            return self.margins().left() + 4 + titleEntriesStartPosition[i];
+        })
         .attr('cy', self.margins().top() - 9)
         .attr('r', 4)
         .style('shape-rendering', 'auto')
         .style('stroke-width', '0')
         .style('fill', function(m, i) {
             if (!self._measurementColorLabels) {
-                return self.colors().get(i); }
+                return self.colors().get(i);
+            }
             return self.colors().getByKey(self._measurementColorLabels.get(m));
         });
 };
