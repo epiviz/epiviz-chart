@@ -217,7 +217,7 @@ epiviz.plugins.charts.BlocksTrack.prototype._drawBlocks = function(range, data, 
         .on('click', function(b) {
             self._deselect.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
             self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), b));
-            self._dispatch.hover(self.id(), b);
+            self._dispatch.click(self.id(), b);
             d3.event.stopPropagation();
         });
 

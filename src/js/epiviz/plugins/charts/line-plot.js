@@ -17,6 +17,8 @@ epiviz.plugins.charts.LinePlot = function(id, container, properties) {
   // Call superclass constructor
   epiviz.ui.charts.Plot.call(this, id, container, properties);
 
+  this._dispatch = d3.dispatch("hover", "click");
+
   this._initialize();
 };
 
@@ -242,9 +244,11 @@ epiviz.plugins.charts.LinePlot.prototype._drawLines = function(range, data, xSca
       .style('opacity', '0')
       .on('mouseover', function(d) {
         self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
+        self._dispatch.hover(self.id(), d);
       })
       .on('mouseout', function () {
         self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+        self._dispatch.hover(self.id(), null);
       })
       .each(function(d) {
         d3.select(this)
