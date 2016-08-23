@@ -427,6 +427,26 @@
                     );
 
                     self.chart = self.chartType.createNew(self.plotId, $('#' + self.plotId), self.chartProperties);
+
+                    // Listen to hover event on the chart
+                    self.chart._dispatch.on("hover", function(id, data) {
+                        if (data == null) {
+
+                            self.unHover();
+
+                            self.fire('unHover', {
+                                id: id
+                            });
+                        } else {
+
+                            self.hover(data);
+
+                            self.fire('hover', {
+                                id: id,
+                                data: data
+                            });
+                        }
+                    });
                 }
             },
 
@@ -530,26 +550,6 @@
                 //this._colorsChanged();
                 self._measurementsChanged();
                 self._dataChanged();
-
-                // Listen to hover event on the chart
-                self.chart._dispatch.on("hover", function(id, data) {
-                    if (data == null) {
-
-                        self.unHover();
-
-                        self.fire('unHover', {
-                            id: id
-                        });
-                    } else {
-
-                        self.hover(data);
-
-                        self.fire('hover', {
-                            id: id,
-                            data: data
-                        });
-                    }
-                });
             },
 
             _draw: function() {
