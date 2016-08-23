@@ -60,6 +60,19 @@
 <script src="src/js/epiviz/measurements/measurement-hashtable.js"></script>
 <script src="src/js/epiviz/measurements/measurement.js"></script>
 
+<script src="src/js/epiviz/ui/charts/transform/clustering/cluster-node.js"></script>
+    <script src="src/js/epiviz/ui/charts/transform/clustering/cluster-subtree.js"></script>
+    <script src="src/js/epiviz/ui/charts/transform/clustering/cluster-leaf.js"></script>
+    <script src="src/js/epiviz/ui/charts/transform/clustering/cluster-tree.js"></script>
+    <script src="src/js/epiviz/ui/charts/transform/clustering/clustering-metric.js"></script>
+    <script src="src/js/epiviz/ui/charts/transform/clustering/clustering-linkage.js"></script>
+    <script src="src/js/epiviz/ui/charts/transform/clustering/hierarchical-clustering-algorithm.js"></script>
+    <script src="src/js/epiviz/ui/charts/transform/clustering/euclidean-metric.js"></script>
+    <script src="src/js/epiviz/ui/charts/transform/clustering/complete-linkage.js"></script>
+    <script src="src/js/epiviz/ui/charts/transform/clustering/none-clustering.js"></script>
+    <script src="src/js/epiviz/ui/charts/transform/clustering/agglomerative-clustering.js"></script>
+    <script src="src/js/epiviz/ui/charts/transform/clustering/clustering-algorithm-factory.js"></script>
+
 <script src="src/js/epiviz/ui/charts/markers/measurement-aggregator.js"></script>
 <script src="src/js/epiviz/ui/charts/markers/visualization-marker.js"></script>
 
@@ -143,10 +156,12 @@
 <script src="src/js/epiviz/datatypes/measurement-aggregated-genomic-data.js"></script>
 <script src="src/js/epiviz/datatypes/genomic-range.js"></script>
 
-<script src="src/js/epiviz/plugins/charts/line-plot.js"></script>
-<script src="src/js/epiviz/plugins/charts/line-plot-type.js"></script>
 
-<dom-module id="epiviz-line-plot">
+
+<script src="src/js/epiviz/plugins/charts/heatmap-plot.js"></script>
+<script src="src/js/epiviz/plugins/charts/heatmap-plot-type.js"></script>
+
+<dom-module id="epiviz-heatmap-plot">
 
     <template>
             <style>
@@ -163,7 +178,7 @@
     <script>
         Polymer({
             /* Custom element html tag */
-            is: 'epiviz-line-plot',
+            is: 'epiviz-heatmap-plot',
 
             /* Properties that can be defined on the element */
             properties: {
@@ -224,24 +239,35 @@
                                         'epiviz.ui.charts.decoration.ChartFilterCodeButton'
                                     ]
                                 },
-
-                                 'epiviz.plugins.charts.LinePlot': {
-                                    width: 800,
-                                    height: 400,
-                                    margins: new epiviz.ui.charts.Margins(30, 30, 50, 15),
-                                    decorations: [
-                                    'epiviz.ui.charts.decoration.ChartGroupByMeasurementsCodeButton',
-                                    'epiviz.ui.charts.decoration.ChartColorByRowCodeButton',
-                                    'epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton'
+                                'epiviz.plugins.charts.HeatmapPlot': {
+                                      width: 800,
+                                      height: 400,
+                                      margins: new epiviz.ui.charts.Margins(80, 120, 40, 40),
+                                      decorations: [
+                                        'epiviz.ui.charts.decoration.ChartGroupByMeasurementsCodeButton',
+                                        'epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton',
+                                        'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
                                       ],
-                                      colors: 'd3-category20b'
-                                }
+                                      colors: 'heatmap-default'
+                                    }
                             },
 
                             chartCustomSettings: {
-                           
+                                'epiviz.plugins.charts.HeatmapPlot': {
+                                  colLabel: 'label',
+                                  maxColumns: 120,
+                                  clusteringAlg: 'agglomerative'
+                                }
                             },
 
+                              clustering: {
+                                algorithms: [
+                                  'epiviz.ui.charts.transform.clustering.NoneClustering',
+                                  'epiviz.ui.charts.transform.clustering.AgglomerativeClustering'
+                                ],
+                                metrics: ['epiviz.ui.charts.transform.clustering.EuclideanMetric'],
+                                linkages: ['epiviz.ui.charts.transform.clustering.CompleteLinkage']
+                              },
                             colorPalettes: [
                                 new epiviz.ui.charts.ColorPalette(
                                     ['#025167', '#e7003e', '#ffcd00', '#057d9f', '#970026', '#ffe373', '#ff8100'],
@@ -376,6 +402,8 @@
 
                 self.config = new epiviz.Config(self.configSrc);
 
+                epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory.initialize(self.config);
+
                 var mSet = new epiviz.measurements.MeasurementSet();
 
                 for (var i = 0; i < self.measurements.length; i++) {
@@ -400,7 +428,7 @@
 
                 self.visConfigSelection = new epiviz.ui.controls.VisConfigSelection(mSet);
 
-                self.chartType = new epiviz.plugins.charts.LinePlotType(self.config);
+                self.chartType = new epiviz.plugins.charts.HeatmapPlotType(self.config);
 
                 self.chartProperties = new epiviz.ui.charts.VisualizationProperties(
                     self.chartType.defaultWidth(),

@@ -18,6 +18,8 @@ epiviz.plugins.charts.StackedLinePlot = function(id, container, properties) {
   epiviz.ui.charts.Plot.call(this, id, container, properties);
 
   this._initialize();
+
+  this._dispatch = d3.dispatch("hover", "click");
 };
 
 /*
@@ -243,9 +245,13 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines = function(range, dat
     .style('fill', function(d, i) { return colors.getByKey(colorBy(data.firstSeries().getRowByGlobalIndex(d.seriesIndex))); })
     .on('mouseover', function(d, i) {
       self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
+      self._dispatch.hover(self.id(), d);
+
     })
     .on('mouseout', function () {
       self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+      self._dispatch.hover(self.id(), null);
+
     });
 
   lines

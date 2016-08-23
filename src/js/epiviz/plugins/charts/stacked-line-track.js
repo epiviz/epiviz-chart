@@ -17,7 +17,7 @@ goog.provide('epiviz.plugins.charts.StackedLineTrack');
 epiviz.plugins.charts.StackedLineTrack = function(id, container, properties) {
   // Call superclass constructor
   epiviz.ui.charts.Track.call(this, id, container, properties);
-
+  this._dispatch = d3.dispatch("hover", "click");
   this._initialize();
 };
 
@@ -204,9 +204,11 @@ epiviz.plugins.charts.StackedLineTrack.prototype._drawLines = function(range, da
     .style('shape-rendering', 'auto')
     .style('stroke-width', '0')
     .style('fill', function(d, i) { return colors.get(i); })
-    .on('mouseover', function() { self._captureMouseHover(); })
-    .on('mousemove', function() { self._captureMouseHover(); })
-    .on('mouseout', function () { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); });
+    .on('mouseover', function() { self._captureMouseHover(); self._dispatch.hover(self.id(), null)})
+    .on('mousemove', function() { self._captureMouseHover(); self._dispatch.hover(self.id(), null)})
+    .on('mouseout', function () { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); 
+                   self._dispatch.hover(self.id(), null);
+    });
 
   lines
     .attr('d', area)

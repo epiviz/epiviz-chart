@@ -143,10 +143,10 @@
 <script src="src/js/epiviz/datatypes/measurement-aggregated-genomic-data.js"></script>
 <script src="src/js/epiviz/datatypes/genomic-range.js"></script>
 
-<script src="src/js/epiviz/plugins/charts/line-plot.js"></script>
-<script src="src/js/epiviz/plugins/charts/line-plot-type.js"></script>
+<script src="src/js/epiviz/plugins/charts/stacked-line-plot.js"></script>
+<script src="src/js/epiviz/plugins/charts/stacked-line-plot-type.js"></script>
 
-<dom-module id="epiviz-line-plot">
+<dom-module id="epiviz-stacked-line-plot">
 
     <template>
             <style>
@@ -163,7 +163,7 @@
     <script>
         Polymer({
             /* Custom element html tag */
-            is: 'epiviz-line-plot',
+            is: 'epiviz-stacked-line-plot',
 
             /* Properties that can be defined on the element */
             properties: {
@@ -225,21 +225,23 @@
                                     ]
                                 },
 
-                                 'epiviz.plugins.charts.LinePlot': {
-                                    width: 800,
-                                    height: 400,
-                                    margins: new epiviz.ui.charts.Margins(30, 30, 50, 15),
-                                    decorations: [
+                                 'epiviz.plugins.charts.StackedLinePlot': {
+                                  width: 800,
+                                  height: 400,
+                                  margins: new epiviz.ui.charts.Margins(30, 30, 50, 15),
+                                  decorations: [
                                     'epiviz.ui.charts.decoration.ChartGroupByMeasurementsCodeButton',
                                     'epiviz.ui.charts.decoration.ChartColorByRowCodeButton',
                                     'epiviz.ui.charts.decoration.ChartOrderByMeasurementsCodeButton'
-                                      ],
-                                      colors: 'd3-category20b'
+                                  ],
+                                  colors: 'd3-category20b'
                                 }
                             },
 
                             chartCustomSettings: {
-                           
+                                'epiviz.plugins.charts.StackedLinePlot': {
+                                    colLabel: 'label'
+                                }
                             },
 
                             colorPalettes: [
@@ -400,7 +402,7 @@
 
                 self.visConfigSelection = new epiviz.ui.controls.VisConfigSelection(mSet);
 
-                self.chartType = new epiviz.plugins.charts.LinePlotType(self.config);
+                self.chartType = new epiviz.plugins.charts.StackedLinePlotType(self.config);
 
                 self.chartProperties = new epiviz.ui.charts.VisualizationProperties(
                     self.chartType.defaultWidth(),

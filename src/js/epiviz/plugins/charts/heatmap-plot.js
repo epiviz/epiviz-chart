@@ -55,6 +55,8 @@ epiviz.plugins.charts.HeatmapPlot = function(id, container, properties) {
   this._dendrogramRatio = 0.1;
 
   this._initialize();
+
+  this._dispatch = d3.dispatch("hover", "click");
 };
 
 /*
@@ -455,15 +457,17 @@ epiviz.plugins.charts.HeatmapPlot.prototype._drawCells = function(range, data, c
   selection
     .on('mouseover', function (d) {
       self._hover.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
+      self._dispatch.hover(self.id(), d);
     })
     .on('mouseout', function () {
       self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+      self._dispatch.hover(self.id(), null);
     })
     .on('click', function (d) {
       self._deselect.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
       self._select.notify(new epiviz.ui.charts.VisEventArgs(self.id(), d));
-
       d3.event.stopPropagation();
+      self._dispatch.click(self.id(), d);
     });
 
   this._drawLabels(itemsGroup, colnames, globalIndices, nCols, rows, cellWidth, cellHeight, firstGlobalIndex, width);
