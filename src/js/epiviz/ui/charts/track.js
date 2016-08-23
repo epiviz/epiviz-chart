@@ -67,7 +67,10 @@ epiviz.ui.charts.Track.prototype._initialize = function() {
     this._background
         .on('mouseover', function() { self._captureMouseHover(); })
         .on('mousemove', function() { self._captureMouseHover(); })
-        .on('mouseout', function() { self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id())); });
+        .on('mouseout', function() {
+            self._unhover.notify(new epiviz.ui.charts.VisEventArgs(self.id()));
+            self._dispatch.hover(self.id(), null);
+        });
 };
 
 /**
