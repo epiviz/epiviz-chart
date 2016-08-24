@@ -31,6 +31,11 @@
                     notify: true
                 },
 
+                useDefaultDataProvider: {
+                    type: Boolean,
+                    notify: true
+                },
+
                 data: {
                     type: Object,
                     notify: true,
@@ -218,6 +223,17 @@
                 '_dimChanged(dimX.*, dimY.*, dimS.*)'
             ],
 
+            _generatePlotId: function() {
+                var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                var result = '';
+                var size = 7;
+
+                for (var i = 0; i < size; ++i) {
+                    result += chars[Math.round(Math.random() * (chars.length - 1))];
+                }
+                return 'epiviz-' + result;
+            },
+
             _dimChanged: function() {
 
                 $('#' + this.plotId).empty();
@@ -316,6 +332,8 @@
                 // style observer on charts
                 self.scopeSubtree(self.$.chart, true);
 
+                self.plotId = self.plotId || self._generatePlotId();
+
                 var chartContainer = document.createElement('div');
                 chartContainer.id = self.plotId;
 
@@ -393,6 +411,52 @@
                 //this._colorsChanged();
                 self._measurementsChanged();
                 self._dataChanged();
+
+                if (self.useDefaultDataProvider) {
+
+                    self.measurements = self.measurements || [{
+                        'id': 'cancer',
+                        'name': 'Expression Colon Cancer',
+                        'type': 'feature',
+                        'datasourceId': 'gene_expression',
+                        'datasourceGroup': 'affymetrix_probeset',
+                        'dataprovider': 'umd',
+                        'formula': null,
+                        'defaultChartType': null,
+                        'annotation': null,
+                        'minValue': -3,
+                        'maxValue': 20,
+                        'metadata': ['probe']
+                    }, {
+                        'id': 'normal',
+                        'name': 'Expression Colon Normal',
+                        'type': 'feature',
+                        'datasourceId': 'gene_expression',
+                        'datasourceGroup': 'affymetrix_probeset',
+                        'dataprovider': 'umd',
+                        'formula': null,
+                        'defaultChartType': null,
+                        'annotation': null,
+                        'minValue': -3,
+                        'maxValue': 20,
+                        'metadata': ['probe']
+                    }];
+
+                    self.range = self.range || new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000);
+
+                    self._measurementsChanged();
+
+                    var chartMeasMap = {};
+                    chartMeasMap[self.plotId] = self.visConfigSelection.measurements;
+
+                    var dataProviderFactory = new epiviz.data.DataProviderFactory(self.config);
+                    var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);
+
+                    dataManager.getData(self.range, chartMeasMap, function(id, data) {
+                        self.data = data;
+                        //self._draw();
+                    });
+                }
             },
 
             _draw: function() {
