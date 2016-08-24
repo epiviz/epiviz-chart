@@ -1,0 +1,17 @@
+epiviz-charts 
+
+    create interactive genomic charts
+
+    each charts takes 
+    measurements - Array of epiviz measurements to use 
+    useDefaultDataProvider: Boolean (true to use epiviz web services to pull data)
+                                    (false use data and range below)
+    data - data to plot
+    range - genomicRange object ( chr, start, end) 
+
+
+
+
+## TODO
+    * refactor useDefaultDataProvider to a behavior 
+    * add resize behavior and refresh chart on resize
