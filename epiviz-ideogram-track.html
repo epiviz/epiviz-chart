@@ -1,0 +1,173 @@
+<!-- Polymer dependency -->
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="../epiviz-imports/epiviz-common-js.html">
+
+<script src="../cyto-chromosome-vis/cyto-chromosome.js"></script>
+
+<dom-module id="epiviz-ideogram-track">
+
+    <template>
+        <style>
+        :host {
+            display: block;
+        }
+
+        ::shadow #chart {
+            width: 800px;
+        }
+        </style>
+
+        <!-- local DOM goes here -->
+        <div id="chart"></div>
+    
+    </template>
+
+    <script>
+        Polymer({
+            /* Custom element html tag */
+            is: 'epiviz-ideogram-track',
+
+            /* Properties that can be defined on the element */
+            properties: {
+
+                chromosome: {
+                    type: String,
+                    notify: true
+                },
+
+                start: {
+                    type: Number,
+                    notify: true
+                },
+
+                end: {
+                    type: Number,
+                    notify: true
+                },
+
+                plotId: {
+                    type: String,
+                    reflectToAttribute: true,
+                    notify: true
+                        // value: function() {
+                        //     var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                        //     var result = '';
+                        //     var size = 7;
+
+                    //     for (var i = 0; i < size; ++i) {
+                    //         result += chars[Math.round(Math.random() * (chars.length - 1))];
+                    //     }
+                    //     return 'epiviz-' + result;
+                    // }
+                },
+
+                range: {
+                    type: Object,
+                    notify: true
+                        // value: function() {
+                        //     return new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000);
+                        // }
+                }
+            },
+
+            observers: [
+                '_rangeChanged(chromosome.*, start.*, end.*)'
+            ],
+
+            _generatePlotId: function() {
+                var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                var result = '';
+                var size = 7;
+
+                for (var i = 0; i < size; ++i) {
+                    result += chars[Math.round(Math.random() * (chars.length - 1))];
+                }
+                return 'epiviz-' + result;
+            },
+
+            _rangeChanged: function() {
+
+                if (this.chromosome != null && this.start != null && this.end != null && this.chromosomeFactory != null) {
+                    this._draw();
+                }
+
+            },
+
+            hover: function(data) {
+                this.chart.doHover(data);
+            },
+
+            unHover: function() {
+                this.chart.doUnhover();
+            },
+
+            // Initialization that should happen or use FactoryImpl 
+            // created: function() {},
+
+            /* callback function after the element is initialized */
+            ready: function() {
+                var self = this;
+                // style observer on charts
+                self.scopeSubtree(self.$.chart, true);
+
+                self.plotId = self.plotId || self._generatePlotId();
+
+                var chartContainer = document.createElement('div');
+                chartContainer.id = self.plotId;
+
+                Polymer.dom(this.$.chart).appendChild(chartContainer);
+
+                // listen to events 
+                // var parent = self.parentNode;
+                // parent.addEventListener('hoverAllCharts', function(e) {
+                //     self.hover(e.detail.data);
+                // }.bind(self));
+
+                // parent.addEventListener('unHoverAllCharts', function(e) {
+                //     self.unHover();
+                // }.bind(self));
+
+                self.chromosomeFactory = cyto_chr.chromosome;
+
+                self._rangeChanged();
+            },
+
+            _draw: function() {
+
+                var self = this;
+
+                //var d3div = d3.select('#' + self.plotId);
+                self.segment = self.chromosome.replace("chr", "");
+
+                this.chart = self.chromosomeFactory()
+                    .segment(self.segment)
+                    //.resolution("850")
+                    // .useRelative(false)
+                    .showAxis(true)
+                    .target('#' + self.plotId)
+                    //.height(100)
+                    .width(800)
+                    .render();
+
+                // this.chart.svgTarget = this.chart.getSVGTarget();
+
+                // this.chart.newSelector(this.start, this.end);
+
+                this.chart.on("selectorChange", function(e) {
+
+                    self.fire('hover', {
+                        id: self.plotId,
+                        data: e
+                    });
+
+                    self.fire('rangeChanged', {
+                        id: self.plotId,
+                        data: e
+                    });
+
+                });
+            }
+        });
+    </script>
+</dom-module>

@@ -42,18 +42,20 @@
                     notify: true
                 },
 
+                dimKey: {
+                    type: String,
+                    notify: true
+                },
+
                 useDefaultDataProvider: {
                     type: Boolean,
                     notify: true
                 },
 
                 data: {
-                    type: Object,
+                    type: Array,
                     notify: true,
-                    observer: '_dataChanged',
-                    value: function(){
-                        return [{"gene":"Sandoz Inc","expression":67.77,"sample_count":57,"sample_gender":"Male"},{"gene":"ALK-Abello, Inc.","expression":99.17,"sample_count":88,"sample_gender":"Female"},{"gene":"Have and Be Co., Ltd.","expression":13.69,"sample_count":99,"sample_gender":"Female"},{"gene":"Physicians Total Care, Inc.","expression":89.05,"sample_count":12,"sample_gender":"Male"},{"gene":"Laboratoires dermo Cosmetik Inc","expression":84.74,"sample_count":93,"sample_gender":"Male"},{"gene":"Bayshore Pharmaceuticals, LLC","expression":56.95,"sample_count":16,"sample_gender":"Male"},{"gene":"Lake Erie Medical & Surgical Supply DBA Quality Care Products LLC","expression":18.02,"sample_count":72,"sample_gender":"Male"},{"gene":"Cardinal Health","expression":72.03,"sample_count":20,"sample_gender":"Female"},{"gene":"LernaPharm Loris Inc.","expression":92.5,"sample_count":68,"sample_gender":"Male"},{"gene":"CVS Pharmacy","expression":11.31,"sample_count":58,"sample_gender":"Female"},{"gene":"REMEDYREPACK INC.","expression":75.0,"sample_count":49,"sample_gender":"Male"},{"gene":"Sagent Pharmaceuticals","expression":62.84,"sample_count":50,"sample_gender":"Female"},{"gene":"E. Fougera & Co. a division of Fougera Pharmaceuticals Inc.","expression":87.72,"sample_count":26,"sample_gender":"Female"},{"gene":"Dr. Reddys Laboratories Limited","expression":18.13,"sample_count":98,"sample_gender":"Female"},{"gene":"X-GEN Pharmaceuticals, Inc.","expression":80.62,"sample_count":83,"sample_gender":"Male"},{"gene":"Hospira, Inc.","expression":5.65,"sample_count":92,"sample_gender":"Female"},{"gene":"Fresenius Kabi USA, LLC","expression":71.47,"sample_count":26,"sample_gender":"Male"},{"gene":"Global Pharmaceuticals, Division of Impax Laboratories Inc.","expression":97.04,"sample_count":94,"sample_gender":"Female"},{"gene":"STAT RX USA LLC","expression":77.53,"sample_count":32,"sample_gender":"Male"},{"gene":"KAISER FOUNDATION HOSPITALS","expression":38.14,"sample_count":23,"sample_gender":"Male"}]
-                    }
+                    observer: '_dataChanged'
                 },
 
                 configSrc: {
@@ -178,36 +180,36 @@
                 measurements: {
                     type: Array,
                     notify: true,
-                    observer: '_measurementsChanged',
-                        value: function() {
-                            return [{
-                                'id': 'cancer',
-                                'name': 'Expression Colon Cancer',
-                                'type': 'feature',
-                                'datasourceId': 'gene_expression',
-                                'datasourceGroup': 'affymetrix_probeset',
-                                'dataprovider': 'umd',
-                                'formula': null,
-                                'defaultChartType': null,
-                                'annotation': null,
-                                'minValue': -3,
-                                'maxValue': 20,
-                                'metadata': ['probe']
-                            }, {
-                                'id': 'normal',
-                                'name': 'Expression Colon Normal',
-                                'type': 'feature',
-                                'datasourceId': 'gene_expression',
-                                'datasourceGroup': 'affymetrix_probeset',
-                                'dataprovider': 'umd',
-                                'formula': null,
-                                'defaultChartType': null,
-                                'annotation': null,
-                                'minValue': -3,
-                                'maxValue': 20,
-                                'metadata': ['probe']
-                            }];
-                        }
+                    observer: '_measurementsChanged'
+                        // value: function() {
+                        //     return [{
+                        //         'id': 'cancer',
+                        //         'name': 'Expression Colon Cancer',
+                        //         'type': 'feature',
+                        //         'datasourceId': 'gene_expression',
+                        //         'datasourceGroup': 'affymetrix_probeset',
+                        //         'dataprovider': 'umd',
+                        //         'formula': null,
+                        //         'defaultChartType': null,
+                        //         'annotation': null,
+                        //         'minValue': -3,
+                        //         'maxValue': 20,
+                        //         'metadata': ['probe']
+                        //     }, {
+                        //         'id': 'normal',
+                        //         'name': 'Expression Colon Normal',
+                        //         'type': 'feature',
+                        //         'datasourceId': 'gene_expression',
+                        //         'datasourceGroup': 'affymetrix_probeset',
+                        //         'dataprovider': 'umd',
+                        //         'formula': null,
+                        //         'defaultChartType': null,
+                        //         'annotation': null,
+                        //         'minValue': -3,
+                        //         'maxValue': 20,
+                        //         'metadata': ['probe']
+                        //     }];
+                        // }
                 },
 
                 range: {
@@ -220,7 +222,7 @@
             },
 
             observers: [
-                '_dimChanged(dimX.*, dimY.*, dimS.*)'
+                '_dimChanged(dimX.*, dimY.*, dimS.*, dimKey.*)'
             ],
 
             _generatePlotId: function() {
@@ -253,8 +255,10 @@
 
                 var self = this;
 
+                var mSet = new epiviz.measurements.MeasurementSet();
+
+
                 if (this.measurements != null && self.config != null) {
-                    var mSet = new epiviz.measurements.MeasurementSet();
 
                     for (var i = 0; i < self.measurements.length; i++) {
 
@@ -275,45 +279,76 @@
                             measurement.metadata
                         ));
                     }
+                } else {
 
-                    self.visConfigSelection = new epiviz.ui.controls.VisConfigSelection(mSet);
-
-                    self.chartType = new epiviz.plugins.charts.CustomScatterPlotType(self.config);
-
-                    self.chartProperties = new epiviz.ui.charts.VisualizationProperties(
-                        self.chartType.defaultWidth(),
-                        self.chartType.defaultHeight(),
-                        self.chartType.defaultMargins(),
-                        self.visConfigSelection,
-                        self.chartType.defaultColors(),
+                    mSet.add(new epiviz.measurements.Measurement(
+                        self.dimX,
+                        self.dimX,
+                        'feature',
+                        self.dimX,
+                        self.dimX,
+                        'data-' + self.plotId,
                         null,
-                        self.chartType.customSettingsValues(),
-                        self.chartType.customSettingsDefs(), [],
+                        null,
+                        null,
+                        0,
+                        100,
                         null
-                    );
+                    ));
 
-                    self.chart = self.chartType.createNew(self.plotId, $('#' + self.plotId), self.chartProperties);
-
-                    // Listen to hover event on the chart
-                    self.chart._dispatch.on("hover", function(id, data) {
-                        if (data == null) {
-
-                            self.unHover();
-
-                            self.fire('unHover', {
-                                id: id
-                            });
-                        } else {
-
-                            self.hover(data);
-
-                            self.fire('hover', {
-                                id: id,
-                                data: data
-                            });
-                        }
-                    });
+                    mSet.add(new epiviz.measurements.Measurement(
+                        self.dimY,
+                        self.dimY,
+                        'feature',
+                        self.dimY,
+                        self.dimY,
+                        'data-' + self.plotId,
+                        null,
+                        null,
+                        null,
+                        0,
+                        100,
+                        null
+                    ));
                 }
+
+                self.visConfigSelection = new epiviz.ui.controls.VisConfigSelection(mSet);
+
+                self.chartType = new epiviz.plugins.charts.CustomScatterPlotType(self.config);
+
+                self.chartProperties = new epiviz.ui.charts.VisualizationProperties(
+                    self.chartType.defaultWidth(),
+                    self.chartType.defaultHeight(),
+                    self.chartType.defaultMargins(),
+                    self.visConfigSelection,
+                    self.chartType.defaultColors(),
+                    null,
+                    self.chartType.customSettingsValues(),
+                    self.chartType.customSettingsDefs(), [],
+                    null
+                );
+
+                self.chart = self.chartType.createNew(self.plotId, $('#' + self.plotId), self.chartProperties);
+
+                // Listen to hover event on the chart
+                self.chart._dispatch.on("hover", function(id, data) {
+                    if (data == null) {
+
+                        self.unHover();
+
+                        self.fire('unHover', {
+                            id: id
+                        });
+                    } else {
+
+                        self.hover(data);
+
+                        self.fire('hover', {
+                            id: id,
+                            data: data
+                        });
+                    }
+                });
             },
 
             hover: function(data) {
@@ -421,7 +456,7 @@
             },
 
             _draw: function() {
-                this.chart.draw(this.range, this.data, "gene", "expression", "sample_count");
+                this.chart.draw(this.range, this.data, this.dimKey, this.dimX, this.dimY);
             }
         });
     </script>
