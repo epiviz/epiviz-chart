@@ -150,9 +150,11 @@
                     .width(800)
                     .render();
 
-                // this.chart.svgTarget = this.chart.getSVGTarget();
+                var svgElem = this.$$("svg");
 
-                // this.chart.newSelector(this.start, this.end);
+                this.chart.svgTarget = d3.select(svgElem);
+
+                this.chart.newSelector(this.start, this.end);
 
                 this.chart.on("selectorChange", function(e) {
 
