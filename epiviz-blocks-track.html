@@ -312,11 +312,10 @@
             // Initialization that should happen or use FactoryImpl 
             // created: function() {},
 
-            /* callback function after the element is initialized */
-            ready: function() {
+            /* callback function after the element is attached to the DOM */
+            attached: function() {
+
                 var self = this;
-                // style observer on charts
-                self.scopeSubtree(self.$.chart, true);
 
                 self.plotId = self.plotId || self._generatePlotId();
 
@@ -334,6 +333,62 @@
                 parent.addEventListener('unHoverAllCharts', function(e) {
                     self.unHover();
                 }.bind(self));
+
+                self._measurementsChanged();
+                self._dataChanged();
+
+                if (self.useDefaultDataProvider) {
+
+                    self.measurements = self.measurements || [{
+                        'id': 'cancer',
+                        'name': 'Expression Colon Cancer',
+                        'type': 'feature',
+                        'datasourceId': 'gene_expression',
+                        'datasourceGroup': 'affymetrix_probeset',
+                        'dataprovider': 'umd',
+                        'formula': null,
+                        'defaultChartType': null,
+                        'annotation': null,
+                        'minValue': -3,
+                        'maxValue': 20,
+                        'metadata': ['probe']
+                    }, {
+                        'id': 'normal',
+                        'name': 'Expression Colon Normal',
+                        'type': 'feature',
+                        'datasourceId': 'gene_expression',
+                        'datasourceGroup': 'affymetrix_probeset',
+                        'dataprovider': 'umd',
+                        'formula': null,
+                        'defaultChartType': null,
+                        'annotation': null,
+                        'minValue': -3,
+                        'maxValue': 20,
+                        'metadata': ['probe']
+                    }];
+
+                    self.range = self.range || new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000);
+
+                    self._measurementsChanged();
+
+                    var chartMeasMap = {};
+                    chartMeasMap[self.plotId] = self.visConfigSelection.measurements;
+
+                    var dataProviderFactory = new epiviz.data.DataProviderFactory(self.config);
+                    var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);
+
+                    dataManager.getData(self.range, chartMeasMap, function(id, data) {
+                        self.data = data;
+                        //self._draw();
+                    });
+                }
+            },
+
+            /* callback function after the element is initialized */
+            ready: function() {
+                var self = this;
+                // style observer on charts
+                self.scopeSubtree(self.$.chart, true);
 
                 self.config = new epiviz.Config(self.configSrc);
 
@@ -393,54 +448,6 @@
                 //TO HERE
 
                 //this._colorsChanged();
-                self._measurementsChanged();
-                self._dataChanged();
-
-                if (self.useDefaultDataProvider) {
-
-                    self.measurements = self.measurements || [{
-                        'id': 'cancer',
-                        'name': 'Expression Colon Cancer',
-                        'type': 'feature',
-                        'datasourceId': 'gene_expression',
-                        'datasourceGroup': 'affymetrix_probeset',
-                        'dataprovider': 'umd',
-                        'formula': null,
-                        'defaultChartType': null,
-                        'annotation': null,
-                        'minValue': -3,
-                        'maxValue': 20,
-                        'metadata': ['probe']
-                    }, {
-                        'id': 'normal',
-                        'name': 'Expression Colon Normal',
-                        'type': 'feature',
-                        'datasourceId': 'gene_expression',
-                        'datasourceGroup': 'affymetrix_probeset',
-                        'dataprovider': 'umd',
-                        'formula': null,
-                        'defaultChartType': null,
-                        'annotation': null,
-                        'minValue': -3,
-                        'maxValue': 20,
-                        'metadata': ['probe']
-                    }];
-
-                    self.range = self.range || new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000);
-
-                    self._measurementsChanged();
-
-                    var chartMeasMap = {};
-                    chartMeasMap[self.plotId] = self.visConfigSelection.measurements;
-
-                    var dataProviderFactory = new epiviz.data.DataProviderFactory(self.config);
-                    var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);
-
-                    dataManager.getData(self.range, chartMeasMap, function(id, data) {
-                        self.data = data;
-                        //self._draw();
-                    });
-                }
             },
 
             _draw: function() {

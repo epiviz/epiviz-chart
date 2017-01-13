@@ -324,11 +324,10 @@
             // Initialization that should happen or use FactoryImpl 
             // created: function() {},
 
-            /* callback function after the element is initialized */
-            ready: function() {
+/* callback function after the element is attached to the DOM */
+            attached: function() {
+
                 var self = this;
-                // style observer on charts
-                self.scopeSubtree(self.$.chart, true);
 
                 self.plotId = self.plotId || self._generatePlotId();
 
@@ -346,26 +345,6 @@
                 parent.addEventListener('unHoverAllCharts', function(e) {
                     self.unHover();
                 }.bind(self));
-
-                self.config = new epiviz.Config(self.configSrc);
-
-                // TODO: eventually comes from data source for testing only!!
-                // FROM HERE
-                // var chartMeasMap = {};
-                // chartMeasMap[self.plotId] = self.visConfigSelection.measurements;
-
-                // var dataProviderFactory = new epiviz.data.DataProviderFactory(self.config);
-                // var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);
-
-                // dataManager.getData(self.range, chartMeasMap, function(id, data) {
-                //     console.log(data);
-                //     self.data = data;
-                //     self._draw();
-                // });
-                //TO HERE
-
-                //this._colorsChanged();
-                //self._dataChanged();
 
                 self._measurementsChanged();
                 self._dataChanged();
@@ -417,6 +396,72 @@
                 }
             },
 
+            /* callback function after the element is initialized */
+            ready: function() {
+                var self = this;
+                // style observer on charts
+                self.scopeSubtree(self.$.chart, true);
+
+                self.config = new epiviz.Config(self.configSrc);
+
+                // var mSet = new epiviz.measurements.MeasurementSet();
+
+                // for (var i = 0; i < self.measurements.length; i++) {
+
+                //     var measurement = self.measurements[i];
+
+                //     mSet.add(new epiviz.measurements.Measurement(
+                //         measurement.id,
+                //         measurement.name,
+                //         measurement.type,
+                //         measurement.datasourceId,
+                //         measurement.datasourceGroup,
+                //         'umd',
+                //         null,
+                //         null,
+                //         null,
+                //         measurement.minValue,
+                //         measurement.maxValue,
+                //         measurement.metadata
+                //     ));
+                // }
+
+                // self.visConfigSelection = new epiviz.ui.controls.VisConfigSelection(mSet);
+
+                // self.chartType = new epiviz.plugins.charts.BlocksTrackType(self.config);
+
+                // self.chartProperties = new epiviz.ui.charts.VisualizationProperties(
+                //     self.chartType.defaultWidth(),
+                //     self.chartType.defaultHeight(),
+                //     self.chartType.defaultMargins(),
+                //     self.visConfigSelection,
+                //     self.chartType.defaultColors(),
+                //     null,
+                //     self.chartType.customSettingsValues(),
+                //     self.chartType.customSettingsDefs(), [],
+                //     null
+                // );
+
+                // self.chart = self.chartType.createNew(self.plotId, $(chartContainer), self.chartProperties);
+
+                // TODO: eventually comes from data source for testing only!!
+                // FROM HERE
+                // var chartMeasMap = {};
+                // chartMeasMap[self.plotId] = self.visConfigSelection.measurements;
+
+                // var dataProviderFactory = new epiviz.data.DataProviderFactory(self.config);
+                // var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);
+
+                // dataManager.getData(self.range, chartMeasMap, function(id, data) {
+                //     console.log(data);
+                //     self.data = data;
+                //     self._draw();
+                // });
+                //TO HERE
+
+                //this._colorsChanged();
+            },
+            
             _draw: function() {
                 this.chart.draw(this.range, this.data);
             }
