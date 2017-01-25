@@ -279,18 +279,11 @@
                         function(e) {
                             var id = e.id;
                             var data = e.args;
-                            if (data == null) {
-                                self.unHover();
-                                self.fire('unHover', {
-                                    id: id
-                                });
-                            } else {
-                                self.hover(data);
-                                self.fire('hover', {
-                                    id: id,
-                                    data: data
-                                });
-                            }
+                            self.hover(data);
+                            self.fire('hover', {
+                                id: id,
+                                data: data
+                            });
                         }
                     ));
 
@@ -298,18 +291,10 @@
                         function(e) {
                             var id = e.id;
                             var data = e.args;
-                            if (data == null) {
-                                self.unHover();
-                                self.fire('unHover', {
-                                    id: id
-                                });
-                            } else {
-                                self.hover(data);
-                                self.fire('hover', {
-                                    id: id,
-                                    data: data
-                                });
-                            }
+                            self.unHover();
+                            self.fire('unHover', {
+                                id: id
+                            });
                         }
                     ));
 

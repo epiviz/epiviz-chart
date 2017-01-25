@@ -333,24 +333,28 @@
                 self.chart = self.chartType.createNew(self.plotId, $('#' + self.plotId), self.chartProperties);
 
                 // Listen to hover event on the chart
-                self.chart._dispatch.on("hover", function(id, data) {
-                    if (data == null) {
-
-                        self.unHover();
-
-                        self.fire('unHover', {
-                            id: id
-                        });
-                    } else {
-
+                self.chart.onHover().addListener(new epiviz.events.EventListener(
+                    function(e) {
+                        var id = e.id;
+                        var data = e.args;
                         self.hover(data);
-
                         self.fire('hover', {
                             id: id,
                             data: data
                         });
                     }
-                });
+                ));
+
+                self.chart.onUnhover().addListener(new epiviz.events.EventListener(
+                    function(e) {
+                        var id = e.id;
+                        var data = e.args;
+                        self.unHover();
+                        self.fire('unHover', {
+                            id: id
+                        });
+                    }
+                ));
             },
 
             _dataChanged: function() {
