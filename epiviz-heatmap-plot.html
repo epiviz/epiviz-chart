@@ -409,6 +409,8 @@
 
                 self.config = new epiviz.Config(self.configSrc);
 
+                epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory.initialize(self.config);
+
                 // var mSet = new epiviz.measurements.MeasurementSet();
 
                 // for (var i = 0; i < self.measurements.length; i++) {
