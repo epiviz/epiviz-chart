@@ -3,7 +3,6 @@
 
 <link rel="import" href="../epiviz-imports/epiviz-common-css.html">
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
-<link rel="import" href="../epiviz-imports/epiviz-genes-track-import.html">
 
 <dom-module id="epiviz-genes-track">
 
@@ -241,7 +240,6 @@
                     for (var i = 0; i < self.measurements.length; i++) {
 
                         var measurement = self.measurements[i];
-
                         mSet.add(new epiviz.measurements.Measurement(
                             measurement.id,
                             measurement.name,
@@ -277,24 +275,77 @@
                     self.chart = self.chartType.createNew(self.plotId, $('#' + self.plotId), self.chartProperties);
 
                     // Listen to hover event on the chart
-                    self.chart._dispatch.on("hover", function(id, data) {
-                        if (data == null) {
-
-                            self.unHover();
-
-                            self.fire('unHover', {
-                                id: id
-                            });
-                        } else {
-
-                            self.hover(data);
-
-                            self.fire('hover', {
-                                id: id,
-                                data: data
-                            });
+                    self.chart.onHover().addListener(new epiviz.events.EventListener(
+                        function(e) {
+                            var id = e.id;
+                            var data = e.args;
+                            if (data == null) {
+                                self.unHover();
+                                self.fire('unHover', {
+                                    id: id
+                                });
+                            } else {
+                                self.hover(data);
+                                self.fire('hover', {
+                                    id: id,
+                                    data: data
+                                });
+                            }
                         }
-                    });
+                    ));
+
+                    self.chart.onUnhover().addListener(new epiviz.events.EventListener(
+                        function(e) {
+                            var id = e.id;
+                            var data = e.args;
+                            if (data == null) {
+                                self.unHover();
+                                self.fire('unHover', {
+                                    id: id
+                                });
+                            } else {
+                                self.hover(data);
+                                self.fire('hover', {
+                                    id: id,
+                                    data: data
+                                });
+                            }
+                        }
+                    ));
+
+                    // self.chart.onHover().addListener(function(id, data) {
+                    //     if (data == null) {
+                    //         self.unHover();
+                    //         self.fire('unHover', {
+                    //             id: id
+                    //         });
+                    //     } else {
+                    //         self.hover(data);
+                    //         self.fire('hover', {
+                    //             id: id,
+                    //             data: data
+                    //         });
+                    //     }
+                    // })
+
+                    // self.chart._dispatch.on("hover", function(id, data) {
+                    //     if (data == null) {
+
+                    //         self.unHover();
+
+                    //         self.fire('unHover', {
+                    //             id: id
+                    //         });
+                    //     } else {
+
+                    //         self.hover(data);
+
+                    //         self.fire('hover', {
+                    //             id: id,
+                    //             data: data
+                    //         });
+                    //     }
+                    // });
                 }
             },
 
