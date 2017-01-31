@@ -50,24 +50,11 @@
                     type: String,
                     reflectToAttribute: true,
                     notify: true
-                        // value: function() {
-                        //     var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                        //     var result = '';
-                        //     var size = 7;
-
-                    //     for (var i = 0; i < size; ++i) {
-                    //         result += chars[Math.round(Math.random() * (chars.length - 1))];
-                    //     }
-                    //     return 'epiviz-' + result;
-                    // }
                 },
 
                 range: {
                     type: Object,
                     notify: true
-                        // value: function() {
-                        //     return new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000);
-                        // }
                 }
             },
 
@@ -83,6 +70,7 @@
                 for (var i = 0; i < size; ++i) {
                     result += chars[Math.round(Math.random() * (chars.length - 1))];
                 }
+
                 return 'epiviz-' + result;
             },
 
@@ -91,7 +79,6 @@
                 if (this.chromosome != null && this.start != null && this.end != null && this.chromosomeFactory != null) {
                     this._draw();
                 }
-
             },
 
             hover: function(data) {
@@ -118,16 +105,6 @@
 
                 Polymer.dom(this.$.chart).appendChild(chartContainer);
 
-                // listen to events 
-                // var parent = self.parentNode;
-                // parent.addEventListener('hoverAllCharts', function(e) {
-                //     self.hover(e.detail.data);
-                // }.bind(self));
-
-                // parent.addEventListener('unHoverAllCharts', function(e) {
-                //     self.unHover();
-                // }.bind(self));
-
                 self.chromosomeFactory = cyto_chr.chromosome;
 
                 self._rangeChanged();
@@ -137,7 +114,6 @@
 
                 var self = this;
 
-                //var d3div = d3.select('#' + self.plotId);
                 self.segment = self.chromosome.replace("chr", "");
 
                 this.chart = self.chromosomeFactory()
@@ -153,21 +129,16 @@
                 var svgElem = this.$$("svg");
 
                 this.chart.svgTarget = d3.select(svgElem);
-
                 this.chart.newSelector(this.start, this.end);
-
                 this.chart.on("selectorChange", function(e) {
-
                     self.fire('hover', {
                         id: self.plotId,
                         data: e
                     });
-
                     self.fire('rangeChanged', {
                         id: self.plotId,
                         data: e
                     });
-
                 });
             }
         });
