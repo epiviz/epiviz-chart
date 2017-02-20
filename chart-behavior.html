@@ -1,0 +1,149 @@
+<script>
+    chartBehavior = {
+        properties : {
+            dimS: {
+                type: Array,
+                notify: true
+            },
+
+            useDefaultDataProvider: {
+                type: Boolean,
+                notify: true
+            },
+
+            data: {
+                type: Object,
+                notify: true,
+                observer: '_dataChanged'
+            },
+
+            plotId: {
+                type: String,
+                reflectToAttribute: true,
+                notify: true
+            },
+
+            measurements: {
+                type: Array,
+                notify: true,
+                observer: '_measurementsChanged'
+            },
+
+            range: {
+                type: Object,
+                notify: true
+            }
+        },
+
+        observers: [
+            '_dimChanged(dimX.*, dimY.*, dimS.*)'
+        ],
+
+        _generatePlotId: function() {
+            var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            var result = '';
+            var size = 7;
+
+            for (var i = 0; i < size; ++i) {
+                result += chars[Math.round(Math.random() * (chars.length - 1))];
+            }
+            return 'epiviz-' + result;
+        },
+
+        _dimChanged: function() {
+
+            $('#' + this.plotId).empty();
+            this.fire('dimChanged', {
+                id: this.plotId
+            });
+        },
+
+        _measurementsChanged: function() {
+
+            var self = this;
+
+            if (this.measurements != null && self.config != null) {
+                var mSet = new epiviz.measurements.MeasurementSet();
+
+                for (var i = 0; i < self.measurements.length; i++) {
+
+                    var measurement = self.measurements[i];
+
+                    mSet.add(new epiviz.measurements.Measurement(
+                        measurement.id,
+                        measurement.name,
+                        measurement.type,
+                        measurement.datasourceId,
+                        measurement.datasourceGroup,
+                        measurement.dataprovider,
+                        measurement.formula,
+                        measurement.defaultChartType,
+                        measurement.annotation,
+                        measurement.minValue,
+                        measurement.maxValue,
+                        measurement.metadata
+                    ));
+                }
+
+                self.visConfigSelection = new epiviz.ui.controls.VisConfigSelection(mSet);
+
+                // self.chartType = new epiviz.plugins.charts.LineTrackType(self.config);
+
+                self.chartType = self._createChart();
+
+                self.chartProperties = new epiviz.ui.charts.VisualizationProperties(
+                    self.chartType.defaultWidth(),
+                    self.chartType.defaultHeight(),
+                    self.chartType.defaultMargins(),
+                    self.visConfigSelection,
+                    self.chartType.defaultColors(),
+                    null,
+                    self.chartType.customSettingsValues(),
+                    self.chartType.customSettingsDefs(), [],
+                    null
+                );
+
+                self.chart = self.chartType.createNew(self.plotId, $('#' + self.plotId), self.chartProperties);
+
+                // Listen to hover event on the chart
+                self.chart.onHover().addListener(new epiviz.events.EventListener(
+                    function(e) {
+                        var id = e.id;
+                        var data = e.args;
+                        self.hover(data);
+                        self.fire('hover', {
+                            id: id,
+                            data: data
+                        });
+                    }
+                ));
+
+                self.chart.onUnhover().addListener(new epiviz.events.EventListener(
+                    function(e) {
+                        var id = e.id;
+                        var data = e.args;
+                        self.unHover();
+                        self.fire('unHover', {
+                            id: id
+                        });
+                    }
+                ));
+            }
+        },
+
+        _dataChanged: function() {
+            if (this.data != null && this.chart != null) {
+                this._draw();
+            }
+        },
+
+        hover: function(data) {
+            this.chart.doHover(data);
+        },
+
+        unHover: function() {
+            this.chart.doUnhover();
+        },
+
+    }
+</script>
