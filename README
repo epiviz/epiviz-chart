@@ -11,10 +11,10 @@ epiviz-charts
 
 Install package through npm
 
-`npm install --save https://github.com/HCBravoLab/epiviz-chart-to-polymer.git`
+`npm install --save https://github.com/HCBravoLab/epiviz-chart.git`
 
 Install package through bower
 
-`bower install --save https://github.com/HCBravoLab/epiviz-chart-to-polymer.git`
+`bower install --save https://github.com/HCBravoLab/epiviz-chart.git`
 
 
