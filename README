@@ -8,6 +8,25 @@ epiviz-charts
                                     (false use data and range below)
         data - data to plot
         range - genomicRange object ( chr, start, end) 
+        chartSettings - available chart settings
+
+
+to update a chartSettings for a chart with id "chart1":
+
+```
+# get chart
+chart = document.querySelector("#chart1");
+# get current chart settings
+currentSettings = chart.ChartSettings;
+# modify chart settings
+...
+
+# set settings back to chart
+chart.setAttribute("chart-settings", JSON.Stringify(currentSettings));
+```
+
+
+
 
 Install package through npm
 

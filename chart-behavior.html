@@ -64,13 +64,10 @@
             });
         },
 
-        _chartSettingsChanged: function(newSettings, oldSettings) {
+        _chartSettingsChanged: function() {
             var self = this;
-            if(oldSettings == null || oldSettings == undefined) {return;}
-            else {
-                self.chart.setCustomSettingsValues(newSettings);
-                self.chart.draw()
-            }
+            self.chart.setCustomSettingsValues(newSettings);
+            self.chart.draw();
         },
 
         _measurementsChanged: function() {
@@ -120,7 +117,12 @@
 
                 self.chart = self.chartType.createNew(self.plotId, $('#' + self.plotId), self.chartProperties);
 
-                self.chartSettings = self.chart._customSettingsValues;
+                if(self.chartSettings != null || self.chartSettings != undefined) {
+                    self.chart.setCustomSettingsValues(self.chartSettings);
+                }
+                else {
+                    self.chartSettings = self.chart._customSettingsValues;
+                }
 
                 // Listen to hover event on the chart
                 self.chart.onHover().addListener(new epiviz.events.EventListener(
