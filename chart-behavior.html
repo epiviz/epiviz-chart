@@ -32,6 +32,12 @@
             range: {
                 type: Object,
                 notify: true
+            },
+
+            chartSettings: {
+                type: Object,
+                notify: true,
+                observer: '_chartSettingsChanged'
             }
         },
 
@@ -56,6 +62,15 @@
             this.fire('dimChanged', {
                 id: this.plotId
             });
+        },
+
+        _chartSettingsChanged: function(newSettings, oldSettings) {
+            var self = this;
+            if(oldSettings == null || oldSettings == undefined) {return;}
+            else {
+                self.chart.setCustomSettingsValues(newSettings);
+                self.chart.draw()
+            }
         },
 
         _measurementsChanged: function() {
@@ -104,6 +119,8 @@
                 );
 
                 self.chart = self.chartType.createNew(self.plotId, $('#' + self.plotId), self.chartProperties);
+
+                self.chartSettings = self.chart._customSettingsValues;
 
                 // Listen to hover event on the chart
                 self.chart.onHover().addListener(new epiviz.events.EventListener(
