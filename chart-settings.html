@@ -1,0 +1,20 @@
+<script>
+    chartSettings = {
+        _initializeSettingsDialog: function(defs, vals) {
+            // console.log(this);
+
+            var currSetting = this.$$('epiviz-chart-settings');
+
+            if(currSetting == null) {
+                var chartSettingsElem = document.createElement('epiviz-chart-settings');
+                chartSettingsElem.defs = defs;
+                chartSettingsElem.vals = vals;
+
+                Polymer.dom(this.$.chart).appendChild(chartSettingsElem);
+            }
+            else {
+                currSetting.setAttribute('vals', JSON.stringify(vals));
+            }
+        }        
+    }
+</script>
