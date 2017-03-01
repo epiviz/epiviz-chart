@@ -1,3 +1,5 @@
+<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+
 <script>
     epivizChartBehavior = {
         properties : {
@@ -45,6 +47,18 @@
             '_dimChanged(dimX.*, dimY.*, dimS.*)'
         ],
 
+        listeners: {
+            'iron-resize': '_onResize'
+        },
+
+        _onResize: function() {
+            // this._measurementsChanged();
+            if(this.chart != null) {
+                this.chart._properties.width = this.offsetWidth;
+                this._draw();
+            }
+        },
+
         _generatePlotId: function() {
             var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
             var result = '';
@@ -67,7 +81,7 @@
         _chartSettingsChanged: function() {
             var self = this;
             self.chart.setCustomSettingsValues(self.chartSettings);
-            self.chart.draw();
+            self._dataChanged();
         },
 
         _measurementsChanged: function() {
@@ -103,7 +117,7 @@
                 self.chartType = self._createChart();
 
                 self.chartProperties = new epiviz.ui.charts.VisualizationProperties(
-                    self.chartType.defaultWidth(),
+                    self.offsetWidth || self.chartType.defaultWidth(),
                     self.chartType.defaultHeight(),
                     self.chartType.defaultMargins(),
                     self.visConfigSelection,
