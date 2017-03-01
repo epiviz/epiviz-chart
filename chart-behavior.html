@@ -1,5 +1,5 @@
 <script>
-    chartBehavior = {
+    epivizChartBehavior = {
         properties : {
             dimS: {
                 type: Array,
@@ -75,12 +75,13 @@
             var self = this;
 
             if (this.measurements != null && self.config != null) {
+
+                $('#' + self.plotId).empty();
                 var mSet = new epiviz.measurements.MeasurementSet();
 
                 for (var i = 0; i < self.measurements.length; i++) {
 
                     var measurement = self.measurements[i];
-
                     mSet.add(new epiviz.measurements.Measurement(
                         measurement.id,
                         measurement.name,
@@ -98,9 +99,7 @@
                 }
 
                 self.visConfigSelection = new epiviz.ui.controls.VisConfigSelection(mSet);
-
                 // self.chartType = new epiviz.plugins.charts.LineTrackType(self.config);
-
                 self.chartType = self._createChart();
 
                 self.chartProperties = new epiviz.ui.charts.VisualizationProperties(
@@ -123,6 +122,8 @@
                 else {
                     self.chartSettings = self.chart._customSettingsValues;
                 }
+
+                self._initializeSettingsDialog(self.chartType.customSettingsDefs(), self.chartSettings);
 
                 // Listen to hover event on the chart
                 self.chart.onHover().addListener(new epiviz.events.EventListener(
@@ -147,6 +148,34 @@
                         });
                     }
                 ));
+
+                if (self.useDefaultDataProvider) {
+
+                    self.measurements = self.measurements || [{
+                        'id': 'genes',
+                        'name': 'Genes',
+                        'type': 'range',
+                        'datasourceId': 'genes',
+                        'datasourceGroup': 'genes',
+                        'dataprovider': 'umd',
+                        'formula': null,
+                        'defaultChartType': "Genes Track",
+                        'annotation': null,
+                        'minValue': null,
+                        'maxValue': null,
+                        'metadata': ['gene', 'entrez', 'exon_starts', 'exon_ends']
+                    }];
+
+                    self.range = self.range || new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000);
+                    var chartMeasMap = {};
+                    chartMeasMap[self.plotId] = self.visConfigSelection.measurements;
+                    var dataProviderFactory = new epiviz.data.DataProviderFactory(self.config);
+                    var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);
+
+                    dataManager.getData(self.range, chartMeasMap, function(id, data) {
+                        self.data = data;
+                    });
+                }
             }
         },
 

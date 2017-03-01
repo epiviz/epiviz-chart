@@ -22,7 +22,7 @@ currentSettings = chart.ChartSettings;
 ...
 
 # set settings back to chart
-chart.setAttribute("chart-settings", JSON.Stringify(currentSettings));
+chart.setAttribute("chart-settings", JSON.stringify(currentSettings));
 ```
 
 

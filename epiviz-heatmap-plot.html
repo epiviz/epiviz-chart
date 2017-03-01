@@ -4,18 +4,23 @@
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
 
 <link rel="import" href="chart-behavior.html">
+<link rel="import" href="chart-settings.html">
+
+<link rel="import" href="epiviz-chart-settings.html">
 
 <dom-module id="epiviz-heatmap-plot">
 
     <template>
-            <style>
-      :host {
-        display: block;
-      }
-    </style>
+        <style include="shared-settings"></style>
+        <style>
+        :host {
+            width: 100%;
+            display: inline-block;
+        }
+        </style>
 
         <!-- local DOM goes here -->
-        <div id="chart"></div>
+        <div id="chart" on-mouseover="hostHovered" on-mouseout="hostUnhovered"></div>
     
     </template>
 
@@ -23,7 +28,7 @@
         Polymer({
             /* Custom element html tag */
             is: 'epiviz-heatmap-plot',
-            behaviors:[chartBehavior],
+            behaviors:[epivizChartBehavior, epivizChartSettings],
 
             /* Properties that can be defined on the element */
             properties: {

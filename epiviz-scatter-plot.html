@@ -5,26 +5,32 @@
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
 
 <link rel="import" href="chart-behavior.html">
+<link rel="import" href="chart-settings.html">
+
+<link rel="import" href="epiviz-chart-settings.html">
 
 <dom-module id="epiviz-scatter-plot">
 
     <template>
-            <style>
-      :host {
-        display: block;
-      }
-    </style>
+        <style include="shared-settings"></style>
+        <style>
+            :host {
+                width: 75%;
+                display: inline-block;
+            }
+        </style>
 
         <!-- local DOM goes here -->
-        <div id="chart"></div>
+        <div id="chart" on-mouseover="hostHovered" on-mouseout="hostUnhovered" ></div>
     
     </template>
 
     <script>
+
         Polymer({
             /* Custom element html tag */
             is: 'epiviz-scatter-plot',
-            behaviors:[chartBehavior],
+            behaviors:[epivizChartBehavior, epivizChartSettings],
 
             /* Properties that can be defined on the element */
             properties: {

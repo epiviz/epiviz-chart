@@ -5,14 +5,18 @@
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
 
 <link rel="import" href="chart-behavior.html">
+<link rel="import" href="chart-settings.html">
+
+<link rel="import" href="epiviz-chart-settings.html">
 
 <dom-module id="epiviz-line-track">
 
     <template>
+        <style include="shared-settings"></style>
         <style>
             :host {
-                width: '100%';
-                display: block;
+                width: 75%;
+                display: inline-block;
             }
 
             /*::shadow .line-plot .items .bg-line { stroke: #dddddd; stroke-opacity: 0.1; }
@@ -22,7 +26,7 @@
         </style>
 
         <!-- local DOM goes here -->
-        <div id="chart" style="min-width:700px"></div>
+        <div id="chart" on-mouseover="hostHovered" on-mouseout="hostUnhovered"></div>
     
     </template>
 
@@ -30,7 +34,7 @@
         Polymer({
             /* Custom element html tag */
             is: 'epiviz-line-track',
-            behaviors:[chartBehavior],
+            behaviors:[epivizChartBehavior, epivizChartSettings],
 
             /* Properties that can be defined on the element */
             properties: {

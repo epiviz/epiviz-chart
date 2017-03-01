@@ -1,16 +1,79 @@
+<link rel="import" href="../iron-icons/iron-icons.html">
+
+<dom-module id="shared-settings">
+  <template>
+    <style>
+        #chartSettingsIcon {
+            /*float: right;*/
+            position:absolute;
+            top: 0;
+            right: 0;
+            
+            --iron-icon-height: 16px;
+            --iron-icon-width: 16px;
+
+            border: 1px solid #000;
+            border-radius: 2px;
+            padding:3px;
+            background-color: #fff000;
+        }
+    </style>
+  </template>
+</dom-module>
+
 <script>
-    chartSettings = {
+    epivizChartSettings = {
+
+        properties: {
+            // iconHidden: true,
+        },
+
+        hostHovered: function() {
+            var currSettingIcon = this.$$('#chartSettingsIcon');
+
+            // currSettingIcon.setAttribute("hidden", false);
+            currSettingIcon.hidden = false;
+            // this.iconHidden = false;
+        },
+
+        hostUnhovered: function() {
+            var currSettingIcon = this.$$('#chartSettingsIcon');
+
+            currSettingIcon.setAttribute("hidden", true);
+            // this.iconHidden = true;
+        },
+
+        _showSettingsDialog: function() {
+            var self = this;
+            var currSetting = self.$$('epiviz-chart-settings');
+            currSetting.showSettings(self, function(newSettings) {
+                self.chartSettings = newSettings;
+            });
+        },
+
         _initializeSettingsDialog: function(defs, vals) {
-            // console.log(this);
+            var chartContainer = this.$$('#' + this.plotId);
+            var currSettingIcon = this.$$('#chartSettingsIcon');
+
+            if(currSettingIcon == null) {
+                var iconElem = document.createElement('iron-icon');
+                iconElem.hidden = true;
+                iconElem.id = "chartSettingsIcon";
+                iconElem.icon = "icons:settings";
+
+                iconElem.addEventListener("click", this._showSettingsDialog.bind(this));
+
+                Polymer.dom(chartContainer).appendChild(iconElem);
+            }
 
             var currSetting = this.$$('epiviz-chart-settings');
 
             if(currSetting == null) {
                 var chartSettingsElem = document.createElement('epiviz-chart-settings');
-                chartSettingsElem.defs = defs;
-                chartSettingsElem.vals = vals;
+                chartSettingsElem.setAttribute('defs', JSON.stringify(defs));
+                chartSettingsElem.setAttribute('vals', JSON.stringify(vals));
 
-                Polymer.dom(this.$.chart).appendChild(chartSettingsElem);
+                Polymer.dom(chartContainer).appendChild(chartSettingsElem);
             }
             else {
                 currSetting.setAttribute('vals', JSON.stringify(vals));
