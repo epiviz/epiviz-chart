@@ -12,7 +12,7 @@
 <link rel="import" href="../paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../iron-form/iron-form.html">
 <link rel="import" href="../paper-dialog/paper-dialog.html">
-<link rel="import" href="../paper-dialog-behavior/paper-dialog-shared-styles.html">
+<!--<link rel="import" href="../paper-dialog-behavior/paper-dialog-shared-styles.html">-->
 <link rel="import" href="../paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 
@@ -20,23 +20,31 @@
 
     <template>
         <style>
-        :host {
+        /*:host {
             display: inline-block;
             width:90%;
-        }
+        }*/
 
-        ::shadow #settings {
+        /*::shadow #settings {
             width: 800px;
-        }
+        }*/
 
-        paper-dialog {
+        /*paper-dialog {
             width: 40%;
-            /*height: 40%;*/
-        }
+            height: 40%;
+        }*/
 
-        paper-dialog-scrollable {
-            @apply(--layout-flex);
-        }
+        /*:host {*/
+            /*--paper-dialog: {
+                height: 50%;
+                width: 50%;
+            };*/
+
+            /*--paper-dialog-scrollable: {
+                width: 80%;
+                height: 80%;
+            };*/
+        /*}*/
         </style>
 
         <!-- local DOM goes here -->
@@ -45,7 +53,25 @@
             <paper-dialog id="modal" modal>
                 <h2>Chart Settings</h2>
                 <form is="iron-form" id="formSettings">
-                    <!--<paper-dialog-scrollable id="scrollContent"></paper-dialog-scrollable>-->
+                    <paper-dialog-scrollable id="scrollContent">
+
+                        <template is="dom-repeat" items="{{defs}}">
+                            <template is="dom-if" if="[[_settingType(item.type, 'boolean')]]">
+                                <paper-toggle-button name="{{item.id}}" label="{{item.label}}" checked="[[_getValue(item.id)]]"></paper-toggle-button>
+                                <iron-label  for="{{item.id}}">{{input.label}}</iron-label>
+                            </template>
+                            <template is="dom-if" if="[[_settingType(item.type, 'string')]]">
+                                <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
+                            </template>
+                            <template is="dom-if" if="[[_settingType(item.type, 'number')]]">
+                                <paper-input name="{{item.id}}" type="number" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
+                            </template>
+                            <template is="dom-if" if="[[_settingType(item.type, 'array')]]">
+                                <paper-dropdown-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]" items="{{item.possibleValues}}"></paper-dropdown-input>
+                            </template>
+                        </template>
+                        
+                    </paper-dialog-scrollable>
                     <paper-button id="submit" raised>Apply</paper-button>
                     <paper-button id="cancel" raised>Cancel</paper-button>
                 </form>
@@ -78,10 +104,19 @@
                 'cancel.click': '_cancel'
             },
 
-            observers: [
-                '_valsChanged(defs.*, vals.*)'
-            ],
+            _settingType: function(type, expected) {
+                if(expected == 'array') {
+                    expected = ['categorical', 'measurementsMetadata', 'measurementsAnnotation']
+                    return expected.indexOf(type) === -1 ? false : true;
+                }
+                return type == expected;
+            },
 
+            _getValue: function(id) {
+                console.log(id);
+                return this.vals[id];
+            },
+            
             _submit: function(event) {
                 this.$.formSettings.submit();
             },
@@ -107,70 +142,14 @@
                 this.$.modal.close();
             },
 
-            _valsChanged: function() {
-                var self = this;
-                if(self.defs != null && self.vals != null) {
-                    var SettingType = epiviz.ui.charts.CustomSetting.Type;    
-                    self.defs.forEach(function(def) {
-                        inputId = def.id;
-                        inputLabel = def.label;
-                        value = self.vals[inputId];
-                        switch (def.type) {
-                            case SettingType.BOOLEAN:
-                                var toggleElem = document.createElement('paper-toggle-button');
-                                toggleElem.label = inputLabel;
-                                toggleElem.name = inputId;
-                                toggleElem.checked = value;
-                                toggleElem.id = inputId;
-                                self.$.formSettings.insertBefore(toggleElem, self.$.submit);
-
-                                var toggleLabel = document.createElement('iron-label');
-                                toggleLabel.for = inputId;
-                                toggleLabel.innerHTML = inputLabel;
-                                self.$.formSettings.insertBefore(toggleLabel, self.$.submit);
-
-                                break;
-                            case SettingType.NUMBER:
-                                var numElem = document.createElement('paper-input');
-                                numElem.type = "number";
-                                numElem.name = inputId;
-                                numElem.label = inputLabel;
-                                numElem.id = inputId;
-                                numElem.value = value;
-                                self.$.formSettings.insertBefore(numElem, self.$.submit);
-                                break;
-                            case SettingType.STRING:
-                                var stringElem = document.createElement('paper-input');
-                                stringElem.name = inputId;
-                                stringElem.id = inputId;
-                                stringElem.label = inputLabel;
-                                stringElem.value = value;
-                                self.$.formSettings.insertBefore(stringElem, self.$.submit);
-                                break;
-                            case SettingType.CATEGORICAL:
-                            case SettingType.MEASUREMENTS_METADATA:
-                            case SettingType.MEASUREMENTS_ANNOTATION:
-                                if (def.possibleValues) {
-                                    var menuElem = document.createElement('paper-dropdown-input');
-                                    menuElem.items = def.possibleValues;
-                                    menuElem.id = inputId;
-                                    menuElem.name = inputId;
-                                    menuElem.label = inputLabel;
-                                    self.$.formSettings.insertBefore(menuElem, self.$.submit);
-                                }
-                                break;
-                        }
-                        // self.$.formSettings.appendChild(document.createElement('br'));
-                    });
-                }
-            },
-
             // Initialization that should happen or use FactoryImpl 
             // created: function() {},
 
             /* callback function after the element is initialized */
             ready: function() {
                 var self = this;
+
+                self.$.scrollContent.dialogElement = self.$.modal;
                 self.$.formSettings.addEventListener('iron-form-submit', this._form_submit.bind(self));
             }
         });
