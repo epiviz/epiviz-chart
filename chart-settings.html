@@ -1,4 +1,6 @@
-<link rel="import" href="../iron-icons/iron-icons.html">
+<!--<link rel="import" href="../iron-icons/iron-icons.html">-->
+
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
 
 <dom-module id="shared-settings">
   <template>
@@ -8,21 +10,23 @@
             position:absolute;
             top: 0;
             right: 0;
+            width: 24px;
+            height: 24px;
             
-            --iron-icon-height: 16px;
-            --iron-icon-width: 16px;
+            /*--iron-icon-height: 16px;
+            --iron-icon-width: 16px;*/
 
             border: 1px solid #000;
             border-radius: 2px;
             padding:3px;
-            background-color: #fff000;
+            /*background-color: #fff000;*/
         }
     </style>
   </template>
 </dom-module>
 
 <script>
-    epivizChartSettings = {
+    epiviz.ChartSettingsBehavior = {
 
         properties: {
             // iconHidden: true,
@@ -56,10 +60,10 @@
             var currSettingIcon = this.$$('#chartSettingsIcon');
 
             if(currSettingIcon == null) {
-                var iconElem = document.createElement('iron-icon');
+                var iconElem = document.createElement('paper-icon-button');
                 iconElem.hidden = true;
                 iconElem.id = "chartSettingsIcon";
-                iconElem.icon = "icons:settings";
+                iconElem.icon = "settings";
 
                 iconElem.addEventListener("click", this._showSettingsDialog.bind(this));
 
