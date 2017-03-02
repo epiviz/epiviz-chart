@@ -1,4 +1,4 @@
-<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+<!--<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">-->
 
 
 <dom-module id="shared-settings">
@@ -274,7 +274,7 @@
 
         _initializeSettingsContainer: function() {
             var chartContainer = this.$$('#' + this.plotId);
-            var settingsContainer = this.$$('#chartSettingsContainer');
+            var settingsContainer = this.$$('#' + this.plotId + '-chartSettingsContainer');
 
             if(settingsContainer == null) {
                 var iconElem = document.createElement('div');

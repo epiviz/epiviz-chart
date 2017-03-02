@@ -27,7 +27,9 @@
         </style>
 
         <!-- local DOM goes here -->
-        <div id="chart" on-mouseover="hostHovered" on-mouseout="hostUnhovered"></div>
+        <div id="chart" on-mouseover="hostHovered" on-mouseout="hostUnhovered">
+            <div id="{{plotId}}"></div>
+        </div>
     
     </template>
 
@@ -157,14 +159,6 @@
 
                 var self = this;
 
-                self.plotId = self.plotId || self._generatePlotId();
-
-                var chartContainer = document.createElement('div');
-                chartContainer.id = self.plotId;
-
-                Polymer.dom(this.$.chart).appendChild(chartContainer);
-                Polymer.dom.flush();
-
                 // listen to events 
                 var parent = self.parentNode;
                 parent.addEventListener('hoverAllCharts', function(e) {
@@ -228,6 +222,7 @@
             /* callback function after the element is initialized */
             ready: function() {
                 var self = this;
+                self.plotId = self.plotId || self._generatePlotId();
                 // style observer on charts
                 self.scopeSubtree(self.$.chart, true);
                 self.config = new epiviz.Config(self.configSrc);
