@@ -1,0 +1,122 @@
+<!-- Polymer dependency -->
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-dropdown-input/paper-dropdown-input.html">
+<link rel="import" href="../paper-styles/color.html">
+<link rel="import" href="../paper-styles/typography.html">
+<link rel="import" href="../iron-form/iron-form.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html">
+<link rel="import" href="../paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../paper-swatch-picker/paper-swatch-picker.html">
+
+<dom-module id="epiviz-chart-colors">
+
+    <template>
+        <style>
+        </style>
+
+        <!-- local DOM goes here -->
+        <div id="settings">
+            <!--no-overlap horizontal-align="left" vertical-align="top"-->
+            <paper-dialog id="modal" modal>
+                <h2>Chart Settings</h2>
+                <form is="iron-form" id="formSettings">
+                    <paper-dialog-scrollable id="scrollContent">
+                        <template is="dom-repeat" items="{{labels}}">
+                            <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
+                            <iron-label for="{{item}}">{{item}}</iron-label>
+                        </template>
+                    </paper-dialog-scrollable>
+                    <paper-button id="submit" raised>Apply</paper-button>
+                    <paper-button id="cancel" raised>Cancel</paper-button>
+                </form>
+            </paper-dialog>
+        </div>
+    
+    </template>
+
+    <script>
+        Polymer({
+            /* Custom element html tag */
+            is: 'epiviz-chart-colors',
+
+            /* Properties that can be defined on the element */
+            properties: {
+
+                labels: {
+                    type: Object,
+                    notify: true
+                },
+
+                palettes: {
+                    type: Object,
+                    notify: true
+                },
+
+                selected: {
+                    type: Object,
+                    notify: true
+                }
+            },
+
+            listeners: {
+                'submit.click': '_submit',
+                'cancel.click': '_cancel'
+            },
+
+            _getColor: function(label) {
+                return this.selected.getByKey(label);
+            },
+
+            _getId: function(label) {
+                return label.split(' ').join('');
+            },
+
+            _submit: function(event) {
+                this.$.formSettings.submit();
+            },
+
+            _form_submit: function(event) {
+                var self = this;
+
+                //collect all colors set
+                colors = [];
+                for (var i=0; i < this.labels.length; i++) {
+                    var swatch = self.$$('#' + this._getId(this.labels[i]));
+                    colors.push(swatch.color);
+                }
+
+                self.selected = new epiviz.ui.charts.ColorPalette(colors, undefined, undefined, self.selected.keyIndices());
+
+                // this.vals = event.detail;
+                this.callback(colors);
+                this.closeColors();
+            },
+
+            _cancel: function(event) {
+                this.closeColors();
+            },
+
+            showColors: function(target, callback) {
+                this.callback = callback;
+                this.$.modal.positionTarget = target;
+                this.$.modal.open();
+            },
+
+            closeColors: function() {
+                this.$.modal.close();
+            },
+
+            // Initialization that should happen or use FactoryImpl 
+            // created: function() {},
+
+            /* callback function after the element is initialized */
+            ready: function() {
+                var self = this;
+                self.$.scrollContent.dialogElement = self.$.modal;
+                self.$.formSettings.addEventListener('iron-form-submit', this._form_submit.bind(self));
+            }
+        });
+    </script>
+</dom-module>

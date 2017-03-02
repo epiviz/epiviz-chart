@@ -1,5 +1,44 @@
 <link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
 
+
+<dom-module id="shared-settings">
+  <template>
+    <style>
+        #chartSettingsContainer {
+            /*float: right;*/
+            position:absolute;
+            top: 0;
+            right: 0;
+            /*width: 24px;
+            height: 24px;*/
+            
+            /*--iron-icon-height: 16px;
+            --iron-icon-width: 16px;*/
+
+            border: 1px solid #000;
+            border-radius: 2px;
+            margin:1px;
+            /*background-color: #fff000;*/
+        }
+
+        #chartSettingsIcon {
+            float: right;
+            width: 24px;
+            height: 24px;
+            padding: 1px;
+        }
+
+        #chartColorsIcon {
+            float: right;
+            width: 24px;
+            height: 24px;
+            padding: 2px;
+        }
+    </style>
+  </template>
+</dom-module>
+
+
 <script>
     epiviz.ChartBehavior = {
         properties : {
@@ -40,6 +79,12 @@
                 type: Object,
                 notify: true,
                 observer: '_chartSettingsChanged'
+            },
+
+            chartColors: {
+                type: Array,
+                notify: true,
+                observer: '_chartColorsChanged'
             }
         },
 
@@ -81,6 +126,13 @@
         _chartSettingsChanged: function() {
             var self = this;
             self.chart.setCustomSettingsValues(self.chartSettings);
+            self._dataChanged();
+        },
+
+        _chartColorsChanged: function() {
+            var self = this;
+            self.chartColorPalette = new epiviz.ui.charts.ColorPalette(self.chartColors);
+            self.chart.setColors(self.chartColorPalette);
             self._dataChanged();
         },
 
@@ -130,6 +182,7 @@
 
                 self.chart = self.chartType.createNew(self.plotId, $('#' + self.plotId), self.chartProperties);
 
+                // TODO: set colors and settings at chart creation
                 if(self.chartSettings != null || self.chartSettings != undefined) {
                     self.chart.setCustomSettingsValues(self.chartSettings);
                 }
@@ -137,7 +190,19 @@
                     self.chartSettings = self.chart._customSettingsValues;
                 }
 
-                self._initializeSettingsDialog(self.chartType.customSettingsDefs(), self.chartSettings);
+                if(self.chartColors != null || self.chartColors != undefined) {
+                    self.chartColorPalette = new epiviz.ui.charts.ColorPalette(self.chartColors);
+                    self.chart.setColors(self.chartColorPalette);
+                }
+                else {
+                    self.chartColorPalette = self.chart.colors();
+                    self.chartColors = self.chartColorPalette._colors;
+                }
+
+                self._initializeSettingsContainer();
+
+                self._initializeSettingsDialog();
+                self._initializeColorsDialog();
 
                 // Listen to hover event on the chart
                 self.chart.onHover().addListener(new epiviz.events.EventListener(
@@ -205,6 +270,30 @@
 
         unHover: function() {
             this.chart.doUnhover();
-        }
+        },
+
+        _initializeSettingsContainer: function() {
+            var chartContainer = this.$$('#' + this.plotId);
+            var settingsContainer = this.$$('#chartSettingsContainer');
+
+            if(settingsContainer == null) {
+                var iconElem = document.createElement('div');
+                iconElem.hidden = true;
+                iconElem.id = "chartSettingsContainer";
+
+                // iconElem.addEventListener("click", this._showColorsDialog.bind(this));
+                Polymer.dom(chartContainer).appendChild(iconElem);
+            }
+        },
+
+        hostHovered: function() {
+            var currColorsIcon = this.$$('#chartSettingsContainer');
+            currColorsIcon.hidden = false;
+        },
+
+        hostUnhovered: function() {
+            var currColorsIcon = this.$$('#chartSettingsContainer');
+            currColorsIcon.setAttribute("hidden", true);
+        },
     }
 </script>

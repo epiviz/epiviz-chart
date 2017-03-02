@@ -58,7 +58,7 @@
                         <template is="dom-repeat" items="{{defs}}">
                             <template is="dom-if" if="[[_settingType(item.type, 'boolean')]]">
                                 <paper-toggle-button name="{{item.id}}" label="{{item.label}}" checked="[[_getValue(item.id)]]"></paper-toggle-button>
-                                <iron-label  for="{{item.id}}">{{input.label}}</iron-label>
+                                <iron-label for="{{item.id}}">{{input.label}}</iron-label>
                             </template>
                             <template is="dom-if" if="[[_settingType(item.type, 'string')]]">
                                 <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
@@ -67,7 +67,7 @@
                                 <paper-input name="{{item.id}}" type="number" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
                             </template>
                             <template is="dom-if" if="[[_settingType(item.type, 'array')]]">
-                                <paper-dropdown-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]" items="{{item.possibleValues}}"></paper-dropdown-input>
+                                <paper-dropdown-input name="{{item.id}}" value="[[_getValue(item.id)]]" label="{{item.label}}" items="{{item.possibleValues}}"></paper-dropdown-input>
                             </template>
                         </template>
                         
@@ -106,14 +106,26 @@
 
             _settingType: function(type, expected) {
                 if(expected == 'array') {
-                    expected = ['categorical', 'measurementsMetadata', 'measurementsAnnotation']
+                    expected = ['categorical', 'measurementsMetadata', 'measurementsAnnotation'];
                     return expected.indexOf(type) === -1 ? false : true;
+
+                    // if(expected.indexOf(type) != -1) {
+                    //     var def = null;
+                    //     for(var i=0; i< this.defs.length; i++){
+                    //         if(this.defs[i].id == id) {
+                    //             def = this.defs[i];
+                    //         }
+                    //     }
+
+                    //     if(def.possibleValues === null) {return false;}
+                    //     else {return true;}
+                    // }
                 }
                 return type == expected;
             },
 
             _getValue: function(id) {
-                console.log(id);
+                // var def = null;
                 return this.vals[id];
             },
             
@@ -122,7 +134,6 @@
             },
 
             _form_submit: function(event) {
-                console.log(event.detail);
                 this.vals = event.detail;
                 this.callback(this.vals);
                 this.closeSettings();
@@ -151,6 +162,23 @@
 
                 self.$.scrollContent.dialogElement = self.$.modal;
                 self.$.formSettings.addEventListener('iron-form-submit', this._form_submit.bind(self));
+            },
+
+
+            attached: function() {
+                for(var i=0; i< this.defs.length; i++){
+                        // def = this.defs[i];
+                    var id = this.defs[i].id;
+                    expected = ['categorical', 'measurementsMetadata', 'measurementsAnnotation']
+                    if(expected.indexOf(this.defs[i].type) != -1) {
+                        if(this.defs[i].possibleValues == null) {
+                            this.defs[i].possibleValues = [this.vals[id]];
+                        }
+                        else if(this.defs[i].possibleValues.indexOf(this.vals[id]) === -1) {
+                            this.defs[i].possibleValues.push(this.vals[id]);
+                        }
+                    }
+                }
             }
         });
     </script>

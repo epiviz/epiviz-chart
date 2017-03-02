@@ -1,0 +1,83 @@
+<link rel="import" href="../iron-icons/image-icons.html">
+
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="epiviz-chart-colors.html">
+
+<!--<dom-module id="shared-colors">
+  <template>
+    <style>
+        #chartColorsIcon {
+            /*float: right;*/
+            position:absolute;
+            top: 0;
+            right: 40px;
+            width: 24px;
+            height: 24px;
+            
+            /*--iron-icon-height: 16px;
+            --iron-icon-width: 16px;*/
+
+            border: 1px solid #000;
+            border-radius: 2px;
+            padding:3px;
+            /*background-color: #fff000;*/
+        }
+    </style>
+  </template>
+</dom-module>-->
+
+<script>
+    epiviz.ChartColorsBehavior = {
+
+        // hostHovered: function() {
+        //     var currColorsIcon = this.$$('#chartColorsIcon');
+        //     currColorsIcon.hidden = false;
+        // },
+
+        // hostUnhovered: function() {
+        //     var currColorsIcon = this.$$('#chartColorsIcon');
+        //     currColorsIcon.setAttribute("hidden", true);
+        // },
+
+        _showColorsDialog: function() {
+            var self = this;
+            var chartContainer = this.$$('#' + this.plotId);
+            var currColors = this.$$('epiviz-chart-colors');
+
+            if(currColors == null) {
+                var currColors = document.createElement('epiviz-chart-colors');
+                currColors.setAttribute('labels', JSON.stringify(self.chart.colorLabels()));
+                currColors.palettes = self.config.colorPalettes;
+                currColors.selected = self.chart.colors();
+                // chartSettingsElem.setAttribute('palettes', JSON.stringify(palettes));
+                // chartSettingsElem.setAttribute('selected', JSON.stringify(selected));
+                Polymer.dom(chartContainer).appendChild(currColors);
+            }
+            else {
+                currColors.setAttribute('labels', JSON.stringify(self.chart.colorLabels()));
+                currColors.selected = self.chart.colors();
+            }
+
+            currColors.showColors(self, function(newColors) {
+                self.chartColors = newColors;
+            });
+        },
+
+        _initializeColorsDialog: function() {
+            var chartSettingsContainer = this.$$('#chartSettingsContainer');
+            var chartContainer = this.$$('#' + this.plotId);
+            var currColorIcon = this.$$('#chartColorsIcon');
+
+            if(currColorIcon == null) {
+                var iconElem = document.createElement('paper-icon-button');
+                // iconElem.hidden = true;
+                iconElem.id = "chartColorsIcon";
+                iconElem.icon = "image:color-lens";
+
+                iconElem.addEventListener("click", this._showColorsDialog.bind(this));
+                Polymer.dom(chartSettingsContainer).appendChild(iconElem);
+            }
+        }        
+    }
+</script>

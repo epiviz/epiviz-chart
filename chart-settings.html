@@ -2,7 +2,9 @@
 
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 
-<dom-module id="shared-settings">
+<link rel="import" href="epiviz-chart-settings.html">
+
+<!--<dom-module id="shared-settings">
   <template>
     <style>
         #chartSettingsIcon {
@@ -23,64 +25,64 @@
         }
     </style>
   </template>
-</dom-module>
+</dom-module>-->
 
 <script>
     epiviz.ChartSettingsBehavior = {
 
-        properties: {
-            // iconHidden: true,
-        },
+        // properties: {
+        //     // iconHidden: true,
+        // },
 
-        hostHovered: function() {
-            var currSettingIcon = this.$$('#chartSettingsIcon');
+        // hostHovered: function() {
+        //     var currSettingIcon = this.$$('#chartSettingsIcon');
 
-            // currSettingIcon.setAttribute("hidden", false);
-            currSettingIcon.hidden = false;
-            // this.iconHidden = false;
-        },
+        //     // currSettingIcon.setAttribute("hidden", false);
+        //     currSettingIcon.hidden = false;
+        //     // this.iconHidden = false;
+        // },
 
-        hostUnhovered: function() {
-            var currSettingIcon = this.$$('#chartSettingsIcon');
+        // hostUnhovered: function() {
+        //     var currSettingIcon = this.$$('#chartSettingsIcon');
 
-            currSettingIcon.setAttribute("hidden", true);
-            // this.iconHidden = true;
-        },
+        //     currSettingIcon.setAttribute("hidden", true);
+        //     // this.iconHidden = true;
+        // },
 
         _showSettingsDialog: function() {
             var self = this;
-            var currSetting = self.$$('epiviz-chart-settings');
+            var chartContainer = this.$$('#' + this.plotId);
+            var currSetting = this.$$('epiviz-chart-settings');
+
+            if(currSetting == null) {
+                var currSetting = document.createElement('epiviz-chart-settings');
+                currSetting.setAttribute('defs', JSON.stringify(self.chartType.customSettingsDefs()));
+                currSetting.setAttribute('vals', JSON.stringify(self.chartSettings));
+
+                Polymer.dom(chartContainer).appendChild(currSetting);
+            }
+            else {
+                currSetting.setAttribute('vals', JSON.stringify(self.chartSettings));
+            }
+
             currSetting.showSettings(self, function(newSettings) {
                 self.chartSettings = newSettings;
             });
         },
 
-        _initializeSettingsDialog: function(defs, vals) {
+        _initializeSettingsDialog: function() {
+            var chartSettingsContainer = this.$$('#chartSettingsContainer');
             var chartContainer = this.$$('#' + this.plotId);
             var currSettingIcon = this.$$('#chartSettingsIcon');
 
             if(currSettingIcon == null) {
                 var iconElem = document.createElement('paper-icon-button');
-                iconElem.hidden = true;
+                // iconElem.hidden = true;
                 iconElem.id = "chartSettingsIcon";
                 iconElem.icon = "settings";
 
                 iconElem.addEventListener("click", this._showSettingsDialog.bind(this));
-
-                Polymer.dom(chartContainer).appendChild(iconElem);
-            }
-
-            var currSetting = this.$$('epiviz-chart-settings');
-
-            if(currSetting == null) {
-                var chartSettingsElem = document.createElement('epiviz-chart-settings');
-                chartSettingsElem.setAttribute('defs', JSON.stringify(defs));
-                chartSettingsElem.setAttribute('vals', JSON.stringify(vals));
-
-                Polymer.dom(chartContainer).appendChild(chartSettingsElem);
-            }
-            else {
-                currSetting.setAttribute('vals', JSON.stringify(vals));
+                Polymer.dom(chartSettingsContainer).appendChild(iconElem);
             }
         }        
     }

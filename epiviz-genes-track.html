@@ -6,13 +6,13 @@
 
 <link rel="import" href="chart-behavior.html">
 <link rel="import" href="chart-settings.html">
-
-<link rel="import" href="epiviz-chart-settings.html">
+<link rel="import" href="chart-colors.html">
 
 <dom-module id="epiviz-genes-track">
 
     <template>
         <style include="shared-settings"></style>
+        <!--<style include="shared-colors"></style>-->
         <style>
             :host {
                 width: 75%;
@@ -40,7 +40,7 @@
         Polymer({
             /* Custom element html tag */
             is: 'epiviz-genes-track',
-            behaviors: [epiviz.ChartBehavior, epiviz.ChartSettingsBehavior, Polymer.IronResizableBehavior],
+            behaviors: [epiviz.ChartBehavior, epiviz.ChartSettingsBehavior, epiviz.ChartColorsBehavior, Polymer.IronResizableBehavior],
 
             /* Properties that can be defined on the element */
             properties: {
