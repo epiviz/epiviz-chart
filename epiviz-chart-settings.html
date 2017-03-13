@@ -135,6 +135,12 @@
 
             _form_submit: function(event) {
                 this.vals = event.detail;
+                //  format vals types
+                this.defs.forEach(function(def) {
+                    if(def.type == "number") {
+                        self.vals[def.id] = parseInt(self.vals[def.id]);
+                    }
+                });
                 this.callback(this.vals);
                 this.closeSettings();
             },

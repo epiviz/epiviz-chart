@@ -1,0 +1,224 @@
+<!-- Polymer dependency -->
+<link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="../epiviz-imports/epiviz-common-css.html">
+<link rel="import" href="../epiviz-imports/epiviz-common-js.html">
+
+<link rel="import" href="chart-behavior.html">
+<link rel="import" href="chart-settings.html">
+<link rel="import" href="chart-colors.html">
+
+<link rel="import" href="epiviz-chart-settings.html">
+
+<link rel="import" href="epiviz-genes-track.html">
+
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-input/paper-input.html">
+
+<dom-module id="epiviz-navigation">
+
+    <template>
+        <style include="shared-settings"></style>
+        <style>
+            :host {
+                width: 75%;
+                display: inline-block;
+            }
+        </style>
+
+        <!-- local DOM goes here -->
+        <div class="header">
+            <paper-input value="{{_strRange]]" on-change="updateRange"></paper-input>
+            <paper-icon-button icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
+            <paper-icon-button icon="icons:chevron-right" on-click="moveRight"></paper-icon-button>
+            <paper-icon-button icon="icons:zoom-out" on-click="zoomOut"></paper-icon-button>
+            <paper-icon-button icon="icons:zoom-in" on-click="zoomIn"></paper-icon-button>
+        </div>
+        <content id="chartNav" select=".charts"></content>
+    </template>
+
+    <script>
+        Polymer({
+            /* Custom element html tag */
+            is: 'epiviz-navigation',
+            behaviors: [epiviz.ChartBehavior, Polymer.IronResizableBehavior],
+
+            /* Properties that can be defined on the element */
+            properties: {
+
+                chr: {
+                    type: String,
+                    notify: true
+                },
+
+                start: {
+                    type: Number,
+                    notify: true
+                },
+
+                end: {
+                    type: Number,
+                    notify: true
+                },
+
+                range: {
+                    type: Object,
+                    notify: true,
+		            computed: 'getGenomicRange(chr, start, end)',
+                    observer: '_rangeUpdate'
+                },
+                  
+                _strRange: {
+                    type: String,
+                    notify: true,
+		            computed: 'getStrRange(chr, start, end)'
+                },
+
+                stepRatio: {
+                    type: Number,
+                    notify: true,
+                    value: 0.2
+                },
+
+                zoomRatio: {
+                    type: Number,
+                    notify: true,
+                    value: 0.2
+                },
+
+                configSrc: {
+                    type: Object,
+                    notify: true,
+                    value: function() {
+                        epiviz.Config.SETTINGS = {
+                            dataProviders: [
+                                ["epiviz.data.WebServerDataProvider", "umd", "http://epiviz.cbcb.umd.edu/data/main.php"]
+                            ],
+                            workspacesDataProvider: sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''),
+                            useCache: true,
+                            colorPalettes: []
+                        };
+                        return epiviz.Config.SETTINGS;
+                    }
+                }
+            },
+
+            _rangeUpdate: function() {
+                var self = this;
+                var numChildren = self.getEffectiveChildren().length;
+                for (var index = 0; index < numChildren; index++) {
+                    var currentChild = self.getEffectiveChildren()[index];
+                    if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
+                    currentChild.range = self.range;
+                    // self._updateChart(currentChild.plotId);  
+                }
+            },
+
+            moveLeft: function(e) {
+                var width = this.end - this.start;
+                var newStart = this.start - Math.round((this.end - this.start) * this.stepRatio);
+                var newEnd = this.start + width;
+                
+                this.start = Math.max(0, newStart);
+                this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+            },
+
+            moveRight: function(e) {
+                var width = this.end - this.start;
+                var newStart = this.start + Math.round((this.end - this.start) * this.stepRatio);
+                var newEnd = this.start + width;
+
+                this.start = Math.max(0, newStart);
+                this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+            },
+
+            zoomIn: function(e) {
+                var width = Math.round(this.end - this.start);
+                var mid = Math.round(this.start + (width/2));
+                var newWidth = Math.round(width * (1 - this.zoomRatio));
+                var newStart = Math.round(mid - (newWidth * 0.5));
+                var newEnd = Math.round(this.start + newWidth);
+
+                this.start = Math.max(0, newStart);
+                this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+            },
+
+            zoomOut: function(e) {
+                var width = Math.round(this.end - this.start);
+                var mid = Math.round(this.start + (width/2));
+                var newWidth = Math.round(width * (1 + this.zoomRatio));
+                var newStart = Math.round(mid - (newWidth * 0.5));
+                var newEnd = Math.round(this.start + newWidth);
+
+                this.start = Math.max(0, newStart);
+                this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+            },
+
+            getStrRange: function(chr, start, end) {
+                return chr + ": " + start + " - " + end;
+            },
+
+            getGenomicRange: function(chr, start, end) {
+                    return new epiviz.datatypes.GenomicRange(chr, start, end-start);
+            },
+
+            // Initialization that should happen or use FactoryImpl 
+            // created: function() {},
+            
+            /* callback function after the element is attached to the DOM */
+            attached: function() {
+
+                var self = this;
+
+                self._rangeUpdate();
+
+                if (self.useDefaultDataProvider) {
+
+                    self.measurements = self.measurements || [{
+                        'id': 'genes',
+                        'name': 'Genes',
+                        'type': 'range',
+                        'datasourceId': 'genes',
+                        'datasourceGroup': 'genes',
+                        'dataprovider': 'umd',
+                        'formula': null,
+                        'defaultChartType': "Genes Track",
+                        'annotation': null,
+                        'minValue': null,
+                        'maxValue': null,
+                        'metadata': ['gene', 'entrez', 'exon_starts', 'exon_ends']
+                    }];
+
+                    self.range = self.range || new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000);
+
+                    var dataProviderFactory = new epiviz.data.DataProviderFactory(new epiviz.Config(self.configSrc));
+                    var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);
+
+                    dataManager.getSeqInfos(function(data) {
+
+                        var seqinfo = {};
+
+                        data.forEach(function(s) {
+                            seqinfo[s.seqName] = s;
+                        });
+                        self.seqInfo = seqinfo;
+                    });
+                }
+            },
+
+            /* callback function after the element is initialized */
+            ready: function() {
+                var self = this;
+                self.plotId = self.plotId || self._generatePlotId();
+                // style observer on charts
+                // self.scopeSubtree(self.$.chart, true);
+
+                self.config = new epiviz.Config(self.configSrc);
+            },
+
+            _createChart: function() {
+                return null;
+            }
+        });
+    </script>
+</dom-module>
