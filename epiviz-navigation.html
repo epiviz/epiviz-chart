@@ -171,8 +171,8 @@
 
             moveLeft: function(e) {
                 var width = this.end - this.start;
-                var newStart = this.start - Math.round((this.end - this.start) * this.stepRatio);
-                var newEnd = this.start + width;
+                var newStart = this.start - Math.round(width * this.stepRatio);
+                var newEnd = newStart + width;
                 
                 this.start = Math.max(0, newStart);
                 this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
@@ -180,8 +180,8 @@
 
             moveRight: function(e) {
                 var width = this.end - this.start;
-                var newStart = this.start + Math.round((this.end - this.start) * this.stepRatio);
-                var newEnd = this.start + width;
+                var newStart = this.start + Math.round(width * this.stepRatio);
+                var newEnd = newStart + width;
 
                 this.start = Math.max(0, newStart);
                 this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
