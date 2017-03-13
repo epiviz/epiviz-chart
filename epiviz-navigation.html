@@ -14,6 +14,7 @@
 
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-autocomplete/paper-autocomplete.html">
 
 <dom-module id="epiviz-navigation">
 
@@ -29,6 +30,18 @@
         <!-- local DOM goes here -->
         <div class="header">
             <paper-input value="{{_strRange]]" on-change="_updateStrRange"></paper-input>
+            <paper-autocomplete id="geneSearch" label="Search Gene/Probe" remote-source="true" min-length="2" 
+                on-autocomplete-selected="_selectGene"
+                on-autocomplete-change="_searchGene"
+                value-property="gene"
+                text-property="gene">
+                <template autocomplete-custom-template>
+                    <paper-item on-tap="_onSelect" id$="[[_getSuggestionId(index)]]" role="option" aria-selected="false">
+                    <div>[[item.gene]] [[item.seqName]]: [[item.start]] - [[item.end]]</div>
+                    <paper-ripple></paper-ripple>
+                    </paper-item>
+                </template>
+                </paper-autocomplete>
             <paper-icon-button icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
             <paper-icon-button icon="icons:chevron-right" on-click="moveRight"></paper-icon-button>
             <paper-icon-button icon="icons:zoom-out" on-click="zoomOut"></paper-icon-button>
@@ -96,7 +109,8 @@
                             ],
                             workspacesDataProvider: sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''),
                             useCache: true,
-                            colorPalettes: []
+                            colorPalettes: [],
+                            maxSearchResults: 12
                         };
                         return epiviz.Config.SETTINGS;
                     }
@@ -114,6 +128,32 @@
                         Polymer.dom(self).parentNode._getElementData(currentChild, Polymer.dom(self));  
                     }
                 }
+            },
+
+            _searchGene: function(e) {
+                var self = this;
+                var gene = e.detail.option.text;
+                var field = this.$.geneSearch;
+
+                if (self.useDefaultDataProvider) {
+
+                    self.range = self.range || new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000);
+
+                    var dataProviderFactory = new epiviz.data.DataProviderFactory(new epiviz.Config(self.configSrc));
+                    var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);
+
+                    dataManager.search(function(data) {
+                        field.suggestions(data);
+                    }, gene);
+                }
+            },
+
+            _selectGene: function(e) {
+                var selected= e.detail.option;
+
+                this.chr = selected.seqName;
+                this.start = selected.start - Math.round(selected.start * 0.01);
+                this.end = selected.end + Math.round(selected.end * 0.01);
             },
 
             _updateStrRange: function(e) {
