@@ -28,7 +28,7 @@
 
         <!-- local DOM goes here -->
         <div class="header">
-            <paper-input value="{{_strRange]]" on-change="updateRange"></paper-input>
+            <paper-input value="{{_strRange]]" on-change="_updateStrRange"></paper-input>
             <paper-icon-button icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
             <paper-icon-button icon="icons:chevron-right" on-click="moveRight"></paper-icon-button>
             <paper-icon-button icon="icons:zoom-out" on-click="zoomOut"></paper-icon-button>
@@ -110,8 +110,23 @@
                     var currentChild = self.getEffectiveChildren()[index];
                     if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
                     currentChild.range = self.range;
-                    // self._updateChart(currentChild.plotId);  
+                    if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
+                        Polymer.dom(self).parentNode._getElementData(currentChild, Polymer.dom(self));  
+                    }
                 }
+            },
+
+            _updateStrRange: function(e) {
+                var update = e.target.value;
+                var split = update.split(":");
+                var chr = split[0];
+                var rsplit = split[1].split("-");
+                var start = parseInt(rsplit[0]);
+                var end = parseInt(rsplit[1]);
+
+                this.chr = chr;
+                this.start = start;
+                this.end = end;
             },
 
             moveLeft: function(e) {
@@ -195,9 +210,7 @@
                     var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);
 
                     dataManager.getSeqInfos(function(data) {
-
                         var seqinfo = {};
-
                         data.forEach(function(s) {
                             seqinfo[s.seqName] = s;
                         });
