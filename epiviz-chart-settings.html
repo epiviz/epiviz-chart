@@ -159,7 +159,7 @@
                                                     <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
                                                 </template>
                                                 <template is="dom-if" if="[[_settingType(item.type, 'number')]]">
-                                                    <paper-input name="{{item.id}}" type="number" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
+                                                    <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
                                                 </template>
                                                 <template is="dom-if" if="[[_settingType(item.type, 'array')]]">
                                                     <paper-dropdown-input name="{{item.id}}" value="[[_getValue(item.id)]]" label="{{item.label}}" items="{{item.possibleValues}}"></paper-dropdown-input>
@@ -178,7 +178,7 @@
                                                     <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
                                                 </template>
                                                 <template is="dom-if" if="[[_settingType(item.type, 'number')]]">
-                                                    <paper-input name="{{item.id}}" type="number" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
+                                                    <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
                                                 </template>
                                                 <template is="dom-if" if="[[_settingType(item.type, 'array')]]">
                                                     <paper-dropdown-input name="{{item.id}}" value="[[_getValue(item.id)]]" label="{{item.label}}" items="{{item.possibleValues}}"></paper-dropdown-input>
@@ -334,8 +334,17 @@
                 this.vals = event.detail;
                 //  format vals types
                 this.defs.forEach(function(def) {
-                    if(def.type == "number") {
-                        self.vals[def.id] = parseInt(self.vals[def.id]);
+                    if(def.type == "number" && self.vals[def.id] != "default") {
+                        self.vals[def.id] = parseFloat(self.vals[def.id]);
+                    }
+
+                    if(def.type == "boolean") {
+                        if(self.vals[def.id] == "on") {
+                            self.vals[def.id] = true;
+                        }
+                        else {
+                            self.vals[def.id] = false;
+                        }
                     }
                 });
                 this.callback(this.vals);
