@@ -14,10 +14,15 @@
     <template>
         <style include="shared-settings"></style>
         <style>
-        :host {
-            width: 100%;
-            display: inline-block;
-        }
+            :host {
+                min-width: 400px;
+                min-height: 400px;
+                display: inline-block;
+                border: 1px solid black;
+                padding: 20px;
+                resize: both;
+                overflow: auto;
+            }
         </style>
 
         <!-- local DOM goes here -->

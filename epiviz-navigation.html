@@ -10,7 +10,7 @@
 
 <link rel="import" href="epiviz-chart-settings.html">
 
-<link rel="import" href="epiviz-genes-track.html">
+<!--<link rel="import" href="epiviz-genes-track.html">-->
 
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-input/paper-input.html">
@@ -23,8 +23,13 @@
         <style include="shared-settings"></style>
         <style>
             :host {
-                width: 75%;
+                min-width: 400px;
+                min-height: 400px;
                 display: inline-block;
+                border: 1px solid black;
+                padding: 20px;
+                resize: both;
+                overflow: auto;
             }
 
             .flex {
@@ -149,6 +154,23 @@
                 }
             },
 
+            listeners: {
+                'hover': 'onHover',
+                'unHover': 'onUnhover'
+            },
+
+            onHover: function(e) {
+                this.fire('hoverAllCharts', {
+                    data: e.detail.data
+                });
+            },
+
+            onUnhover: function(e) {
+                this.fire('unHoverAllCharts', {
+                    data: null
+                });
+            },
+
             _rangeUpdate: function() {
                 var self = this;
                 var numChildren = self.getEffectiveChildren().length;
@@ -266,22 +288,22 @@
 
                 if (self.useDefaultDataProvider) {
 
-                    self.measurements = self.measurements || [{
-                        'id': 'genes',
-                        'name': 'Genes',
-                        'type': 'range',
-                        'datasourceId': 'genes',
-                        'datasourceGroup': 'genes',
-                        'dataprovider': 'umd',
-                        'formula': null,
-                        'defaultChartType': "Genes Track",
-                        'annotation': null,
-                        'minValue': null,
-                        'maxValue': null,
-                        'metadata': ['gene', 'entrez', 'exon_starts', 'exon_ends']
-                    }];
+                    // self.measurements = self.measurements || [{
+                    //     'id': 'genes',
+                    //     'name': 'Genes',
+                    //     'type': 'range',
+                    //     'datasourceId': 'genes',
+                    //     'datasourceGroup': 'genes',
+                    //     'dataprovider': 'umd',
+                    //     'formula': null,
+                    //     'defaultChartType': "Genes Track",
+                    //     'annotation': null,
+                    //     'minValue': null,
+                    //     'maxValue': null,
+                    //     'metadata': ['gene', 'entrez', 'exon_starts', 'exon_ends']
+                    // }];
 
-                    self.range = self.range || new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000);
+                    // self.range = self.range || new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000);
 
                     var dataProviderFactory = new epiviz.data.DataProviderFactory(new epiviz.Config(self.configSrc));
                     var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);

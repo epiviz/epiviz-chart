@@ -97,9 +97,12 @@
         },
 
         _onResize: function() {
+            var self = this;
             // this._measurementsChanged();
             if(this.chart != null) {
-                this.chart._properties.width = this.offsetWidth;
+                var width = self.offsetWidth - 40;
+                // if(width < self.chartType.defaultWidth()) { width = self.chartType.defaultWidth()}
+                this.chart._properties.width = width;
                 this._draw();
             }
         },
@@ -172,9 +175,12 @@
                 // self.chartType = new epiviz.plugins.charts.LineTrackType(self.config);
                 self.chartType = self._createChart();
 
+                var width = self.offsetWidth - 40;
+                if(width < self.chartType.defaultWidth()) { width = self.chartType.defaultWidth()}
+
                 if(self.chartType) {
                     self.chartProperties = new epiviz.ui.charts.VisualizationProperties(
-                        self.offsetWidth || self.chartType.defaultWidth(),
+                        width,
                         self.chartType.defaultHeight(),
                         self.chartType.defaultMargins(),
                         self.visConfigSelection,
