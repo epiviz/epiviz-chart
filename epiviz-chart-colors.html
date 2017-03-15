@@ -9,27 +9,91 @@
 <link rel="import" href="../paper-dialog/paper-dialog.html">
 <link rel="import" href="../paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../paper-swatch-picker/paper-swatch-picker.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-label/iron-label.html">
 
 <dom-module id="epiviz-chart-colors">
 
     <template>
         <style>
+            .flex {
+                @apply(--layout-horizontal);
+            }
+
+            .flexchild {
+                @apply(--layout-flex);
+                padding: 20px;
+                flex: 1 1 auto;
+            }
+
+            .flex-end-justified {
+                @apply(--layout-horizontal);
+                @apply(--layout-end-justified);
+            }
+
+            #formSettings {
+                min-width: 500px;
+            }
+
+            #scrollContent {
+                margin-bottom: 10px;
+            }
+
+            .color-item {
+                display: block;
+            }
         </style>
 
         <!-- local DOM goes here -->
         <div id="settings">
             <!--no-overlap horizontal-align="left" vertical-align="top"-->
             <paper-dialog id="modal" modal>
-                <h2>Chart Settings</h2>
+                <h2>Chart Color Settings</h2>
                 <form is="iron-form" id="formSettings">
                     <paper-dialog-scrollable id="scrollContent">
-                        <template is="dom-repeat" items="{{labels}}">
+
+                        <div class="container flex">
+                            <div class="flexchild">
+                                <template is="dom-repeat" items="{{labels}}">
+                                    <template is="dom-if" if="[[_isIndexGroup(index, 0)]]">
+                                        <div class="color-item">
+                                            <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
+                                            <iron-label for="{{item}}">{{item}}</iron-label>
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+                            <div class="flexchild">
+                                <template is="dom-repeat" items="{{labels}}">
+                                    <template is="dom-if" if="[[_isIndexGroup(index, 1)]]">
+                                        <div class="color-item">                                        
+                                            <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
+                                            <iron-label for="{{item}}">{{item}}</iron-label>
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+                            <div class="flexchild">
+                                <template is="dom-repeat" items="{{labels}}">
+                                    <template is="dom-if" if="[[_isIndexGroup(index, 2)]]">
+                                        <div class="color-item">
+                                            <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
+                                            <iron-label for="{{item}}">{{item}}</iron-label>
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!--<template is="dom-repeat" items="{{labels}}">
                             <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
                             <iron-label for="{{item}}">{{item}}</iron-label>
-                        </template>
+                        </template>-->
                     </paper-dialog-scrollable>
-                    <paper-button id="submit" raised>Apply</paper-button>
-                    <paper-button id="cancel" raised>Cancel</paper-button>
+                    <div class="container flex-end-justified">
+                        <paper-button id="submit" raised>Apply</paper-button>
+                        <paper-button id="cancel" raised>Cancel</paper-button>
+                    </div>
                 </form>
             </paper-dialog>
         </div>
@@ -67,6 +131,14 @@
 
             _getColor: function(label) {
                 return this.selected.getByKey(label);
+            },
+
+            _isIndexGroup(value, expected) {
+                if( value % 3 == expected ) {
+                    return true;
+                }
+
+                return false;
             },
 
             _getId: function(label) {

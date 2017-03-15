@@ -15,6 +15,7 @@
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-autocomplete/paper-autocomplete.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 
 <dom-module id="epiviz-navigation">
 
@@ -25,27 +26,58 @@
                 width: 75%;
                 display: inline-block;
             }
+
+            .flex {
+                @apply(--layout-horizontal);
+                align-items: center;
+            }
+
+            .flexchild {
+                @apply(--layout-flex);
+                padding: 20px;
+                flex: 1 1 auto;
+            }
+
+            .flex-end-justified {
+                @apply(--layout-horizontal);
+                @apply(--layout-end-justified);
+            }
+
+            paper-icon-button {
+                background-color: #dedede;
+                color: black;
+                border-radius: 3px;
+                padding: 2px;
+                width: 28px;
+                height: 28px;
+            }
         </style>
 
         <!-- local DOM goes here -->
-        <div class="header">
-            <paper-input value="{{_strRange]]" on-change="_updateStrRange"></paper-input>
-            <paper-autocomplete id="geneSearch" label="Search Gene/Probe" remote-source="true" min-length="2" 
-                on-autocomplete-selected="_selectGene"
-                on-autocomplete-change="_searchGene"
-                value-property="gene"
-                text-property="gene">
-                <template autocomplete-custom-template>
-                    <paper-item on-tap="_onSelect" id$="[[_getSuggestionId(index)]]" role="option" aria-selected="false">
-                    <div>[[item.gene]] [[item.seqName]]: [[item.start]] - [[item.end]]</div>
-                    <paper-ripple></paper-ripple>
-                    </paper-item>
-                </template>
+        <div class="container flex">
+            <div class="flexchild">
+                <paper-input value="{{_strRange]]" label="Chromosome Location" on-change="_updateStrRange"></paper-input>
+            </div>
+            <div class="flexchild">
+                <paper-autocomplete id="geneSearch" label="Search Gene/Probe" remote-source="true" min-length="2" 
+                    on-autocomplete-selected="_selectGene"
+                    on-autocomplete-change="_searchGene"
+                    value-property="gene"
+                    text-property="gene">
+                    <template autocomplete-custom-template>
+                        <paper-item on-tap="_onSelect" id$="[[_getSuggestionId(index)]]" role="option" aria-selected="false">
+                        <div>[[item.gene]] [[item.seqName]]: [[item.start]] - [[item.end]]</div>
+                        <paper-ripple></paper-ripple>
+                        </paper-item>
+                    </template>
                 </paper-autocomplete>
-            <paper-icon-button icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
-            <paper-icon-button icon="icons:chevron-right" on-click="moveRight"></paper-icon-button>
-            <paper-icon-button icon="icons:zoom-out" on-click="zoomOut"></paper-icon-button>
-            <paper-icon-button icon="icons:zoom-in" on-click="zoomIn"></paper-icon-button>
+            </div>
+            <div class="flexchild">
+                <paper-icon-button title="move left" icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
+                <paper-icon-button title="move right" icon="icons:chevron-right" on-click="moveRight"></paper-icon-button>
+                <paper-icon-button title="zoom out" icon="icons:zoom-out" on-click="zoomOut"></paper-icon-button>
+                <paper-icon-button title="zoom in" icon="icons:zoom-in" on-click="zoomIn"></paper-icon-button>
+            </div>
         </div>
         <content id="chartNav" select=".charts"></content>
     </template>
@@ -146,6 +178,11 @@
                         field.suggestions(data);
                     }, gene);
                 }
+                // else {
+                //     if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
+                //         var result = Polymer.dom(self).parentNode._getElementSearch(currentChild, Polymer.dom(self));  
+                //     }
+                // }
             },
 
             _selectGene: function(e) {
