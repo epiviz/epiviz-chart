@@ -1,7 +1,7 @@
 <script>
     epiviz.ChartDataBehavior = {
 
-        _getElementSearch: function(term, currentChild, pDom) {
+        _getElementSearch: function(gene, currentChild, pDom) {
 
             var dataManagerElem = document.querySelector('epiviz-data-source');
 
@@ -44,7 +44,7 @@
 
             if(dims != null && dims.length > 0) {
                 for (var idim = 0; idim < dims.length; idim++) {
-                    var mtdx = self.measurements[dims[idim]];
+                    var mtdx = pDom.measurements[dims[idim]];
                     mSet.add(new epiviz.measurements.Measurement(
                         mtdx.id,
                         mtdx.name,
@@ -87,7 +87,7 @@
 
             var id = currentChild.plotId;
             if(tMeasurements.length != 0) {
-                currentChild.range = currentChild.range || self.range;
+                currentChild.range = currentChild.range || self.range || pDom.range;
                 currentChild.measurements = tMeasurements;
                 var chartMeasMap = {};
                 chartMeasMap[id] = mSet;
@@ -100,7 +100,7 @@
                     dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
                         //currentChild.data = data;
                         var dataChartElem = pDom.querySelector('[plot-id$="' + id + '"]');
-                        dataChartElem.data = self.transformFunc(data);
+                        dataChartElem.data = pDom.transformFunc(data);
                     });
                 }
             }

@@ -13,7 +13,14 @@
         margin: 5px;
         border: 1px solid black;
         border-radius: 5px;
-        width: 80%;
+        min-width: 400px;
+        min-height: 400px;
+        resize: both;
+        overflow: auto;
+        transition:width 0.01s, height 0.01s;
+        margin: 10px;
+        width: auto;
+        height: auto;
 	}
 	</style>
 
@@ -73,6 +80,23 @@
                 '_rangeChanged(chr.*, start.*, end.*)'
             ],
 
+            // listeners: {
+            //     'iron-resize': '_onResize',
+            //     'transitionend': '_onResize'
+            // },
+
+            _onResize: function() {
+                var self = this;
+                // this._measurementsChanged();
+                if(this.chart != null) {
+                    // var width = self.offsetWidth - 40;
+                    // if(width < self.chartType.defaultWidth()) { width = self.chartType.defaultWidth()}
+                    this.chart._properties.width = self.offsetWidth - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
+                    this.chart._properties.height = self.offsetHeight - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
+                    this._draw();
+                }
+            },
+
             getGenomicRange: function(chr, start, end) {
                 return new epiviz.datatypes.GenomicRange(chr, start, end-start);
             },
@@ -88,12 +112,16 @@
                 this.fire('hoverAllCharts', {
                     data: e.detail.data
                 });
+                e.preventDefault();
+                e.stopPropagation();
             },
 
             onUnhover: function(e) {
                 this.fire('unHoverAllCharts', {
                     data: null
                 });
+                e.preventDefault();
+                e.stopPropagation();
             },
 
             onDimChanged: function(e) {
@@ -125,7 +153,7 @@
                     if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
                     currentChild.range = self.range;
                     // self._updateChart(currentChild.plotId);  
-                    self._getElementData(currentChild, Polymer.dom(self));
+                    self._getElementData(currentChild, self);
                 }
             },
 
@@ -206,16 +234,16 @@
 
                         if(currentChild.nodeName === "EPIVIZ-NAVIGATION") {
 
-                            self._getElementSeqInfo(currentChild, Polymer.dom(self));
+                            self._getElementSeqInfo(currentChild, self);
 
                             var navChildren = currentChild.getEffectiveChildren().length;
                             for (var nindex = 0; nindex < navChildren; nindex++) {
                                 var currentNavChild = currentChild.getEffectiveChildren()[nindex];
-                                self._getElementData(currentNavChild, currentChild);
+                                self._getElementData(currentNavChild, self);
                             }
                         }
                         else {
-                            self._getElementData(currentChild, Polymer.dom(self));
+                            self._getElementData(currentChild, self);
                         }
                     }
                 }
@@ -230,12 +258,12 @@
                                     var navChildren = node.getEffectiveChildren().length;
                                     for (var nindex = 0; nindex < navChildren; nindex++) {
                                         var currentNavChild = node.getEffectiveChildren()[nindex];
-                                        self._getElementData(currentNavChild, node);
+                                        self._getElementData(currentNavChild, self);
                                     }
         
                             }
                             else {
-                                self._getElementData(node, Polymer.dom(self));
+                                self._getElementData(node, self);
                             }
                         });
                     });

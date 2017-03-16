@@ -33,6 +33,8 @@
                 overflow: auto;
                 transition:width 0.01s, height 0.01s;
                 margin: 10px;
+                width: auto;
+                height: auto;
             }
 
             .flex {
@@ -166,12 +168,22 @@
                 this.fire('hoverAllCharts', {
                     data: e.detail.data
                 });
+                // this.fire('hover', {
+                //     data: e.detail.data
+                // });
+                // e.preventDefault();
+                // e.stopPropagation();
             },
 
             onUnhover: function(e) {
                 this.fire('unHoverAllCharts', {
                     data: null
                 });
+                // this.fire('unHover', {
+                //     data: e.detail.data
+                // });
+                // e.preventDefault();
+                // e.stopPropagation();
             },
 
             _rangeUpdate: function() {
@@ -181,9 +193,9 @@
                     var currentChild = self.getEffectiveChildren()[index];
                     if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
                     currentChild.range = self.range;
-                    // if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
-                        self._getElementData(currentChild, Polymer.dom(self));  
-                    // }
+                    if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
+                        self._getElementData(currentChild, Polymer.dom(self).parentNode);  
+                    }
                 }
             },
 
@@ -204,9 +216,9 @@
                     }, gene);
                 }
                 else {
-                    // if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
-                        var result = self._getElementSearch(gene, currentChild, Polymer.dom(self));  
-                    // }
+                    if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
+                        var result = self._getElementSearch(gene, self, self);  
+                    }
                 }
             },
 
@@ -286,6 +298,24 @@
             attached: function() {
 
                 var self = this;
+
+                // listen to events 
+                // var parent = self.parentNode;
+                // parent.addEventListener('hoverAllCharts', function(e) {
+                //     // self.hover(e.detail.data);
+                //     self.fire('hover', {
+                //         data: e.detail.data,
+                //         bubbles: false
+                //     });
+                // }.bind(self));
+
+                // parent.addEventListener('unHoverAllCharts', function(e) {
+                //     // self.unHover();
+                //     self.fire('unHover', {
+                //         data: e.detail.data,
+                //         bubbles:false
+                //     });
+                // }.bind(self));
 
                 self._rangeUpdate();
 
