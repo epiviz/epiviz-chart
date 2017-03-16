@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head>
+    <title> epiviz-environment demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../epiviz-environment.html">
+  </head>
+  <body>
+      <h3>Basic epiviz-environment Demo</h3>
+      
+          <epiviz-data-source provider-type="epiviz.data.WebServerDataProvider" provider-id="umd" provider-url="http://epiviz.cbcb.umd.edu/data/main.php"></epiviz-data-source>
+
+          <epiviz-environment 
+            transform-data="false"
+            measurement='{"affy1":{
+                    "id":"cancer",
+                    "name":"Expression Colon Cancer",
+                    "type":"feature",
+                    "datasourceId":"gene_expression",
+                    "datasourceGroup":"affymetrix_probeset",
+                    "dataprovider":"umd",
+                    "formula":null,
+                    "defaultChartType":null,
+                    "annotation":null,
+                    "minValue":-3,
+                    "maxValue":20,
+                    "metadata":["probe"]
+                },
+                "affy2":{
+                    "id":"normal",
+                    "name":"Expression Colon Normal",
+                    "type":"feature",
+                    "datasourceId":"gene_expression",
+                    "datasourceGroup":"affymetrix_probeset",
+                    "dataprovider":"umd",
+                    "formula":null,
+                    "defaultChartType":null,
+                    "annotation":null,
+                    "minValue":-3,
+                    "maxValue":20,
+                    "metadata":["probe"]
+                }}'>
+          </epiviz-environment>
+  </body>
+</html>

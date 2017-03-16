@@ -1,0 +1,408 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../epiviz-imports/epiviz-common-js.html">
+
+<dom-module id="epiviz-environment">
+
+    <template>	
+	<style>
+	:host{
+		display: inline-block;
+        padding: 15px;
+        margin: 5px;
+        border: 1px solid black;
+        border-radius: 5px;
+        width: 80%;
+	}
+	</style>
+
+    <div class="header">
+        <a href="http://epiviz.github.io" target="_blank"><img src="epiviz_4_logo_medium.png" alt="Epiviz" width="100" height="21"></a>
+    </div>
+    <content id="chartNav" select=".navigation"></content>
+    <content id="chartEnv" select=".charts"></content>
+</template>
+
+    <script>
+        Polymer({
+            is: 'epiviz-environment',
+            properties: {
+                measurements: {
+                    type: Object,
+                    notify: true,
+                    reflectToAttribute: true
+                },
+
+                chr: {
+                    type: String,
+                    notify: true
+                },
+
+                start: {
+                    type: Number,
+                    notify: true
+                },
+
+                end: {
+                    type: Number,
+                    notify: true
+                },
+
+                range: {
+                    type: Object,
+                    notify: true,
+		            computed: 'getGenomicRange(chr, start, end)'
+                },
+
+                transformData: {
+                    type: Boolean,
+                    notify: true,
+                    value: false
+                },
+
+                transformDataFunc: {
+                    type: String,
+                    notify: true
+                }
+            },
+
+            observers: [
+                '_rangeChanged(chr.*, start.*, end.*)'
+            ],
+
+            getGenomicRange: function(chr, start, end) {
+                    return new epiviz.datatypes.GenomicRange(chr, start, end-start);
+            },
+
+            // Listeners for interaction between 2 graphs
+            listeners: {
+                'hover': 'onHover',
+                'unHover': 'onUnhover',
+                'dimChanged': 'onDimChanged'
+            },
+
+            onHover: function(e) {
+                this.fire('hoverAllCharts', {
+                    data: e.detail.data
+                });
+            },
+
+            onUnhover: function(e) {
+                this.fire('unHoverAllCharts', {
+                    data: null
+                });
+            },
+
+            onDimChanged: function(e) {
+                var chartId = e.detail.id;
+
+                if (chartId != null) {
+                    this._updateChart(chartId);
+                }
+            },
+
+            _generateChartId: function() {
+                var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                var result = '';
+                var size = 7;
+
+                for (var i = 0; i < size; ++i) {
+                    result += chars[Math.round(Math.random() * (chars.length - 1))];
+                }
+                return 'epiviz-' + result;
+            },
+
+            _rangeChanged: function() {
+
+                var self = this;
+
+                var numChildren = self.getEffectiveChildren().length;
+                for (var index = 0; index < numChildren; index++) {
+                    var currentChild = self.getEffectiveChildren()[index];
+                    if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
+                    currentChild.range = self.range;
+                    // self._updateChart(currentChild.plotId);  
+                    self._getElementData(currentChild, Polymer.dom(self));
+                }
+            },
+
+            _updateChart: function(cId) {
+
+                if(cId == undefined) {return;}
+                var self = this;
+                var currentChild = Polymer.dom(self).querySelector('[plot-id$="' + cId + '"]');
+                var dims = currentChild.dimS || currentChild.getAttribute("dim-s");
+                $('#' + cId).empty();
+
+                if (typeof(dims) == "string") {
+                    dims = JSON.parse(dims);
+                }
+
+                var mSet = new epiviz.measurements.MeasurementSet();
+                var tMeasurements = [];
+
+                if(dims != null && dims.length > 0) {
+                    for (var idim = 0; idim < dims.length; idim++) {
+                        var mtdx = self.measurements[dims[idim]];
+                        mSet.add(new epiviz.measurements.Measurement(
+                            mtdx.id,
+                            mtdx.name,
+                            mtdx.type,
+                            mtdx.datasourceId,
+                            mtdx.datasourceGroup,
+                            mtdx.dataprovider,
+                            mtdx.formula,
+                            mtdx.defaultChartType,
+                            mtdx.annotation,
+                            mtdx.minValue,
+                            mtdx.maxValue,
+                            mtdx.metadata
+                        ));
+                        tMeasurements.push(mtdx);
+                    }
+                }
+                else if(currentChild.measurements != null && currentChild.measurements.length > 0 ){
+                    for (var idim = 0; idim < currentChild.measurements.length; idim++) {
+                        var mtdx = currentChild.measurements[idim];
+                        mSet.add(new epiviz.measurements.Measurement(
+                            mtdx.id,
+                            mtdx.name,
+                            mtdx.type,
+                            mtdx.datasourceId,
+                            mtdx.datasourceGroup,
+                            mtdx.dataprovider,
+                            mtdx.formula,
+                            mtdx.defaultChartType,
+                            mtdx.annotation,
+                            mtdx.minValue,
+                            mtdx.maxValue,
+                            mtdx.metadata
+                        ));
+
+                        tMeasurements.push(mtdx);
+                    }
+                }
+
+                if(tMeasurements.length != 0) {
+                    currentChild.range = currentChild.range || self.range;
+                    currentChild.measurements = tMeasurements;
+                    var chartMeasMap = {};
+                    chartMeasMap[cId] = mSet;
+
+                    var dataManagerElem = document.querySelector('epiviz-data-source[provider-id$="' + tMeasurements[0].dataprovider + '"]');
+
+                    if (dataManagerElem != null) {
+                        var dataManager = dataManagerElem.dataManager;
+
+                        dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
+                            //currentChild.data = data;
+                            var dataChartElem = Polymer.dom(self).querySelector('[plot-id$="' + id + '"]');
+
+                            dataChartElem.data = self.transformFunc(data);
+                        });
+                    }
+                }
+            },
+
+            //
+            //  output data format 
+            //  {
+            //      columns: Collection <Object> {measurement-id: <Epiviz measurement>}
+            //      values : Array  [measurement-id: Val <Integer>, row: rowInfo]
+            //  }
+            // TODO: json format
+            epivizToJSON: function(data) {
+
+                if(!this.transformData) {
+                    return data;
+                }
+
+                var fromDataMeasurements = [];
+                var range = this.range;
+
+                var firstGlobalIndex = data.firstSeries().globalStartIndex();
+                var lastGlobalIndex = data.firstSeries().globalEndIndex();
+
+                data.foreach(function(measurement, series) {
+                    fromDataMeasurements.push(measurement);
+                    var firstIndex = series.globalStartIndex();
+                    var lastIndex = series.globalEndIndex();
+                    if (firstIndex > firstGlobalIndex) { firstGlobalIndex = firstIndex; }
+                    if (lastIndex < lastGlobalIndex) { lastGlobalIndex = lastIndex; }
+                });
+
+                var nItems = lastGlobalIndex - firstGlobalIndex;
+
+                var i, index;
+                var grid = {};
+                grid.measurements = fromDataMeasurements;
+                grid.columns = {};
+
+                grid.measurements.forEach(function(m) {
+                    grid.columns[m.datasourceId() + "-" + m.id()] = m;
+                });
+
+                grid.values = [];
+                var nSeries = fromDataMeasurements.length;
+                for (i = 0; i < nItems; ++i) {
+                    index = i + firstGlobalIndex;
+                    var valArray = {};
+                    
+                    var row = {};
+                    var rowData = data.getSeries(fromDataMeasurements[0]).getRowByGlobalIndex(index);
+                    row.start = rowData.start();
+                    row.end = rowData.end();
+                    row.metadata = rowData.rowMetadata();
+                    row.strand = rowData.strand();
+                    row.index = rowData.index();
+                    row.globalIndex = rowData.globalIndex();
+                    row.id = rowData.id();
+                    row.seqName = rowData.seqName();
+                    valArray.row = row;
+
+                    grid.measurements.forEach(function(m) {
+                        var cellX = data.getSeries(m).getByGlobalIndex(index);
+                        valArray[m.datasourceId() + "-" + m.id()] = cellX.value;
+                    });
+
+                    grid.values.push(valArray);
+                }
+                return grid;
+            },
+
+            _getElementData: function(currentChild, pDom) {
+
+                var self = this;
+                var dims = currentChild.dims || currentChild.getAttribute("dim-s");
+
+                if (typeof(dims) == "string") {
+                    dims = JSON.parse(dims);
+                }
+
+                // var id = self._generateChartId();
+                var mSet = new epiviz.measurements.MeasurementSet();
+                var tMeasurements = [];
+
+                if(dims != null && dims.length > 0) {
+                    for (var idim = 0; idim < dims.length; idim++) {
+                        var mtdx = self.measurements[dims[idim]];
+                        mSet.add(new epiviz.measurements.Measurement(
+                            mtdx.id,
+                            mtdx.name,
+                            mtdx.type,
+                            mtdx.datasourceId,
+                            mtdx.datasourceGroup,
+                            mtdx.dataprovider,
+                            mtdx.formula,
+                            mtdx.defaultChartType,
+                            mtdx.annotation,
+                            mtdx.minValue,
+                            mtdx.maxValue,
+                            mtdx.metadata
+                        ));
+
+                        tMeasurements.push(mtdx);
+                    }
+                }
+                else if(currentChild.measurements != null && currentChild.measurements.length > 0 ){
+                    for (var idim = 0; idim < currentChild.measurements.length; idim++) {
+                        var mtdx = currentChild.measurements[idim];
+                        mSet.add(new epiviz.measurements.Measurement(
+                            mtdx.id,
+                            mtdx.name,
+                            mtdx.type,
+                            mtdx.datasourceId,
+                            mtdx.datasourceGroup,
+                            mtdx.dataprovider,
+                            mtdx.formula,
+                            mtdx.defaultChartType,
+                            mtdx.annotation,
+                            mtdx.minValue,
+                            mtdx.maxValue,
+                            mtdx.metadata
+                        ));
+
+                        tMeasurements.push(mtdx);
+                    }
+                }
+
+                var id = currentChild.plotId;
+                if(tMeasurements.length != 0) {
+                    currentChild.range = currentChild.range || self.range;
+                    currentChild.measurements = tMeasurements;
+                    var chartMeasMap = {};
+                    chartMeasMap[id] = mSet;
+
+                    var dataManagerElem = document.querySelector('epiviz-data-source[provider-id$="' + tMeasurements[0].dataprovider + '"]');
+
+                    if (dataManagerElem != null) {
+                        var dataManager = dataManagerElem.dataManager;
+
+                        dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
+                            //currentChild.data = data;
+                            var dataChartElem = pDom.querySelector('[plot-id$="' + id + '"]');
+                            dataChartElem.data = self.transformFunc(data);
+                        });
+                    }
+                }
+            },
+
+            attached: function() {
+
+                var self = this;
+
+                if(self.measurements) {
+                    var numChildren = self.getEffectiveChildren().length;
+                    for (var index = 0; index < numChildren; index++) {
+                        var currentChild = self.getEffectiveChildren()[index];
+
+                        if(currentChild.nodeName === "EPIVIZ-NAVIGATION") {
+
+                            var dataManagerElem = document.querySelector('epiviz-data-source');
+
+                            if (dataManagerElem != null) {
+                                var dataManager = dataManagerElem.dataManager;
+                                dataManager.getSeqInfos(function(data) {
+                                    var seqinfo = {};
+                                    data.forEach(function(s) {
+                                        seqinfo[s.seqName] = s;
+                                    });
+                                    currentChild.seqInfo = seqinfo;
+                                });
+                            }
+
+                            var navChildren = currentChild.getEffectiveChildren().length;
+                            for (var nindex = 0; nindex < navChildren; nindex++) {
+                                var currentNavChild = currentChild.getEffectiveChildren()[nindex];
+                                self._getElementData(currentNavChild, currentChild);
+                            }
+                        }
+                        else {
+                            self._getElementData(currentChild, Polymer.dom(self));
+                        }
+                    }
+                }
+
+                self._observer =
+                    Polymer.dom(self.$.chartEnv).observeNodes(function(info) {
+                        info.addedNodes.forEach(function(node) {
+                            // self._updateChart(node.plotId);
+                            self._getElementData(node, Polymer.dom(self));
+                        });
+                });
+            },
+
+            ready: function() {
+                this.scopeSubtree(this, true);
+                var self = this;
+
+                if(self.transformDataFunc) {
+                    self.transformFunc = new Function('return ' + self.transformDataFunc);
+                }
+                else {
+                    self.transformFunc = self.epivizToJSON;
+                }
+            }
+
+        });
+    </script>
+</dom-module>
