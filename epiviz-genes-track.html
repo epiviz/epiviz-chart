@@ -15,13 +15,20 @@
         <!--<style include="shared-colors"></style>-->
         <style>
             :host {
-                min-width: 900px;
+                min-width: 450px;
                 min-height: 90px;
+                width: auto;
+                height: auto;
                 display: inline-block;
                 border: 1px solid black;
-                padding: 20px;
+                padding: 10px;
                 resize: both;
                 overflow: auto;
+                /*-moz-transition:width 0.01s, height 0.01s;
+                -webkit-transition:width 0.01s, height 0.01s;
+                -o-transition:width 0.01s, height 0.01s;*/
+                transition:width 0.01s, height 0.01s;
+                margin: 10px;
             }
 
             /*::shadow .genes-track {}
@@ -215,6 +222,10 @@
                 self.plotId = self.plotId || self._generatePlotId();
                 self.scopeSubtree(self.$.chart, true);
                 self.config = new epiviz.Config(self.configSrc);
+
+                // self.listen(self.$.chart, 'iron-resize', 'onElementResize');
+
+                // this.addEventListener("transitionend","onElementResize");
             },
 
             _draw: function() {

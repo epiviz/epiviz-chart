@@ -9,6 +9,7 @@
 <link rel="import" href="chart-colors.html">
 
 <link rel="import" href="epiviz-chart-settings.html">
+<link rel="import" href="chart-data-behavior.html">
 
 <!--<link rel="import" href="epiviz-genes-track.html">-->
 
@@ -27,9 +28,11 @@
                 min-height: 400px;
                 display: inline-block;
                 border: 1px solid black;
-                padding: 20px;
+                padding: 10px;
                 resize: both;
                 overflow: auto;
+                transition:width 0.01s, height 0.01s;
+                margin: 10px;
             }
 
             .flex {
@@ -39,7 +42,7 @@
 
             .flexchild {
                 @apply(--layout-flex);
-                padding: 20px;
+                padding: 10px;
                 flex: 1 1 auto;
             }
 
@@ -91,7 +94,7 @@
         Polymer({
             /* Custom element html tag */
             is: 'epiviz-navigation',
-            behaviors: [epiviz.ChartBehavior, Polymer.IronResizableBehavior],
+            behaviors: [epiviz.ChartBehavior, epiviz.ChartDataBehavior, Polymer.IronResizableBehavior],
 
             /* Properties that can be defined on the element */
             properties: {
@@ -178,9 +181,9 @@
                     var currentChild = self.getEffectiveChildren()[index];
                     if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
                     currentChild.range = self.range;
-                    if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
-                        Polymer.dom(self).parentNode._getElementData(currentChild, Polymer.dom(self));  
-                    }
+                    // if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
+                        self._getElementData(currentChild, Polymer.dom(self));  
+                    // }
                 }
             },
 
@@ -200,11 +203,11 @@
                         field.suggestions(data);
                     }, gene);
                 }
-                // else {
-                //     if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
-                //         var result = Polymer.dom(self).parentNode._getElementSearch(currentChild, Polymer.dom(self));  
-                //     }
-                // }
+                else {
+                    // if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
+                        var result = self._getElementSearch(gene, currentChild, Polymer.dom(self));  
+                    // }
+                }
             },
 
             _selectGene: function(e) {

@@ -1,0 +1,173 @@
+<script>
+    epiviz.ChartDataBehavior = {
+
+        _getElementSearch: function(term, currentChild, pDom) {
+
+            var tMeasurements = currentChild.measurements;
+
+            var dataManagerElem = document.querySelector('epiviz-data-source[provider-id$="' + tMeasurements[0].dataprovider + '"]');
+
+            if (dataManagerElem != null) {
+                var dataManager = dataManagerElem.dataManager;
+
+                dataManager.search(function(data) {
+                    pDom.$.geneSearch.suggestions(data);
+                }, gene);
+            }
+        },
+
+        _getElementData: function(currentChild, pDom) {
+            var self = this;
+            var dims = currentChild.dims || currentChild.getAttribute("dim-s");
+
+            if (typeof(dims) == "string") {
+                dims = JSON.parse(dims);
+            }
+
+            // var id = self._generateChartId();
+            var mSet = new epiviz.measurements.MeasurementSet();
+            var tMeasurements = [];
+
+            if(dims != null && dims.length > 0) {
+                for (var idim = 0; idim < dims.length; idim++) {
+                    var mtdx = self.measurements[dims[idim]];
+                    mSet.add(new epiviz.measurements.Measurement(
+                        mtdx.id,
+                        mtdx.name,
+                        mtdx.type,
+                        mtdx.datasourceId,
+                        mtdx.datasourceGroup,
+                        mtdx.dataprovider,
+                        mtdx.formula,
+                        mtdx.defaultChartType,
+                        mtdx.annotation,
+                        mtdx.minValue,
+                        mtdx.maxValue,
+                        mtdx.metadata
+                    ));
+
+                    tMeasurements.push(mtdx);
+                }
+            }
+            else if(currentChild.measurements != null && currentChild.measurements.length > 0 ){
+                for (var idim = 0; idim < currentChild.measurements.length; idim++) {
+                    var mtdx = currentChild.measurements[idim];
+                    mSet.add(new epiviz.measurements.Measurement(
+                        mtdx.id,
+                        mtdx.name,
+                        mtdx.type,
+                        mtdx.datasourceId,
+                        mtdx.datasourceGroup,
+                        mtdx.dataprovider,
+                        mtdx.formula,
+                        mtdx.defaultChartType,
+                        mtdx.annotation,
+                        mtdx.minValue,
+                        mtdx.maxValue,
+                        mtdx.metadata
+                    ));
+
+                    tMeasurements.push(mtdx);
+                }
+            }
+
+            var id = currentChild.plotId;
+            if(tMeasurements.length != 0) {
+                currentChild.range = currentChild.range || self.range;
+                currentChild.measurements = tMeasurements;
+                var chartMeasMap = {};
+                chartMeasMap[id] = mSet;
+
+                var dataManagerElem = document.querySelector('epiviz-data-source[provider-id$="' + tMeasurements[0].dataprovider + '"]');
+
+                if (dataManagerElem != null) {
+                    var dataManager = dataManagerElem.dataManager;
+
+                    dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
+                        //currentChild.data = data;
+                        var dataChartElem = pDom.querySelector('[plot-id$="' + id + '"]');
+                        dataChartElem.data = self.transformFunc(data);
+                    });
+                }
+            }
+        },
+
+        _updateChart: function(cId) {
+
+            if(cId == undefined) {return;}
+            var self = this;
+            var currentChild = Polymer.dom(self).querySelector('[plot-id$="' + cId + '"]');
+            var dims = currentChild.dimS || currentChild.getAttribute("dim-s");
+            $('#' + cId).empty();
+
+            if (typeof(dims) == "string") {
+                dims = JSON.parse(dims);
+            }
+
+            var mSet = new epiviz.measurements.MeasurementSet();
+            var tMeasurements = [];
+
+            if(dims != null && dims.length > 0) {
+                for (var idim = 0; idim < dims.length; idim++) {
+                    var mtdx = self.measurements[dims[idim]];
+                    mSet.add(new epiviz.measurements.Measurement(
+                        mtdx.id,
+                        mtdx.name,
+                        mtdx.type,
+                        mtdx.datasourceId,
+                        mtdx.datasourceGroup,
+                        mtdx.dataprovider,
+                        mtdx.formula,
+                        mtdx.defaultChartType,
+                        mtdx.annotation,
+                        mtdx.minValue,
+                        mtdx.maxValue,
+                        mtdx.metadata
+                    ));
+                    tMeasurements.push(mtdx);
+                }
+            }
+            else if(currentChild.measurements != null && currentChild.measurements.length > 0 ){
+                for (var idim = 0; idim < currentChild.measurements.length; idim++) {
+                    var mtdx = currentChild.measurements[idim];
+                    mSet.add(new epiviz.measurements.Measurement(
+                        mtdx.id,
+                        mtdx.name,
+                        mtdx.type,
+                        mtdx.datasourceId,
+                        mtdx.datasourceGroup,
+                        mtdx.dataprovider,
+                        mtdx.formula,
+                        mtdx.defaultChartType,
+                        mtdx.annotation,
+                        mtdx.minValue,
+                        mtdx.maxValue,
+                        mtdx.metadata
+                    ));
+
+                    tMeasurements.push(mtdx);
+                }
+            }
+
+            if(tMeasurements.length != 0) {
+                currentChild.range = currentChild.range || self.range;
+                currentChild.measurements = tMeasurements;
+                var chartMeasMap = {};
+                chartMeasMap[cId] = mSet;
+
+                var dataManagerElem = document.querySelector('epiviz-data-source[provider-id$="' + tMeasurements[0].dataprovider + '"]');
+
+                if (dataManagerElem != null) {
+                    var dataManager = dataManagerElem.dataManager;
+
+                    dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
+                        //currentChild.data = data;
+                        var dataChartElem = Polymer.dom(self).querySelector('[plot-id$="' + id + '"]');
+
+                        dataChartElem.data = self.transformFunc(data);
+                    });
+                }
+            }
+        }
+    }
+</script>

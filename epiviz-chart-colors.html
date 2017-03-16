@@ -58,7 +58,7 @@
                                     <template is="dom-if" if="[[_isIndexGroup(index, 0)]]">
                                         <div class="color-item">
                                             <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
-                                            <iron-label for="{{item}}">{{item}}</iron-label>
+                                            <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
                                         </div>
                                     </template>
                                 </template>
@@ -68,7 +68,7 @@
                                     <template is="dom-if" if="[[_isIndexGroup(index, 1)]]">
                                         <div class="color-item">                                        
                                             <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
-                                            <iron-label for="{{item}}">{{item}}</iron-label>
+                                            <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
                                         </div>
                                     </template>
                                 </template>
@@ -78,7 +78,7 @@
                                     <template is="dom-if" if="[[_isIndexGroup(index, 2)]]">
                                         <div class="color-item">
                                             <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
-                                            <iron-label for="{{item}}">{{item}}</iron-label>
+                                            <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
                                         </div>
                                     </template>
                                 </template>
