@@ -3,9 +3,7 @@
 
         _getElementSearch: function(term, currentChild, pDom) {
 
-            var tMeasurements = currentChild.measurements;
-
-            var dataManagerElem = document.querySelector('epiviz-data-source[provider-id$="' + tMeasurements[0].dataprovider + '"]');
+            var dataManagerElem = document.querySelector('epiviz-data-source');
 
             if (dataManagerElem != null) {
                 var dataManager = dataManagerElem.dataManager;
@@ -13,6 +11,22 @@
                 dataManager.search(function(data) {
                     pDom.$.geneSearch.suggestions(data);
                 }, gene);
+            }
+        },
+
+        _getElementSeqInfo: function(currentChild, pDom) {
+
+            var dataManagerElem = document.querySelector('epiviz-data-source');
+
+            if (dataManagerElem != null) {
+                var dataManager = dataManagerElem.dataManager;
+                dataManager.getSeqInfos(function(data) {
+                    var seqinfo = {};
+                    data.forEach(function(s) {
+                        seqinfo[s.seqName] = s;
+                    });
+                    currentChild.seqInfo = seqinfo;
+                });
             }
         },
 

@@ -206,18 +206,7 @@
 
                         if(currentChild.nodeName === "EPIVIZ-NAVIGATION") {
 
-                            var dataManagerElem = document.querySelector('epiviz-data-source');
-
-                            if (dataManagerElem != null) {
-                                var dataManager = dataManagerElem.dataManager;
-                                dataManager.getSeqInfos(function(data) {
-                                    var seqinfo = {};
-                                    data.forEach(function(s) {
-                                        seqinfo[s.seqName] = s;
-                                    });
-                                    currentChild.seqInfo = seqinfo;
-                                });
-                            }
+                            self._getElementSeqInfo(currentChild, Polymer.dom(self));
 
                             var navChildren = currentChild.getEffectiveChildren().length;
                             for (var nindex = 0; nindex < navChildren; nindex++) {
@@ -235,7 +224,19 @@
                     Polymer.dom(self.$.chartEnv).observeNodes(function(info) {
                         info.addedNodes.forEach(function(node) {
                             // self._updateChart(node.plotId);
-                            self._getElementData(node, Polymer.dom(self));
+                            if(node.nodeName === "EPIVIZ-NAVIGATION") {
+                                    self._getElementSeqInfo(node, Polymer.dom(self));
+
+                                    var navChildren = node.getEffectiveChildren().length;
+                                    for (var nindex = 0; nindex < navChildren; nindex++) {
+                                        var currentNavChild = node.getEffectiveChildren()[nindex];
+                                        self._getElementData(currentNavChild, node);
+                                    }
+        
+                            }
+                            else {
+                                self._getElementData(node, Polymer.dom(self));
+                            }
                         });
                     });
             },
