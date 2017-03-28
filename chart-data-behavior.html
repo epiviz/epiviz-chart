@@ -111,7 +111,7 @@
 
         _getElementData: function(currentChild, pDom, measurements) {
             var self = this;
-            var dims = currentChild.dims || currentChild.getAttribute("dim-s");
+            var dims = currentChild.dimS || currentChild.getAttribute("dim-s");
 
             if (typeof(dims) == "string") {
                 dims = JSON.parse(dims);

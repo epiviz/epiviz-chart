@@ -68,9 +68,10 @@
         </style>
 
         <!-- local DOM goes here -->
-        
-        <button class="collapse-header" on-click="toggleHeader">
-        </button>
+        <div>
+            <button class="collapse-header" on-click="toggleHeader">Collapse</button>
+            <button on-click="cloneNavigation">Clone</button>
+        </div>
         <template restamp="true" is="dom-if" if="{{!collapsed}}">
             <!--<epiviz-genes-track range="{{range}}" use-default-data-provider="true"></epiviz-genes-track>-->
             <!--<epiviz-ideogram-track chromosome="{{chr}}" start="{{start}}" end="{{end}}"></epiviz-ideogram-track>-->
@@ -105,7 +106,7 @@
                     </div>
                 </div>
                 <content id="chartNav" select=".charts"></content>
-                </template>
+            </template>
         </iron-collapse>
         
     </template>
@@ -137,7 +138,7 @@
                 range: {
                     type: Object,
                     // notify: true,
-		            // computed: 'getGenomicRange(chr, start, end)',
+		            computed: 'getGenomicRange(chr, start, end)',
                     observer: '_rangeUpdate'
                 },
                   
@@ -163,6 +164,10 @@
                     type: Boolean,
                     notify: true,
                     value: false
+                },
+
+                initializeGeneEnvironments: {
+                    type: Array
                 },
 
                 configSrc: {
@@ -340,6 +345,32 @@
                     if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
                         self._getElementData(currentChild, self, self.parentNode.measurements);  
                     }
+                }
+            },
+
+
+            cloneNavigation: function() {
+                var self = this;
+
+                var navElem = document.createElement('epiviz-navigation');
+                navElem.chr = self.chr;
+                navElem.start = self.start;
+                navElem.end = self.end;
+                navElem.className = "charts";
+
+                Polymer.dom(self.parentNode).appendChild(navElem);
+
+                var numChildren = self.getEffectiveChildren().length;
+                for (var index = 0; index < numChildren; index++) {
+                    var currentChild = self.getEffectiveChildren()[index];
+                    var childElem = document.createElement(currentChild.nodeName);
+                    childElem.className = "charts";
+                    childElem.dimS = currentChild.dimS;
+                    childElem.measurements = currentChild.measurements;
+                    childElem.chartSettings = currentChild.chartSettings;
+                    childElem.chartColors = currentChild.chartColors;
+
+                    Polymer.dom(navElem).appendChild(childElem);
                 }
             },
 
