@@ -55,7 +55,7 @@
                         <div class="container flex">
                             <div class="flexchild">
                                 <template is="dom-repeat" items="{{labels}}">
-                                    <template is="dom-if" if="[[_isIndexGroup(index, 0)]]">
+                                    <template restamp="true" is="dom-if" if="[[_isIndexGroup(index, 0)]]">
                                         <div class="color-item">
                                             <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
                                             <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
@@ -65,7 +65,7 @@
                             </div>
                             <div class="flexchild">
                                 <template is="dom-repeat" items="{{labels}}">
-                                    <template is="dom-if" if="[[_isIndexGroup(index, 1)]]">
+                                    <template restamp="true" is="dom-if" if="[[_isIndexGroup(index, 1)]]">
                                         <div class="color-item">                                        
                                             <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
                                             <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
@@ -75,7 +75,7 @@
                             </div>
                             <div class="flexchild">
                                 <template is="dom-repeat" items="{{labels}}">
-                                    <template is="dom-if" if="[[_isIndexGroup(index, 2)]]">
+                                    <template restamp="true" is="dom-if" if="[[_isIndexGroup(index, 2)]]">
                                         <div class="color-item">
                                             <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
                                             <iron-label for="{{_getId(item)}}">{{item}}</iron-label>

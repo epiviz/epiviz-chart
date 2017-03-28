@@ -160,6 +160,11 @@
 
                 // listen to events 
                 var parent = self.parentNode;
+                
+                if(parent.nodeName === "IRON-COLLAPSE") {
+                    parent = parent.parentNode;
+                }
+
                 parent.addEventListener('hoverAllCharts', function(e) {
                     self.hover(e.detail.data);
                 }.bind(self));
@@ -167,6 +172,16 @@
                 parent.addEventListener('unHoverAllCharts', function(e) {
                     self.unHover();
                 }.bind(self));
+
+                // if(parent.nodeName === "EPIVIZ-NAVIGATION") {
+                //     parent.addEventListener('hover', function(e) {
+                //         self.hover(e.detail.data);
+                //     }.bind(self));
+
+                //     parent.addEventListener('unHover', function(e) {
+                //         self.unHover();
+                //     }.bind(self));
+                // }
 
                 self._measurementsChanged();
                 self._dataChanged();
@@ -223,7 +238,7 @@
                 var self = this;
                 self.plotId = self.plotId || self._generatePlotId();
                 // style observer on charts
-                self.scopeSubtree(self.$.chart, true);
+                // self.scopeSubtree(self.$.chart, true);
                 self.config = new epiviz.Config(self.configSrc);
             },
             

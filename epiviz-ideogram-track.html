@@ -3,23 +3,21 @@
 
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
 
-<script src="../cyto-chromosome-vis/cyto-chromosome.js"></script>
+<script src="src/cyto-chromosome-vis/cyto-chromosome.js"></script>
 
 <dom-module id="epiviz-ideogram-track">
-
     <template>
         <style>
         :host {
-            display: block;
-        }
-
-        ::shadow #chart {
-            width: 800px;
+            display: inline-block;
+            min-width: 400px;
         }
         </style>
 
         <!-- local DOM goes here -->
-        <div id="chart"></div>
+        <div id="chart">
+            <div id="{{plotId}}"></div>
+        </div>
     
     </template>
 
@@ -76,8 +74,10 @@
 
             _rangeChanged: function() {
 
-                if (this.chromosome != null && this.start != null && this.end != null && this.chromosomeFactory != null) {
-                    this._draw();
+                if (this.chromosome != null && this.start != null && this.end != null) {
+                    if(this.plotId) {
+                        this._draw();
+                    }
                 }
             },
 
@@ -95,18 +95,23 @@
             /* callback function after the element is initialized */
             ready: function() {
                 var self = this;
-                // style observer on charts
-                self.scopeSubtree(self.$.chart, true);
 
                 self.plotId = self.plotId || self._generatePlotId();
+                var parent = self.parentNode;
+                
+                if(parent.nodeName === "IRON-COLLAPSE") {
+                    parent = parent.parentNode;
+                }
 
-                var chartContainer = document.createElement('div');
-                chartContainer.id = self.plotId;
+                parent.addEventListener('hoverAllCharts', function(e) {
+                    self.chart.hover(e.detail.data);
+                }.bind(self));
 
-                Polymer.dom(this.$.chart).appendChild(chartContainer);
+                parent.addEventListener('unHoverAllCharts', function(e) {
+                    self.chart.unHover();
+                }.bind(self));
 
-                self.chromosomeFactory = cyto_chr.chromosome;
-
+                self.chromosomeFactory = cyto_chr;
                 self._rangeChanged();
             },
 
@@ -116,30 +121,33 @@
 
                 self.segment = self.chromosome.replace("chr", "");
 
-                this.chart = self.chromosomeFactory()
+                self.chart = self.chromosomeFactory.chromosome()
                     .segment(self.segment)
-                    //.resolution("850")
+                    // .resolution("850")
                     // .useRelative(false)
                     .showAxis(true)
-                    .target('#' + self.plotId)
-                    //.height(100)
-                    .width(800)
+                    .target(self.$$("#" + self.plotId))
+                    // .height(100)
+                    .width(300)
                     .render();
 
-                var svgElem = this.$$("svg");
+                // TODO: use callback instead after the chart is rendered
+                setTimeout(function(){ 
+                    self.chart.on("selectorhover", function(e) {
+                        self.fire('hover', {
+                            data: self.chartObject
+                        });
+                    }.bind(self));
+                    
+                    self.chart.on("selectorunhover", function(e) {
+                        self.fire('unHover', {
+                            data: null
+                        });
+                    }.bind(self));
 
-                this.chart.svgTarget = d3.select(svgElem);
-                this.chart.newSelector(this.start, this.end);
-                this.chart.on("selectorChange", function(e) {
-                    self.fire('hover', {
-                        id: self.plotId,
-                        data: e
-                    });
-                    self.fire('rangeChanged', {
-                        id: self.plotId,
-                        data: e
-                    });
-                });
+                    self.chart.newSelector(self.start, self.end);
+                    self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined);
+                }, 1000);
             }
         });
     </script>

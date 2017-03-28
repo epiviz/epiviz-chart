@@ -1,6 +1,85 @@
 <script>
     epiviz.ChartDataBehavior = {
 
+        properties: {
+            transformData: {
+                type: Boolean,
+                notify: true,
+                value: false
+            },
+
+            transformDataFunc: {
+                type: String,
+                notify: true
+            }
+        },
+
+        //
+        //  output data format 
+        //  {
+        //      columns: Collection <Object> {measurement-id: <Epiviz measurement>}
+        //      values : Array  [measurement-id: Val <Integer>, row: rowInfo]
+        //  }
+        // TODO: json format
+        epivizToJSON: function(data) {
+
+            if(!this.transformData) {
+                return data;
+            }
+
+            var fromDataMeasurements = [];
+            var range = this.range;
+
+            var firstGlobalIndex = data.firstSeries().globalStartIndex();
+            var lastGlobalIndex = data.firstSeries().globalEndIndex();
+
+            data.foreach(function(measurement, series) {
+                fromDataMeasurements.push(measurement);
+                var firstIndex = series.globalStartIndex();
+                var lastIndex = series.globalEndIndex();
+                if (firstIndex > firstGlobalIndex) { firstGlobalIndex = firstIndex; }
+                if (lastIndex < lastGlobalIndex) { lastGlobalIndex = lastIndex; }
+            });
+
+            var nItems = lastGlobalIndex - firstGlobalIndex;
+
+            var i, index;
+            var grid = {};
+            grid.measurements = fromDataMeasurements;
+            grid.columns = {};
+
+            grid.measurements.forEach(function(m) {
+                grid.columns[m.datasourceId() + "-" + m.id()] = m;
+            });
+
+            grid.values = [];
+            var nSeries = fromDataMeasurements.length;
+            for (i = 0; i < nItems; ++i) {
+                index = i + firstGlobalIndex;
+                var valArray = {};
+                
+                var row = {};
+                var rowData = data.getSeries(fromDataMeasurements[0]).getRowByGlobalIndex(index);
+                row.start = rowData.start();
+                row.end = rowData.end();
+                row.metadata = rowData.rowMetadata();
+                row.strand = rowData.strand();
+                row.index = rowData.index();
+                row.globalIndex = rowData.globalIndex();
+                row.id = rowData.id();
+                row.seqName = rowData.seqName();
+                valArray.row = row;
+
+                grid.measurements.forEach(function(m) {
+                    var cellX = data.getSeries(m).getByGlobalIndex(index);
+                    valArray[m.datasourceId() + "-" + m.id()] = cellX.value;
+                });
+
+                grid.values.push(valArray);
+            }
+            return grid;
+        },
+
         _getElementSearch: function(gene, currentChild, pDom) {
 
             var dataManagerElem = document.querySelector('epiviz-data-source');
@@ -30,7 +109,7 @@
             }
         },
 
-        _getElementData: function(currentChild, pDom) {
+        _getElementData: function(currentChild, pDom, measurements) {
             var self = this;
             var dims = currentChild.dims || currentChild.getAttribute("dim-s");
 
@@ -44,7 +123,7 @@
 
             if(dims != null && dims.length > 0) {
                 for (var idim = 0; idim < dims.length; idim++) {
-                    var mtdx = pDom.measurements[dims[idim]];
+                    var mtdx = measurements[dims[idim]];
                     mSet.add(new epiviz.measurements.Measurement(
                         mtdx.id,
                         mtdx.name,
@@ -99,8 +178,10 @@
 
                     dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
                         //currentChild.data = data;
-                        var dataChartElem = pDom.querySelector('[plot-id$="' + id + '"]');
-                        dataChartElem.data = pDom.transformFunc(data);
+                        var dataChartElem = pDom.querySelector('[plot-id$="' + id + '"]') || Polymer.dom(pDom).querySelector('[plot-id$="' + id + '"]');
+                        if(dataChartElem) {
+                            dataChartElem.data = pDom.transformFunc(data);
+                        }
                     });
                 }
             }

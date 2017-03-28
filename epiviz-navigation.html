@@ -11,7 +11,8 @@
 <link rel="import" href="epiviz-chart-settings.html">
 <link rel="import" href="chart-data-behavior.html">
 
-<!--<link rel="import" href="epiviz-genes-track.html">-->
+<link rel="import" href="epiviz-genes-track.html">
+<link rel="import" href="epiviz-ideogram-track.html">
 
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-input/paper-input.html">
@@ -24,8 +25,6 @@
         <style include="shared-settings"></style>
         <style>
             :host {
-                min-width: 400px;
-                min-height: 400px;
                 display: inline-block;
                 border: 1px solid black;
                 padding: 10px;
@@ -35,6 +34,11 @@
                 margin: 10px;
                 width: auto;
                 height: auto;
+            }
+
+            .container {
+                width: 600px;
+                display: inline;
             }
 
             .flex {
@@ -64,32 +68,46 @@
         </style>
 
         <!-- local DOM goes here -->
-        <div class="container flex">
-            <div class="flexchild">
-                <paper-input value="{{_strRange]]" label="Chromosome Location" on-change="_updateStrRange"></paper-input>
-            </div>
-            <div class="flexchild">
-                <paper-autocomplete id="geneSearch" label="Search Gene/Probe" remote-source="true" min-length="2" 
-                    on-autocomplete-selected="_selectGene"
-                    on-autocomplete-change="_searchGene"
-                    value-property="gene"
-                    text-property="gene">
-                    <template autocomplete-custom-template>
-                        <paper-item on-tap="_onSelect" id$="[[_getSuggestionId(index)]]" role="option" aria-selected="false">
-                        <div>[[item.gene]] [[item.seqName]]: [[item.start]] - [[item.end]]</div>
-                        <paper-ripple></paper-ripple>
-                        </paper-item>
-                    </template>
-                </paper-autocomplete>
-            </div>
-            <div class="flexchild">
-                <paper-icon-button title="move left" icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
-                <paper-icon-button title="move right" icon="icons:chevron-right" on-click="moveRight"></paper-icon-button>
-                <paper-icon-button title="zoom out" icon="icons:zoom-out" on-click="zoomOut"></paper-icon-button>
-                <paper-icon-button title="zoom in" icon="icons:zoom-in" on-click="zoomIn"></paper-icon-button>
-            </div>
-        </div>
-        <content id="chartNav" select=".charts"></content>
+        
+        <button class="collapse-header" on-click="toggleHeader">
+        </button>
+        <template restamp="true" is="dom-if" if="{{!collapsed}}">
+            <!--<epiviz-genes-track range="{{range}}" use-default-data-provider="true"></epiviz-genes-track>-->
+            <!--<epiviz-ideogram-track chromosome="{{chr}}" start="{{start}}" end="{{end}}"></epiviz-ideogram-track>-->
+            <epiviz-ideogram-track id="navTrack" chromosome="{{chr}}" start="{{start}}" end="{{end}}"></epiviz-ideogram-track>
+        </template>
+        
+        <iron-collapse id="navHeader">
+            <template restamp="true" is="dom-if" if="{{collapsed}}">
+                <div class="container flex">
+                    <div class="flexchild">
+                        <paper-icon-button title="move left" icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
+                        <paper-icon-button title="move right" icon="icons:chevron-right" on-click="moveRight"></paper-icon-button>
+                        <paper-icon-button title="zoom out" icon="icons:zoom-out" on-click="zoomOut"></paper-icon-button>
+                        <paper-icon-button title="zoom in" icon="icons:zoom-in" on-click="zoomIn"></paper-icon-button>
+                    </div>
+                    <div class="flexchild">
+                        <paper-input value="{{_strRange]]" label="Chromosome Location" on-change="_updateStrRange"></paper-input>
+                    </div>
+                    <div class="flexchild">
+                        <paper-autocomplete id="geneSearch" label="Search Gene/Probe" remote-source="true" min-length="2" 
+                            on-autocomplete-selected="_selectGene"
+                            on-autocomplete-change="_searchGene"
+                            value-property="gene"
+                            text-property="gene">
+                            <template autocomplete-custom-template>
+                                <paper-item on-tap="_onSelect" id$="[[_getSuggestionId(index)]]" role="option" aria-selected="false">
+                                <div>[[item.gene]] [[item.seqName]]: [[item.start]] - [[item.end]]</div>
+                                <paper-ripple></paper-ripple>
+                                </paper-item>
+                            </template>
+                        </paper-autocomplete>
+                    </div>
+                </div>
+                <content id="chartNav" select=".charts"></content>
+                </template>
+        </iron-collapse>
+        
     </template>
 
     <script>
@@ -102,24 +120,24 @@
             properties: {
 
                 chr: {
-                    type: String,
-                    notify: true
+                    type: String
+                    // notify: true
                 },
 
                 start: {
-                    type: Number,
-                    notify: true
+                    type: Number
+                    // notify: true
                 },
 
                 end: {
                     type: Number,
-                    notify: true
+                    // notify: true
                 },
 
                 range: {
                     type: Object,
-                    notify: true,
-		            computed: 'getGenomicRange(chr, start, end)',
+                    // notify: true,
+		            // computed: 'getGenomicRange(chr, start, end)',
                     observer: '_rangeUpdate'
                 },
                   
@@ -139,6 +157,12 @@
                     type: Number,
                     notify: true,
                     value: 0.2
+                },
+
+                collapsed: {
+                    type: Boolean,
+                    notify: true,
+                    value: false
                 },
 
                 configSrc: {
@@ -162,6 +186,14 @@
             listeners: {
                 'hover': 'onHover',
                 'unHover': 'onUnhover'
+            },
+
+            toggleHeader: function(event) {
+                this.$.navHeader.toggle();
+                this.collapsed = !this.collapsed;
+                event.preventDefault();
+                event.stopPropagation();
+                // this._getData();
             },
 
             onHover: function(e) {
@@ -194,7 +226,7 @@
                     if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
                     currentChild.range = self.range;
                     if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
-                        self._getElementData(currentChild, Polymer.dom(self).parentNode);  
+                        self._getElementData(currentChild, self, self.parentNode.measurements);  
                     }
                 }
             },
@@ -207,7 +239,6 @@
                 if (self.useDefaultDataProvider) {
 
                     self.range = self.range || new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000);
-
                     var dataProviderFactory = new epiviz.data.DataProviderFactory(new epiviz.Config(self.configSrc));
                     var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);
 
@@ -250,6 +281,8 @@
                 
                 this.start = Math.max(0, newStart);
                 this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+
+                this.range = this.getGenomicRange(this.chr, this.start, this.end);
             },
 
             moveRight: function(e) {
@@ -259,6 +292,8 @@
 
                 this.start = Math.max(0, newStart);
                 this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+
+                this.range = this.getGenomicRange(this.chr, this.start, this.end);
             },
 
             zoomIn: function(e) {
@@ -270,6 +305,8 @@
 
                 this.start = Math.max(0, newStart);
                 this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+
+                this.range = this.getGenomicRange(this.chr, this.start, this.end);
             },
 
             zoomOut: function(e) {
@@ -281,6 +318,8 @@
 
                 this.start = Math.max(0, newStart);
                 this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+
+                this.range = this.getGenomicRange(this.chr, this.start, this.end);
             },
 
             getStrRange: function(chr, start, end) {
@@ -289,6 +328,19 @@
 
             getGenomicRange: function(chr, start, end) {
                     return new epiviz.datatypes.GenomicRange(chr, start, end-start);
+            },
+
+            _getData: function() {
+                var self = this;
+                var numChildren = self.getEffectiveChildren().length;
+                for (var index = 0; index < numChildren; index++) {
+                    var currentChild = self.getEffectiveChildren()[index];
+                    if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
+                    currentChild.range = self.range;
+                    if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
+                        self._getElementData(currentChild, self, self.parentNode.measurements);  
+                    }
+                }
             },
 
             // Initialization that should happen or use FactoryImpl 
@@ -300,24 +352,45 @@
                 var self = this;
 
                 // listen to events 
-                // var parent = self.parentNode;
-                // parent.addEventListener('hoverAllCharts', function(e) {
-                //     // self.hover(e.detail.data);
-                //     self.fire('hover', {
-                //         data: e.detail.data,
-                //         bubbles: false
-                //     });
-                // }.bind(self));
+                var parent = self.parentNode;
+                parent.addEventListener('hoverAllCharts', function(e) {
+                    if(!self.collapsed) {
+                        if(e.detail.data.overlapsWith(self.$$("#navTrack").chartObject)) {
+                            self.$$("#navTrack").hover();
+                        }
+                    }
+                    else {
+                        var numChildren = self.getEffectiveChildren().length;
+                        for (var index = 0; index < numChildren; index++) {
+                            var currentChild = self.getEffectiveChildren()[index];
+                            currentChild.hover(e.detail.data);
+                        }
+                    }
+                }.bind(self));
 
-                // parent.addEventListener('unHoverAllCharts', function(e) {
-                //     // self.unHover();
-                //     self.fire('unHover', {
-                //         data: e.detail.data,
-                //         bubbles:false
-                //     });
-                // }.bind(self));
+                parent.addEventListener('unHoverAllCharts', function(e) {
+                    if(!self.collapsed) {
+                        self.$$("#navTrack").unHover();
+                    }
+                    else {
+                        var numChildren = self.getEffectiveChildren().length;
+                        for (var index = 0; index < numChildren; index++) {
+                            var currentChild = self.getEffectiveChildren()[index];
+                            currentChild.unHover();
+                        }
+                    }
+                }.bind(self));
 
-                self._rangeUpdate();
+                // if(self.collapsed) {
+                    var numChildren = self.getEffectiveChildren().length;
+                    for (var index = 0; index < numChildren; index++) {
+                        var currentChild = self.getEffectiveChildren()[index];
+                        currentChild.range = self.range;
+                        self._getElementData(currentChild, self, self.parentNode.measurements);
+                    }
+                // }
+
+                // self._rangeUpdate();
 
                 if (self.useDefaultDataProvider) {
 
@@ -359,6 +432,15 @@
                 // self.scopeSubtree(self.$.chart, true);
 
                 self.config = new epiviz.Config(self.configSrc);
+
+                self.range = self.getGenomicRange(self.chr, self.start, self.end);
+
+                if(self.transformDataFunc) {
+                    self.transformFunc = new Function('return ' + self.transformDataFunc);
+                }
+                else {
+                    self.transformFunc = self.epivizToJSON;
+                }
             },
 
             _createChart: function() {

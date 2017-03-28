@@ -109,7 +109,7 @@
                 // if(width < self.chartType.defaultWidth()) { width = self.chartType.defaultWidth()}
                 this.chart._properties.width = self.offsetWidth - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
                 this.chart._properties.height = self.offsetHeight - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
-                this._draw();
+                self._dataChanged();
             }
         },
 
@@ -199,7 +199,6 @@
 
                     self.chart = self.chartType.createNew(self.plotId, $('#' + self.plotId), self.chartProperties);
 
-                    // TODO: set colors and settings at chart creation
                     if(self.chartSettings != null || self.chartSettings != undefined) {
                         self.chart.setCustomSettingsValues(self.chartSettings);
                     }

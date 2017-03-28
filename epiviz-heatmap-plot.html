@@ -171,6 +171,11 @@
 
                 // listen to events 
                 var parent = self.parentNode;
+
+                if(parent.nodeName === "IRON-COLLAPSE") {
+                    parent = parent.parentNode;
+                }
+
                 parent.addEventListener('hoverAllCharts', function(e) {
                     self.hover(e.detail.data);
                 }.bind(self));
@@ -231,7 +236,7 @@
                 var self = this;
                 self.plotId = self.plotId || self._generatePlotId();
                 // style observer on charts
-                self.scopeSubtree(self.$.chart, true);
+                // self.scopeSubtree(self.$.chart, true);
                 self.config = new epiviz.Config(self.configSrc);
                 epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory.initialize(self.config);
             },

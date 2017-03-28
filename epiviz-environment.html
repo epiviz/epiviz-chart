@@ -62,17 +62,6 @@
                     type: Object,
                     notify: true,
 		            computed: 'getGenomicRange(chr, start, end)'
-                },
-
-                transformData: {
-                    type: Boolean,
-                    notify: true,
-                    value: false
-                },
-
-                transformDataFunc: {
-                    type: String,
-                    notify: true
                 }
             },
 
@@ -153,74 +142,8 @@
                     if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
                     currentChild.range = self.range;
                     // self._updateChart(currentChild.plotId);  
-                    self._getElementData(currentChild, self);
+                    self._getElementData(currentChild, self, self.measurements);
                 }
-            },
-
-            //
-            //  output data format 
-            //  {
-            //      columns: Collection <Object> {measurement-id: <Epiviz measurement>}
-            //      values : Array  [measurement-id: Val <Integer>, row: rowInfo]
-            //  }
-            // TODO: json format
-            epivizToJSON: function(data) {
-
-                if(!this.transformData) {
-                    return data;
-                }
-
-                var fromDataMeasurements = [];
-                var range = this.range;
-
-                var firstGlobalIndex = data.firstSeries().globalStartIndex();
-                var lastGlobalIndex = data.firstSeries().globalEndIndex();
-
-                data.foreach(function(measurement, series) {
-                    fromDataMeasurements.push(measurement);
-                    var firstIndex = series.globalStartIndex();
-                    var lastIndex = series.globalEndIndex();
-                    if (firstIndex > firstGlobalIndex) { firstGlobalIndex = firstIndex; }
-                    if (lastIndex < lastGlobalIndex) { lastGlobalIndex = lastIndex; }
-                });
-
-                var nItems = lastGlobalIndex - firstGlobalIndex;
-
-                var i, index;
-                var grid = {};
-                grid.measurements = fromDataMeasurements;
-                grid.columns = {};
-
-                grid.measurements.forEach(function(m) {
-                    grid.columns[m.datasourceId() + "-" + m.id()] = m;
-                });
-
-                grid.values = [];
-                var nSeries = fromDataMeasurements.length;
-                for (i = 0; i < nItems; ++i) {
-                    index = i + firstGlobalIndex;
-                    var valArray = {};
-                    
-                    var row = {};
-                    var rowData = data.getSeries(fromDataMeasurements[0]).getRowByGlobalIndex(index);
-                    row.start = rowData.start();
-                    row.end = rowData.end();
-                    row.metadata = rowData.rowMetadata();
-                    row.strand = rowData.strand();
-                    row.index = rowData.index();
-                    row.globalIndex = rowData.globalIndex();
-                    row.id = rowData.id();
-                    row.seqName = rowData.seqName();
-                    valArray.row = row;
-
-                    grid.measurements.forEach(function(m) {
-                        var cellX = data.getSeries(m).getByGlobalIndex(index);
-                        valArray[m.datasourceId() + "-" + m.id()] = cellX.value;
-                    });
-
-                    grid.values.push(valArray);
-                }
-                return grid;
             },
 
             attached: function() {
@@ -236,14 +159,16 @@
 
                             self._getElementSeqInfo(currentChild, self);
 
-                            var navChildren = currentChild.getEffectiveChildren().length;
-                            for (var nindex = 0; nindex < navChildren; nindex++) {
-                                var currentNavChild = currentChild.getEffectiveChildren()[nindex];
-                                self._getElementData(currentNavChild, self);
+                            if(currentChild.collapsed) {
+                                var navChildren = currentChild.getEffectiveChildren().length;
+                                for (var nindex = 0; nindex < navChildren; nindex++) {
+                                    var currentNavChild = currentChild.getEffectiveChildren()[nindex];
+                                    self._getElementData(currentNavChild, self, self.measurements);
+                                }
                             }
                         }
                         else {
-                            self._getElementData(currentChild, self);
+                            self._getElementData(currentChild, self, self.measurements);
                         }
                     }
                 }
@@ -253,24 +178,25 @@
                         info.addedNodes.forEach(function(node) {
                             // self._updateChart(node.plotId);
                             if(node.nodeName === "EPIVIZ-NAVIGATION") {
-                                    self._getElementSeqInfo(node, Polymer.dom(self));
+                            //         self._getElementSeqInfo(node, Polymer.dom(self));
 
-                                    var navChildren = node.getEffectiveChildren().length;
-                                    for (var nindex = 0; nindex < navChildren; nindex++) {
-                                        var currentNavChild = node.getEffectiveChildren()[nindex];
-                                        self._getElementData(currentNavChild, self);
-                                    }
-        
+                            //         if(node.collapsed) {
+                            //             var navChildren = node.getEffectiveChildren().length;
+                            //             for (var nindex = 0; nindex < navChildren; nindex++) {
+                            //                 var currentNavChild = node.getEffectiveChildren()[nindex];
+                            //                 self._getElementData(currentNavChild, self, self.measurements);
+                            //             }
+                            //         }
                             }
                             else {
-                                self._getElementData(node, self);
+                                self._getElementData(node, self, self.measurements);
                             }
                         });
                     });
             },
 
             ready: function() {
-                this.scopeSubtree(this, true);
+                // this.scopeSubtree(this, true);
                 var self = this;
 
                 if(self.transformDataFunc) {

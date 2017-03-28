@@ -93,27 +93,27 @@
         <div id="settings">
             <!--no-overlap horizontal-align="left" vertical-align="top"-->
             <paper-dialog id="modal" modal>
-                <h2>Chart Settings</h2>
+                <h2>Title and Margins</h2>
                 <form is="iron-form" id="formSettings">
                     <paper-dialog-scrollable id="scrollContent">
-                        <button class="collapse-header" on-click="toggleCommon">Chart Settings</button>
+                        <button class="collapse-header" on-click="toggleCommon">Chart Title and Margins</button>
                         <iron-collapse id="commonSettings">
                             <div class="collapse-content">
                                 <div class="container flex">
                                     <div class="flexchild">
                                         <template is="dom-repeat" items="{{defs}}" filter="_isCommonSetting">
-                                            <template is="dom-if" if="[[_isIndex(index, 'even')]]">
-                                                <template is="dom-if" if="[[_settingType(item.type, 'boolean')]]">
+                                            <template restamp="true" is="dom-if" if="[[_isIndex(index, 'even')]]">
+                                                <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'boolean')]]">
                                                     <paper-toggle-button name="{{item.id}}" label="{{item.label}}" checked="[[_getValue(item.id)]]"></paper-toggle-button>
                                                     <iron-label for="{{item.id}}">{{input.label}}</iron-label>
                                                 </template>
-                                                <template is="dom-if" if="[[_settingType(item.type, 'string')]]">
+                                                <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'string')]]">
                                                     <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
                                                 </template>
-                                                <template is="dom-if" if="[[_settingType(item.type, 'number')]]">
+                                                <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'number')]]">
                                                     <paper-input name="{{item.id}}" type="number" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
                                                 </template>
-                                                <template is="dom-if" if="[[_settingType(item.type, 'array')]]">
+                                                <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'array')]]">
                                                     <paper-dropdown-input name="{{item.id}}" value="[[_getValue(item.id)]]" label="{{item.label}}" items="{{item.possibleValues}}"></paper-dropdown-input>
                                                 </template>
                                             </template>
@@ -121,18 +121,18 @@
                                     </div>
                                     <div class="flexchild">
                                         <template is="dom-repeat" items="{{defs}}" filter="_isCommonSetting">
-                                            <template is="dom-if" if="[[_isIndex(index, 'odd')]]">
-                                                <template is="dom-if" if="[[_settingType(item.type, 'boolean')]]">
+                                            <template restamp="true" is="dom-if" if="[[_isIndex(index, 'odd')]]">
+                                                <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'boolean')]]">
                                                     <paper-toggle-button name="{{item.id}}" label="{{item.label}}" checked="[[_getValue(item.id)]]"></paper-toggle-button>
                                                     <iron-label for="{{item.id}}">{{input.label}}</iron-label>
                                                 </template>
-                                                <template is="dom-if" if="[[_settingType(item.type, 'string')]]">
+                                                <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'string')]]">
                                                     <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
                                                 </template>
-                                                <template is="dom-if" if="[[_settingType(item.type, 'number')]]">
+                                                <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'number')]]">
                                                     <paper-input name="{{item.id}}" type="number" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
                                                 </template>
-                                                <template is="dom-if" if="[[_settingType(item.type, 'array')]]">
+                                                <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'array')]]">
                                                     <paper-dropdown-input name="{{item.id}}" value="[[_getValue(item.id)]]" label="{{item.label}}" items="{{item.possibleValues}}"></paper-dropdown-input>
                                                 </template>
                                             </template>
@@ -144,24 +144,24 @@
                         <!--<template is="dom-repeat" items="{{defs}}", filter="isCommonSettings">
                         </template>-->
 
-                        <button class="collapse-header" on-click="toggleStats">Stats</button>
+                        <button class="collapse-header" on-click="toggleStats">Chart Settings</button>
                         <iron-collapse id="statsSettings">
                             <div class="collapse-content">
                                 <div class="container flex">
                                     <div class="flexchild">
                                         <template is="dom-repeat" items="{{defs}}" filter="_isStatSetting">
-                                            <template is="dom-if" if="[[_isIndex(index, 'even')]]">
-                                                <template is="dom-if" if="[[_settingType(item.type, 'boolean')]]">
+                                            <template restamp="true" is="dom-if" if="[[_isIndex(index, 'even')]]">
+                                                <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'boolean')]]">
                                                     <paper-toggle-button name="{{item.id}}" label="{{item.label}}" checked="[[_getValue(item.id)]]"></paper-toggle-button>
                                                     <iron-label for="{{item.id}}">{{input.label}}</iron-label>
                                                 </template>
-                                                <template is="dom-if" if="[[_settingType(item.type, 'string')]]">
+                                                <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'string')]]">
                                                     <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
                                                 </template>
-                                                <template is="dom-if" if="[[_settingType(item.type, 'number')]]">
+                                                <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'number')]]">
                                                     <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
                                                 </template>
-                                                <template is="dom-if" if="[[_settingType(item.type, 'array')]]">
+                                                <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'array')]]">
                                                     <paper-dropdown-input name="{{item.id}}" value="[[_getValue(item.id)]]" label="{{item.label}}" items="{{item.possibleValues}}"></paper-dropdown-input>
                                                 </template>
                                             </template>
@@ -169,18 +169,18 @@
                                     </div>
                                     <div class="flexchild">
                                         <template is="dom-repeat" items="{{defs}}" filter="_isStatSetting">
-                                            <template is="dom-if" if="[[_isIndex(index, 'odd')]]">
-                                                <template is="dom-if" if="[[_settingType(item.type, 'boolean')]]">
+                                            <template restamp="true" is="dom-if" if="[[_isIndex(index, 'odd')]]">
+                                                <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'boolean')]]">
                                                     <paper-toggle-button name="{{item.id}}" label="{{item.label}}" checked="[[_getValue(item.id)]]"></paper-toggle-button>
                                                     <iron-label for="{{item.id}}">{{input.label}}</iron-label>
                                                 </template>
-                                                <template is="dom-if" if="[[_settingType(item.type, 'string')]]">
+                                                <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'string')]]">
                                                     <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
                                                 </template>
-                                                <template is="dom-if" if="[[_settingType(item.type, 'number')]]">
+                                                <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'number')]]">
                                                     <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
                                                 </template>
-                                                <template is="dom-if" if="[[_settingType(item.type, 'array')]]">
+                                                <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'array')]]">
                                                     <paper-dropdown-input name="{{item.id}}" value="[[_getValue(item.id)]]" label="{{item.label}}" items="{{item.possibleValues}}"></paper-dropdown-input>
                                                 </template>
                                             </template>
@@ -189,47 +189,6 @@
                                 </div>
                             </div>
                         </iron-collapse>
-
-                        <!--<div class="container flex">
-                            <div class="flexchild">
-                                <template is="dom-repeat" items="{{defs}}">
-                                    <template is="dom-if" if="[[_isIndex(index, 'even')]]">
-                                        <template is="dom-if" if="[[_settingType(item.type, 'boolean')]]">
-                                            <paper-toggle-button name="{{item.id}}" label="{{item.label}}" checked="[[_getValue(item.id)]]"></paper-toggle-button>
-                                            <iron-label for="{{item.id}}">{{input.label}}</iron-label>
-                                        </template>
-                                        <template is="dom-if" if="[[_settingType(item.type, 'string')]]">
-                                            <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
-                                        </template>
-                                        <template is="dom-if" if="[[_settingType(item.type, 'number')]]">
-                                            <paper-input name="{{item.id}}" type="number" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
-                                        </template>
-                                        <template is="dom-if" if="[[_settingType(item.type, 'array')]]">
-                                            <paper-dropdown-input name="{{item.id}}" value="[[_getValue(item.id)]]" label="{{item.label}}" items="{{item.possibleValues}}"></paper-dropdown-input>
-                                        </template>
-                                    </template>
-                                </template>
-                            </div>
-                            <div class="flexchild">
-                                <template is="dom-repeat" items="{{defs}}">
-                                    <template is="dom-if" if="[[_isIndex(index, 'odd')]]">
-                                        <template is="dom-if" if="[[_settingType(item.type, 'boolean')]]">
-                                            <paper-toggle-button name="{{item.id}}" label="{{item.label}}" checked="[[_getValue(item.id)]]"></paper-toggle-button>
-                                            <iron-label for="{{item.id}}">{{input.label}}</iron-label>
-                                        </template>
-                                        <template is="dom-if" if="[[_settingType(item.type, 'string')]]">
-                                            <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
-                                        </template>
-                                        <template is="dom-if" if="[[_settingType(item.type, 'number')]]">
-                                            <paper-input name="{{item.id}}" type="number" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
-                                        </template>
-                                        <template is="dom-if" if="[[_settingType(item.type, 'array')]]">
-                                            <paper-dropdown-input name="{{item.id}}" value="[[_getValue(item.id)]]" label="{{item.label}}" items="{{item.possibleValues}}"></paper-dropdown-input>
-                                        </template>
-                                    </template>
-                                </template>
-                            </div>
-                        </div>-->
                         
                     </paper-dialog-scrollable>
                     <div class="container flex-end-justified">
