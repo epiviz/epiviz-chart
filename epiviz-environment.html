@@ -62,6 +62,14 @@
                     type: Object,
                     notify: true,
 		            computed: 'getGenomicRange(chr, start, end)'
+                },
+
+                /**
+                * can be one of these {region: {chr , start, end}} or {gene} 
+                **/
+                initializeRegions: {
+                    type: Array,
+                    value: []
                 }
             },
 
@@ -149,6 +157,22 @@
             attached: function() {
 
                 var self = this;
+
+                if(self.initializeRegions.length > 0) {
+                    for(var i=0; i< self.initializeRegions.length; i++) {
+                        var navElem = document.createElement("epiviz-navigation");
+                        navElem.className = "charts";
+                        if(Object.keys(self.initializeRegions[i]).indexOf("gene") != -1) {
+                            navElem.gene = self.initializeRegions[i].gene;
+                        }
+                        else {
+                            navElem.chr = self.initializeRegions[i].region.chr;
+                            navElem.start = self.initializeRegions[i].region.start;
+                            navElem.end = self.initializeRegions[i].region.end;
+                        }
+                        Polymer.dom(self).appendChild(navElem);
+                    }
+                }
 
                 if(self.measurements) {
                     var numChildren = self.getEffectiveChildren().length;

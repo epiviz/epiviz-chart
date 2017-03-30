@@ -131,8 +131,13 @@
                 },
 
                 end: {
-                    type: Number,
+                    type: Number
                     // notify: true
+                },
+
+                gene: {
+                    type: String,
+                    observer: '_geneUpdate'
                 },
 
                 range: {
@@ -164,10 +169,6 @@
                     type: Boolean,
                     notify: true,
                     value: false
-                },
-
-                initializeGeneEnvironments: {
-                    type: Array
                 },
 
                 configSrc: {
@@ -234,6 +235,15 @@
                         self._getElementData(currentChild, self, self.parentNode.measurements);  
                     }
                 }
+            },
+
+            _geneUpdate: function() {
+                var self = this;
+                self._getElementSearch(self.gene, null, null, function(data) {
+                    self.chr = data[0].seqName;
+                    self.start = data[0].start;
+                    self.end = data[0].end;
+                });
             },
 
             _searchGene: function(e) {
@@ -464,7 +474,16 @@
 
                 self.config = new epiviz.Config(self.configSrc);
 
-                self.range = self.getGenomicRange(self.chr, self.start, self.end);
+                if(self.gene) {
+                    self._getElementSearch(self.gene, null, null, function(data) {
+                        self.chr = data[0].seqName;
+                        self.start = data[0].start;
+                        self.end = data[0].end;
+                    });
+                }
+                else if(self.chr && self.start && self.end) {
+                    self.range = self.getGenomicRange(self.chr, self.start, self.end);
+                }
 
                 if(self.transformDataFunc) {
                     self.transformFunc = new Function('return ' + self.transformDataFunc);

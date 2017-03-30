@@ -80,7 +80,7 @@
             return grid;
         },
 
-        _getElementSearch: function(gene, currentChild, pDom) {
+        _getElementSearch: function(gene, currentChild, pDom, cb) {
 
             var dataManagerElem = document.querySelector('epiviz-data-source');
 
@@ -88,7 +88,13 @@
                 var dataManager = dataManagerElem.dataManager;
 
                 dataManager.search(function(data) {
-                    pDom.$.geneSearch.suggestions(data);
+                    if(pDom) {
+                        pDom.$.geneSearch.suggestions(data);
+                    }
+                    else {
+                        cb(data);
+                    }
+                    
                 }, gene);
             }
         },
