@@ -14,6 +14,12 @@
             }
         },
 
+
+        created: function() {        
+            var dataManagerElem = document.querySelector('epiviz-data-source');
+            this.dataManager = new epiviz.data.DataManager(dataManagerElem.config, dataManagerElem.dataProviderFactory);
+        },
+
         //
         //  output data format 
         //  {
@@ -82,37 +88,37 @@
 
         _getElementSearch: function(gene, currentChild, pDom, cb) {
 
-            var dataManagerElem = document.querySelector('epiviz-data-source');
+            // var dataManagerElem = document.querySelector('epiviz-data-source');
 
-            if (dataManagerElem != null) {
-                var dataManager = dataManagerElem.dataManager;
+            // if (dataManagerElem != null) {
+            //     var dataManager = dataManagerElem.dataManager;
 
-                dataManager.search(function(data) {
+                this.dataManager.search(function(data) {
                     if(pDom) {
-                        pDom.$.geneSearch.suggestions(data);
+                        pDom.$$("#geneSearch").suggestions(data);
                     }
                     else {
                         cb(data);
                     }
                     
                 }, gene);
-            }
+            // }
         },
 
         _getElementSeqInfo: function(currentChild, pDom) {
 
-            var dataManagerElem = document.querySelector('epiviz-data-source');
+            // var dataManagerElem = document.querySelector('epiviz-data-source');
 
-            if (dataManagerElem != null) {
-                var dataManager = dataManagerElem.dataManager;
-                dataManager.getSeqInfos(function(data) {
+            // if (dataManagerElem != null) {
+            //     var dataManager = dataManagerElem.dataManager;
+                this.dataManager.getSeqInfos(function(data) {
                     var seqinfo = {};
                     data.forEach(function(s) {
                         seqinfo[s.seqName] = s;
                     });
                     currentChild.seqInfo = seqinfo;
                 });
-            }
+            // }
         },
 
         _getElementData: function(currentChild, pDom, measurements) {
@@ -177,19 +183,19 @@
                 var chartMeasMap = {};
                 chartMeasMap[id] = mSet;
 
-                var dataManagerElem = document.querySelector('epiviz-data-source[provider-id$="' + tMeasurements[0].dataprovider + '"]');
+                // var dataManagerElem = document.querySelector('epiviz-data-source[provider-id$="' + tMeasurements[0].dataprovider + '"]');
 
-                if (dataManagerElem != null) {
-                    var dataManager = dataManagerElem.dataManager;
+                // if (dataManagerElem != null) {
+                //     var dataManager = dataManagerElem.dataManager;
 
-                    dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
+                    self.dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
                         //currentChild.data = data;
                         var dataChartElem = pDom.querySelector('[plot-id$="' + id + '"]') || Polymer.dom(pDom).querySelector('[plot-id$="' + id + '"]');
                         if(dataChartElem) {
                             dataChartElem.data = pDom.transformFunc(data);
                         }
                     });
-                }
+                // }
             }
         },
 
@@ -256,18 +262,17 @@
                 var chartMeasMap = {};
                 chartMeasMap[cId] = mSet;
 
-                var dataManagerElem = document.querySelector('epiviz-data-source[provider-id$="' + tMeasurements[0].dataprovider + '"]');
+                // var dataManagerElem = document.querySelector('epiviz-data-source[provider-id$="' + tMeasurements[0].dataprovider + '"]');
+                // if (dataManagerElem != null) {
+                //     var dataManager = dataManagerElem.dataManager;
 
-                if (dataManagerElem != null) {
-                    var dataManager = dataManagerElem.dataManager;
-
-                    dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
+                    self.dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
                         //currentChild.data = data;
                         var dataChartElem = Polymer.dom(self).querySelector('[plot-id$="' + id + '"]');
 
                         dataChartElem.data = self.transformFunc(data);
                     });
-                }
+                // }
             }
         }
     }
