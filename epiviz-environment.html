@@ -158,6 +158,13 @@
 
                 var self = this;
 
+                if(!(self.start && self.end)) {
+                    if(self.chr) {
+                        self.start = 0;
+                        self.end = self.seqInfo[self.chr].max;
+                    }
+                }
+
                 if(self.initializeRegions.length > 0) {
                     for(var i=0; i< self.initializeRegions.length; i++) {
                         var navElem = document.createElement("epiviz-navigation");
@@ -229,6 +236,8 @@
                 else {
                     self.transformFunc = self.epivizToJSON;
                 }
+
+                self._getElementSeqInfo(self, self);
             }
 
         });
