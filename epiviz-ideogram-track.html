@@ -10,7 +10,7 @@
         <style>
         :host {
             display: inline-block;
-            min-width: 400px;
+            min-width: 250px;
         }
         </style>
 
@@ -52,6 +52,11 @@
 
                 range: {
                     type: Object,
+                    notify: true
+                },
+
+                geneInRange: {
+                    type: String,
                     notify: true
                 }
             },
@@ -113,6 +118,7 @@
 
                 self.chromosomeFactory = cyto_chr;
                 self._rangeChanged();
+                self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined);
             },
 
             _draw: function() {
@@ -144,6 +150,20 @@
                             data: null
                         });
                     }.bind(self));
+
+                    self.chart.getSVGTarget().append('text')
+                        .text("chr: " + self.segment)
+                        .attr('x', self.chart.getSVGTarget().attr("width") - 85)
+                        .attr('y', self.chart.getSVGTarget().attr("height")*2/3 - 5)
+                        .attr('text-anchor','left')
+                        .style('font', '12px sans-serif');
+
+                    self.chart.getSVGTarget().append('text')
+                        .text("Gene: " + self.geneInRange)
+                        .attr('x', self.chart.getSVGTarget().attr("width") - 85)
+                        .attr('y', self.chart.getSVGTarget().attr("height")*2/3 + 5)
+                        .attr('text-anchor','left')
+                        .style('font', '12px sans-serif');
 
                     self.chart.newSelector(self.start, self.end);
                     self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined);

@@ -75,7 +75,7 @@
         <template restamp="true" is="dom-if" if="{{!collapsed}}">
             <!--<epiviz-genes-track range="{{range}}" use-default-data-provider="true"></epiviz-genes-track>-->
             <!--<epiviz-ideogram-track chromosome="{{chr}}" start="{{start}}" end="{{end}}"></epiviz-ideogram-track>-->
-            <epiviz-ideogram-track id="navTrack" chromosome="{{chr}}" start="{{start}}" end="{{end}}"></epiviz-ideogram-track>
+            <epiviz-ideogram-track gene-in-range="{{geneInRange}}" id="navTrack" chromosome="{{chr}}" start="{{start}}" end="{{end}}"></epiviz-ideogram-track>
         </template>
         
         <iron-collapse id="navHeader">
@@ -171,6 +171,11 @@
                     value: false
                 },
 
+                geneInRange: {
+                    type: String,
+                    notify: true
+                },
+
                 configSrc: {
                     type: Object,
                     notify: true,
@@ -199,6 +204,11 @@
                 this.collapsed = !this.collapsed;
                 event.preventDefault();
                 event.stopPropagation();
+
+                // if(!this.collapsed) {
+                //     this._getGenesInRange(this, this);
+                // }
+                // 
                 // this._getData();
             },
 
@@ -226,6 +236,9 @@
 
             _rangeUpdate: function() {
                 var self = this;
+
+                self._getGenesInRange(self, self);
+                
                 var numChildren = self.getEffectiveChildren().length;
                 for (var index = 0; index < numChildren; index++) {
                     var currentChild = self.getEffectiveChildren()[index];
@@ -396,7 +409,7 @@
                 var parent = self.parentNode;
                 parent.addEventListener('hoverAllCharts', function(e) {
                     if(!self.collapsed) {
-                        if(e.detail.data.overlapsWith(self.$$("#navTrack").chartObject)) {
+                        if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
                             self.$$("#navTrack").hover();
                         }
                     }
@@ -479,10 +492,13 @@
                         self.chr = data[0].seqName;
                         self.start = data[0].start;
                         self.end = data[0].end;
+                        self.range = self.getGenomicRange(self.chr, self.start, self.end);
+                        // self._getGenesInRange(self, self);
                     });
                 }
                 else if(self.chr && self.start && self.end) {
                     self.range = self.getGenomicRange(self.chr, self.start, self.end);
+                    // self._getGenesInRange(self, self);
                 }
 
                 if(self.transformDataFunc) {

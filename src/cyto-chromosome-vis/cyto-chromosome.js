@@ -272,6 +272,7 @@
       self.xscale.range([0, rangeTo]);
 
       var h = self._height + 62;
+      // var h = self._height;
       var w = self._width;
 
       self.svgTarget = self._domTarget
@@ -284,12 +285,12 @@
       var bands = self.svgTarget.selectAll('g')
         .data(data).enter();
 
-      self.svgTarget.append('text')
-        .text(self._segment)
-        .attr('x', 5)
-        .attr('y', cyto_chr.margin.top + (self._height/ 2) + 2)
-        .attr('text-anchor','middle')
-        .style('font', '8px sans-serif');
+      // self.svgTarget.append('text')
+      //   .text("chr: " + self._segment)
+      //   .attr('x', w - 77)
+      //   .attr('y', cyto_chr.margin.top + (self._height/ 3) + 2)
+      //   .attr('text-anchor','middle')
+      //   .style('font', '12px sans-serif');
 
       function bpCoord(bp) {
         var xshift = 0;
@@ -323,21 +324,21 @@
             labelSkipFactor = 12;
           }
 
-          if(i % labelSkipFactor === 0) {
-            var bmid = (bpCoord(d.bp_stop) + bpCoord(d.bp_start)) / 2;
-            elem.append('line')
-              .attr('x1', bmid)
-              .attr('y1', cyto_chr.margin.top)
-              .attr('x2', bmid)
-              .attr('y2', cyto_chr.margin.top - 4)
-              .style('stroke', 'grey')
-              .style('stroke-width',1);
+          // if(i % labelSkipFactor === 0) {
+          //   var bmid = (bpCoord(d.bp_stop) + bpCoord(d.bp_start)) / 2;
+          //   elem.append('line')
+          //     .attr('x1', bmid)
+          //     .attr('y1', cyto_chr.margin.top)
+          //     .attr('x2', bmid)
+          //     .attr('y2', cyto_chr.margin.top - 4)
+          //     .style('stroke', 'grey')
+          //     .style('stroke-width',1);
 
-            elem.append('text')
-              .attr('transform', 'translate(' + bmid + ',' + (cyto_chr.margin.top - 6) + ')rotate(-50)')
-              .style('font', '8px sans-serif')
-              .text(d.arm + d.band);
-          }
+          //   elem.append('text')
+          //     .attr('transform', 'translate(' + bmid + ',' + (cyto_chr.margin.top - 6) + ')rotate(-50)')
+          //     .style('font', '8px sans-serif')
+          //     .text(d.arm + d.band);
+          // }
 
           var rect;
           var w = bpCoord(d.bp_stop) - bpCoord(d.bp_start);

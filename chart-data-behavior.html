@@ -92,7 +92,6 @@
 
             // if (dataManagerElem != null) {
             //     var dataManager = dataManagerElem.dataManager;
-
                 this.dataManager.search(function(data) {
                     if(pDom) {
                         pDom.$$("#geneSearch").suggestions(data);
@@ -100,15 +99,50 @@
                     else {
                         cb(data);
                     }
-                    
                 }, gene);
             // }
+        },
+
+        _getGenesInRange: function(currentChild, pDom) {
+            var self = this;
+
+            var mSet = new epiviz.measurements.MeasurementSet();
+            var m = new epiviz.measurements.Measurement(
+                "genes",
+                "Genes",
+                "range",
+                "genes",
+                "genes",
+                "umd",
+                null,
+                "Genes Track",
+                null,
+                null,
+                null,
+                ["gene", "entrez", "exon_starts", "exon_ends"]
+            )
+            mSet.add(m);
+
+            var chartMeasMap = {};
+            chartMeasMap[currentChild.plotId] = mSet;
+
+            this.dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
+                // Get gene (based on size)
+                // var index = data.globalStartIndex(m) + Math.round((data.size(m) - 1) / 2);
+
+                // Get gene (based on position)
+                var searchIndex = data.binarySearchStarts(m, new epiviz.datatypes.GenomicRange(pDom.range.seqName(), (pDom.range.start() + pDom.range.end()) / 2, 1000000));
+                var index = data.globalStartIndex(m) + searchIndex.index;
+                
+                var gene = data.getRowByGlobalIndex(m, index).rowMetadata().gene;
+
+                pDom.geneInRange = gene;
+            });
         },
 
         _getElementSeqInfo: function(currentChild, pDom) {
 
             // var dataManagerElem = document.querySelector('epiviz-data-source');
-
             // if (dataManagerElem != null) {
             //     var dataManager = dataManagerElem.dataManager;
                 this.dataManager.getSeqInfos(function(data) {
