@@ -1,17 +1,23 @@
-epiviz-charts 
+# Installation
 
-    create interactive genomic charts
+`bower install hcbravolab/epiviz-chart`
 
-    each charts takes 
-        measurements - Array of epiviz measurements to use 
-        useDefaultDataProvider: Boolean (true to use epiviz web services to pull data)
-                                    (false use data and range below)
-        data - data to plot
-        range - genomicRange object ( chr, start, end) 
-        chartSettings - available chart settings
+# Documentation
+
+run a local instance of polymer-server
+`polymer serve`
+
+Then navigate to http://localhost:8080/components/epiviz-chart/
+
+# Demo
+
+run a local instance of polymer-server
+`polymer serve`
+
+Then navigate to http://localhost:8080/components/epiviz-chart/demo/
 
 
-to update a chartSettings for a chart with id "chart1":
+# Update chartSettings:
 
 ```
 # get chart
@@ -25,19 +31,7 @@ currentSettings = chart.ChartSettings;
 chart.setAttribute("chart-settings", JSON.stringify(currentSettings));
 ```
 
-
-
-
-Install package through npm
-
-`npm install --save https://github.com/HCBravoLab/epiviz-chart.git`
-
-Install package through bower
-
-`bower install --save https://github.com/HCBravoLab/epiviz-chart.git`
-
-
-Epiviz-environment
+# Epiviz-environment
 
 ### must use polymer api to add charts to environment. Js dom api does not properly initialize elements
 
