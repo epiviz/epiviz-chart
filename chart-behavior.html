@@ -1,4 +1,6 @@
+<!-- External Polymer Styles/elements dependency -->
 <link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+
 
 <dom-module id="shared-settings">
   <template>
@@ -39,48 +41,95 @@
 
 
 <script>
+    /**
+     * `ChartBehavior` is an interface to all epiviz-charts. 
+     * all charts inherit this behavior.
+     *
+     * @polymerBehavior
+    **/
     epiviz.ChartBehavior = {
         properties : {
+
+            /**
+             * Dimensions for a chart. (x and y axis measurements).
+             *
+             * @type {Array<string>}
+             */            
             dimS: {
                 type: Array,
                 notify: true
             },
 
+            /**
+             * Whether to use a default data provider. only for testing & development. 
+             *
+             * @type {boolean}
+             */   
             useDefaultDataProvider: {
                 type: Boolean,
                 notify: true
             },
 
+            /**
+             * Chart data object.
+             *
+             * @type {Object<epiviz.datatypes.MapGenomicData>}
+             */   
             data: {
                 type: Object,
                 notify: true,
                 observer: '_dataChanged'
             },
 
+            /**
+             * Unique chart Id
+             *
+             * @type {string}
+             */   
             plotId: {
                 type: String,
                 reflectToAttribute: true,
                 notify: true
             },
 
+            /**
+             * Measurements for the chart. Charts automatically sets measurements from `dimS`.
+             *
+             * @type {Array<>}
+             */   
             measurements: {
                 type: Array,
                 notify: true,
                 observer: '_measurementsChanged'
             },
 
+            /**
+             * Computed Range from `<chr>`, `<start>` & `<end>`. 
+             *
+             * @type {Object<epiviz.datatypes.GenomicRange>}
+             */
             range: {
                 type: Object,
                 notify: true,
                 observer: '_rangeChanged'
             },
 
+            /**
+             * Chart Settings. 
+             *
+             * @type {Array.<epiviz.ui.charts.CustomSetting>}
+             */
             chartSettings: {
                 type: Object,
                 notify: true,
                 observer: '_chartSettingsChanged'
             },
 
+            /**
+             * Chart Colors. 
+             *
+             * @type {Array<epiviz.ui.charts.ColorPalette>}
+             */
             chartColors: {
                 type: Array,
                 notify: true,
@@ -101,6 +150,9 @@
         //     console.log(event);
         // },
 
+        /**
+         * Resizes the chart.
+         */
         _onResize: function() {
             var self = this;
             // this._measurementsChanged();
@@ -113,6 +165,12 @@
             }
         },
 
+
+        /**
+         * Generates a unique chart ID
+         * 
+         * @return {string}
+         */
         _generatePlotId: function() {
             var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
             var result = '';
@@ -124,20 +182,40 @@
             return 'epiviz-' + result;
         },
 
+
+        /**
+         * MeasurementChange/ChartDimension event handler.
+         * Listens to when a chart dimensions(axes) are changed and updates chart
+         *
+         * @fires dimChanged
+         */
         _dimChanged: function() {
 
+            /**
+             * fires event when a chart dimensions are changed.
+             *
+             * @event dimChanged
+             * @type {string}
+             * @property {string} id - Id of the chart element.
+             */
             $('#' + this.plotId).empty();
             this.fire('dimChanged', {
                 id: this.plotId
             });
         },
 
+        /**
+         * chartSettings change event handler.
+         */
         _chartSettingsChanged: function() {
             var self = this;
             self.chart.setCustomSettingsValues(self.chartSettings);
             // self._dataChanged();
         },
 
+        /**
+         * chartColors change event handler.
+         */
         _chartColorsChanged: function() {
             var self = this;
             self.chartColorPalette = new epiviz.ui.charts.ColorPalette(self.chartColors);
@@ -145,10 +223,17 @@
             self._dataChanged();
         },
 
+        /**
+         * ChartLocation/RangeChange event handler.
+         */
         _rangeChanged: function() {
             this._measurementsChanged();
         },
 
+        /**
+         * MeasurementChange/ChartDimension event handler.
+         * Listens to when a chart dimensions(axes) are changed and updates chart
+         */
         _measurementsChanged: function() {
 
             var self = this;
@@ -221,6 +306,13 @@
                     self._initializeColorsDialog();
 
                     // Listen to hover event on the chart
+                    /**
+                     * fires event when a chart data object is hovered.
+                     *
+                     * @event hover
+                     * @type {object}
+                     * @property {object} data - data object currently hovered.
+                     */
                     self.chart.onHover().addListener(new epiviz.events.EventListener(
                         function(e) {
                             var id = e.id;
@@ -233,6 +325,13 @@
                         }
                     ));
 
+                    /**
+                     * fires event when a chart data object is unhovered.
+                     *
+                     * @event unHover
+                     * @type {object}
+                     * @property {object} data - data object currently hovered.
+                     */
                     self.chart.onUnhover().addListener(new epiviz.events.EventListener(
                         function(e) {
                             var id = e.id;
@@ -275,20 +374,34 @@
             }
         },
 
+        /**
+         * ChartData change event handler.
+         */
         _dataChanged: function() {
             if (this.data != null && this.chart != null) {
                 this._draw();
             }
         },
 
+        /**
+         * Hover event handler.
+         *
+         * @param {object} data data object currently hovered.
+         */
         hover: function(data) {
             this.chart.doHover(data);
         },
 
+        /**
+         * unHover event handler.
+         */
         unHover: function() {
             this.chart.doUnhover();
         },
 
+        /**
+         * Intilizes chart container DOM element for settings and colors elements.
+         */
         _initializeSettingsContainer: function() {
             var chartContainer = this.$$('#' + this.plotId);
             var settingsContainer = this.$$('#' + this.plotId + '-chartSettingsContainer');
@@ -303,6 +416,9 @@
             }
         },
 
+        /**
+         * Handles when mouse-overed on a chart to show settings and colors.
+         */
         hostHovered: function() {
             var currColorsIcon = this.$$('#chartSettingsContainer');
             if(currColorsIcon) {
@@ -310,11 +426,14 @@
             }
         },
 
+        /**
+         * Handles when mouse-overed on a chart to show settings and colors.
+         */
         hostUnhovered: function() {
             var currColorsIcon = this.$$('#chartSettingsContainer');
             if(currColorsIcon) {
                 currColorsIcon.setAttribute("hidden", true);   
             }
-        },
+        }
     }
 </script>

@@ -1,14 +1,26 @@
 <!-- Polymer dependency -->
 <link rel="import" href="../polymer/polymer.html">
 
+<!-- Epiviz imports dependency -->
 <link rel="import" href="../epiviz-imports/epiviz-common-css.html">
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
 
+<!-- Epiviz Polymer Behaviors dependency -->
 <link rel="import" href="chart-behavior.html">
 <link rel="import" href="chart-settings.html">
 <link rel="import" href="chart-colors.html">
 
-<link rel="import" href="epiviz-chart-settings.html">
+<!--
+`<epiviz-line-track>` creates a line track chart with genomic location on the x-axis.
+
+Most element attributes are defined in `<epiviz.ChartBehavior>` element.
+
+To use, add `<epiviz-line-track>` in the page
+
+      <epiviz-line-track></epiviz-line-track>
+
+@demo demo/index-line-track.html Example page showing a line track
+-->
 
 <dom-module id="epiviz-line-track">
 
@@ -49,6 +61,11 @@
             /* Properties that can be defined on the element */
             properties: {
 
+                /**
+                 * Default chart properties for line track.
+                 *
+                 * @type {Object}
+                 */
                 configSrc: {
                     type: Object,
                     notify: true,
@@ -240,10 +257,21 @@
                 self.config = new epiviz.Config(self.configSrc);
             },
 
+            /**
+             * Draws the chart.
+             *
+             * @param {Object<epiviz.datatypes.GenomicRange>} range genomic range.
+             * @param {Object<epiviz.datatypes.MapGenomicData>} data to plot
+             */
             _draw: function() {
                 this.chart.draw(this.range, this.data);
             },
 
+            /**
+             * Creates an instance of the line track chart.
+             *
+             * @return {epiviz.plugins.charts.LineTrackType} LineTrack chart object
+             */
             _createChart: function() {
                 var self = this;
                 return new epiviz.plugins.charts.LineTrackType(self.config);

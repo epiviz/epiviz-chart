@@ -1,9 +1,21 @@
 <!-- Polymer dependency -->
 <link rel="import" href="../polymer/polymer.html">
 
+<!-- Epiviz imports dependency -->
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
 
+<!-- Ideogram library dependency -->
 <script src="src/cyto-chromosome-vis/cyto-chromosome.js"></script>
+
+<!--
+`<epiviz-ideogram-track>` creates a ideogram track chart for a given chromosome.
+
+To use, add `<epiviz-ideogram-track>` in the page
+
+      <epiviz-ideogram-track></epiviz-ideogram-track>
+
+@demo demo/index-ideogram.html Example page showing a ideogram track
+-->
 
 <dom-module id="epiviz-ideogram-track">
     <template>
@@ -29,32 +41,67 @@
             /* Properties that can be defined on the element */
             properties: {
 
+                /**
+                 * Chromosome location.
+                 * Default Location Attribute to set to all the children chart elements.
+                 *
+                 * @example: chr1
+                 *
+                 * @type {string}
+                 */
                 chromosome: {
                     type: String,
                     notify: true
                 },
 
+                /**
+                 * Chromosome start. 
+                 * Default Chromosome start value to use. (defaults to 0).
+                 *
+                 * @type {number}
+                 */
                 start: {
                     type: Number,
                     notify: true
                 },
 
+                /**
+                 * Chromosome end. 
+                 * Default Chromosome end value to use. (defaults to the `<chr>` length).
+                 *
+                 * @type {number}
+                 */
                 end: {
                     type: Number,
                     notify: true
                 },
 
+                /**
+                 * Unique plot ID for the chart
+                 *
+                 * @type {string}
+                 */
                 plotId: {
                     type: String,
                     reflectToAttribute: true,
                     notify: true
                 },
 
+                /**
+                 * Computed Range from `<chr>`, `<start>` & `<end>`. 
+                 *
+                 * @type {Object<epiviz.datatypes.GenomicRange>}
+                 */
                 range: {
                     type: Object,
                     notify: true
                 },
 
+                /**
+                 * Current gene in range (set automatically)
+                 *
+                 * @type {string}
+                 */   
                 geneInRange: {
                     type: String,
                     notify: true
@@ -65,6 +112,11 @@
                 '_rangeChanged(chromosome.*, start.*, end.*)'
             ],
 
+            /**
+             * Generates a unique chart ID
+             * 
+             * @return {string}
+             */
             _generatePlotId: function() {
                 var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 var result = '';
@@ -77,6 +129,9 @@
                 return 'epiviz-' + result;
             },
 
+            /**
+             * ChartLocation/RangeChange event handler.
+             */
             _rangeChanged: function() {
 
                 if (this.chromosome != null && this.start != null && this.end != null) {
@@ -86,10 +141,18 @@
                 }
             },
 
+            /**
+             * Hover event handler.
+             *
+             * @param {object} data data object currently hovered.
+             */
             hover: function(data) {
                 this.chart.doHover(data);
             },
 
+            /**
+             * unHover event handler.
+             */
             unHover: function() {
                 this.chart.doUnhover();
             },
@@ -121,6 +184,9 @@
                 self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined);
             },
 
+            /**
+             * Draws the chart.
+             */
             _draw: function() {
 
                 var self = this;

@@ -1,54 +1,22 @@
+<!-- External Polymer Styles/elements dependency -->
 <!--<link rel="import" href="../iron-icons/iron-icons.html">-->
-
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 
+<!-- Epiviz element dependency -->
 <link rel="import" href="epiviz-chart-settings.html">
 
-<!--<dom-module id="shared-settings">
-  <template>
-    <style>
-        #chartSettingsIcon {
-            /*float: right;*/
-            position:absolute;
-            top: 0;
-            right: 0;
-            width: 24px;
-            height: 24px;
-            
-            /*--iron-icon-height: 16px;
-            --iron-icon-width: 16px;*/
-
-            border: 1px solid #000;
-            border-radius: 2px;
-            padding:3px;
-            /*background-color: #fff000;*/
-        }
-    </style>
-  </template>
-</dom-module>-->
-
 <script>
+    /**
+     * `ChartSettingsBehavior` object manages the `<epiviz-chart-settings>` element for each chart. 
+     * All charts automatically inherit this behavior to update chart settings.
+     *
+     * @polymerBehavior
+    **/
     epiviz.ChartSettingsBehavior = {
 
-        // properties: {
-        //     // iconHidden: true,
-        // },
-
-        // hostHovered: function() {
-        //     var currSettingIcon = this.$$('#chartSettingsIcon');
-
-        //     // currSettingIcon.setAttribute("hidden", false);
-        //     currSettingIcon.hidden = false;
-        //     // this.iconHidden = false;
-        // },
-
-        // hostUnhovered: function() {
-        //     var currSettingIcon = this.$$('#chartSettingsIcon');
-
-        //     currSettingIcon.setAttribute("hidden", true);
-        //     // this.iconHidden = true;
-        // },
-
+        /**
+         * Shows the `<epiviz-chart-settings>` element
+         */
         _showSettingsDialog: function() {
             var self = this;
             var chartContainer = this.$$('#' + this.plotId);
@@ -70,6 +38,9 @@
             });
         },
 
+        /**
+         * Initializes the `<epiviz-chart-settings>` element
+         */
         _initializeSettingsDialog: function() {
             var chartSettingsContainer = this.$$('#chartSettingsContainer');
             var chartContainer = this.$$('#' + this.plotId);

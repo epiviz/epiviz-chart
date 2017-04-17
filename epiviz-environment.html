@@ -1,28 +1,42 @@
+<!-- Polymer dependency -->
 <link rel="import" href="../polymer/polymer.html">
+
+<!-- Epiviz imports dependency -->
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
 
+<!-- Epiviz Polymer Behaviors dependency -->
 <link rel="import" href="chart-data-behavior.html">
+
+<!--
+`<epiviz-environment>` is a wrapper element that manages measurements, handles events and brushing across all of its children `<epiviz-charts>` elements.
+
+To use, add `<epiviz-environment>` in the page
+
+      <epiviz-environment></epiviz-environment>
+
+@demo demo/index-environment.html Example page showing a environment element with charts 
+-->
 
 <dom-module id="epiviz-environment">
 
     <template>	
-	<style>
-	:host{
-		display: inline-block;
-        padding: 15px;
-        margin: 5px;
-        border: 1px solid black;
-        border-radius: 5px;
-        min-width: 400px;
-        min-height: 400px;
-        resize: both;
-        overflow: auto;
-        transition:width 0.01s, height 0.01s;
-        margin: 10px;
-        width: auto;
-        height: auto;
-	}
-	</style>
+        <style>
+            :host{
+                display: inline-block;
+                padding: 15px;
+                margin: 5px;
+                border: 1px solid black;
+                border-radius: 5px;
+                min-width: 400px;
+                min-height: 400px;
+                resize: both;
+                overflow: auto;
+                transition:width 0.01s, height 0.01s;
+                margin: 10px;
+                width: auto;
+                height: auto;
+            }
+        </style>
 
     <div class="header">
         <a href="http://epiviz.github.io" target="_blank"><img src="epiviz_4_logo_medium.png" alt="Epiviz" width="100" height="21"></a>
@@ -37,27 +51,58 @@
             behaviors: [epiviz.ChartDataBehavior],
 
             properties: {
+                
+                /**
+                 * Measurement Object mapped to measurements provided from `<epiviz-data-source>`.
+                 *
+                 * @type {Object}
+                 */
                 measurements: {
                     type: Object,
                     notify: true,
                     reflectToAttribute: true
                 },
 
+                /**
+                 * Chromosome location.
+                 * Default Location Attribute to set to all the children chart elements.
+                 *
+                 * @example: chr1
+                 *
+                 * @type {string}
+                 */
                 chr: {
                     type: String,
                     notify: true
                 },
 
+                /**
+                 * <Optional> Chromosome start. 
+                 * Default Chromosome start value to use. (defaults to 0).
+                 *
+                 * @type {number}
+                 */
                 start: {
                     type: Number,
                     notify: true
                 },
 
+                /**
+                 * <Optional> Chromosome end. 
+                 * Default Chromosome end value to use. (defaults to the `<chr>` length).
+                 *
+                 * @type {number}
+                 */
                 end: {
                     type: Number,
                     notify: true
                 },
 
+                /**
+                 * Computed Range from `<chr>`, `<start>` & `<end>`. 
+                 *
+                 * @type {Object<epiviz.datatypes.GenomicRange>}
+                 */
                 range: {
                     type: Object,
                     notify: true,
@@ -65,8 +110,14 @@
                 },
 
                 /**
-                * can be one of these {region: {chr , start, end}} or {gene} 
-                **/
+                 * Intiliazes an environment with `<epiviz-navigation>` elements.
+                 * 
+                 * Can be one of these {region: {chr , start, end}} or {gene} 
+                 *
+                 * @example: [{region: {chr: 'chr11', start: 20000, end: 600000}{, {gene: 'esr1'}]
+                 * 
+                 * @type {Array[<Object>]}
+                 */
                 initializeRegions: {
                     type: Array,
                     value: []
@@ -82,6 +133,9 @@
             //     'transitionend': '_onResize'
             // },
 
+            /**
+             * Resizes the chart.
+             */
             _onResize: function() {
                 var self = this;
                 // this._measurementsChanged();
@@ -94,18 +148,41 @@
                 }
             },
 
+            /**
+             * Creates a epiviz GenomicRange object from chromosome, start and end.
+             * 
+             * @param {string} chr chromosome location 
+             * @param {number} start chromosome start
+             * @param {number} end chromosome end 
+             * 
+             * @return {epiviz.datatypes.GenomicRange}
+             */
             getGenomicRange: function(chr, start, end) {
                 return new epiviz.datatypes.GenomicRange(chr, start, end-start);
             },
 
-            // Listeners for interaction between 2 graphs
+            // Listeners for interaction between charts
             listeners: {
                 'hover': 'onHover',
                 'unHover': 'onUnhover',
                 'dimChanged': 'onDimChanged'
             },
 
+            /**
+             * Hover event handler.
+             * Listens to hover events fired from its children elements and propagates to other charts
+             *
+             * @fires hoverAllCharts
+             */
             onHover: function(e) {
+
+                /**
+                 * Propogates hover event to other charts.
+                 *
+                 * @event hoverAllCharts
+                 * @type {object}
+                 * @property {object} data - data object currently hovered.
+                 */
                 this.fire('hoverAllCharts', {
                     data: e.detail.data
                 });
@@ -113,7 +190,19 @@
                 e.stopPropagation();
             },
 
+            /**
+             * Unhover event handler.
+             * Listens to unhover events fired from its children elements and propagates to other charts
+             * 
+             * @fires unHoverAllCharts
+             */
             onUnhover: function(e) {
+
+                /**
+                 * Propogates unHover event to other charts.
+                 *
+                 * @event unHoverAllCharts
+                 */
                 this.fire('unHoverAllCharts', {
                     data: null
                 });
@@ -121,6 +210,10 @@
                 e.stopPropagation();
             },
 
+            /**
+             * MeasurementChange/ChartDimension event handler.
+             * Listens to when a chart dimensions(axes) are changed and updates chart
+             */
             onDimChanged: function(e) {
                 var chartId = e.detail.id;
 
@@ -129,6 +222,11 @@
                 }
             },
 
+            /**
+             * Generates a unique chart ID
+             * 
+             * @return {string}
+             */
             _generateChartId: function() {
                 var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 var result = '';
@@ -140,6 +238,9 @@
                 return 'epiviz-' + result;
             },
 
+            /**
+             * ChartLocation/RangeChange event handler.
+             */
             _rangeChanged: function() {
 
                 var self = this;
@@ -154,6 +255,7 @@
                 }
             },
 
+            /* callback function after the element is attached to the DOM */
             attached: function() {
 
                 var self = this;
@@ -226,6 +328,7 @@
                     });
             },
 
+            /* callback function after the element is initialized & attached */
             ready: function() {
                 // this.scopeSubtree(this, true);
                 var self = this;
@@ -239,7 +342,6 @@
 
                 self._getElementSeqInfo(self, self);
             }
-
         });
     </script>
 </dom-module>

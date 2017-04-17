@@ -1,19 +1,31 @@
 <!-- Polymer dependency -->
 <link rel="import" href="../polymer/polymer.html">
+
+<!-- Epiviz imports dependency -->
 <link rel="import" href="../epiviz-imports/epiviz-common-css.html">
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
 
+<!-- Epiviz Polymer Behaviors dependency -->
 <link rel="import" href="chart-behavior.html">
 <link rel="import" href="chart-settings.html">
 <link rel="import" href="chart-colors.html">
 
-<link rel="import" href="epiviz-chart-settings.html">
+<!--
+`<epiviz-blocks-track>` creates a block track chart with genomic location on the x-axis.
+
+Most element attributes are defined in `<epiviz.ChartBehavior>` element.
+
+To use, add `<epiviz-blocks-track>` in the page
+
+      <epiviz-blocks-track></epiviz-blocks-track>
+
+@demo demo/index-blocks-track.html Example page showing a blocks track
+-->
 
 <dom-module id="epiviz-blocks-track">
 
     <template>
         <style include="shared-settings"></style>
-        <!--<style include="shared-colors"></style>-->
         <style>
             :host {
                 width: 900px;
@@ -26,11 +38,6 @@
                 transition:width 0.01s, height 0.01s;
                 margin: 10px;
             }
-
-            /*::shadow .blocks-track {}
-            ::shadow .blocks-track .items { shape-rendering: crispEdges; fill-opacity: 0.6; stroke: #555555; stroke-opacity: 0.5; stroke-width: 1; }
-            ::shadow .blocks-track .selected { stroke: #ffc600; stroke-width: 5; stroke-opacity: 0.7; fill-opacity: 1; }
-            ::shadow .blocks-track .hovered { stroke: #ffc600; stroke-width: 5; stroke-opacity: 0.7; fill-opacity: 1; }*/
         </style>
 
         <!-- local DOM goes here -->
@@ -49,9 +56,13 @@
             /* Properties that can be defined on the element */
             properties: {
 
+                /**
+                * Default chart properties for blocks track.
+                *
+                * @type {Object}
+                */
                 configSrc: {
                     type: Object,
-                    notify: true,
                     value: function() {
 
                         epiviz.Config.SETTINGS = {
@@ -222,17 +233,25 @@
             /* callback function after the element is initialized & attached */
             ready: function() {
                 var self = this;
-                // style observer on charts
                 self.plotId = self.plotId || self._generatePlotId();
-
-                // self.scopeSubtree(self.$.chart, true);
                 self.config = new epiviz.Config(self.configSrc);
             },
 
+            /**
+             * Draws the chart.
+             *
+             * @param {Object<epiviz.datatypes.GenomicRange>} range genomic range.
+             * @param {Object<epiviz.datatypes.MapGenomicData>} data to plot
+             */
             _draw: function() {
                 this.chart.draw(this.range, this.data);
             },
 
+            /**
+             * Creates an instance of the blocks track chart.
+             *
+             * @return {epiviz.plugins.charts.BlocksTrackType} BlocksTrack chart object
+             */
             _createChart: function() {
                 var self = this;
                 return new epiviz.plugins.charts.BlocksTrackType(self.config);

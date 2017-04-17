@@ -1,14 +1,26 @@
 <!-- Polymer dependency -->
 <link rel="import" href="../polymer/polymer.html">
 
+<!-- Epiviz imports dependency -->
 <link rel="import" href="../epiviz-imports/epiviz-common-css.html">
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
 
+<!-- Epiviz Polymer Behaviors dependency -->
 <link rel="import" href="chart-behavior.html">
 <link rel="import" href="chart-settings.html">
 <link rel="import" href="chart-colors.html">
 
-<link rel="import" href="epiviz-chart-settings.html">
+<!--
+`<epiviz-line-plot>` creates a line-plot chart with genomic location on the x-axis.
+
+Most element attributes are defined in `<epiviz.ChartBehavior>` element.
+
+To use, add `<epiviz-line-plot>` in the page
+
+      <epiviz-line-plot></epiviz-line-plot>
+
+@demo demo/index-line-plot.html Example page showing a line plot
+-->
 
 <dom-module id="epiviz-line-plot">
 
@@ -44,6 +56,11 @@
             /* Properties that can be defined on the element */
             properties: {
 
+                /**
+                 * Default chart properties for line plot.
+                 *
+                 * @type {Object}
+                 */
                 configSrc: {
                     type: Object,
                     notify: true,
@@ -233,10 +250,21 @@
                 self.config = new epiviz.Config(self.configSrc);
             },
 
+            /**
+             * Draws the chart.
+             *
+             * @param {Object<epiviz.datatypes.GenomicRange>} range genomic range.
+             * @param {Object<epiviz.datatypes.MapGenomicData>} data to plot
+             */
             _draw: function() {
                 this.chart.draw(this.range, this.data);
             },
 
+            /**
+             * Creates an instance of the line plot chart.
+             *
+             * @return {epiviz.plugins.charts.LinePlotType} LinePlot chart object
+             */
             _createChart: function() {
                 var self = this;
                 return new epiviz.plugins.charts.LinePlotType(self.config);

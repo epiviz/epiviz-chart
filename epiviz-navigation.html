@@ -1,23 +1,43 @@
 <!-- Polymer dependency -->
 <link rel="import" href="../polymer/polymer.html">
 
+<!-- Epiviz imports dependency -->
 <link rel="import" href="../epiviz-imports/epiviz-common-css.html">
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
 
+<!-- Epiviz behaviors dependency -->
 <link rel="import" href="chart-behavior.html">
 <link rel="import" href="chart-settings.html">
 <link rel="import" href="chart-colors.html">
 
-<link rel="import" href="epiviz-chart-settings.html">
+<!-- Epiviz data behaviors dependency -->
 <link rel="import" href="chart-data-behavior.html">
 
+<!-- Chart elements dependency -->
 <link rel="import" href="epiviz-genes-track.html">
 <link rel="import" href="epiviz-ideogram-track.html">
 
+<!-- External Polymer Styles/elements dependency -->
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-autocomplete/paper-autocomplete.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+
+<!--
+`<epiviz-navigation>` is similar to `<epiviz-environment>`. It is a wrapper element that handles events 
+    and brushing across all of its children `<epiviz-charts>` elements. In addition, `<epiviz-navigation>`
+    has a collapse and expand feature. When collapsed, it hides its children and provides a smaller compact ideogram-view of the current 
+    genomic location of the element. When expanded, features such are navigating along the chromosome, 
+    or navigating to a gene location are available.
+
+Most element attributes are defined in `<epiviz.ChartBehavior>` element.
+
+To use, add `<epiviz-navigation>` in the page
+
+      <epiviz-navigation></epiviz-navigation>
+
+@demo demo/index-navigation.html Example page showing a navigation element with charts 
+-->
 
 <dom-module id="epiviz-navigation">
 
@@ -73,8 +93,6 @@
             <button on-click="cloneNavigation">Clone</button>
         </div>
         <template restamp="true" is="dom-if" if="{{!collapsed}}">
-            <!--<epiviz-genes-track range="{{range}}" use-default-data-provider="true"></epiviz-genes-track>-->
-            <!--<epiviz-ideogram-track chromosome="{{chr}}" start="{{start}}" end="{{end}}"></epiviz-ideogram-track>-->
             <epiviz-ideogram-track gene-in-range="{{geneInRange}}" id="navTrack" chromosome="{{chr}}" start="{{start}}" end="{{end}}"></epiviz-ideogram-track>
         </template>
         
@@ -108,7 +126,6 @@
                 <content id="chartNav" select=".charts"></content>
             </template>
         </iron-collapse>
-        
     </template>
 
     <script>
@@ -120,62 +137,122 @@
             /* Properties that can be defined on the element */
             properties: {
 
+                /**
+                 * Chromosome location.
+                 * Default Location Attribute to set to all the children chart elements.
+                 *
+                 * @example: chr1
+                 *
+                 * @type {string}
+                 */
                 chr: {
                     type: String
                     // notify: true
                 },
 
+                /**
+                 * Chromosome start. 
+                 * Default Chromosome start value to use. (defaults to 0).
+                 *
+                 * @type {number}
+                 */
                 start: {
                     type: Number
                     // notify: true
                 },
 
+                /**
+                 * Chromosome end. 
+                 * Default Chromosome end value to use. (defaults to the `<chr>` length).
+                 *
+                 * @type {number}
+                 */
                 end: {
                     type: Number
                     // notify: true
                 },
 
+                /**
+                 * Updates location attributes(chr, start, end) to this gene's location.
+                 *
+                 * @type {string}
+                 */
                 gene: {
                     type: String,
                     observer: '_geneUpdate'
                 },
 
+                /**
+                 * Computed Range from `<chr>`, `<start>` & `<end>`. 
+                 *
+                 * @type {Object<epiviz.datatypes.GenomicRange>}
+                 */
                 range: {
                     type: Object,
                     // notify: true,
 		            computed: 'getGenomicRange(chr, start, end)',
                     observer: '_rangeUpdate'
                 },
-                  
+
+                /**
+                 * Computed Range from `<chr>`, `<start>` & `<end>`. 
+                 *
+                 * @type {string}
+                 */        
                 _strRange: {
                     type: String,
                     notify: true,
 		            computed: 'getStrRange(chr, start, end)'
                 },
 
+                /**
+                 * Default scroll left/right ratio
+                 *
+                 * @type {number}
+                 */   
                 stepRatio: {
                     type: Number,
                     notify: true,
                     value: 0.2
                 },
 
+                /**
+                 * Default zoom in/out ratio
+                 *
+                 * @type {number}
+                 */   
                 zoomRatio: {
                     type: Number,
                     notify: true,
                     value: 0.2
                 },
 
+                /**
+                 * Whether the element is collapsed
+                 *
+                 * @type {boolean}
+                 */   
                 collapsed: {
                     type: Boolean,
                     notify: true,
                     value: false
                 },
 
+                /**
+                 * Current gene in range (set automatically)
+                 *
+                 * @type {string}
+                 */   
                 geneInRange: {
                     type: String,
                     notify: true
                 },
 
+                /**
+                 * Default chart properties for navigation element.
+                 *
+                 * @type {Object}
+                 */  
                 configSrc: {
                     type: Object,
                     notify: true,
@@ -194,17 +271,26 @@
                 }
             },
 
+            /* event listeners */
             listeners: {
                 'hover': 'onHover',
                 'unHover': 'onUnhover'
             },
 
+            /**
+             * Toggle handler (expand/collapse)
+             */
             toggleHeader: function(event) {
                 this.$.navHeader.toggle();
                 this.collapsed = !this.collapsed;
+                console.log($(this).find(".collapse-header")[0]);
+                if (this.collapsed) {
+                    $(this).find(".collapse-header")[0].innerHTML = "Collapse";
+                } else {
+                    $(this).find(".collapse-header")[0].innerHTML = "Expand";
+                }
                 event.preventDefault();
                 event.stopPropagation();
-
                 // if(!this.collapsed) {
                 //     this._getGenesInRange(this, this);
                 // }
@@ -212,28 +298,45 @@
                 // this._getData();
             },
 
+            /**
+             * Hover event handler.
+             * Listens to hover events fired from its children elements and propagates to other charts.
+             *
+             * @fires hoverAllCharts
+             */
             onHover: function(e) {
+                /**
+                 * Propogates hover event to other charts.
+                 *
+                 * @event hoverAllCharts
+                 * @type {object}
+                 * @property {object} data - data object currently hovered.
+                 */
                 this.fire('hoverAllCharts', {
                     data: e.detail.data
                 });
-                // this.fire('hover', {
-                //     data: e.detail.data
-                // });
-                // e.preventDefault();
-                // e.stopPropagation();
             },
 
+            /**
+             * Unhover event handler.
+             * Listens to unhover events fired from its children elements and propagates to other charts
+             * 
+             * @fires unHoverAllCharts
+             */
             onUnhover: function(e) {
+                /**
+                 * Propogates unHover event to other charts.
+                 *
+                 * @event unHoverAllCharts
+                 */
                 this.fire('unHoverAllCharts', {
                     data: null
                 });
-                // this.fire('unHover', {
-                //     data: e.detail.data
-                // });
-                // e.preventDefault();
-                // e.stopPropagation();
             },
 
+            /**
+             * ChartLocation/RangeChange event handler.
+             */
             _rangeUpdate: function() {
                 var self = this;
 
@@ -250,6 +353,9 @@
                 }
             },
 
+            /**
+             * GeneLocationChange event handler.
+             */
             _geneUpdate: function() {
                 var self = this;
                 self._getElementSearch(self.gene, null, null, function(data) {
@@ -259,6 +365,11 @@
                 });
             },
 
+            /**
+             * Search handler for a gene (gene search field).
+             * 
+             * @param {string} keyword search string is at e.detail.option.text
+             */
             _searchGene: function(e) {
                 var self = this;
                 var gene = e.detail.option.text;
@@ -281,6 +392,10 @@
                 }
             },
 
+            /**
+             * Update Location Attributes when a gene is selected.
+             * selected gene value @ e.detail.option
+             */
             _selectGene: function(e) {
                 var selected= e.detail.option;
 
@@ -289,6 +404,9 @@
                 this.end = selected.end + Math.round(selected.end * 0.01);
             },
 
+            /**
+             * Handles location change (gene location field)
+             */
             _updateStrRange: function(e) {
                 var update = e.target.value;
                 var split = update.split(":");
@@ -302,6 +420,9 @@
                 this.end = end;
             },
 
+            /**
+             * Navigation handler - move left
+             */
             moveLeft: function(e) {
                 var width = this.end - this.start;
                 var newStart = this.start - Math.round(width * this.stepRatio);
@@ -313,6 +434,9 @@
                 this.range = this.getGenomicRange(this.chr, this.start, this.end);
             },
 
+            /**
+             * Navigation handler - move right
+             */
             moveRight: function(e) {
                 var width = this.end - this.start;
                 var newStart = this.start + Math.round(width * this.stepRatio);
@@ -324,6 +448,9 @@
                 this.range = this.getGenomicRange(this.chr, this.start, this.end);
             },
 
+            /**
+             * Navigation handler - zoom in 
+             */
             zoomIn: function(e) {
                 var width = Math.round(this.end - this.start);
                 var mid = Math.round(this.start + (width/2));
@@ -337,6 +464,9 @@
                 this.range = this.getGenomicRange(this.chr, this.start, this.end);
             },
 
+            /**
+             * Navigation handler - zoom out
+             */
             zoomOut: function(e) {
                 var width = Math.round(this.end - this.start);
                 var mid = Math.round(this.start + (width/2));
@@ -350,14 +480,35 @@
                 this.range = this.getGenomicRange(this.chr, this.start, this.end);
             },
 
+            /**
+             * String formatted Range
+             * 
+             * @param {string} chr chromosome location
+             * @param {number} start chromosome start
+             * @param {number} end chromosome end
+             *
+             * @return {string} range in string format
+             */
             getStrRange: function(chr, start, end) {
                 return chr + ": " + start + " - " + end;
             },
 
+            /**
+             * String formatted Range
+             * 
+             * @param {string} chr chromosome location
+             * @param {number} start chromosome start
+             * @param {number} end chromosome end
+             *
+             * @return {epiviz.datatypes.GenomicRange} Genomic Range object
+             */
             getGenomicRange: function(chr, start, end) {
                     return new epiviz.datatypes.GenomicRange(chr, start, end-start);
             },
 
+            /**
+             * Handles data when charts are first initialized.
+             */
             _getData: function() {
                 var self = this;
                 var numChildren = self.getEffectiveChildren().length;
@@ -371,7 +522,9 @@
                 }
             },
 
-
+            /**
+             * Clones a navigation element and add it to the page
+             */
             cloneNavigation: function() {
                 var self = this;
 
@@ -444,26 +597,7 @@
                     }
                 // }
 
-                // self._rangeUpdate();
-
                 if (self.useDefaultDataProvider) {
-
-                    // self.measurements = self.measurements || [{
-                    //     'id': 'genes',
-                    //     'name': 'Genes',
-                    //     'type': 'range',
-                    //     'datasourceId': 'genes',
-                    //     'datasourceGroup': 'genes',
-                    //     'dataprovider': 'umd',
-                    //     'formula': null,
-                    //     'defaultChartType': "Genes Track",
-                    //     'annotation': null,
-                    //     'minValue': null,
-                    //     'maxValue': null,
-                    //     'metadata': ['gene', 'entrez', 'exon_starts', 'exon_ends']
-                    // }];
-
-                    // self.range = self.range || new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000);
 
                     var dataProviderFactory = new epiviz.data.DataProviderFactory(new epiviz.Config(self.configSrc));
                     var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);
@@ -481,10 +615,8 @@
             /* callback function after the element is initialized */
             ready: function() {
                 var self = this;
-                self.plotId = self.plotId || self._generatePlotId();
-                // style observer on charts
-                // self.scopeSubtree(self.$.chart, true);
 
+                self.plotId = self.plotId || self._generatePlotId();
                 self.config = new epiviz.Config(self.configSrc);
 
                 if(self.gene) {
@@ -493,12 +625,10 @@
                         self.start = data[0].start;
                         self.end = data[0].end;
                         self.range = self.getGenomicRange(self.chr, self.start, self.end);
-                        // self._getGenesInRange(self, self);
                     });
                 }
                 else if(self.chr && self.start && self.end) {
                     self.range = self.getGenomicRange(self.chr, self.start, self.end);
-                    // self._getGenesInRange(self, self);
                 }
 
                 if(self.transformDataFunc) {
@@ -509,6 +639,11 @@
                 }
             },
 
+            /**
+             * Creates an instance of the navigation element.
+             *
+             * @return {null} for consistency with other chart elements
+             */
             _createChart: function() {
                 return null;
             }

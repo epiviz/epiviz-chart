@@ -1,15 +1,26 @@
 <!-- Polymer dependency -->
 <link rel="import" href="../polymer/polymer.html">
 
+<!-- Epiviz imports dependency -->
 <link rel="import" href="../epiviz-imports/epiviz-common-css.html">
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
 
+<!-- Epiviz Polymer Behaviors dependency -->
 <link rel="import" href="chart-behavior.html">
 <link rel="import" href="chart-settings.html">
 <link rel="import" href="chart-colors.html">
 
-<link rel="import" href="epiviz-chart-settings.html">
-<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<!--
+`<epiviz-scatter-plot>` creates a scatter plot chart
+
+Most element attributes are defined in `<epiviz.ChartBehavior>` element.
+
+To use, add `<epiviz-scatter-plot>` in the page
+
+      <epiviz-scatter-plot></epiviz-scatter-plot>
+
+@demo demo/index-scatter.html Example page showing a scatter plot
+-->
 
 <dom-module id="epiviz-scatter-plot">
 
@@ -46,6 +57,11 @@
             /* Properties that can be defined on the element */
             properties: {
 
+                /**
+                 * Default chart properties for scatter plot.
+                 *
+                 * @type {Object}
+                 */
                 configSrc: {
                     type: Object,
                     notify: true,
@@ -242,10 +258,21 @@
                 self.config = new epiviz.Config(self.configSrc);
             },
             
+            /**
+             * Draws the chart.
+             *
+             * @param {Object<epiviz.datatypes.GenomicRange>} range genomic range.
+             * @param {Object<epiviz.datatypes.MapGenomicData>} data to plot
+             */
             _draw: function() {
                 this.chart.draw(this.range, this.data);
             },
 
+            /**
+             * Creates an instance of the scatter plot chart.
+             *
+             * @return {epiviz.plugins.charts.ScatterPlotType} ScatterPlot chart object
+             */
             _createChart: function() {
                 var self = this;
                 return new epiviz.plugins.charts.ScatterPlotType(self.config);

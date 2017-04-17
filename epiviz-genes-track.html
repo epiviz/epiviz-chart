@@ -1,18 +1,31 @@
 <!-- Polymer dependency -->
 <link rel="import" href="../polymer/polymer.html">
 
+<!-- Epiviz imports dependency -->
 <link rel="import" href="../epiviz-imports/epiviz-common-css.html">
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
 
+<!-- Epiviz Polymer Behaviors dependency -->
 <link rel="import" href="chart-behavior.html">
 <link rel="import" href="chart-settings.html">
 <link rel="import" href="chart-colors.html">
+
+<!--
+`<epiviz-genes-track>` creates a genes track chart.
+
+Most element attributes are defined in `<epiviz.ChartBehavior>` element.
+
+To use, add `<epiviz-genes-track>` in the page
+
+      <epiviz-genes-track></epiviz-genes-track>
+
+@demo demo/index-genes-track.html Example page showing a genes track
+-->
 
 <dom-module id="epiviz-genes-track">
 
     <template>
         <style include="shared-settings"></style>
-        <!--<style include="shared-colors"></style>-->
         <style>
             :host {
                 min-width: 450px;
@@ -30,17 +43,6 @@
                 transition:width 0.01s, height 0.01s;
                 margin: 10px;
             }
-
-            /*::shadow .genes-track {}
-            ::shadow .genes-track .items { shape-rendering: auto; stroke: #555555; fill-opacity: 0.6; }
-            ::shadow .genes-track .exons { stroke: none; }
-            ::shadow .genes-track .gene-name { font-weight: bold; font-size: 12; fill: #000000; stroke: none; fill-opacity: 0; }
-            ::shadow .genes-track .selected { fill-opacity: 1; stroke: #555555; }
-            ::shadow .genes-track .selected .gene-body { stroke: #555555; stroke-width: 3; stroke-opacity: 0.7; }
-            ::shadow .genes-track .hovered { fill-opacity: 1; stroke: #555555; }
-            ::shadow .genes-track .hovered .gene-body { stroke: #555555; stroke-width: 3; stroke-opacity: 0.7; }
-            ::shadow .genes-track .hovered .gene-name { fill-opacity: 1; }
-            ::shadow .genes-track .selected .gene-name { fill-opacity: 1; }*/
         </style>
 
         <!-- local DOM goes here -->
@@ -59,6 +61,11 @@
             /* Properties that can be defined on the element */
             properties: {
 
+                /**
+                 * Default chart properties for genes track.
+                 *
+                 * @type {Object}
+                 */
                 configSrc: {
                     type: Object,
                     notify: true,
@@ -243,10 +250,21 @@
                 // this.addEventListener("transitionend","onElementResize");
             },
 
+            /**
+             * Draws the chart.
+             *
+             * @param {Object<epiviz.datatypes.GenomicRange>} range genomic range.
+             * @param {Object<epiviz.datatypes.MapGenomicData>} data to plot
+             */
             _draw: function() {
                 this.chart.draw(this.range, this.data);
             },
-             
+
+            /**
+             * Creates an instance of the genes track chart.
+             *
+             * @return {epiviz.plugins.charts.GenesTrackType} GenesTrack chart object
+             */
             _createChart: function() {
                 var self = this;
                 return new epiviz.plugins.charts.GenesTrackType(self.config);

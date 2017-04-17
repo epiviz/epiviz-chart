@@ -1,13 +1,26 @@
 <!-- Polymer dependency -->
 <link rel="import" href="../polymer/polymer.html">
+
+<!-- Epiviz imports dependency -->
 <link rel="import" href="../epiviz-imports/epiviz-common-css.html">
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
 
+<!-- Epiviz Polymer Behaviors dependency -->
 <link rel="import" href="chart-behavior.html">
 <link rel="import" href="chart-settings.html">
 <link rel="import" href="chart-colors.html">
 
-<link rel="import" href="epiviz-chart-settings.html">
+<!--
+`<epiviz-heatmap-plot>` creates a heatmap where columns are aligned to the genomic location.
+
+Most element attributes are defined in `<epiviz.ChartBehavior>` element.
+
+To use, add `<epiviz-heatmap-plot>` in the page
+
+      <epiviz-heatmap-plot></epiviz-heatmap-plot>
+
+@demo demo/index-heatmap-plot.html Example page showing a heatmap-plot
+-->
 
 <dom-module id="epiviz-heatmap-plot">
 
@@ -43,6 +56,11 @@
             /* Properties that can be defined on the element */
             properties: {
 
+                /**
+                 * Default chart properties for heatmap plot.
+                 *
+                 * @type {Object}
+                 */
                 configSrc: {
                     type: Object,
                     notify: true,
@@ -241,11 +259,22 @@
                 epiviz.ui.charts.transform.clustering.ClusteringAlgorithmFactory.initialize(self.config);
             },
 
+            /**
+             * Draws the chart.
+             *
+             * @param {Object<epiviz.datatypes.GenomicRange>} range genomic range.
+             * @param {Object<epiviz.datatypes.MapGenomicData>} data to plot
+             */
             _draw: function() {
                 this.chart.draw(this.range, this.data);
             },
 
-            _createChart: function() {
+            /**
+             * Creates an instance of the Heatmap plot chart.
+             *
+             * @return {epiviz.plugins.charts.HeatmapPlotType} HeatmapPlot chart object
+             */
+             _createChart: function() {
                 var self = this;
                 return new epiviz.plugins.charts.HeatmapPlotType(self.config);
             }

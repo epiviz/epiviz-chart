@@ -1,14 +1,26 @@
 <!-- Polymer dependency -->
 <link rel="import" href="../polymer/polymer.html">
 
+<!-- Epiviz imports dependency -->
 <link rel="import" href="../epiviz-imports/epiviz-common-css.html">
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
 
+<!-- Epiviz Polymer Behaviors dependency -->
 <link rel="import" href="chart-behavior.html">
 <link rel="import" href="chart-settings.html">
 <link rel="import" href="chart-colors.html">
 
-<link rel="import" href="epiviz-chart-settings.html">
+<!--
+`<epiviz-stacked-line-track>` creates a stacked-line track chart with genomic location on the x-axis.
+
+Most element attributes are defined in `<epiviz.ChartBehavior>` element.
+
+To use, add `<epiviz-stacked-line-track>` in the page
+
+      <epiviz-stacked-line-track></epiviz-stacked-line-track>
+
+@demo demo/index-stacked-line-track.html Example page showing a stacked-line track
+-->
 
 <dom-module id="epiviz-stacked-line-track">
 
@@ -44,6 +56,11 @@
             /* Properties that can be defined on the element */
             properties: {
 
+                /**
+                 * Default chart properties for stacked-line track.
+                 *
+                 * @type {Object}
+                 */
                 configSrc: {
                     type: Object,
                     notify: true,
@@ -224,10 +241,21 @@
                 self.config = new epiviz.Config(self.configSrc);
             },
 
+            /**
+             * Draws the chart.
+             *
+             * @param {Object<epiviz.datatypes.GenomicRange>} range genomic range.
+             * @param {Object<epiviz.datatypes.MapGenomicData>} data to plot
+             */
             _draw: function() {
                 this.chart.draw(this.range, this.data);
             },
 
+            /**
+             * Creates an instance of the stacked-line track chart.
+             *
+             * @return {epiviz.plugins.charts.StackedLineTrackType} StackedLineTrack chart object
+             */
             _createChart: function() {
                 var self = this;
                 return new epiviz.plugins.charts.StackedLineTrackType(self.config);

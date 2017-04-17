@@ -1,23 +1,24 @@
 <!-- Polymer dependency -->
 <link rel="import" href="../polymer/polymer.html">
 
+<!-- External Polymer Styles/elements dependency -->
 <link rel="import" href="../paper-button/paper-button.html">
-<!--<link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">-->
-<!--<link rel="import" href="../paper-listbox/paper-listbox.html">-->
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-dropdown-input/paper-dropdown-input.html">
-<!--<link rel="import" href="../paper-item/paper-item.html">-->
 <link rel="import" href="../paper-styles/color.html">
 <link rel="import" href="../paper-styles/typography.html">
 <link rel="import" href="../paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../iron-form/iron-form.html">
 <link rel="import" href="../paper-dialog/paper-dialog.html">
-<!--<link rel="import" href="../paper-dialog-behavior/paper-dialog-shared-styles.html">-->
 <link rel="import" href="../paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../iron-collapse/iron-collapse.html">
 <link rel="import" href="../iron-label/iron-label.html">
 
+<!--
+`<epiviz-chart-settings>` is a view element that manages chart settings. 
+All charts automatically create an instance of `<epiviz-chart-settings>` element.
+-->
 <dom-module id="epiviz-chart-settings">
 
     <template>
@@ -62,31 +63,6 @@
             #scrollContent {
                 margin-bottom: 10px;
             }
-        /*:host {
-            display: inline-block;
-            width:90%;
-        }*/
-
-        /*::shadow #settings {
-            width: 800px;
-        }*/
-
-        /*paper-dialog {
-            width: 40%;
-            height: 40%;
-        }*/
-
-        /*:host {*/
-            /*--paper-dialog: {
-                height: 50%;
-                width: 50%;
-            };*/
-
-            /*--paper-dialog-scrollable: {
-                width: 80%;
-                height: 80%;
-            };*/
-        /*}*/
         </style>
 
         <!-- local DOM goes here -->
@@ -209,11 +185,21 @@
             /* Properties that can be defined on the element */
             properties: {
 
+                /**
+                * Default chart setting definitions.
+                *
+                * @type {Array.<epiviz.ui.charts.CustomSetting>}
+                */
                 defs: {
-                    type: Object,
+                    type: Array,
                     notify: true
                 },
 
+                /**
+                * Currently set chart setting values.
+                *
+                * @type {Object.<string, *>}
+                */
                 vals: {
                     type: Object,
                     notify: true
@@ -225,6 +211,9 @@
                 'cancel.click': '_cancel'
             },
 
+            /**
+             * Toggle handler for showing chart settings
+             */
             toggleCommon: function(event) {
                 this.$.commonSettings.toggle();
                 event.preventDefault();
@@ -232,12 +221,22 @@
 
             },
 
+            /**
+             * Toggle handler for showing chart stat settings
+             */
             toggleStats: function(event) {
                 this.$.statsSettings.toggle();
                 event.preventDefault();
                 event.stopPropagation();
             },
 
+            /**
+             * whether a setting is a common setting.
+             *
+             * @param {string} item setting name/label.
+             *
+             * @return {boolean} if item is common setting
+             */
             _isCommonSetting: function(item) {
                 var commonSettings = ['title', 'marginTop', 'marginBottom', 'marginRight', 'marginLeft'];
                 if(commonSettings.indexOf(item.id) != -1 ) {
@@ -247,10 +246,24 @@
                 return false;
             },
 
+            /**
+             * whether a setting is a stat setting.
+             *
+             * @param {string} item setting name/label.
+             *
+             * @return {boolean} if item is stat setting
+             */
             _isStatSetting: function(item) {
                 return !this._isCommonSetting(item);
             },
 
+            /**
+             * UI helper function for finding a setting type
+             *
+             * @param {string} type input setting type.
+             * @param {string} expected expected setting type.
+             * @return {boolean} return true if type and expected match
+             */
             _settingType: function(type, expected) {
                 if(expected == 'array') {
                     expected = ['categorical', 'measurementsMetadata', 'measurementsAnnotation'];
@@ -271,6 +284,13 @@
                 return type == expected;
             },
 
+            /**
+             * UI helper function for grouping settings by type
+             *
+             * @param {string} value input setting index.
+             * @param {string} type expected setting group.
+             * @return {boolean} return true if value and type match
+             */
             _isIndex(value, type) {
                 if( (value % 2 == 0 && type == "even") || (value%2 == 1 && type == "odd")) {
                     return true;
@@ -279,15 +299,27 @@
                 return false;
             },
 
+            /**
+             * UI helper function get value for a given setting id
+             *
+             * @param {string} id setting id.
+             * @return {number|string} return setting value
+             */
             _getValue: function(id) {
                 // var def = null;
                 return this.vals[id];
             },
             
+            /**
+             * handles form submit action
+             */
             _submit: function(event) {
                 this.$.formSettings.submit();
             },
 
+            /**
+             * handles form submit action
+             */
             _form_submit: function(event) {
                 var self = this;
                 this.vals = event.detail;
@@ -310,16 +342,25 @@
                 this.closeSettings();
             },
 
+            /**
+             * handles form cancel action
+             */
             _cancel: function(event) {
                 this.closeSettings();
             },
 
+            /**
+             * handles form show modal action
+             */
             showSettings: function(target, callback) {
                 this.callback = callback;
                 this.$.modal.positionTarget = target;
                 this.$.modal.open();
             },
 
+            /**
+             * handles form close modal action
+             */
             closeSettings: function() {
                 this.$.modal.close();
             },
@@ -335,7 +376,7 @@
                 self.$.formSettings.addEventListener('iron-form-submit', this._form_submit.bind(self));
             },
 
-
+            /* callback function after the element is attached to the DOM (ready and created) */
             attached: function() {
                 for(var i=0; i< this.defs.length; i++){
                         // def = this.defs[i];

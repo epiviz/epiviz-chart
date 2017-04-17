@@ -1,32 +1,53 @@
 <script>
+    /**
+     * `ChartDataBehavior` object handles data requests from all epiviz-charts. 
+     * `<epiviz-environment>` & `<epiviz-navigation>` automatically inherit this behavior to update chart data.
+     *
+     * @polymerBehavior
+    **/
     epiviz.ChartDataBehavior = {
 
         properties: {
+            /**
+             * Whether to apply a data transformation function
+             *
+             * @type {boolean}
+             */
             transformData: {
                 type: Boolean,
                 notify: true,
                 value: false
             },
 
+            /**
+             * Data Transformation function
+             *
+             * @type {string}
+             */
             transformDataFunc: {
                 type: String,
                 notify: true
             }
         },
 
-
+        /* callback called when the behavior is created.*/
         created: function() {        
             var dataManagerElem = document.querySelector('epiviz-data-source');
             this.dataManager = new epiviz.data.DataManager(dataManagerElem.config, dataManagerElem.dataProviderFactory);
         },
 
-        //
-        //  output data format 
-        //  {
-        //      columns: Collection <Object> {measurement-id: <Epiviz measurement>}
-        //      values : Array  [measurement-id: Val <Integer>, row: rowInfo]
-        //  }
-        // TODO: json format
+        /**
+         *  output data format 
+         *  {
+         *      columns: Collection <Object> {measurement-id: <Epiviz measurement>}
+         *      values : Array  [measurement-id: Val <Integer>, row: rowInfo]
+         *  }
+         * TODO: json structure
+         *
+         * @param {Object} data data object
+         *
+         * @return {Object} transformed data object
+         */
         epivizToJSON: function(data) {
 
             if(!this.transformData) {
@@ -86,6 +107,15 @@
             return grid;
         },
 
+        /**
+         * Handles search requests for genes
+         * 
+         * @param {string} gene keyword to search for genes
+         * @param {HTMLElement} currentChild child HTML element where request was created
+         * @param {HTMLElement} pDom parent HTML element of the child 
+         * @callback cb
+         * @param {cb} cb Callback that handles the response
+         */
         _getElementSearch: function(gene, currentChild, pDom, cb) {
 
             // var dataManagerElem = document.querySelector('epiviz-data-source');
@@ -103,6 +133,13 @@
             // }
         },
 
+        /**
+         * Handles gene in range requests.
+         * Given a range, get the gene close to the center of the given location.
+         * 
+         * @param {HTMLElement} currentChild child HTML element where request was created
+         * @param {HTMLElement} pDom parent HTML element of the child 
+         */
         _getGenesInRange: function(currentChild, pDom) {
             var self = this;
 
@@ -140,6 +177,12 @@
             });
         },
 
+        /**
+         * Handles SeqInfo requests
+         * 
+         * @param {HTMLElement} currentChild child HTML element where request was created
+         * @param {HTMLElement} pDom parent HTML element of the child 
+         */
         _getElementSeqInfo: function(currentChild, pDom) {
 
             // var dataManagerElem = document.querySelector('epiviz-data-source');
@@ -155,6 +198,13 @@
             // }
         },
 
+        /**
+         * Handles data requests
+         * 
+         * @param {HTMLElement} currentChild child HTML element where request was created
+         * @param {HTMLElement} pDom parent HTML element of the child 
+         * @param {Array<string>} measurements measurements to request data 
+         */
         _getElementData: function(currentChild, pDom, measurements) {
             var self = this;
             var dims = currentChild.dimS || currentChild.getAttribute("dim-s");
@@ -233,6 +283,11 @@
             }
         },
 
+        /**
+         * Handles data requests when dimensions are changed/updated 
+         * 
+         * @param {string} cId Id of the chart
+         */
         _updateChart: function(cId) {
 
             if(cId == undefined) {return;}

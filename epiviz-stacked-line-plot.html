@@ -1,14 +1,26 @@
 <!-- Polymer dependency -->
 <link rel="import" href="../polymer/polymer.html">
+
+<!-- Epiviz imports dependency -->
 <link rel="import" href="../epiviz-imports/epiviz-common-css.html">
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
 
+<!-- Epiviz Polymer Behaviors dependency -->
 <link rel="import" href="chart-behavior.html">
 <link rel="import" href="chart-settings.html">
 <link rel="import" href="chart-colors.html">
 
-<link rel="import" href="epiviz-chart-settings.html">
+<!--
+`<epiviz-stacked-line-plot>` creates a stacked-line plot chart
 
+Most element attributes are defined in `<epiviz.ChartBehavior>` element.
+
+To use, add `<epiviz-stacked-line-plot>` in the page
+
+      <epiviz-stacked-line-plot></epiviz-stacked-line-plot>
+
+@demo demo/index-stacked-line-plot.html Example page showing a stacked-line plot
+-->
 <dom-module id="epiviz-stacked-line-plot">
 
     <template>
@@ -43,6 +55,11 @@
             /* Properties that can be defined on the element */
             properties: {
 
+                /**
+                 * Default chart properties for stacked-line plot.
+                 *
+                 * @type {Object}
+                 */
                 configSrc: {
                     type: Object,
                     notify: true,
@@ -233,10 +250,21 @@
                 self.config = new epiviz.Config(self.configSrc);
             },
 
+            /**
+             * Draws the chart.
+             *
+             * @param {Object<epiviz.datatypes.GenomicRange>} range genomic range.
+             * @param {Object<epiviz.datatypes.MapGenomicData>} data to plot
+             */
             _draw: function() {
                 this.chart.draw(this.range, this.data);
             },
 
+            /**
+             * Creates an instance of the stacked-line plot chart.
+             *
+             * @return {epiviz.plugins.charts.StackedLinePlotType} StackedLinePlot chart object
+             */
             _createChart: function() {
                 var self = this;
                 return new epiviz.plugins.charts.StackedLinePlotType(self.config);

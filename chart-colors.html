@@ -1,45 +1,21 @@
+<!-- External Polymer Styles/elements dependency -->
 <link rel="import" href="../iron-icons/image-icons.html">
-
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 
+<!-- Epiviz element dependency -->
 <link rel="import" href="epiviz-chart-colors.html">
 
-<!--<dom-module id="shared-colors">
-  <template>
-    <style>
-        #chartColorsIcon {
-            /*float: right;*/
-            position:absolute;
-            top: 0;
-            right: 40px;
-            width: 24px;
-            height: 24px;
-            
-            /*--iron-icon-height: 16px;
-            --iron-icon-width: 16px;*/
-
-            border: 1px solid #000;
-            border-radius: 2px;
-            padding:3px;
-            /*background-color: #fff000;*/
-        }
-    </style>
-  </template>
-</dom-module>-->
-
 <script>
+    /**
+     * `ChartColorsBehavior` object manages the `<epiviz-chart-colors>` element for each chart. 
+     * All charts automatically inherit this behavior to update chart colors.
+     *
+     * @polymerBehavior
+    **/
     epiviz.ChartColorsBehavior = {
-
-        // hostHovered: function() {
-        //     var currColorsIcon = this.$$('#chartColorsIcon');
-        //     currColorsIcon.hidden = false;
-        // },
-
-        // hostUnhovered: function() {
-        //     var currColorsIcon = this.$$('#chartColorsIcon');
-        //     currColorsIcon.setAttribute("hidden", true);
-        // },
-
+        /**
+         * Shows the `<epiviz-chart-colors>` element
+         */
         _showColorsDialog: function() {
             var self = this;
             var chartContainer = this.$$('#' + this.plotId);
@@ -64,6 +40,9 @@
             });
         },
 
+        /**
+         * Initializes the `<epiviz-chart-colors>` element
+         */
         _initializeColorsDialog: function() {
             var chartSettingsContainer = this.$$('#chartSettingsContainer');
             var chartContainer = this.$$('#' + this.plotId);
