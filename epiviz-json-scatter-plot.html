@@ -1,0 +1,86 @@
+<!-- Polymer dependency -->
+<link rel="import" href="../polymer/polymer.html">
+
+<!-- Epiviz imports dependency -->
+<link rel="import" href="../epiviz-imports/epiviz-common-css.html">
+<link rel="import" href="../epiviz-imports/epiviz-common-js.html">
+
+<!-- Epiviz Polymer Behaviors dependency -->
+<link rel="import" href="chart-json-behavior.html">
+
+<!--
+`<epiviz-json-scatter-plot>` creates a scatter plot chart. Its a wrapper around the <epiviz-scatter-plot> component that takes json data input.
+
+Most element attributes are defined in `<epiviz.ChartBehavior>` element.
+
+To use, add `<epiviz-json-scatter-plot>` in the page
+
+      <epiviz-json-scatter-plot></epiviz-json-scatter-plot>
+
+@demo demo/index-scatter.html Example page showing a scatter plot
+-->
+
+<dom-module id="epiviz-json-scatter-plot">
+
+    <template>
+        <style include="shared-settings"></style>
+        <style>
+            :host {
+                min-width: 400px;
+                min-height: 400px;
+                display: inline-block;
+                margin: 10px;
+            }
+        </style>
+
+        <!-- local DOM goes here -->
+        <epiviz-scatter-plot id="epivizChart" range="{{_chartRange}}" data="{{_chartData}}" measurements="{{_chartMeasurements}}"></epiviz-scatter-plot>
+    
+    </template>
+
+    <script>
+
+        Polymer({
+            /* Custom element html tag */
+            is: 'epiviz-json-scatter-plot',
+            behaviors: [epiviz.ChartJSONBehavior],
+
+            properties: {
+                /**
+                 * Chart Name. 
+                 *
+                 * @type {Object<epiviz.datatypes.GenomicRange>}
+                 */
+                chartName: {
+                    type: String,
+                    value: "Scatter Plot"
+                }
+            },
+
+            // Initialization that should happen or use FactoryImpl 
+            // created: function() {},
+
+            /* callback function after the element is attached to the DOM */
+            attached: function() {
+                var self = this;
+                
+                var parent = self.parentNode;
+
+                if(parent.nodeName === "IRON-COLLAPSE") {
+                    parent = parent.parentNode;
+                }
+
+                parent.addEventListener('hoverAllCharts', function(e) {
+                    self.$.epivizChart.hover(e.detail.data);
+                }.bind(self));
+
+                parent.addEventListener('unHoverAllCharts', function(e) {
+                    self.$.epivizChart.unHover();
+                }.bind(self));
+            }
+
+            /* callback function after the element is initialized */
+            // ready: function() {}
+        });
+    </script>
+</dom-module>
