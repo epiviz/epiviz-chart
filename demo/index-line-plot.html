@@ -8,11 +8,53 @@
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
     <link rel="import" href="../epiviz-line-plot.html">
+    <link rel="import" href="../epiviz-json-line-plot.html">
 </head>
 
 <body>
     <h3>epiviz-line-plot Demo</h3>
     <epiviz-line-plot use-default-data-provider="true"></epiviz-line-plot>
+
+    <h3>epiviz-line-plot Demo</h3>
+    <epiviz-json-line-plot id="jsonChart" 
+        dim-s='["col1", "col2", "col3", "col4"]'
+        data='{
+                "cols": {
+                    "col1" : [10, 20, 30, 22, 45, 14, 30, 22, 45, 14],
+                    "col2" : [4, 7, 89, 100, 12, 23, 7, 89, 100, 12],
+                    "col3" : [44, 57, 893, 210, 512, 623, 57, 893, 210, 512],
+                    "col4" : [150, 620, 370, 228, 456, 154, 620, 370, 228, 456]
+                }, 
+                "rows": {
+                    "label": ["customer1", "customer2", "customer3", "customer4", "customer5", "customer6", "customer7", "customer8", "customer9", "customer0"],
+                    "info": ["red", "blue", "blue", "red", "red", "red", "blue", "blue", "red", "red"],
+                    "state": ["nc", "va", "md", "tn", "ca", "sc", "va", "md", "tn", "ca"],
+                    "random": ["e", "e", "d", "e", "f", "f", "e", "d", "e", "f"],
+                    "randomId": [1, 5 ,7 ,9, 0, 2, 5 ,7 ,9, 0]
+                },
+                "colAnnotation" : {
+                    "col1": {
+                        "status": "yes",
+                        "ageRange": "10-15",
+                        "licensed": "no"
+                    },
+                    "col2" : {
+                        "status": "yes",
+                        "ageRange": "20-35",
+                        "licensed": "yes"
+                    },
+                    "col3": {
+                        "status": "no",
+                        "ageRange": "10-15",
+                        "licensed": "yes"
+                    },
+                    "col4" : {
+                        "status": "no",
+                        "ageRange": "20-35",
+                        "licensed": "no"
+                    }
+                }
+            }'></epiviz-json-line-plot>
 </body>
 
 </html>
