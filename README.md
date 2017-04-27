@@ -1,6 +1,6 @@
 # Installation
 
-`bower install hcbravolab/epiviz-chart`
+`bower install epiviz/epiviz-chart`
 
 # Documentation
 
