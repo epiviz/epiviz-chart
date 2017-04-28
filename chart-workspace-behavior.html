@@ -65,7 +65,7 @@
 
                         navChart.className = "charts";
                         navChart.measurements = chartNavWorkspaceObj.measurements;
-                        navChart.dims = chartNavWorkspaceObj.dimS;
+                        navChart.dimS = chartNavWorkspaceObj.dims;
                         navChart.chartSettings = chartNavWorkspaceObj.chartSettings;
                         navChart.chartColors = chartNavWorkspaceObj.chartColors;
 
@@ -74,7 +74,7 @@
                 }
                 else {
                     chart.measurements = chartWorkspaceObj.measurements;
-                    chart.dims = chartWorkspaceObj.dimS;
+                    chart.dimS = chartWorkspaceObj.dims;
                     chart.chartSettings = chartWorkspaceObj.chartSettings;
                     chart.chartColors = chartWorkspaceObj.chartColors;
                     Polymer.dom(self).appendChild(chart);
