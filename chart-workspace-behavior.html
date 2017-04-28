@@ -44,6 +44,7 @@
             self.chr = self.workspace.chr;
             self.start = self.workspace.start;
             self.end = self.workspace.end;
+            self.plotId = workspace.plotId;
             
             for (var key in self.workspace.children) {
                 chartWorkspaceObj = self.workspace.children[key];
@@ -87,6 +88,7 @@
 
             var workspaceObj = {};
             workspaceObj.measurements = self.measurements;
+            workspace.plotId = self.plotId;
             workspaceObj.chr = self.chr;
             workspaceObj.start = self.start;
             workspaceObj.end = self.end;
