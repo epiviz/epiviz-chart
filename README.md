@@ -48,10 +48,8 @@ to add an epiviz chart for example line-track.
 
 # create a new element
 ```
-elem = document.createElement('epiviz-line-track'); 
+elem = document.createElement('epiviz-scatter-plot'); 
 elem.dimS = ['affy1', 'affy2']; 
-elem.dimX = 'affy1'; 
-elem.dimY = 'affy2'; 
 elem.className="charts"
 ```
 

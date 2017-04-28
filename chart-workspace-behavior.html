@@ -1,0 +1,141 @@
+<!-- External Polymer Styles/elements dependency -->
+<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+
+<script>
+    /**
+     * `ChartWorkspaceBehavior` is an interface to saving & workspaces. 
+     * all charts inherit this behavior.
+     *
+     * @polymerBehavior
+    **/
+    epiviz.ChartWorkspaceBehavior = {
+        properties : {
+
+            /**
+             * current workspace object.
+             *
+             * @type {Object}
+             */   
+            workspace: {
+                type: Object,
+                notify: true
+                // observer: 'loadWorkspace'
+            },
+
+            /**
+             * current workspace name.
+             *
+             * @type {String}
+             */   
+            workspaceName: {
+                type: String,
+                notify: true,
+                value: "default"
+            }
+        },
+
+        // ready: function() {},
+
+        loadWorkspace: function(workspace) {
+
+            var self = this;
+            
+            self.measurements = self.workspace.measurements;
+            self.chr = self.workspace.chr;
+            self.start = self.workspace.start;
+            self.end = self.workspace.end;
+            
+            for (var key in self.workspace.children) {
+                chartWorkspaceObj = self.workspace.children[key];
+
+                var chart = document.createElement(chartWorkspaceObj.node);
+                chart.className = "charts";
+                if(chartWorkspaceObj.node == "EPIVIZ-NAVIGATION") {
+                    chart.chr = chartWorkspaceObj.chr;
+                    chart.start = chartWorkspaceObj.start;
+                    chart.end = chartWorkspaceObj.end;
+                    chart.node = chartWorkspaceObj.nodeName;
+
+                    Polymer.dom(self).appendChild(chart);
+
+                    for (var navs in chartWorkspaceObj.children) {
+                        var chartNavWorkspaceObj = chartWorkspaceObj.children[navs];
+                        var navChart = document.createElement(chartNavWorkspaceObj.node);
+
+                        navChart.className = "charts";
+                        navChart.measurements = chartNavWorkspaceObj.measurements;
+                        navChart.dims = chartNavWorkspaceObj.dimS;
+                        navChart.chartSettings = chartNavWorkspaceObj.chartSettings;
+                        navChart.chartColors = chartNavWorkspaceObj.chartColors;
+
+                        Polymer.dom(chart).appendChild(navChart);
+                    }
+                }
+                else {
+                    chart.measurements = chartWorkspaceObj.measurements;
+                    chart.dims = chartWorkspaceObj.dimS;
+                    chart.chartSettings = chartWorkspaceObj.chartSettings;
+                    chart.chartColors = chartWorkspaceObj.chartColors;
+                    Polymer.dom(self).appendChild(chart);
+                }
+            }
+        },
+
+        saveWorkspace: function() {
+
+            var self = this;
+
+            var workspaceObj = {};
+            workspaceObj.measurements = self.measurements;
+            workspaceObj.chr = self.chr;
+            workspaceObj.start = self.start;
+            workspaceObj.end = self.end;
+            workspaceObj.children = {};
+
+            var numChildren = self.getEffectiveChildren().length;
+            for (var index = 0; index < numChildren; index++) {
+
+                var childObj = {};
+                var currentChild = self.getEffectiveChildren()[index];
+                childObj[currentChild.plotId] = {};
+
+                if(currentChild.nodeName === "EPIVIZ-NAVIGATION") {
+
+                    childObj[currentChild.plotId].chr = currentChild.chr;
+                    childObj[currentChild.plotId].start = currentChild.start;
+                    childObj[currentChild.plotId].end = currentChild.end;
+                    childObj[currentChild.plotId].node = currentChild.nodeName;
+                    childObj[currentChild.plotId].children = {};
+
+                    var navChildren = currentChild.getEffectiveChildren().length;
+                    for (var nindex = 0; nindex < navChildren; nindex++) {
+                        var currentNavChild = currentChild.getEffectiveChildren()[nindex];
+                        childObj[currentChild.plotId].children[currentNavChild.plotId] = {
+                            "node": currentNavChild.nodeName,
+                            "measurements": currentNavChild.measurements,
+                            "dims": currentNavChild.dimS,
+                            "chartSettings": currentNavChild.chartSettings,
+                            "chartColors": currentNavChild.chartColors
+                        }
+                    }
+                }
+                else {
+                    childObj[currentChild.plotId] = {
+                        "node": currentChild.nodeName,
+                        "measurements": currentChild.measurements,
+                        "dims": currentChild.dimS,
+                        "chartSettings": currentChild.chartSettings,
+                        "chartColors": currentChild.chartColors
+                    };
+                }
+                workspaceObj.children[currentChild.plotId] = childObj[currentChild.plotId];
+            }
+            self.workspace = workspaceObj;
+
+            self.fire('workspaceChanged', {
+                id: self.plotId,
+                data: self.workspace 
+            });
+        }
+    }
+</script>

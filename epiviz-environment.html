@@ -6,6 +6,7 @@
 
 <!-- Epiviz Polymer Behaviors dependency -->
 <link rel="import" href="chart-data-behavior.html">
+<link rel="import" href="chart-workspace-behavior.html">
 
 <!--
 `<epiviz-environment>` is a wrapper element that manages measurements, handles events and brushing across all of its children `<epiviz-charts>` elements.
@@ -48,7 +49,7 @@ To use, add `<epiviz-environment>` in the page
     <script>
         Polymer({
             is: 'epiviz-environment',
-            behaviors: [epiviz.ChartDataBehavior],
+            behaviors: [epiviz.ChartDataBehavior, epiviz.ChartWorkspaceBehavior],
 
             properties: {
                 
@@ -325,6 +326,8 @@ To use, add `<epiviz-environment>` in the page
                                 self._getElementData(node, self, self.measurements);
                             }
                         });
+
+                        self.saveWorkspace();
                     });
             },
 
@@ -341,6 +344,10 @@ To use, add `<epiviz-environment>` in the page
                 }
 
                 self._getElementSeqInfo(self, self);
+
+                if(self.workspace) {
+                    self.loadWorkspace(self.workspace);
+                }
             }
         });
     </script>

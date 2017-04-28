@@ -141,7 +141,7 @@
                  */
                 var jsonData = {};
                 jsonData.cols = cols;
-                jsonData.globalStartIndex = 0;
+                jsonData.globalStartIndex = 1;
                 var rowObj = self._generateRowIndexes(rowLength);
                 rowObj.metadata = rows;
                 jsonData.rows = rowObj;
@@ -149,7 +149,7 @@
                 var chartData = new epiviz.measurements.MeasurementHashtable();
                 var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
                 var globalStartIndex = jsonData.globalStartIndex;
-                var range =  new epiviz.datatypes.GenomicRange(datasource, 0, rowLength);
+                var range =  new epiviz.datatypes.GenomicRange(datasource, 1, rowLength-1);
                 self._chartRange = range;
                 
                 var rowDataObj = new epiviz.datatypes.GenomicRangeArray(datasource, range, globalStartIndex, jsonData.rows);
@@ -203,7 +203,7 @@
 
                 var jsonData = {};
                 jsonData.cols = self.data.cols;
-                jsonData.globalStartIndex = 0;
+                jsonData.globalStartIndex = 1;
                 var rowObj = self._generateRowIndexes(rowLength);
                 rowObj.metadata = self.data.rows;
                 jsonData.rows = rowObj;
@@ -211,7 +211,7 @@
                 var chartData = new epiviz.measurements.MeasurementHashtable();
                 var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
                 var globalStartIndex = jsonData.globalStartIndex;
-                var range =  new epiviz.datatypes.GenomicRange(datasource, 0, rowLength);
+                var range =  new epiviz.datatypes.GenomicRange(datasource, 1, rowLength-1);
                 self._chartRange = range;
                 
                 var rowDataObj = new epiviz.datatypes.GenomicRangeArray(datasource, range, globalStartIndex, jsonData.rows);
@@ -239,9 +239,9 @@
             rowObj.index = [];
             rowObj.end = [];
             for(var i=0; i< length; i++) {
-                rowObj.start.push(i);
-                rowObj.index.push(i);
-                rowObj.end.push(i+1);
+                rowObj.start.push(i+1);
+                rowObj.index.push(i+1);
+                rowObj.end.push(i+2);
             }
             return rowObj;
         }
