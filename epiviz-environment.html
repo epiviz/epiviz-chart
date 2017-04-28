@@ -336,6 +336,8 @@ To use, add `<epiviz-environment>` in the page
                 // this.scopeSubtree(this, true);
                 var self = this;
 
+                self.plotId = self.plotId || self._generatePlotId();
+
                 if(self.transformDataFunc) {
                     self.transformFunc = new Function('return ' + self.transformDataFunc);
                 }
