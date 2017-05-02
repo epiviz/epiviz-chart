@@ -58,3 +58,7 @@ elem.className="charts"
 
 # add chart
 `Polymer.dom(ot).appendChild(elem)`
+
+
+# Optimize elements for productions. 
+`polymer-bundler --inline-scripts --inline-css --strip-commentsnpm install -g polymer-bundler epiviz-charts.html > epiviz-charts-compiled.html`
