@@ -37,6 +37,16 @@
             },
 
             /**
+             * Measurements for a chart from data Object.
+             *
+             * @type {Array<string>}
+             */            
+            measurements: {
+                type: Array,
+                notify: true
+            },
+
+            /**
              * json data Key.
              *
              * @type {string} 
@@ -86,7 +96,6 @@
             var datasource = "epiviz";
 
             var rowLength = 0;
-
 
             // if data format is a Array of JSON Objects (long format)
             if(Array.isArray(self.data)) {
@@ -173,36 +182,54 @@
                 var rowMetadata = Object.keys(self.data.rows);
                 var rowLength = self.data.cols[Object.keys(self.data.cols)[0]].length;
 
-                self.dimS.forEach(function(dim) {
+                if(self.measurements) {
+                    self.measurements.forEach(function(mea) {
+                        mSet.add(mea);
+                    })
 
-                    var colAnnotation = self.data.colAnnotation[dim];
-                    var colValues = self.data.cols[dim];
-                    var rowLength = colValues.length;
+                    m = self.measurements;
+                }
+                else if(self.dimS) {
+                    self.dimS.forEach(function(dim) {
 
-                    m.push({
-                        'id': dim,
-                        'name': dim,
-                        'type': 'feature',
-                        'datasourceId': datasource,
-                        'datasourceGroup': dim,
-                        'dataprovider': datasource,
-                        'formula': null,
-                        'defaultChartType': self.chartName,
-                        'annotation': colAnnotation,
-                        'minValue': Math.min.apply(Math, colValues),
-                        'maxValue': Math.max.apply(Math, colValues),
-                        'metadata': rowMetadata
+                        var colAnnotation = undefined;
+                        if(self.data.colAnnotation) {
+                            colAnnotation = self.data.colAnnotation[dim];
+                        }
+
+                        var colValues = [0,5];
+                        if(self.data.cols) {
+                            colValues = self.data.cols[dim];
+                        }
+                        // var colValues = self.data.cols[dim];
+                        var rowLength = colValues.length;
+
+                        m.push({
+                            'id': dim,
+                            'name': dim,
+                            'type': 'feature',
+                            'datasourceId': datasource,
+                            'datasourceGroup': dim,
+                            'dataprovider': datasource,
+                            'formula': null,
+                            'defaultChartType': self.chartName,
+                            'annotation': colAnnotation,
+                            'minValue': Math.min.apply(Math, colValues),
+                            'maxValue': Math.max.apply(Math, colValues),
+                            'metadata': rowMetadata
+                        });
+
+                        mSet.add(new epiviz.measurements.Measurement(
+                            dim, dim, 'feature', datasource, dim, datasource, null, self.chartName, colAnnotation, null, null, rowMetadata
+                        ));
                     });
+                }
 
-                    mSet.add(new epiviz.measurements.Measurement(
-                        dim, dim, 'feature', datasource, dim, datasource, null, self.chartName, colAnnotation, null, null, rowMetadata
-                    ));
-                });
 
                 self._chartMeasurements = m;
 
                 var jsonData = {};
-                jsonData.cols = self.data.cols;
+                jsonData.cols = self.data.cols || {};
                 jsonData.globalStartIndex = 1;
                 var rowObj = self._generateRowIndexes(rowLength);
                 rowObj.metadata = self.data.rows;
