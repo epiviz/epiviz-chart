@@ -180,7 +180,7 @@
             else {
                 //if data format is more like a dataframe/data table representation
                 var rowMetadata = Object.keys(self.data.rows);
-                var rowLength = self.data.cols[Object.keys(self.data.cols)[0]].length;
+                var rowLength = self.data.cols[Object.keys(self.data.cols)[0]].length || self.data.rows[Object.keys(self.data.rows)[0]].length || 0;
 
                 if(self.measurements) {
                     self.measurements.forEach(function(mea) {
