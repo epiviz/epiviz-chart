@@ -262,7 +262,7 @@ To use, add `<epiviz-environment>` in the page
                 var self = this;
 
                 if(!(self.start && self.end)) {
-                    if(self.chr) {
+                    if(self.chr && self.seqInfo) {
                         self.start = 0;
                         self.end = self.seqInfo[self.chr].max;
                     }

@@ -61,4 +61,5 @@ elem.className="charts"
 
 
 # Optimize elements for productions. 
-`polymer-bundler --inline-scripts --inline-css --strip-commentsnpm install -g polymer-bundler epiviz-charts.html > epiviz-charts-compiled.html`
+`npm install -g polymer-bundler`
+`polymer-bundler --inline-scripts --inline-css --strip-comments epiviz-charts.html > epiviz-charts-compiled.html`
