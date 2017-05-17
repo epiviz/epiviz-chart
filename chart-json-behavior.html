@@ -52,7 +52,7 @@
              * @type {string} 
              */  
             key: {
-                type: String,
+                type: Array,
                 notify: true
             },
 
@@ -99,6 +99,16 @@
 
             // if data format is a Array of JSON Objects (long format)
             if(Array.isArray(self.data)) {
+                if(self.key && self.key.length > 0) {
+                    self.data.forEach(function(d) {
+                        var keyFields = [];
+                        self.key.forEach(function(k) {
+                            keyFields.push(d[k]);
+                        });
+                        d.key = keyFields.join("-");
+                    });
+                }
+
                 var rowKeys = Object.keys(self.data[0]);
                 var colAnnotation = null;
                 var colsCollection = {}, cols = {};
@@ -160,11 +170,22 @@
                 var rowMetadata = Object.keys(self.data.rows);
                 var rowLength = self.data.cols[Object.keys(self.data.cols)[0]].length || self.data.rows[Object.keys(self.data.rows)[0]].length || 0;
 
+                if(self.key && self.key.length > 0) {
+                    var keyArray = [];
+                    for (var ikey = 0; ikey < rowLength; ikey++) {
+                        var keyFields = [];
+                        self.key.forEach(function(k) {
+                            keyFields.push(self.data.rows[k][ikey]);
+                        });
+                        keyArray.push(keyFields.join("-"));
+                    }
+                    self.data.rows.key = keyArray;
+                }
+
                 if(self.measurements) {
                     self.measurements.forEach(function(mea) {
                         mSet.add(mea);
-                    })
-
+                    });
                     m = self.measurements;
                 }
                 else if(self.dimS) {
