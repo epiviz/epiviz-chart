@@ -169,6 +169,9 @@
                 //if data format is more like a dataframe/data table representation
                 var rowMetadata = Object.keys(self.data.rows);
                 var rowLength = 0 ;
+                var hasfData = true;
+
+                if(self.data.cols == null) { hasfData = false; self.data.cols = {};}
                 
                 if(self.data.cols) {
                     if(Object.keys(self.data.cols[Object.keys(self.data.cols)[0]]).indexOf("values") != -1) {
@@ -233,6 +236,10 @@
                             'metadata': rowMetadata
                         });
 
+                        if(!hasfData) {
+                            self.data.cols[dim] = {"values":[]}
+                        }
+
                         mSet.add(new epiviz.measurements.Measurement(
                             dim, dim, 'feature', datasource, dim, datasource, null, self.chartName, undefined, null, null, rowMetadata
                         ));
@@ -242,16 +249,18 @@
                 self._chartMeasurements = m;
                 var jsonData = {};
                 jsonData.cols = {};
-                var colKeys = Object.keys(self.data.cols);
+                if(self.data.cols) {
+                    var colKeys = Object.keys(self.data.cols);
 
-                colKeys.forEach(function(ck) {
-                    if(Array.isArray(self.data.cols[ck])) {
-                        jsonData.cols[ck] = self.data.cols[ck];
-                    }
-                    else {
-                        jsonData.cols[ck] = self.data.cols[ck]["values"];
-                    }
-                });
+                    colKeys.forEach(function(ck) {
+                        if(Array.isArray(self.data.cols[ck])) {
+                            jsonData.cols[ck] = self.data.cols[ck];
+                        }
+                        else {
+                            jsonData.cols[ck] = self.data.cols[ck]["values"];
+                        }
+                    });
+                }
 
                 var rowObj = {};
                 var rowKeys = Object.keys(self.data.rows);
