@@ -1,4 +1,8 @@
-<html><head></head><body><div hidden="" by-polymer-bundler=""><link rel="import" href="../epiviz-imports/epiviz-common-css.html"><link rel="import" href="../epiviz-imports/epiviz-common-js.html"><link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+<html><head></head><body><div hidden="" by-polymer-bundler=""><link rel="import" href="../polymer/polymer.html">
+
+<link rel="import" href="../epiviz-imports/epiviz-common-js.html">
+
+<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
 
 
 <dom-module id="shared-settings">
@@ -158,8 +162,8 @@
             if(this.chart != null) {
                 // var width = self.offsetWidth - 40;
                 // if(width < self.chartType.defaultWidth()) { width = self.chartType.defaultWidth()}
-                this.chart._properties.width = self.offsetWidth - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
-                this.chart._properties.height = self.offsetHeight - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
+                this.chart._properties.width = Math.max(400, self.offsetWidth - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN);
+                this.chart._properties.height = Math.max(120, self.offsetHeight - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN);
                 self._dataChanged();
             }
         },
@@ -434,677 +438,21 @@
             }
         }
     }
-</script><script>
-    /**
-     * `ChartDataBehavior` object handles data requests from all epiviz-charts. 
-     * `<epiviz-environment>` & `<epiviz-navigation>` automatically inherit this behavior to update chart data.
-     *
-     * @polymerBehavior
-    **/
-    epiviz.ChartDataBehavior = {
-
-        properties: {
-            /**
-             * Whether to apply a data transformation function
-             *
-             * @type {boolean}
-             */
-            transformData: {
-                type: Boolean,
-                notify: true,
-                value: false
-            },
-
-            /**
-             * Data Transformation function
-             *
-             * @type {string}
-             */
-            transformDataFunc: {
-                type: String,
-                notify: true
-            }
-        },
-
-        /* callback called when the behavior is created.*/
-        created: function() {        
-            var dataManagerElem = document.querySelector('epiviz-data-source');
-            if(dataManagerElem) {
-                this.dataManager = new epiviz.data.DataManager(dataManagerElem.config, dataManagerElem.dataProviderFactory);
-            }
-        },
-
-        /**
-         *  output data format 
-         *  {
-         *      columns: Collection <Object> {measurement-id: <Epiviz measurement>}
-         *      values : Array  [measurement-id: Val <Integer>, row: rowInfo]
-         *  }
-         * TODO: json structure
-         *
-         * @param {Object} data data object
-         *
-         * @return {Object} transformed data object
-         */
-        epivizToJSON: function(data) {
-
-            if(!this.transformData) {
-                return data;
-            }
-
-            var fromDataMeasurements = [];
-            var range = this.range;
-
-            var firstGlobalIndex = data.firstSeries().globalStartIndex();
-            var lastGlobalIndex = data.firstSeries().globalEndIndex();
-
-            data.foreach(function(measurement, series) {
-                fromDataMeasurements.push(measurement);
-                var firstIndex = series.globalStartIndex();
-                var lastIndex = series.globalEndIndex();
-                if (firstIndex > firstGlobalIndex) { firstGlobalIndex = firstIndex; }
-                if (lastIndex < lastGlobalIndex) { lastGlobalIndex = lastIndex; }
-            });
-
-            var nItems = lastGlobalIndex - firstGlobalIndex;
-
-            var i, index;
-            var grid = {};
-            grid.measurements = fromDataMeasurements;
-            grid.columns = {};
-
-            grid.measurements.forEach(function(m) {
-                grid.columns[m.datasourceId() + "-" + m.id()] = m;
-            });
-
-            grid.values = [];
-            var nSeries = fromDataMeasurements.length;
-            for (i = 0; i < nItems; ++i) {
-                index = i + firstGlobalIndex;
-                var valArray = {};
-                
-                var row = {};
-                var rowData = data.getSeries(fromDataMeasurements[0]).getRowByGlobalIndex(index);
-                row.start = rowData.start();
-                row.end = rowData.end();
-                row.metadata = rowData.rowMetadata();
-                row.strand = rowData.strand();
-                row.index = rowData.index();
-                row.globalIndex = rowData.globalIndex();
-                row.id = rowData.id();
-                row.seqName = rowData.seqName();
-                valArray.row = row;
-
-                grid.measurements.forEach(function(m) {
-                    var cellX = data.getSeries(m).getByGlobalIndex(index);
-                    valArray[m.datasourceId() + "-" + m.id()] = cellX.value;
-                });
-
-                grid.values.push(valArray);
-            }
-            return grid;
-        },
-
-        /**
-         * Handles search requests for genes
-         * 
-         * @param {string} gene keyword to search for genes
-         * @param {HTMLElement} currentChild child HTML element where request was created
-         * @param {HTMLElement} pDom parent HTML element of the child 
-         * @callback cb
-         * @param {cb} cb Callback that handles the response
-         */
-        _getElementSearch: function(gene, currentChild, pDom, cb) {
-
-            // var dataManagerElem = document.querySelector('epiviz-data-source');
-
-            // if (dataManagerElem != null) {
-            //     var dataManager = dataManagerElem.dataManager;
-            if(this.dataManager) {
-                this.dataManager.search(function(data) {
-                    if(pDom) {
-                        pDom.$$("#geneSearch").suggestions(data);
-                    }
-                    else {
-                        cb(data);
-                    }
-                }, gene);
-            }
-        },
-
-        /**
-         * Handles gene in range requests.
-         * Given a range, get the gene close to the center of the given location.
-         * 
-         * @param {HTMLElement} currentChild child HTML element where request was created
-         * @param {HTMLElement} pDom parent HTML element of the child 
-         */
-        _getGenesInRange: function(currentChild, pDom) {
-            var self = this;
-
-            var mSet = new epiviz.measurements.MeasurementSet();
-            var m = new epiviz.measurements.Measurement(
-                "genes",
-                "Genes",
-                "range",
-                "genes",
-                "genes",
-                "umd",
-                null,
-                "Genes Track",
-                null,
-                null,
-                null,
-                ["gene", "entrez", "exon_starts", "exon_ends"]
-            )
-            mSet.add(m);
-
-            var chartMeasMap = {};
-            chartMeasMap[currentChild.plotId] = mSet;
-
-            if(this.dataManager) {
-                this.dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
-                    // Get gene (based on size)
-                    // var index = data.globalStartIndex(m) + Math.round((data.size(m) - 1) / 2);
-
-                    // Get gene (based on position)
-                    var searchIndex = data.binarySearchStarts(m, new epiviz.datatypes.GenomicRange(pDom.range.seqName(), (pDom.range.start() + pDom.range.end()) / 2, 1000000));
-                    var index = data.globalStartIndex(m) + searchIndex.index;
-                    
-                    var gene = data.getRowByGlobalIndex(m, index).rowMetadata().gene;
-
-                    pDom.geneInRange = gene;
-                });
-            }
-        },
-
-        /**
-         * Handles SeqInfo requests
-         * 
-         * @param {HTMLElement} currentChild child HTML element where request was created
-         * @param {HTMLElement} pDom parent HTML element of the child 
-         */
-        _getElementSeqInfo: function(currentChild, pDom) {
-
-            // var dataManagerElem = document.querySelector('epiviz-data-source');
-            if(this.dataManager) {
-            //     var dataManager = dataManagerElem.dataManager;
-                this.dataManager.getSeqInfos(function(data) {
-                    var seqinfo = {};
-                    data.forEach(function(s) {
-                        seqinfo[s.seqName] = s;
-                    });
-                    currentChild.seqInfo = seqinfo;
-                });
-            }
-        },
-
-        /**
-         * Handles data requests
-         * 
-         * @param {HTMLElement} currentChild child HTML element where request was created
-         * @param {HTMLElement} pDom parent HTML element of the child 
-         * @param {Array<string>} measurements measurements to request data 
-         */
-        _getElementData: function(currentChild, pDom, measurements) {
-            var self = this;
-
-            if(self.dataManager != null) {
-            var dims = currentChild.dimS || currentChild.getAttribute("dim-s");
-
-            if (typeof(dims) == "string") {
-                dims = JSON.parse(dims);
-            }
-
-            // var id = self._generateChartId();
-            var mSet = new epiviz.measurements.MeasurementSet();
-            var tMeasurements = [];
-
-            if(dims != null && dims.length > 0) {
-                for (var idim = 0; idim < dims.length; idim++) {
-                    var mtdx = measurements[dims[idim]];
-                    mSet.add(new epiviz.measurements.Measurement(
-                        mtdx.id,
-                        mtdx.name,
-                        mtdx.type,
-                        mtdx.datasourceId,
-                        mtdx.datasourceGroup,
-                        mtdx.dataprovider,
-                        mtdx.formula,
-                        mtdx.defaultChartType,
-                        mtdx.annotation,
-                        mtdx.minValue,
-                        mtdx.maxValue,
-                        mtdx.metadata
-                    ));
-
-                    tMeasurements.push(mtdx);
-                }
-            }
-            else if(currentChild.measurements != null && currentChild.measurements.length > 0 ){
-                for (var idim = 0; idim < currentChild.measurements.length; idim++) {
-                    var mtdx = currentChild.measurements[idim];
-                    mSet.add(new epiviz.measurements.Measurement(
-                        mtdx.id,
-                        mtdx.name,
-                        mtdx.type,
-                        mtdx.datasourceId,
-                        mtdx.datasourceGroup,
-                        mtdx.dataprovider,
-                        mtdx.formula,
-                        mtdx.defaultChartType,
-                        mtdx.annotation,
-                        mtdx.minValue,
-                        mtdx.maxValue,
-                        mtdx.metadata
-                    ));
-
-                    tMeasurements.push(mtdx);
-                }
-            }
-
-            var id = currentChild.plotId;
-            if(tMeasurements.length != 0) {
-                currentChild.range = currentChild.range || self.range || pDom.range;
-                currentChild.measurements = tMeasurements;
-                var chartMeasMap = {};
-                chartMeasMap[id] = mSet;
-
-                // var dataManagerElem = document.querySelector('epiviz-data-source[provider-id$="' + tMeasurements[0].dataprovider + '"]');
-                //     var dataManager = dataManagerElem.dataManager;
-
-                    self.dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
-                        //currentChild.data = data;
-                        var dataChartElem = pDom.querySelector('[plot-id$="' + id + '"]') || Polymer.dom(pDom).querySelector('[plot-id$="' + id + '"]');
-                        if(dataChartElem) {
-                            dataChartElem.data = pDom.transformFunc(data);
-                        }
-                    });
-                }
-            }
-        },
-
-        /**
-         * Handles data requests when dimensions are changed/updated 
-         * 
-         * @param {string} cId Id of the chart
-         */
-        _updateChart: function(cId) {
-
-            if(cId == undefined) {return;}
-            var self = this;
-            var currentChild = Polymer.dom(self).querySelector('[plot-id$="' + cId + '"]');
-            var dims = currentChild.dimS || currentChild.getAttribute("dim-s");
-            $('#' + cId).empty();
-
-            if (typeof(dims) == "string") {
-                dims = JSON.parse(dims);
-            }
-
-            var mSet = new epiviz.measurements.MeasurementSet();
-            var tMeasurements = [];
-
-            if(dims != null && dims.length > 0) {
-                for (var idim = 0; idim < dims.length; idim++) {
-                    var mtdx = self.measurements[dims[idim]];
-                    mSet.add(new epiviz.measurements.Measurement(
-                        mtdx.id,
-                        mtdx.name,
-                        mtdx.type,
-                        mtdx.datasourceId,
-                        mtdx.datasourceGroup,
-                        mtdx.dataprovider,
-                        mtdx.formula,
-                        mtdx.defaultChartType,
-                        mtdx.annotation,
-                        mtdx.minValue,
-                        mtdx.maxValue,
-                        mtdx.metadata
-                    ));
-                    tMeasurements.push(mtdx);
-                }
-            }
-            else if(currentChild.measurements != null && currentChild.measurements.length > 0 ){
-                for (var idim = 0; idim < currentChild.measurements.length; idim++) {
-                    var mtdx = currentChild.measurements[idim];
-                    mSet.add(new epiviz.measurements.Measurement(
-                        mtdx.id,
-                        mtdx.name,
-                        mtdx.type,
-                        mtdx.datasourceId,
-                        mtdx.datasourceGroup,
-                        mtdx.dataprovider,
-                        mtdx.formula,
-                        mtdx.defaultChartType,
-                        mtdx.annotation,
-                        mtdx.minValue,
-                        mtdx.maxValue,
-                        mtdx.metadata
-                    ));
-
-                    tMeasurements.push(mtdx);
-                }
-            }
-
-            if(tMeasurements.length != 0) {
-                currentChild.range = currentChild.range || self.range;
-                currentChild.measurements = tMeasurements;
-                var chartMeasMap = {};
-                chartMeasMap[cId] = mSet;
-
-                // var dataManagerElem = document.querySelector('epiviz-data-source[provider-id$="' + tMeasurements[0].dataprovider + '"]');
-                if(self.dataManager) {
-                //     var dataManager = dataManagerElem.dataManager;
-
-                    self.dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
-                        //currentChild.data = data;
-                        var dataChartElem = Polymer.dom(self).querySelector('[plot-id$="' + id + '"]');
-
-                        dataChartElem.data = self.transformFunc(data);
-                    });
-                }
-            }
-        }
-    }
-</script><link rel="import" href="../iron-icons/image-icons.html">
-<link rel="import" href="../paper-icon-button/paper-icon-button.html">
-
-<link rel="import" href="../polymer/polymer.html">
+</script><link rel="import" href="../paper-icon-button/paper-icon-button.html">
 
 <link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-dropdown-input/paper-dropdown-input.html">
 <link rel="import" href="../paper-styles/color.html">
 <link rel="import" href="../paper-styles/typography.html">
+<link rel="import" href="../paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../iron-form/iron-form.html">
 <link rel="import" href="../paper-dialog/paper-dialog.html">
 <link rel="import" href="../paper-dialog-scrollable/paper-dialog-scrollable.html">
-<link rel="import" href="../paper-swatch-picker/paper-swatch-picker.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-collapse/iron-collapse.html">
 <link rel="import" href="../iron-label/iron-label.html">
 
-<dom-module id="epiviz-chart-colors">
-
-    <template>
-        <style>
-            .flex {
-                @apply(--layout-horizontal);
-            }
-
-            .flexchild {
-                @apply(--layout-flex);
-                padding: 20px;
-                flex: 1 1 auto;
-            }
-
-            .flex-end-justified {
-                @apply(--layout-horizontal);
-                @apply(--layout-end-justified);
-            }
-
-            #formSettings {
-                min-width: 500px;
-            }
-
-            #scrollContent {
-                margin-bottom: 10px;
-            }
-
-            .color-item {
-                display: block;
-            }
-        </style>
-
-        <!-- local DOM goes here -->
-        <div id="settings">
-            <!--no-overlap horizontal-align="left" vertical-align="top"-->
-            <paper-dialog id="modal" modal="">
-                <h2>Chart Color Settings</h2>
-                <form is="iron-form" id="formSettings">
-                    <paper-dialog-scrollable id="scrollContent">
-
-                        <div class="container flex">
-                            <div class="flexchild">
-                                <template is="dom-repeat" items="{{labels}}">
-                                    <template restamp="true" is="dom-if" if="[[_isIndexGroup(index, 0)]]">
-                                        <div class="color-item">
-                                            <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
-                                            <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
-                                        </div>
-                                    </template>
-                                </template>
-                            </div>
-                            <div class="flexchild">
-                                <template is="dom-repeat" items="{{labels}}">
-                                    <template restamp="true" is="dom-if" if="[[_isIndexGroup(index, 1)]]">
-                                        <div class="color-item">                                        
-                                            <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
-                                            <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
-                                        </div>
-                                    </template>
-                                </template>
-                            </div>
-                            <div class="flexchild">
-                                <template is="dom-repeat" items="{{labels}}">
-                                    <template restamp="true" is="dom-if" if="[[_isIndexGroup(index, 2)]]">
-                                        <div class="color-item">
-                                            <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
-                                            <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
-                                        </div>
-                                    </template>
-                                </template>
-                            </div>
-                        </div>
-
-                    </paper-dialog-scrollable>
-                    <div class="container flex-end-justified">
-                        <paper-button id="submit" raised="">Apply</paper-button>
-                        <paper-button id="cancel" raised="">Cancel</paper-button>
-                    </div>
-                </form>
-            </paper-dialog>
-        </div>
-    
-    </template>
-
-    <script>
-        Polymer({
-            /* Custom element html tag */
-            is: 'epiviz-chart-colors',
-
-            /* Properties that can be defined on the element */
-            properties: {
-
-                /**
-                * Default chart color labels.
-                *
-                * @type {Object<string, string>}
-                */
-                labels: {
-                    type: Object,
-                    notify: true
-                },
-
-                /**
-                * Default chart color palettes.
-                *
-                * @type {Array<epiviz.ui.charts.ColorPalette>}
-                */
-                palettes: {
-                    type: Array,
-                    notify: true
-                },
-
-                /**
-                * currently selected chart colors.
-                *
-                * @type {Object<string, string>}
-                */
-                selected: {
-                    type: Object,
-                    notify: true
-                }
-            },
-
-            listeners: {
-                'submit.click': '_submit',
-                'cancel.click': '_cancel'
-            },
-
-            /**
-             * Get Color for a given label/Key.
-             *
-             * @param {string} label label/key to search for.
-             *
-             * @return {Object} color set for the given label
-             */
-            _getColor: function(label) {
-                return this.selected.getByKey(label);
-            },
-
-            /**
-             * UI Helper function to find group
-             *
-             * @param {string} value index number
-             * @param {number} expeced expected group
-             * @return {boolean} returns True if value in expected
-             */
-            _isIndexGroup(value, expected) {
-                if( value % 3 == expected ) {
-                    return true;
-                }
-
-                return false;
-            },
-
-            /**
-             * UI Helper function to create Id for a given label (ignore spaces)
-             *
-             * @param {string} label string
-             * 
-             * @return {string} return label ignoring white spaces
-             */
-            _getId: function(label) {
-                return label.split(' ').join('');
-            },
-
-            /**
-             * handles form submit action
-             */
-            _submit: function(event) {
-                this.$.formSettings.submit();
-            },
-
-            /**
-             * handles form submit action
-             */
-            _form_submit: function(event) {
-                var self = this;
-
-                //collect all colors set
-                colors = [];
-                for (var i=0; i < this.labels.length; i++) {
-                    var swatch = self.$$('#' + this._getId(this.labels[i]));
-                    colors.push(swatch.color);
-                }
-
-                self.selected = new epiviz.ui.charts.ColorPalette(colors, undefined, undefined, self.selected.keyIndices());
-
-                // this.vals = event.detail;
-                this.callback(colors);
-                this.closeColors();
-            },
-
-            /**
-             * handles form cancel action
-             */
-            _cancel: function(event) {
-                this.closeColors();
-            },
-
-            /**
-             * handles element modal show action
-             */
-            showColors: function(target, callback) {
-                this.callback = callback;
-                this.$.modal.positionTarget = target;
-                this.$.modal.open();
-            },
-
-            /**
-             * handles element modal close action
-             */
-            closeColors: function() {
-                this.$.modal.close();
-            },
-
-            // Initialization that should happen or use FactoryImpl 
-            // created: function() {},
-
-            /* callback function after the element is initialized */
-            ready: function() {
-                var self = this;
-                self.$.scrollContent.dialogElement = self.$.modal;
-                self.$.formSettings.addEventListener('iron-form-submit', this._form_submit.bind(self));
-            }
-        });
-    </script>
-</dom-module><script>
-    /**
-     * `ChartColorsBehavior` object manages the `<epiviz-chart-colors>` element for each chart. 
-     * All charts automatically inherit this behavior to update chart colors.
-     *
-     * @polymerBehavior
-    **/
-    epiviz.ChartColorsBehavior = {
-        /**
-         * Shows the `<epiviz-chart-colors>` element
-         */
-        _showColorsDialog: function() {
-            var self = this;
-            var chartContainer = this.$$('#' + this.plotId);
-            var currColors = this.$$('epiviz-chart-colors');
-
-            if(currColors == null) {
-                var currColors = document.createElement('epiviz-chart-colors');
-                currColors.setAttribute('labels', JSON.stringify(self.chart.colorLabels()));
-                currColors.palettes = self.config.colorPalettes;
-                currColors.selected = self.chart.colors();
-                // chartSettingsElem.setAttribute('palettes', JSON.stringify(palettes));
-                // chartSettingsElem.setAttribute('selected', JSON.stringify(selected));
-                Polymer.dom(chartContainer).appendChild(currColors);
-            }
-            else {
-                currColors.setAttribute('labels', JSON.stringify(self.chart.colorLabels()));
-                currColors.selected = self.chart.colors();
-            }
-
-            currColors.showColors(self, function(newColors) {
-                self.chartColors = newColors;
-            });
-        },
-
-        /**
-         * Initializes the `<epiviz-chart-colors>` element
-         */
-        _initializeColorsDialog: function() {
-            var chartSettingsContainer = this.$$('#chartSettingsContainer');
-            var chartContainer = this.$$('#' + this.plotId);
-            var currColorIcon = this.$$('#chartColorsIcon');
-
-            if(currColorIcon == null) {
-                var iconElem = document.createElement('paper-icon-button');
-                // iconElem.hidden = true;
-                iconElem.id = "chartColorsIcon";
-                iconElem.icon = "image:color-lens";
-
-                iconElem.addEventListener("click", this._showColorsDialog.bind(this));
-                Polymer.dom(chartSettingsContainer).appendChild(iconElem);
-            }
-        }        
-    }
-</script><link rel="import" href="../paper-input/paper-input.html">
-<link rel="import" href="../paper-toggle-button/paper-toggle-button.html">
-<link rel="import" href="../iron-collapse/iron-collapse.html">
 <dom-module id="epiviz-chart-settings">
 
     <template>
@@ -1532,8 +880,290 @@
             }
         }        
     }
-</script><dom-module id="epiviz-blocks-track">
+</script><link rel="import" href="../iron-icons/image-icons.html">
+<link rel="import" href="../paper-swatch-picker/paper-swatch-picker.html">
+<dom-module id="epiviz-chart-colors">
 
+    <template>
+        <style>
+            .flex {
+                @apply(--layout-horizontal);
+            }
+
+            .flexchild {
+                @apply(--layout-flex);
+                padding: 20px;
+                flex: 1 1 auto;
+            }
+
+            .flex-end-justified {
+                @apply(--layout-horizontal);
+                @apply(--layout-end-justified);
+            }
+
+            #formSettings {
+                min-width: 500px;
+            }
+
+            #scrollContent {
+                margin-bottom: 10px;
+            }
+
+            .color-item {
+                display: block;
+            }
+        </style>
+
+        <!-- local DOM goes here -->
+        <div id="settings">
+            <!--no-overlap horizontal-align="left" vertical-align="top"-->
+            <paper-dialog id="modal" modal="">
+                <h2>Chart Color Settings</h2>
+                <form is="iron-form" id="formSettings">
+                    <paper-dialog-scrollable id="scrollContent">
+
+                        <div class="container flex">
+                            <div class="flexchild">
+                                <template is="dom-repeat" items="{{labels}}">
+                                    <template restamp="true" is="dom-if" if="[[_isIndexGroup(index, 0)]]">
+                                        <div class="color-item">
+                                            <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
+                                            <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+                            <div class="flexchild">
+                                <template is="dom-repeat" items="{{labels}}">
+                                    <template restamp="true" is="dom-if" if="[[_isIndexGroup(index, 1)]]">
+                                        <div class="color-item">                                        
+                                            <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
+                                            <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+                            <div class="flexchild">
+                                <template is="dom-repeat" items="{{labels}}">
+                                    <template restamp="true" is="dom-if" if="[[_isIndexGroup(index, 2)]]">
+                                        <div class="color-item">
+                                            <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
+                                            <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+                        </div>
+
+                    </paper-dialog-scrollable>
+                    <div class="container flex-end-justified">
+                        <paper-button id="submit" raised="">Apply</paper-button>
+                        <paper-button id="cancel" raised="">Cancel</paper-button>
+                    </div>
+                </form>
+            </paper-dialog>
+        </div>
+    
+    </template>
+
+    <script>
+        Polymer({
+            /* Custom element html tag */
+            is: 'epiviz-chart-colors',
+
+            /* Properties that can be defined on the element */
+            properties: {
+
+                /**
+                * Default chart color labels.
+                *
+                * @type {Object<string, string>}
+                */
+                labels: {
+                    type: Object,
+                    notify: true
+                },
+
+                /**
+                * Default chart color palettes.
+                *
+                * @type {Array<epiviz.ui.charts.ColorPalette>}
+                */
+                palettes: {
+                    type: Array,
+                    notify: true
+                },
+
+                /**
+                * currently selected chart colors.
+                *
+                * @type {Object<string, string>}
+                */
+                selected: {
+                    type: Object,
+                    notify: true
+                }
+            },
+
+            listeners: {
+                'submit.click': '_submit',
+                'cancel.click': '_cancel'
+            },
+
+            /**
+             * Get Color for a given label/Key.
+             *
+             * @param {string} label label/key to search for.
+             *
+             * @return {Object} color set for the given label
+             */
+            _getColor: function(label) {
+                return this.selected.getByKey(label);
+            },
+
+            /**
+             * UI Helper function to find group
+             *
+             * @param {string} value index number
+             * @param {number} expeced expected group
+             * @return {boolean} returns True if value in expected
+             */
+            _isIndexGroup(value, expected) {
+                if( value % 3 == expected ) {
+                    return true;
+                }
+
+                return false;
+            },
+
+            /**
+             * UI Helper function to create Id for a given label (ignore spaces)
+             *
+             * @param {string} label string
+             * 
+             * @return {string} return label ignoring white spaces
+             */
+            _getId: function(label) {
+                return label.split(' ').join('');
+            },
+
+            /**
+             * handles form submit action
+             */
+            _submit: function(event) {
+                this.$.formSettings.submit();
+            },
+
+            /**
+             * handles form submit action
+             */
+            _form_submit: function(event) {
+                var self = this;
+
+                //collect all colors set
+                colors = [];
+                for (var i=0; i < this.labels.length; i++) {
+                    var swatch = self.$$('#' + this._getId(this.labels[i]));
+                    colors.push(swatch.color);
+                }
+
+                self.selected = new epiviz.ui.charts.ColorPalette(colors, undefined, undefined, self.selected.keyIndices());
+
+                // this.vals = event.detail;
+                this.callback(colors);
+                this.closeColors();
+            },
+
+            /**
+             * handles form cancel action
+             */
+            _cancel: function(event) {
+                this.closeColors();
+            },
+
+            /**
+             * handles element modal show action
+             */
+            showColors: function(target, callback) {
+                this.callback = callback;
+                this.$.modal.positionTarget = target;
+                this.$.modal.open();
+            },
+
+            /**
+             * handles element modal close action
+             */
+            closeColors: function() {
+                this.$.modal.close();
+            },
+
+            // Initialization that should happen or use FactoryImpl 
+            // created: function() {},
+
+            /* callback function after the element is initialized */
+            ready: function() {
+                var self = this;
+                self.$.scrollContent.dialogElement = self.$.modal;
+                self.$.formSettings.addEventListener('iron-form-submit', this._form_submit.bind(self));
+            }
+        });
+    </script>
+</dom-module><script>
+    /**
+     * `ChartColorsBehavior` object manages the `<epiviz-chart-colors>` element for each chart. 
+     * All charts automatically inherit this behavior to update chart colors.
+     *
+     * @polymerBehavior
+    **/
+    epiviz.ChartColorsBehavior = {
+        /**
+         * Shows the `<epiviz-chart-colors>` element
+         */
+        _showColorsDialog: function() {
+            var self = this;
+            var chartContainer = this.$$('#' + this.plotId);
+            var currColors = this.$$('epiviz-chart-colors');
+
+            if(currColors == null) {
+                var currColors = document.createElement('epiviz-chart-colors');
+                currColors.setAttribute('labels', JSON.stringify(self.chart.colorLabels()));
+                currColors.palettes = self.config.colorPalettes;
+                currColors.selected = self.chart.colors();
+                // chartSettingsElem.setAttribute('palettes', JSON.stringify(palettes));
+                // chartSettingsElem.setAttribute('selected', JSON.stringify(selected));
+                Polymer.dom(chartContainer).appendChild(currColors);
+            }
+            else {
+                currColors.setAttribute('labels', JSON.stringify(self.chart.colorLabels()));
+                currColors.selected = self.chart.colors();
+            }
+
+            currColors.showColors(self, function(newColors) {
+                self.chartColors = newColors;
+            });
+        },
+
+        /**
+         * Initializes the `<epiviz-chart-colors>` element
+         */
+        _initializeColorsDialog: function() {
+            var chartSettingsContainer = this.$$('#chartSettingsContainer');
+            var chartContainer = this.$$('#' + this.plotId);
+            var currColorIcon = this.$$('#chartColorsIcon');
+
+            if(currColorIcon == null) {
+                var iconElem = document.createElement('paper-icon-button');
+                // iconElem.hidden = true;
+                iconElem.id = "chartColorsIcon";
+                iconElem.icon = "image:color-lens";
+
+                iconElem.addEventListener("click", this._showColorsDialog.bind(this));
+                Polymer.dom(chartSettingsContainer).appendChild(iconElem);
+            }
+        }        
+    }
+</script><dom-module id="epiviz-blocks-track">
+    <link rel="import" href="../epiviz-imports/epiviz-common-css.html">
     <template>
         <style include="shared-settings"></style>
         <style>
@@ -1769,7 +1399,6 @@
         });
     </script>
 </dom-module><dom-module id="epiviz-genes-track">
-
     <template>
         <style include="shared-settings"></style>
         <style>
@@ -2018,7 +1647,6 @@
         });
     </script>
 </dom-module><dom-module id="epiviz-heatmap-plot">
-
     <template>
         <style include="shared-settings"></style>
         <style>
@@ -2276,7 +1904,6 @@
         });
     </script>
 </dom-module><dom-module id="epiviz-line-plot">
-
     <template>
         <style include="shared-settings"></style>
         <style>
@@ -2525,7 +2152,6 @@
         });
     </script>
 </dom-module><dom-module id="epiviz-line-track">
-
     <template>
         <style include="shared-settings"></style>
         <style>
@@ -2781,7 +2407,6 @@
         });
     </script>
 </dom-module><dom-module id="epiviz-scatter-plot">
-
     <template>
         <style include="shared-settings"></style>
         <style>
@@ -3038,7 +2663,6 @@
         });
     </script>
 </dom-module><dom-module id="epiviz-stacked-line-track">
-
     <template>
         <style include="shared-settings"></style>
         <style>
@@ -3278,7 +2902,6 @@
         });
     </script>
 </dom-module><dom-module id="epiviz-stacked-line-plot">
-
     <template>
         <style include="shared-settings"></style>
         <style>
@@ -4624,7 +4247,7 @@
              * @type {string} 
              */  
             key: {
-                type: String,
+                type: Array,
                 notify: true
             },
 
@@ -4671,6 +4294,16 @@
 
             // if data format is a Array of JSON Objects (long format)
             if(Array.isArray(self.data)) {
+                if(self.key && self.key.length > 0) {
+                    self.data.forEach(function(d) {
+                        var keyFields = [];
+                        self.key.forEach(function(k) {
+                            keyFields.push(d[k]);
+                        });
+                        d.key = keyFields.join("-");
+                    });
+                }
+
                 var rowKeys = Object.keys(self.data[0]);
                 var colAnnotation = null;
                 var colsCollection = {}, cols = {};
@@ -4730,13 +4363,47 @@
             else {
                 //if data format is more like a dataframe/data table representation
                 var rowMetadata = Object.keys(self.data.rows);
-                var rowLength = self.data.cols[Object.keys(self.data.cols)[0]].length;
+                var rowLength = 0 ;
+                var hasfData = true;
+
+                if(self.data.cols == null) { hasfData = false; self.data.cols = {};}
+                
+                if(self.data.cols) {
+                    if(Object.keys(self.data.cols[Object.keys(self.data.cols)[0]]).indexOf("values") != -1) {
+                        rowLength = self.data.cols[Object.keys(self.data.cols)[0]].values.length;
+                    }
+                    else {
+                        rowLength = self.data.cols[Object.keys(self.data.cols)[0]].length;
+                    }
+                }
+                else if (self.data.rows) {
+                    if(Object.keys(self.data.rows)[0].indexOf("values") != -1) {
+                        rowLength = self.data.rows.values[Object.keys(self.data.rows.values)[0]].length;
+                    }
+                    else {
+                        rowLength = self.data.rows[Object.keys(self.data.rows)[0]].length;
+                    }
+                };
+
+                if(self.key && self.key.length > 0) {
+                    var keyArray = [];
+                    for (var ikey = 0; ikey < rowLength; ikey++) {
+                        var keyFields = [];
+                        self.key.forEach(function(k) {
+                            keyFields.push(self.data.rows[k][ikey]);
+                        });
+                        keyArray.push(keyFields.join("-"));
+                    }
+                    self.data.rows.key = keyArray;
+                }
 
                 if(self.measurements) {
                     self.measurements.forEach(function(mea) {
-                        mSet.add(mea);
-                    })
-
+                        mSet.add(new epiviz.measurements.Measurement(
+                            mea.id, mea.name, mea.type, mea.datasourceId, mea.datasourceGroup, mea.dataprovider, 
+                            mea.formula, mea.defaultChartType, mea.annotation, mea.minValue, mea.maxValue, mea.metadata
+                        ));
+                    });
                     m = self.measurements;
                 }
                 else if(self.dimS) {
@@ -4764,6 +4431,10 @@
                             'metadata': rowMetadata
                         });
 
+                        if(!hasfData) {
+                            self.data.cols[dim] = {"values":[]}
+                        }
+
                         mSet.add(new epiviz.measurements.Measurement(
                             dim, dim, 'feature', datasource, dim, datasource, null, self.chartName, undefined, null, null, rowMetadata
                         ));
@@ -4773,21 +4444,30 @@
                 self._chartMeasurements = m;
                 var jsonData = {};
                 jsonData.cols = {};
-                var colKeys = Object.keys(self.data.cols);
+                if(self.data.cols) {
+                    var colKeys = Object.keys(self.data.cols);
 
-                colKeys.forEach(function(ck) {
-                    if(Array.isArray(self.data.cols[ck])) {
-                        jsonData.cols[ck] = self.data.cols[ck];
-                    }
-                    else {
-                        jsonData.cols[ck] = self.data.cols[ck]["values"];
-                    }
-                });
+                    colKeys.forEach(function(ck) {
+                        if(Array.isArray(self.data.cols[ck])) {
+                            jsonData.cols[ck] = self.data.cols[ck];
+                        }
+                        else {
+                            jsonData.cols[ck] = self.data.cols[ck]["values"];
+                        }
+                    });
+                }
 
-                var rowObj;
+                var rowObj = {};
                 var rowKeys = Object.keys(self.data.rows);
 
-                if( (rowKeys.indexOf("start") == -1) || (rowKeys.indexOf("index") == -1) || (rowKeys.rows.indexOf("end") == -1)) {
+                if(rowKeys.indexOf("values") != -1) {
+                    rowObj.start = self.data.rows.values.start;
+                    rowObj.end = self.data.rows.values.end;
+                    // rowObj.index = self.data.rows.values.id;
+                    rowObj.id = self.data.rows.values.id;
+                    rowObj.metadata = self.data.rows.values.metadata;
+                }
+                else if( (rowKeys.indexOf("start") == -1) || (rowKeys.indexOf("index") == -1) || (rowKeys.rows.indexOf("end") == -1)) {
                     rowObj = self._generateRowIndexes(rowLength);
                     rowObj.metadata = self.data.rows;
                 }
@@ -4805,7 +4485,7 @@
             var chartData = new epiviz.measurements.MeasurementHashtable();
             var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
             var globalStartIndex = jsonData.globalStartIndex;
-            var range =  new epiviz.datatypes.GenomicRange(datasource, 1, rowLength-1);
+            var range =  new epiviz.datatypes.GenomicRange(datasource, globalStartIndex, jsonData.rows.end[rowLength-1] - globalStartIndex);
             self._chartRange = range;
             
             var rowDataObj = new epiviz.datatypes.GenomicRangeArray(datasource, range, globalStartIndex, jsonData.rows);
@@ -4838,8 +4518,8 @@
             return rowObj;
         }
     }
-</script><dom-module id="epiviz-json-heatmap-plot">
-
+</script>
+<dom-module id="epiviz-json-heatmap-plot">
     <template>
         <style include="shared-settings"></style>
         <style>
@@ -4902,7 +4582,6 @@
         });
     </script>
 </dom-module><dom-module id="epiviz-json-line-plot">
-
     <template>
         <style include="shared-settings"></style>
         <style>
@@ -4965,7 +4644,6 @@
         });
     </script>
 </dom-module><dom-module id="epiviz-json-line-track">
-
     <template>
         <style include="shared-settings"></style>
         <style>
@@ -5028,7 +4706,6 @@
         });
     </script>
 </dom-module><dom-module id="epiviz-json-scatter-plot">
-
     <template>
         <style include="shared-settings"></style>
         <style>
@@ -5091,7 +4768,6 @@
         });
     </script>
 </dom-module><dom-module id="epiviz-json-stacked-line-track">
-
     <template>
         <style include="shared-settings"></style>
         <style>
@@ -5154,7 +4830,6 @@
         });
     </script>
 </dom-module><dom-module id="epiviz-json-stacked-line-plot">
-
     <template>
         <style include="shared-settings"></style>
         <style>
@@ -5217,7 +4892,6 @@
         });
     </script>
 </dom-module><dom-module id="epiviz-json-blocks-track">
-
     <template>
         <style include="shared-settings"></style>
         <style>
@@ -5277,9 +4951,380 @@
             // ready: function() {}
         });
     </script>
-</dom-module><link rel="import" href="../paper-autocomplete/paper-autocomplete.html">
-<dom-module id="epiviz-navigation">
+</dom-module><script>
+    /**
+     * `ChartDataBehavior` object handles data requests from all epiviz-charts. 
+     * `<epiviz-environment>` & `<epiviz-navigation>` automatically inherit this behavior to update chart data.
+     *
+     * @polymerBehavior
+    **/
+    epiviz.ChartDataBehavior = {
 
+        properties: {
+            /**
+             * Whether to apply a data transformation function
+             *
+             * @type {boolean}
+             */
+            transformData: {
+                type: Boolean,
+                notify: true,
+                value: false
+            },
+
+            /**
+             * Data Transformation function
+             *
+             * @type {string}
+             */
+            transformDataFunc: {
+                type: String,
+                notify: true
+            }
+        },
+
+        /* callback called when the behavior is created.*/
+        created: function() {        
+            var dataManagerElem = document.querySelector('epiviz-data-source');
+            if(dataManagerElem) {
+                this.dataManager = new epiviz.data.DataManager(dataManagerElem.config, dataManagerElem.dataProviderFactory);
+            }
+        },
+
+        /**
+         *  output data format 
+         *  {
+         *      columns: Collection <Object> {measurement-id: <Epiviz measurement>}
+         *      values : Array  [measurement-id: Val <Integer>, row: rowInfo]
+         *  }
+         * TODO: json structure
+         *
+         * @param {Object} data data object
+         *
+         * @return {Object} transformed data object
+         */
+        epivizToJSON: function(data) {
+
+            if(!this.transformData) {
+                return data;
+            }
+
+            var fromDataMeasurements = [];
+            var range = this.range;
+
+            var firstGlobalIndex = data.firstSeries().globalStartIndex();
+            var lastGlobalIndex = data.firstSeries().globalEndIndex();
+
+            data.foreach(function(measurement, series) {
+                fromDataMeasurements.push(measurement);
+                var firstIndex = series.globalStartIndex();
+                var lastIndex = series.globalEndIndex();
+                if (firstIndex > firstGlobalIndex) { firstGlobalIndex = firstIndex; }
+                if (lastIndex < lastGlobalIndex) { lastGlobalIndex = lastIndex; }
+            });
+
+            var nItems = lastGlobalIndex - firstGlobalIndex;
+
+            var i, index;
+            var grid = {};
+            grid.measurements = fromDataMeasurements;
+            grid.columns = {};
+
+            grid.measurements.forEach(function(m) {
+                grid.columns[m.datasourceId() + "-" + m.id()] = m;
+            });
+
+            grid.values = [];
+            var nSeries = fromDataMeasurements.length;
+            for (i = 0; i < nItems; ++i) {
+                index = i + firstGlobalIndex;
+                var valArray = {};
+                
+                var row = {};
+                var rowData = data.getSeries(fromDataMeasurements[0]).getRowByGlobalIndex(index);
+                row.start = rowData.start();
+                row.end = rowData.end();
+                row.metadata = rowData.rowMetadata();
+                row.strand = rowData.strand();
+                row.index = rowData.index();
+                row.globalIndex = rowData.globalIndex();
+                row.id = rowData.id();
+                row.seqName = rowData.seqName();
+                valArray.row = row;
+
+                grid.measurements.forEach(function(m) {
+                    var cellX = data.getSeries(m).getByGlobalIndex(index);
+                    valArray[m.datasourceId() + "-" + m.id()] = cellX.value;
+                });
+
+                grid.values.push(valArray);
+            }
+            return grid;
+        },
+
+        /**
+         * Handles search requests for genes
+         * 
+         * @param {string} gene keyword to search for genes
+         * @param {HTMLElement} currentChild child HTML element where request was created
+         * @param {HTMLElement} pDom parent HTML element of the child 
+         * @callback cb
+         * @param {cb} cb Callback that handles the response
+         */
+        _getElementSearch: function(gene, currentChild, pDom, cb) {
+
+            // var dataManagerElem = document.querySelector('epiviz-data-source');
+
+            // if (dataManagerElem != null) {
+            //     var dataManager = dataManagerElem.dataManager;
+            if(this.dataManager) {
+                this.dataManager.search(function(data) {
+                    if(pDom) {
+                        pDom.$$("#geneSearch").suggestions(data);
+                    }
+                    else {
+                        cb(data);
+                    }
+                }, gene);
+            }
+        },
+
+        /**
+         * Handles gene in range requests.
+         * Given a range, get the gene close to the center of the given location.
+         * 
+         * @param {HTMLElement} currentChild child HTML element where request was created
+         * @param {HTMLElement} pDom parent HTML element of the child 
+         */
+        _getGenesInRange: function(currentChild, pDom) {
+            var self = this;
+
+            var mSet = new epiviz.measurements.MeasurementSet();
+            var m = new epiviz.measurements.Measurement(
+                "genes",
+                "Genes",
+                "range",
+                "genes",
+                "genes",
+                "umd",
+                null,
+                "Genes Track",
+                null,
+                null,
+                null,
+                ["gene", "entrez", "exon_starts", "exon_ends"]
+            )
+            mSet.add(m);
+
+            var chartMeasMap = {};
+            chartMeasMap[currentChild.plotId] = mSet;
+
+            if(this.dataManager) {
+                this.dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
+                    // Get gene (based on size)
+                    // var index = data.globalStartIndex(m) + Math.round((data.size(m) - 1) / 2);
+
+                    // Get gene (based on position)
+                    var searchIndex = data.binarySearchStarts(m, new epiviz.datatypes.GenomicRange(pDom.range.seqName(), (pDom.range.start() + pDom.range.end()) / 2, 1000000));
+                    var index = data.globalStartIndex(m) + searchIndex.index;
+                    
+                    var gene = data.getRowByGlobalIndex(m, index).rowMetadata().gene;
+
+                    pDom.geneInRange = gene;
+                });
+            }
+        },
+
+        /**
+         * Handles SeqInfo requests
+         * 
+         * @param {HTMLElement} currentChild child HTML element where request was created
+         * @param {HTMLElement} pDom parent HTML element of the child 
+         */
+        _getElementSeqInfo: function(currentChild, pDom) {
+
+            // var dataManagerElem = document.querySelector('epiviz-data-source');
+            if(this.dataManager) {
+            //     var dataManager = dataManagerElem.dataManager;
+                this.dataManager.getSeqInfos(function(data) {
+                    var seqinfo = {};
+                    data.forEach(function(s) {
+                        seqinfo[s.seqName] = s;
+                    });
+                    currentChild.seqInfo = seqinfo;
+                });
+            }
+        },
+
+        /**
+         * Handles data requests
+         * 
+         * @param {HTMLElement} currentChild child HTML element where request was created
+         * @param {HTMLElement} pDom parent HTML element of the child 
+         * @param {Array<string>} measurements measurements to request data 
+         */
+        _getElementData: function(currentChild, pDom, measurements) {
+            var self = this;
+
+            if(self.dataManager != null) {
+            var dims = currentChild.dimS || currentChild.getAttribute("dim-s");
+
+            if (typeof(dims) == "string") {
+                dims = JSON.parse(dims);
+            }
+
+            // var id = self._generateChartId();
+            var mSet = new epiviz.measurements.MeasurementSet();
+            var tMeasurements = [];
+
+            if(dims != null && dims.length > 0) {
+                for (var idim = 0; idim < dims.length; idim++) {
+                    var mtdx = measurements[dims[idim]];
+                    mSet.add(new epiviz.measurements.Measurement(
+                        mtdx.id,
+                        mtdx.name,
+                        mtdx.type,
+                        mtdx.datasourceId,
+                        mtdx.datasourceGroup,
+                        mtdx.dataprovider,
+                        mtdx.formula,
+                        mtdx.defaultChartType,
+                        mtdx.annotation,
+                        mtdx.minValue,
+                        mtdx.maxValue,
+                        mtdx.metadata
+                    ));
+
+                    tMeasurements.push(mtdx);
+                }
+            }
+            else if(currentChild.measurements != null && currentChild.measurements.length > 0 ){
+                for (var idim = 0; idim < currentChild.measurements.length; idim++) {
+                    var mtdx = currentChild.measurements[idim];
+                    mSet.add(new epiviz.measurements.Measurement(
+                        mtdx.id,
+                        mtdx.name,
+                        mtdx.type,
+                        mtdx.datasourceId,
+                        mtdx.datasourceGroup,
+                        mtdx.dataprovider,
+                        mtdx.formula,
+                        mtdx.defaultChartType,
+                        mtdx.annotation,
+                        mtdx.minValue,
+                        mtdx.maxValue,
+                        mtdx.metadata
+                    ));
+
+                    tMeasurements.push(mtdx);
+                }
+            }
+
+            var id = currentChild.plotId;
+            if(tMeasurements.length != 0) {
+                currentChild.range = currentChild.range || self.range || pDom.range;
+                currentChild.measurements = tMeasurements;
+                var chartMeasMap = {};
+                chartMeasMap[id] = mSet;
+
+                // var dataManagerElem = document.querySelector('epiviz-data-source[provider-id$="' + tMeasurements[0].dataprovider + '"]');
+                //     var dataManager = dataManagerElem.dataManager;
+
+                    self.dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
+                        //currentChild.data = data;
+                        var dataChartElem = pDom.querySelector('[plot-id$="' + id + '"]') || Polymer.dom(pDom).querySelector('[plot-id$="' + id + '"]');
+                        if(dataChartElem) {
+                            dataChartElem.data = pDom.transformFunc(data);
+                        }
+                    });
+                }
+            }
+        },
+
+        /**
+         * Handles data requests when dimensions are changed/updated 
+         * 
+         * @param {string} cId Id of the chart
+         */
+        _updateChart: function(cId) {
+
+            if(cId == undefined) {return;}
+            var self = this;
+            var currentChild = Polymer.dom(self).querySelector('[plot-id$="' + cId + '"]');
+            var dims = currentChild.dimS || currentChild.getAttribute("dim-s");
+            $('#' + cId).empty();
+
+            if (typeof(dims) == "string") {
+                dims = JSON.parse(dims);
+            }
+
+            var mSet = new epiviz.measurements.MeasurementSet();
+            var tMeasurements = [];
+
+            if(dims != null && dims.length > 0) {
+                for (var idim = 0; idim < dims.length; idim++) {
+                    var mtdx = self.measurements[dims[idim]];
+                    mSet.add(new epiviz.measurements.Measurement(
+                        mtdx.id,
+                        mtdx.name,
+                        mtdx.type,
+                        mtdx.datasourceId,
+                        mtdx.datasourceGroup,
+                        mtdx.dataprovider,
+                        mtdx.formula,
+                        mtdx.defaultChartType,
+                        mtdx.annotation,
+                        mtdx.minValue,
+                        mtdx.maxValue,
+                        mtdx.metadata
+                    ));
+                    tMeasurements.push(mtdx);
+                }
+            }
+            else if(currentChild.measurements != null && currentChild.measurements.length > 0 ){
+                for (var idim = 0; idim < currentChild.measurements.length; idim++) {
+                    var mtdx = currentChild.measurements[idim];
+                    mSet.add(new epiviz.measurements.Measurement(
+                        mtdx.id,
+                        mtdx.name,
+                        mtdx.type,
+                        mtdx.datasourceId,
+                        mtdx.datasourceGroup,
+                        mtdx.dataprovider,
+                        mtdx.formula,
+                        mtdx.defaultChartType,
+                        mtdx.annotation,
+                        mtdx.minValue,
+                        mtdx.maxValue,
+                        mtdx.metadata
+                    ));
+
+                    tMeasurements.push(mtdx);
+                }
+            }
+
+            if(tMeasurements.length != 0) {
+                currentChild.range = currentChild.range || self.range;
+                currentChild.measurements = tMeasurements;
+                var chartMeasMap = {};
+                chartMeasMap[cId] = mSet;
+
+                // var dataManagerElem = document.querySelector('epiviz-data-source[provider-id$="' + tMeasurements[0].dataprovider + '"]');
+                if(self.dataManager) {
+                //     var dataManager = dataManagerElem.dataManager;
+
+                    self.dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
+                        //currentChild.data = data;
+                        var dataChartElem = Polymer.dom(self).querySelector('[plot-id$="' + id + '"]');
+
+                        dataChartElem.data = self.transformFunc(data);
+                    });
+                }
+            }
+        }
+    }
+</script><link rel="import" href="../paper-autocomplete/paper-autocomplete.html">
+<dom-module id="epiviz-navigation">
     <template>
         <style include="shared-settings"></style>
         <style>
