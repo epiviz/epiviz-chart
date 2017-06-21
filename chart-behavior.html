@@ -159,8 +159,8 @@
             if(this.chart != null) {
                 // var width = self.offsetWidth - 40;
                 // if(width < self.chartType.defaultWidth()) { width = self.chartType.defaultWidth()}
-                this.chart._properties.width = self.offsetWidth - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
-                this.chart._properties.height = self.offsetHeight - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
+                this.chart._properties.width = Math.max(400, self.offsetWidth - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN);
+                this.chart._properties.height = Math.max(120, self.offsetHeight - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN);
                 self._dataChanged();
             }
         },
