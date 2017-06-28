@@ -8,42 +8,40 @@
 <link rel="import" href="chart-json-behavior.html">
 
 <!--
-`<epiviz-json-stacked-line-track>` creates a stacked-line track chart. Its a wrapper around the <epiviz-stacked-line-track> component that takes json data input.
+`<epiviz-json-genes-track>` creates a genes track chart. Its a wrapper around the <epiviz-genes-track> component that takes json data input.
 
 Most element attributes are defined in `<epiviz.ChartBehavior>` element.
 
-To use, add `<epiviz-json-stacked-line-track>` in the page
+To use, add `<epiviz-json-genes-track>` in the page
 
-      <epiviz-json-stacked-line-track></epiviz-json-stacked-line-track>
+      <epiviz-json-genes-track></epiviz-json-genes-track>
 
-@demo demo/index-scatter.html Example page showing a scatter plot
+@demo demo/index-heatmap.html Example page showing a heatmap plot
 -->
 
-<dom-module id="epiviz-json-stacked-line-track">
+<dom-module id="epiviz-json-genes-track">
     <link rel="import" href="../epiviz-imports/epiviz-common-css.html">
     <template>
         <style include="shared-settings"></style>
         <style>
             :host {
-                /*min-width: 900px;
-                min-height: 90px;*/
+                /*min-width: 400px;
+                min-height: 400px;*/
+                display: inline-block;
                 width: 100%;
                 height: 100%;
-                display: inline-block;
                 /*margin: 10px;*/
             }
         </style>
 
         <!-- local DOM goes here -->
-        <epiviz-stacked-line-track id="epivizChart" range="{{_chartRange}}" data="{{_chartData}}" measurements="{{_chartMeasurements}}"></epiviz-stacked-line-track>
-    
+        <epiviz-genes-track id="epivizChart" range="{{_chartRange}}" data="{{_chartData}}" measurements="{{_chartMeasurements}}"></epiviz-genes-track>
     </template>
-
+    
     <script>
-
         Polymer({
             /* Custom element html tag */
-            is: 'epiviz-json-stacked-line-track',
+            is: 'epiviz-json-genes-track',
             behaviors: [epiviz.ChartJSONBehavior],
 
             properties: {
@@ -54,7 +52,7 @@ To use, add `<epiviz-json-stacked-line-track>` in the page
                  */
                 chartName: {
                     type: String,
-                    value: "Stacked Line Track"
+                    value: "genes Track"
                 }
             },
 

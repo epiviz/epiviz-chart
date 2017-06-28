@@ -290,10 +290,16 @@
             var chartData = new epiviz.measurements.MeasurementHashtable();
             var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
             var globalStartIndex = jsonData.globalStartIndex;
-            var range =  new epiviz.datatypes.GenomicRange(datasource, globalStartIndex, jsonData.rows.end[rowLength-1] - globalStartIndex);
+
+            var chr = datasource;
+
+            if(jsonData.rows.chr) {
+                chr = jsonData.rows.chr[0];
+            }
+            var range =  new epiviz.datatypes.GenomicRange(chr, globalStartIndex, jsonData.rows.end[rowLength-1] - globalStartIndex);
             self._chartRange = range;
             
-            var rowDataObj = new epiviz.datatypes.GenomicRangeArray(datasource, range, globalStartIndex, jsonData.rows);
+            var rowDataObj = new epiviz.datatypes.GenomicRangeArray(chr, range, globalStartIndex, jsonData.rows);
             sumExp.addRowData(rowDataObj);
 
             mSet.foreach(function(m) {
