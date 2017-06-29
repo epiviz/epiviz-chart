@@ -94,10 +94,10 @@
             var m = [];
             var mSet = new epiviz.measurements.MeasurementSet();
             var datasource = "epiviz";
-
             var rowLength = 0;
-
+            var hasfData = true;
             var measurementType = 'feature';
+            var useOffset = false;
 
             if(self.nodeName === "EPIVIZ-JSON-GENES-TRACK") {
                 measurementType = 'range';
@@ -175,7 +175,7 @@
                 //if data format is more like a dataframe/data table representation
                 var rowMetadata = Object.keys(self.data.rows);
                 var rowLength = 0 ;
-                var hasfData = true;
+                useOffset = self.data.rows.useOffset;
 
                 if(self.data.cols == null) { hasfData = false; self.data.cols = {};}
                 
@@ -297,8 +297,8 @@
             }
             var range =  new epiviz.datatypes.GenomicRange(chr, globalStartIndex, jsonData.rows.end[rowLength-1] - globalStartIndex);
             self._chartRange = range;
-            
-            var rowDataObj = new epiviz.datatypes.GenomicRangeArray(chr, range, globalStartIndex, jsonData.rows, self.data.rows.useOffset);
+
+            var rowDataObj = new epiviz.datatypes.GenomicRangeArray(chr, range, globalStartIndex, jsonData.rows, useOffset);
             sumExp.addRowData(rowDataObj);
 
             if(hasfData) {

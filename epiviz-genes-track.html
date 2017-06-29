@@ -9,6 +9,9 @@
 <link rel="import" href="chart-settings.html">
 <link rel="import" href="chart-colors.html">
 
+<!-- Epiviz Shared css -->
+<link rel="import" href="chart-shared-css.html">
+
 <!--
 `<epiviz-genes-track>` creates a genes track chart.
 
@@ -22,9 +25,10 @@ To use, add `<epiviz-genes-track>` in the page
 -->
 
 <dom-module id="epiviz-genes-track">
-    <link rel="import" href="../epiviz-imports/epiviz-common-css.html">
+    <!--<link rel="import" href="../epiviz-imports/epiviz-common-css.html">-->
     <template>
         <style include="shared-settings"></style>
+        <style include="chart-shared-css"></style>
         <style>
             :host {
                 /*min-width: 450px;
@@ -242,7 +246,7 @@ To use, add `<epiviz-genes-track>` in the page
                 var self = this;
                 // style observer on charts
                 self.plotId = self.plotId || self._generatePlotId();
-                // self.scopeSubtree(self.$.chart, true);
+                self.scopeSubtree(self.$.chart, true);
                 self.config = new epiviz.Config(self.configSrc);
 
                 // self.listen(self.$.chart, 'iron-resize', 'onElementResize');

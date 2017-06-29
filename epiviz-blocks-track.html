@@ -9,6 +9,10 @@
 <link rel="import" href="chart-settings.html">
 <link rel="import" href="chart-colors.html">
 
+<!-- Epiviz Shared css -->
+<link rel="import" href="chart-shared-css.html">
+
+
 <!--
 `<epiviz-blocks-track>` creates a block track chart with genomic location on the x-axis.
 
@@ -22,9 +26,10 @@ To use, add `<epiviz-blocks-track>` in the page
 -->
 
 <dom-module id="epiviz-blocks-track">
-    <link rel="import" href="../epiviz-imports/epiviz-common-css.html">
+    <!--<link rel="import" href="../epiviz-imports/epiviz-common-css.html">-->
     <template>
         <style include="shared-settings"></style>
+        <style include="chart-shared-css"></style>
         <style>
             :host {
                 /*width: 900px;
@@ -235,6 +240,7 @@ To use, add `<epiviz-blocks-track>` in the page
             ready: function() {
                 var self = this;
                 self.plotId = self.plotId || self._generatePlotId();
+                self.scopeSubtree(self.$.chart, true);
                 self.config = new epiviz.Config(self.configSrc);
             },
 

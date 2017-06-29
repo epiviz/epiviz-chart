@@ -9,6 +9,9 @@
 <link rel="import" href="chart-settings.html">
 <link rel="import" href="chart-colors.html">
 
+<!-- Epiviz Shared css -->
+<link rel="import" href="chart-shared-css.html">
+
 <!--
 `<epiviz-stacked-line-track>` creates a stacked-line track chart with genomic location on the x-axis.
 
@@ -22,9 +25,10 @@ To use, add `<epiviz-stacked-line-track>` in the page
 -->
 
 <dom-module id="epiviz-stacked-line-track">
-    <link rel="import" href="../epiviz-imports/epiviz-common-css.html">
+    <!--<link rel="import" href="../epiviz-imports/epiviz-common-css.html">-->
     <template>
         <style include="shared-settings"></style>
+        <style include="chart-shared-css"></style>
         <style>
             :host {
                 /*min-width: 900px;
@@ -238,7 +242,7 @@ To use, add `<epiviz-stacked-line-track>` in the page
                 var self = this;
                 self.plotId = self.plotId || self._generatePlotId();
                 // style observer on charts
-                // self.scopeSubtree(self.$.chart, true);
+                self.scopeSubtree(self.$.chart, true);
                 self.config = new epiviz.Config(self.configSrc);
             },
 
