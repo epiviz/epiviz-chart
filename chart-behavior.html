@@ -10,6 +10,7 @@
             position:absolute;
             top: 0;
             right: 0;
+            /*display:block;*/
             /*width: 24px;
             height: 24px;*/
             
@@ -159,8 +160,8 @@
             if(this.chart != null) {
                 // var width = self.offsetWidth - 40;
                 // if(width < self.chartType.defaultWidth()) { width = self.chartType.defaultWidth()}
-                this.chart._properties.width = Math.max(400, self.offsetWidth - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN);
-                this.chart._properties.height = Math.max(120, self.offsetHeight - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN);
+                this.chart._properties.width = Math.max(self.chartType.defaultWidth(), self.offsetWidth - epiviz.ui.charts.Visualization.SVG_MARGIN);
+                this.chart._properties.height = Math.max(self.chartType.defaultHeight(), self.offsetHeight - epiviz.ui.charts.Visualization.SVG_MARGIN);
                 self._dataChanged();
             }
         },
