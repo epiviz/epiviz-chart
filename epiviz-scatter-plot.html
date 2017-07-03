@@ -171,7 +171,49 @@ To use, add `<epiviz-scatter-plot>` in the page
 
                         return epiviz.Config.SETTINGS;
                     }
+                },
+
+                colorByRegions: {
+                    type: Array,
+                    notify: true,
+                    observer: "_colorByRegionsChanged"
                 }
+            },
+
+            _colorByRegionsChanged: function() {
+                var self = this;
+                var itemsGroup = self.chart._chartContent.select('.items');
+                var selection = itemsGroup.selectAll('circle');
+
+                var chartRanges = self.colorByRegions;
+
+                // self.colorByRegions.forEach(function(region) {
+                //     chartRanges.push(
+                //         region.seqName(), 
+                //         region.start(), 
+                //         region.end() - region.start());
+                // });
+
+                selection
+                .each(
+                /**
+                 * @param {epiviz.ui.charts.ChartObject} d
+                 */
+                function(d) {
+                    var circle = d3.select(this);
+
+                    var dRange = new epiviz.datatypes.GenomicRange(
+                        d.valueItems[0][0].rowItem.seqName(), 
+                        d.valueItems[0][0].rowItem.start(), 
+                        d.valueItems[0][0].rowItem.end() - d.valueItems[0][0].rowItem.start());
+
+                    chartRanges.forEach(function(r,i) {
+                        if(dRange.overlapsWith(r)) {
+                            var fill = self.chart.colors().get(i+1); 
+                            circle.style('fill', fill);
+                        }
+                    });
+                });
             },
 
             // Initialization that should happen or use FactoryImpl 
@@ -274,6 +316,7 @@ To use, add `<epiviz-scatter-plot>` in the page
              */
             _draw: function() {
                 this.chart.draw(this.range, this.data);
+                this._colorByRegionsChanged();
             },
 
             /**
