@@ -608,7 +608,7 @@ To use, add `<epiviz-navigation>` in the page
                 }
 
                 // listen to events 
-                var parent = self.parentNode;
+                var parent = self.parentNode.parentNode;
                 parent.addEventListener('hoverAllCharts', function(e) {
                     if(self.collapsed) {
                         if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
@@ -642,7 +642,7 @@ To use, add `<epiviz-navigation>` in the page
                     for (var index = 0; index < numChildren; index++) {
                         var currentChild = self.getEffectiveChildren()[index];
                         currentChild.range = self.range;
-                        self._getElementData(currentChild, self, self.parentNode.measurements);
+                        self._getElementData(currentChild, self, self.parentNode.parentNode.measurements);
                     }
                 // }
 

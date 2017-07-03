@@ -186,7 +186,7 @@ To use, add `<epiviz-stacked-line-plot>` in the page
                 var self = this;
 
                 // listen to events 
-                var parent = self.parentNode;
+                var parent = self.parentNode.parentNode;
 
                 if(parent.nodeName === "IRON-COLLAPSE") {
                     parent = parent.parentNode;

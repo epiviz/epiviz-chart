@@ -168,7 +168,7 @@ To use, add `<epiviz-ideogram-track>` in the page
                 var self = this;
 
                 self.plotId = self.plotId || self._generatePlotId();
-                var parent = self.parentNode;
+                var parent = self.parentNode.parentNode;
                 
                 if(parent.nodeName === "IRON-COLLAPSE") {
                     parent = parent.parentNode;
