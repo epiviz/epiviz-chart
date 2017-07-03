@@ -316,7 +316,9 @@ To use, add `<epiviz-scatter-plot>` in the page
              */
             _draw: function() {
                 this.chart.draw(this.range, this.data);
-                this._colorByRegionsChanged();
+                if(this.colorByRegions) {
+                    this._colorByRegionsChanged();
+                }
             },
 
             /**
