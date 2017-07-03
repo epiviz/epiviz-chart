@@ -31,10 +31,16 @@
         },
 
         /* callback called when the behavior is created.*/
-        created: function() {        
+        created: function() {      
+            var self = this;  
             var dataManagerElem = document.querySelector('epiviz-data-source');
             if(dataManagerElem) {
                 this.dataManager = new epiviz.data.DataManager(dataManagerElem.config, dataManagerElem.dataProviderFactory);
+                // this.measurementSet = dataManagerElem.measurementSet;
+                this.dataManager.getMeasurements(function(result) {
+                    // self.measurements = result.raw();
+                    self.measurementSet = result;
+                });
             }
         },
 
@@ -189,6 +195,7 @@
          * @param {HTMLElement} pDom parent HTML element of the child 
          */
         _getElementSeqInfo: function(currentChild, pDom) {
+            var self = this;
 
             // var dataManagerElem = document.querySelector('epiviz-data-source');
             if(this.dataManager) {
@@ -199,6 +206,13 @@
                         seqinfo[s.seqName] = s;
                     });
                     currentChild.seqInfo = seqinfo;
+
+                    if(!(currentChild.start && currentChild.end)) {
+                        if(currentChild.chr && currentChild.seqInfo) {
+                            currentChild.start = 0;
+                            currentChild.end = currentChild.seqInfo[currentChild.chr].max;
+                        }
+                    }
                 });
             }
         },
