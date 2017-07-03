@@ -106,7 +106,7 @@ To use, add `<epiviz-navigation>` in the page
                         <paper-icon-button title="zoom out" icon="icons:zoom-out" on-click="zoomOut"></paper-icon-button>
                         <paper-icon-button title="zoom in" icon="icons:zoom-in" on-click="zoomIn"></paper-icon-button>
                     </div>
-                    <div class="flexchild">
+                    <div class="flexchild" on-mouseover="locationHovered" on-mouseout="locationUnhovered">
                         <paper-input value="{{_strRange]]" label="Chromosome Location" on-change="_updateStrRange"></paper-input>
                     </div>
                     <div class="flexchild">
@@ -551,6 +551,26 @@ To use, add `<epiviz-navigation>` in the page
                 }
             },
 
+            /**
+             * Handles when mouse-overed on a ramge element.
+             */
+            locationHovered: function() {
+                var self = this;
+                self.fire('hover', {
+                    data: self.chartObject
+                });
+            },
+
+            /**
+             * Handles when mouse-out on a range element.
+             */
+            locationUnhovered: function() {
+                var self = this;
+                self.fire('unHover', {
+                    data: null
+                });
+            },
+
             // Initialization that should happen or use FactoryImpl 
             // created: function() {},
             
@@ -626,10 +646,14 @@ To use, add `<epiviz-navigation>` in the page
                         self.start = data[0].start;
                         self.end = data[0].end;
                         self.range = self.getGenomicRange(self.chr, self.start, self.end);
+
+                        self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined);
                     });
                 }
                 else if(self.chr && self.start && self.end) {
                     self.range = self.getGenomicRange(self.chr, self.start, self.end);
+
+                    self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined);
                 }
 
                 if(self.transformDataFunc) {
