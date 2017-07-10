@@ -90,15 +90,15 @@ To use, add `<epiviz-navigation>` in the page
 
         <!-- local DOM goes here -->
         <div>
-            <button class="collapse-header" on-click="toggleHeader">Collapse</button>
+            <button class="collapse-header" on-click="toggleHeader">Expand</button>
             <button on-click="cloneNavigation">Clone</button>
         </div>
-        <template restamp="true" is="dom-if" if="{{!collapsed}}">
+        <template restamp="true" is="dom-if" if="{{collapsed}}">
             <epiviz-ideogram-track gene-in-range="{{geneInRange}}" id="navTrack" chromosome="{{chr}}" start="{{start}}" end="{{end}}"></epiviz-ideogram-track>
         </template>
         
         <iron-collapse id="navHeader">
-            <template restamp="true" is="dom-if" if="{{collapsed}}">
+            <template restamp="true" is="dom-if" if="{{!collapsed}}">
                 <div class="container flex">
                     <div class="flexchild">
                         <paper-icon-button title="move left" icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
@@ -236,7 +236,7 @@ To use, add `<epiviz-navigation>` in the page
                 collapsed: {
                     type: Boolean,
                     notify: true,
-                    value: false
+                    value: true
                 },
 
                 /**
@@ -284,8 +284,8 @@ To use, add `<epiviz-navigation>` in the page
             toggleHeader: function(event) {
                 this.$.navHeader.toggle();
                 this.collapsed = !this.collapsed;
-                console.log($(this).find(".collapse-header")[0]);
-                if (this.collapsed) {
+                // console.log($(this).find(".collapse-header")[0]);
+                if (!this.collapsed) {
                     $(this).find(".collapse-header")[0].innerHTML = "Collapse";
                 } else {
                     $(this).find(".collapse-header")[0].innerHTML = "Expand";
@@ -582,7 +582,7 @@ To use, add `<epiviz-navigation>` in the page
                 // listen to events 
                 var parent = self.parentNode;
                 parent.addEventListener('hoverAllCharts', function(e) {
-                    if(!self.collapsed) {
+                    if(self.collapsed) {
                         if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
                             self.$$("#navTrack").hover();
                         }
@@ -597,7 +597,7 @@ To use, add `<epiviz-navigation>` in the page
                 }.bind(self));
 
                 parent.addEventListener('unHoverAllCharts', function(e) {
-                    if(!self.collapsed) {
+                    if(self.collapsed) {
                         self.$$("#navTrack").unHover();
                     }
                     else {
