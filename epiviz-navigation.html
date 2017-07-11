@@ -87,8 +87,13 @@ To use, add `<epiviz-navigation>` in the page
                 height: 28px;
             }
 
+<<<<<<< 0b0bd2ad0cf23830d24e0aeebc6a45732b3b9933
             .disableHeader {
                 pointer-events:none;
+=======
+            #disableHeader {
+                pointer-events: none;
+>>>>>>> disable navigation header if data source is not defined
                 opacity: 0.4;
             }
         </style>
@@ -103,8 +108,13 @@ To use, add `<epiviz-navigation>` in the page
         </template>
         
         <iron-collapse id="navHeader">
+<<<<<<< 0b0bd2ad0cf23830d24e0aeebc6a45732b3b9933
             <template restamp="true" is="dom-if" if="{{collapsed}}">
                 <div class="container flex" class$="[[headerClassName]]">
+=======
+            <template restamp="true" is="dom-if" if="{{!collapsed}}">
+                <div class="container flex" id="{{_headerName}}">
+>>>>>>> disable navigation header if data source is not defined
                     <div class="flexchild">
                         <paper-icon-button title="move left" icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
                         <paper-icon-button title="move right" icon="icons:chevron-right" on-click="moveRight"></paper-icon-button>
@@ -209,6 +219,13 @@ To use, add `<epiviz-navigation>` in the page
                     type: String,
                     notify: true,
 		            computed: 'getStrRange(chr, start, end)'
+                },
+
+
+                _headerName: {
+                    type: String,
+                    notify: true,
+                    value : "enableHeader"
                 },
 
                 /**
@@ -590,7 +607,11 @@ To use, add `<epiviz-navigation>` in the page
                 var self = this;
 
                 if(!self.dataManager) {
+<<<<<<< 0b0bd2ad0cf23830d24e0aeebc6a45732b3b9933
                     self.headerClassName = "disableHeader";
+=======
+                    self._headerName = "disableHeader";
+>>>>>>> disable navigation header if data source is not defined
                 }
 
                 // listen to events 
