@@ -67,13 +67,49 @@
             }, 
 
             /**
+                * Chromosome location.
+                * Default Location Attribute to set to all the children chart elements.
+                *
+                * @example: chr1
+                *
+                * @type {string}
+                */
+            chr: {
+                type: String
+                // notify: true
+            },
+
+            /**
+                * Chromosome start. 
+                * Default Chromosome start value to use. (defaults to 0).
+                *
+                * @type {number}
+                */
+            start: {
+                type: Number
+                // notify: true
+            },
+
+            /**
+                * Chromosome end. 
+                * Default Chromosome end value to use. (defaults to the `<chr>` length).
+                *
+                * @type {number}
+                */
+            end: {
+                type: Number
+                // notify: true
+            },
+
+            /**
              * Chart range. 
              *
              * @type {Object<epiviz.datatypes.GenomicRange>}
              */
             range: {
                 type: Object,
-                notify: true
+                notify: true,
+                computed: 'getGenomicRange(chr, start, end)',
             },
 
             /**
@@ -84,7 +120,32 @@
             _chartMeasurements: {
                 type: Array,
                 notify: true
+            },
+
+
+            /**
+             * Chart Setings. 
+             *
+             * @type {Object}
+             */
+            settings: {
+                type: Object,
+                notify: true
+            },
+
+            /**
+             * Chart Colors. 
+             *
+             * @type {Object}
+             */
+            colors: {
+                type: Array,
+                notify: true
             }
+        },
+
+        getGenomicRange: function(chr, start, end) {
+            return new epiviz.datatypes.GenomicRange(chr, start, end-start);
         },
 
         ready: function() {
@@ -157,21 +218,24 @@
                     var mData = self.data[m.datasourceId()];
                     var rowLength = mData.rows.values.chr.length;
 
-                    var range =  new epiviz.datatypes.GenomicRange(mData.rows.values.chr[0], mData.rows.values.start[0], mData.rows.values.end[rowLength-1] - mData.rows.values.start[0]);
+                    if(!self.range) {
+                        self.range =  new epiviz.datatypes.GenomicRange(mData.rows.values.chr[0], mData.rows.values.start[0], mData.rows.values.end[rowLength-1] - mData.rows.values.start[0]);
+                    }
+
                     var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
 
-                    var rowDataObj = new epiviz.datatypes.GenomicRangeArray(m, range, mData.rows.values.start[0], mData.rows.values, mData.rows.useOffset);
+                    var rowDataObj = new epiviz.datatypes.GenomicRangeArray(m, self.range, mData.rows.values.start[0], mData.rows.values, mData.rows.useOffset);
                     sumExp.addRowData(rowDataObj);
 
                     if(mData.cols) {
-                        var valueData = new epiviz.datatypes.FeatureValueArray(m, range,mData.rows.values.start[0], mData.cols[m.id()].values);
+                        var valueData = new epiviz.datatypes.FeatureValueArray(m, self.range,mData.rows.values.start[0], mData.cols[m.id()].values);
                         sumExp.addValues(valueData);
                     }
 
                     var msData = new epiviz.datatypes.MeasurementGenomicDataWrapper(m, sumExp);
                     chartData.put(m, msData);
 
-                    self._chartRange = range;
+                    self._chartRange = self.range;
                 });
 
                 var genomicData = new epiviz.datatypes.MapGenomicData(chartData);
