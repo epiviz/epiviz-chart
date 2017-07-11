@@ -86,6 +86,11 @@ To use, add `<epiviz-navigation>` in the page
                 width: 28px;
                 height: 28px;
             }
+
+            .disableHeader {
+                pointer-events:none;
+                opacity: 0.4;
+            }
         </style>
 
         <!-- local DOM goes here -->
@@ -98,8 +103,8 @@ To use, add `<epiviz-navigation>` in the page
         </template>
         
         <iron-collapse id="navHeader">
-            <template restamp="true" is="dom-if" if="{{!collapsed}}">
-                <div class="container flex">
+            <template restamp="true" is="dom-if" if="{{collapsed}}">
+                <div class="container flex" class$="[[headerClassName]]">
                     <div class="flexchild">
                         <paper-icon-button title="move left" icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
                         <paper-icon-button title="move right" icon="icons:chevron-right" on-click="moveRight"></paper-icon-button>
@@ -245,6 +250,11 @@ To use, add `<epiviz-navigation>` in the page
                  * @type {string}
                  */   
                 geneInRange: {
+                    type: String,
+                    notify: true
+                },
+
+                headerClassName: {
                     type: String,
                     notify: true
                 },
@@ -578,6 +588,10 @@ To use, add `<epiviz-navigation>` in the page
             attached: function() {
 
                 var self = this;
+
+                if(!self.dataManager) {
+                    self.headerClassName = "disableHeader";
+                }
 
                 // listen to events 
                 var parent = self.parentNode;
