@@ -209,7 +209,9 @@
          */
         _chartSettingsChanged: function() {
             var self = this;
-            self.chart.setCustomSettingsValues(self.chartSettings);
+            if(self.chartSettings) {
+                self.chart.setCustomSettingsValues(self.chartSettings);
+            }
             // self._dataChanged();
         },
 
@@ -218,9 +220,11 @@
          */
         _chartColorsChanged: function() {
             var self = this;
-            self.chartColorPalette = new epiviz.ui.charts.ColorPalette(self.chartColors);
-            self.chart.setColors(self.chartColorPalette);
-            self._dataChanged();
+            if(self.chartColors) {
+                self.chartColorPalette = new epiviz.ui.charts.ColorPalette(self.chartColors);
+                self.chart.setColors(self.chartColorPalette);
+                self._dataChanged();
+            }
         },
 
         /**
