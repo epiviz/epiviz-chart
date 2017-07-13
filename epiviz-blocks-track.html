@@ -118,14 +118,18 @@ To use, add `<epiviz-blocks-track>` in the page
                                         'epiviz.ui.charts.decoration.ChartTooltip',
                                         'epiviz.ui.charts.decoration.ChartFilterCodeButton'
                                     ]
-                                }
+                                },
+
+                                'epiviz.plugins.charts.BlocksTrack': {
+                                    height: 120
+                                },
                             },
 
                             chartCustomSettings: {
                                 'epiviz.plugins.charts.BlocksTrack': {
                                     minBlockDistance: 3,
                                     useColorBy: false,
-                                    blockColorBy: 'label'
+                                    blockColorBy: ''
                                 }
                             },
 

@@ -209,7 +209,7 @@
          */
         _chartSettingsChanged: function() {
             var self = this;
-            if(self.chartSettings) {
+            if(self.chartSettings && self.chart) {
                 self.chart.setCustomSettingsValues(self.chartSettings);
             }
             // self._dataChanged();
@@ -220,7 +220,7 @@
          */
         _chartColorsChanged: function() {
             var self = this;
-            if(self.chartColors) {
+            if(self.chartColors && self.chart) {
                 self.chartColorPalette = new epiviz.ui.charts.ColorPalette(self.chartColors);
                 self.chart.setColors(self.chartColorPalette);
                 self._dataChanged();

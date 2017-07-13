@@ -29194,7 +29194,7 @@ module.exports = {
          */
         _chartSettingsChanged: function() {
             var self = this;
-            if(self.chartSettings) {
+            if(self.chartSettings && self.chart) {
                 self.chart.setCustomSettingsValues(self.chartSettings);
             }
             // self._dataChanged();
@@ -29205,7 +29205,7 @@ module.exports = {
          */
         _chartColorsChanged: function() {
             var self = this;
-            if(self.chartColors) {
+            if(self.chartColors && self.chart) {
                 self.chartColorPalette = new epiviz.ui.charts.ColorPalette(self.chartColors);
                 self.chart.setColors(self.chartColorPalette);
                 self._dataChanged();
@@ -44566,14 +44566,18 @@ It will also ensure that focus remains in the dialog.
                                         'epiviz.ui.charts.decoration.ChartTooltip',
                                         'epiviz.ui.charts.decoration.ChartFilterCodeButton'
                                     ]
-                                }
+                                },
+
+                                'epiviz.plugins.charts.BlocksTrack': {
+                                    height: 120
+                                },
                             },
 
                             chartCustomSettings: {
                                 'epiviz.plugins.charts.BlocksTrack': {
                                     minBlockDistance: 3,
                                     useColorBy: false,
-                                    blockColorBy: 'label'
+                                    blockColorBy: ''
                                 }
                             },
 
