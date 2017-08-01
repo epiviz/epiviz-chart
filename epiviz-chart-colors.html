@@ -163,7 +163,7 @@ All charts automatically create an instance of `<epiviz-chart-colors>` element.
              * @param {number} expeced expected group
              * @return {boolean} returns True if value in expected
              */
-            _isIndexGroup(value, expected) {
+            _isIndexGroup: function(value, expected) {
                 if( value % 3 == expected ) {
                     return true;
                 }

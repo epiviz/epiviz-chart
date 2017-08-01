@@ -291,7 +291,7 @@ All charts automatically create an instance of `<epiviz-chart-settings>` element
              * @param {string} type expected setting group.
              * @return {boolean} return true if value and type match
              */
-            _isIndex(value, type) {
+            _isIndex: function(value, type) {
                 if( (value % 2 == 0 && type == "even") || (value%2 == 1 && type == "odd")) {
                     return true;
                 }

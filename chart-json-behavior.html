@@ -240,11 +240,11 @@
 
                     var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
 
-                    var rowDataObj = new epiviz.datatypes.GenomicRangeArray(m, self.range, mData.rows.values.start[0], mData.rows.values, mData.rows.useOffset);
+                    var rowDataObj = new epiviz.datatypes.GenomicRangeArray(m, self.range, mData.rows.globalStartIndex, mData.rows.values, mData.rows.useOffset);
                     sumExp.addRowData(rowDataObj);
 
                     if(mData.cols) {
-                        var valueData = new epiviz.datatypes.FeatureValueArray(m, self.range,mData.rows.values.start[0], mData.cols[m.id()].values);
+                        var valueData = new epiviz.datatypes.FeatureValueArray(m, self.range ,mData.cols[m.id()].globalStartIndex, mData.cols[m.id()].values);
                         sumExp.addValues(valueData);
                     }
 
