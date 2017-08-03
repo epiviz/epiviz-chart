@@ -369,6 +369,13 @@ To use, add `<epiviz-navigation>` in the page
                         self._getElementData(currentChild, self, self.parentNode.measurements);  
                     }
                 }
+
+                self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined);
+
+                self.fire('navigationRangeUpdate', {
+                    plotId: self.plotId,
+                    range: self.range
+                });
             },
 
             /**

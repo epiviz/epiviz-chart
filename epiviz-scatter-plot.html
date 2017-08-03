@@ -207,10 +207,18 @@ To use, add `<epiviz-scatter-plot>` in the page
                         d.valueItems[0][0].rowItem.start(), 
                         d.valueItems[0][0].rowItem.end() - d.valueItems[0][0].rowItem.start());
 
+                    var inRegion = false;
+
                     chartRanges.forEach(function(r,i) {
                         if(dRange.overlapsWith(r)) {
                             var fill = self.chart.colors().get(i+1); 
                             circle.style('fill', fill);
+                            inRegion = true;
+                        }
+                        else if( !inRegion && i == chartRanges.length-1) {
+                            var fill = self.chart.colors().get(0); 
+                            circle.style('fill', fill);
+                            inRegion = true;
                         }
                     });
                 });

@@ -141,6 +141,11 @@ To use, add `<epiviz-environment>` in the page
                     value: []
                 },
 
+                /**
+                 * List of regions currently in workspace
+                 * 
+                 * @type {Array}
+                 */
                 navigationRegions: {
                     type: Array,
                     notify: true,
@@ -153,10 +158,26 @@ To use, add `<epiviz-environment>` in the page
                 '_navigationRegionsChanged(navigationRegions.*)'
             ],
 
-            // listeners: {
-            //     'iron-resize': '_onResize',
-            //     'transitionend': '_onResize'
-            // },
+            // Listeners for interaction between charts
+            listeners: {
+                'hover': 'onHover',
+                'unHover': 'onUnhover',
+                'dimChanged': 'onDimChanged',
+                'navigationRangeUpdate': '_updateNavRegion'
+            },
+
+            _updateNavRegion: function(e) {
+
+                for(var regIndex = 0; regIndex < this.navigationRegions.length; regIndex++) {
+                    // nRegions.push(this.navigationRegions[regIndex]["range"]);
+                    if(e.detail.plotId == this.navigationRegions[regIndex]["plotId"]
+                            && (e.detail.range != this.navigationRegions[regIndex]["range"])
+                            ) {
+                        this.navigationRegions.splice(regIndex, 1);
+                        this.push("navigationRegions", {"plotId": e.detail.plotId, "range": e.detail.range});
+                    }
+                }
+            },
 
             /**
              * Resizes the chart.
@@ -186,25 +207,25 @@ To use, add `<epiviz-environment>` in the page
                 return new epiviz.datatypes.GenomicRange(chr, start, end-start);
             },
 
-            // Listeners for interaction between charts
-            listeners: {
-                'hover': 'onHover',
-                'unHover': 'onUnhover',
-                'dimChanged': 'onDimChanged'
-            },
-
             _navigationRegionsChanged: function() {
                 var self = this;
-                console.log(this.navigationRegions);
+                // console.log(this.navigationRegions);
                 if(this.navigationRegions && this.navigationRegions.length > 0) {
                     // this.fire('navigationRegions', {
                     //     data: this.navigationRegions
                     // });
+
+                    var nRegions = [];
+
+                    for(var regIndex = 0; regIndex < this.navigationRegions.length; regIndex++) {
+                        nRegions.push(this.navigationRegions[regIndex]["range"]);
+                    }
+
                     var numChildren = self.getEffectiveChildren().length;
                     for (var index = 0; index < numChildren; index++) {
                         var currentChild = self.getEffectiveChildren()[index];
                         if(currentChild.nodeName === "EPIVIZ-SCATTER-PLOT") {
-                            currentChild.colorByRegions = self.navigationRegions;
+                            currentChild.colorByRegions = nRegions;
                         }
                     }
                 }
@@ -332,7 +353,7 @@ To use, add `<epiviz-environment>` in the page
 
                         if(currentChild.nodeName === "EPIVIZ-NAVIGATION") {
 
-                            self.push("navigationRegions", currentChild.range);
+                            self.push("navigationRegions", {"plotId": currentChild.plotId, "range": currentChild.range});
                             self._getElementSeqInfo(currentChild, self);
 
                             if(currentChild.collapsed) {
@@ -355,6 +376,8 @@ To use, add `<epiviz-environment>` in the page
                             // self._updateChart(node.plotId);
                             if(node.nodeName === "EPIVIZ-NAVIGATION") {
                                 self._getElementSeqInfo(node, Polymer.dom(self));
+
+                                self.push("navigationRegions", {"plotId": currentChild.plotId, "range": currentChild.range});
 
                                 // if(node.collapsed) {
                                     var navChildren = node.getEffectiveChildren().length;
