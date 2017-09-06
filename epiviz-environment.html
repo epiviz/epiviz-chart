@@ -214,7 +214,18 @@ To use, add `<epiviz-environment>` in the page
 
             _navigationRegionsChanged: function() {
                 var self = this;
+                // console.log(this.navigationRegions);
                 if(this.navigationRegions && this.navigationRegions.length > 0) {
+                    // this.fire('navigationRegions', {
+                    //     data: this.navigationRegions
+                    // });
+
+                    var nRegions = [];
+
+                    for(var regIndex = 0; regIndex < this.navigationRegions.length; regIndex++) {
+                        nRegions.push(this.navigationRegions[regIndex]["range"]);
+                    }
+
                     var numChildren = self.getEffectiveChildren().length;
                     for (var index = 0; index < numChildren; index++) {
                         var currentChild = self.getEffectiveChildren()[index];
