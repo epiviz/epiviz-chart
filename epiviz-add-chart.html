@@ -6,8 +6,9 @@
 <link rel="import" href="../paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-item/paper-item.html">
-
+<link rel="import" href="../iron-icons/editor-icons.html">
 
 <!--Semantic-->
 <link rel="stylesheet" href="src/browser/semantic/dist/semantic.min.css">
@@ -27,18 +28,27 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
 <dom-module id="epiviz-add-chart">
 
     <template>
+
+        <style>
+            #addChart {
+                display: inline-block;
+            }
+        </style>
         <!-- local DOM goes here -->
         <div id="addChart">
-            <paper-dialog id="modal" modal>
+            <!-- <paper-dialog id="modal" modal> -->
                 <paper-menu-button>
-                    <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
+                    <paper-button class="dropdown-trigger" raised>
+                        <iron-icon icon="editor:insert-chart"></iron-icon>
+                        <span>Add Visualization</span>
+                    </paper-button>
                     <paper-menu class="dropdown-content" selected="{{selectedChart}}">
                         <template is="dom-repeat" items="{{_charts}}">
                             <paper-item>[[item]]</paper-item>
                         </template>
                     </paper-menu>
                 </paper-menu-button>
-            </paper-dialog>
+            <!-- </paper-dialog> -->
         </div>
     
     </template>
@@ -149,7 +159,7 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
                             var measurements = data.subset(function(m) { return m.datasourceGroup() === source });
                             chartElem.setAttribute("measurements", JSON.stringify(measurements.raw()));
                             Polymer.dom(envElement).appendChild(chartElem);
-                            self.$.modal.close();
+                            // self.$.modal.close();
                         }
                     });
                     $('#sourcemodal').modal('show');
@@ -162,7 +172,7 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
                     showModal(source, data.raw(), function(selected) {
                         chartElem.setAttribute("measurements", JSON.stringify(selected));
                         Polymer.dom(envElement).appendChild(chartElem);
-                        self.$.modal.close();
+                        // self.$.modal.close();
                     });
                     $('#sourcemodal').modal('show');
                 }

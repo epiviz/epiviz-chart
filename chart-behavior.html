@@ -158,9 +158,9 @@
             var self = this;
             // this._measurementsChanged();
             if(this.chart != null) {
-                var width = self.offsetWidth - 20;
-                if(width < 0) { width = self.chartType.defaultWidth()/2;}
-                this.chart._properties.width = Math.max(width, self.offsetWidth - epiviz.ui.charts.Visualization.SVG_MARGIN);
+                // var width = self.offsetWidth - 40;
+                // if(width < self.chartType.defaultWidth()) { width = self.chartType.defaultWidth()}
+                this.chart._properties.width = Math.max(self.chartType.defaultWidth()/2, self.offsetWidth - epiviz.ui.charts.Visualization.SVG_MARGIN);
                 this.chart._properties.height = Math.max(self.chartType.defaultHeight(), self.offsetHeight - epiviz.ui.charts.Visualization.SVG_MARGIN);
                 self._dataChanged();
             }
@@ -271,7 +271,7 @@
                 self.chartType = self._createChart();
 
                 var width = self.offsetWidth - 40;
-                if(width < 0) { width = self.chartType.defaultWidth()/2;}
+                if(width < self.chartType.defaultWidth()/2) { width = self.chartType.defaultWidth()/2;}
 
                 if(self.chartType) {
                     self.chartProperties = new epiviz.ui.charts.VisualizationProperties(
@@ -347,6 +347,42 @@
                         }
                     ));
 
+                    /**
+                     * fires event when a chart data object is selected.
+                     *
+                     * @event select
+                     * @type {object}
+                     * @property {object} data - data object currently selected.
+                     */
+                     self.chart.onSelect().addListener(new epiviz.events.EventListener(
+                        function(e) {
+                            var id = e.id;
+                            var data = e.args;
+                            self.select(data);
+                            self.fire('select', {
+                                id: id,
+                                data: data
+                            });
+                        }
+                    ));
+
+
+                    /**
+                     * fires event when a chart data object is unSelected.
+                     *
+                     * @event deSelect
+                     * @type {object}
+                     */
+                     self.chart.onDeselect().addListener(new epiviz.events.EventListener(
+                        function(e) {
+                            var id = e.id;
+                            self.deSelect();
+                            self.fire('deSelect', {
+                                id: id
+                            });
+                        }
+                    ));
+
                     if (self.useDefaultDataProvider) {
 
                         self.measurements = self.measurements || [{
@@ -401,6 +437,21 @@
          */
         unHover: function() {
             this.chart.doUnhover();
+        },
+
+        /**
+         * select event handler.
+         * @param {object} data data object currently hovered.
+         */
+         select: function(data) {
+            this.chart.doSelect(data);
+        },
+
+        /**
+         * deSelect event handler.
+         */
+         deSelect: function() {
+            this.chart.doDeselect();
         },
 
         /**

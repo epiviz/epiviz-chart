@@ -18,7 +18,35 @@
          * Shows the `<epiviz-add-chart>` element
          */
         _showAddDialog: function() {
-            var self = this;
+            // var self = this;
+            // var chartContainer = this.$.header;
+            // var currAddElem = this.$$('epiviz-add-chart');
+
+            // if(currAddElem == null) {
+            //     var currAddElem = document.createElement('epiviz-add-chart');
+            //     Polymer.dom(chartContainer).appendChild(currAddElem);
+                
+            //     var dataManagerElem = document.querySelector('epiviz-data-source');
+            //     if(dataManagerElem) {
+            //         // currAddElem.setAttribute('measurements', JSON.stringify(dataManagerElem.measurementSet));\
+            //         Polymer.dom(currAddElem).measurements = dataManagerElem.measurementSet;
+            //     }               
+            // }
+
+            // currAddElem.showAdd(self, function(chartObject) {
+            //     // self.chartSettings = newSettings;
+            //     console.log(chartObject);
+            // });
+        },
+
+        /**
+         * Initializes the `<epiviz-add-chart>` element
+         */
+        _initializeAddDialog: function() {
+            // var chartSettingsContainer = this.$$('#chartSettingsContainer');
+
+            // var chartSettingsContainer = this.$$('#header');
+
             var chartContainer = this.$.header;
             var currAddElem = this.$$('epiviz-add-chart');
 
@@ -33,45 +61,38 @@
                 }               
             }
 
-            currAddElem.showAdd(self, function(chartObject) {
-                // self.chartSettings = newSettings;
-                console.log(chartObject);
-            });
-        },
+            // currAddElem.showAdd(self, function(chartObject) {
+            //     // self.chartSettings = newSettings;
+            //     console.log(chartObject);
+            // });
+            // var currAddDialogIcon = this.$$('#chartAddDialogIcon');
 
-        /**
-         * Initializes the `<epiviz-add-chart>` element
-         */
-        _initializeAddDialog: function() {
-            var chartSettingsContainer = this.$$('#chartSettingsContainer');
-            var currAddDialogIcon = this.$$('#chartAddDialogIcon');
+            // if(currAddDialogIcon == null) {
+            //     var iconElem = document.createElement('paper-icon-button');
+            //     // iconElem.hidden = true;
+            //     iconElem.id = "chartAddDialogIcon";
+            //     iconElem.icon = "settings";
 
-            if(currAddDialogIcon == null) {
-                var iconElem = document.createElement('paper-icon-button');
-                // iconElem.hidden = true;
-                iconElem.id = "chartAddDialogIcon";
-                iconElem.icon = "settings";
-
-                iconElem.addEventListener("click", this._showAddDialog.bind(this));
-                Polymer.dom(chartSettingsContainer).appendChild(iconElem);
-            }
+            //     iconElem.addEventListener("click", this._showAddDialog.bind(this));
+            //     Polymer.dom(chartSettingsContainer).appendChild(iconElem);
+            // }
         },
 
         /**
          * Intilizes chart container DOM element for settings and colors elements.
          */
         _initializeDialogContainer: function() {
-            var chartContainer = this.$.header;
-            var settingsContainer = this.$$('#' + 'chartSettingsContainer');
+            // var chartContainer = this.$.header;
+            // var settingsContainer = this.$$('#' + 'chartSettingsContainer');
 
-            if(settingsContainer == null) {
-                var iconElem = document.createElement('div');
-                iconElem.hidden = true;
-                iconElem.id = "chartSettingsContainer";
+            // if(settingsContainer == null) {
+            //     var iconElem = document.createElement('div');
+            //     iconElem.hidden = true;
+            //     iconElem.id = "chartSettingsContainer";
 
-                // iconElem.addEventListener("click", this._showColorsDialog.bind(this));
-                Polymer.dom(chartContainer).appendChild(iconElem);
-            }
+            //     // iconElem.addEventListener("click", this._showColorsDialog.bind(this));
+            //     Polymer.dom(chartContainer).appendChild(iconElem);
+            // }
         },
 
         ready: function() {

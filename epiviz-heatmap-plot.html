@@ -210,6 +210,14 @@ To use, add `<epiviz-heatmap-plot>` in the page
                     self.unHover();
                 }.bind(self));
 
+                parent.addEventListener('selectAllCharts', function(e) {
+                    self.select(e.detail.data);
+                }.bind(self));
+
+                parent.addEventListener('unSelectAllCharts', function(e) {
+                    self.deSelect();
+                }.bind(self));
+
                 self._measurementsChanged();
                 self._dataChanged();
 

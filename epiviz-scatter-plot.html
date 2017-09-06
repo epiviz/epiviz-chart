@@ -247,6 +247,14 @@ To use, add `<epiviz-scatter-plot>` in the page
                     self.unHover();
                 }.bind(self));
 
+                parent.addEventListener('selectAllCharts', function(e) {
+                    self.select(e.detail.data);
+                }.bind(self));
+
+                parent.addEventListener('unSelectAllCharts', function(e) {
+                    self.deSelect();
+                }.bind(self));
+
                 // if(parent.nodeName === "EPIVIZ-NAVIGATION") {
                 //     parent.addEventListener('hover', function(e) {
                 //         self.hover(e.detail.data);

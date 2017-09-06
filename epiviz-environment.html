@@ -32,8 +32,8 @@ To use, add `<epiviz-environment>` in the page
                 /*min-height: 400px;*/
                 /*resize: both;*/
                 width: 100%;
-                height: 100%;
-                overflow: auto;
+                /* height: 100%; */
+                overflow: none;
                 transition:width 0.01s, height 0.01s;
                 /*margin: 10px;*/
                 /*width: auto;
@@ -58,7 +58,7 @@ To use, add `<epiviz-environment>` in the page
                 /*background-color: #fff000;*/
             }
         </style>
-        <div  on-mouseover="hostHovered" on-mouseout="hostUnhovered">
+        <div>
             <div class="header" id="header">
                 <a href="http://epiviz.github.io" target="_blank"><img src="epiviz_4_logo_medium.png" alt="Epiviz" width="100" height="21"></a>
             </div>
@@ -69,7 +69,7 @@ To use, add `<epiviz-environment>` in the page
     <script>
         Polymer({
             is: 'epiviz-environment',
-            behaviors: [epiviz.ChartDataBehavior, epiviz.ChartWorkspaceBehavior, epiviz.ChartAddBehavior],
+            behaviors: [epiviz.ChartDataBehavior, epiviz.ChartWorkspaceBehavior, epiviz.ChartAddBehavior, Polymer.IronResizableBehavior],
 
             properties: {
                 
@@ -163,10 +163,12 @@ To use, add `<epiviz-environment>` in the page
 
             // Listeners for interaction between charts
             listeners: {
+                'navigationRangeUpdate': '_updateNavRegion',
                 'hover': 'onHover',
                 'unHover': 'onUnhover',
-                'dimChanged': 'onDimChanged',
-                'navigationRangeUpdate': '_updateNavRegion'
+                'select': 'onSelect',
+                'deSelect': 'onDeSelect',
+                'dimChanged': 'onDimChanged'
             },
 
             _updateNavRegion: function(e) {
@@ -185,17 +187,17 @@ To use, add `<epiviz-environment>` in the page
             /**
              * Resizes the chart.
              */
-            _onResize: function() {
-                var self = this;
-                // this._measurementsChanged();
-                if(this.chart != null) {
-                    // var width = self.offsetWidth - 40;
-                    // if(width < self.chartType.defaultWidth()) { width = self.chartType.defaultWidth()}
-                    this.chart._properties.width = self.offsetWidth - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
-                    this.chart._properties.height = self.offsetHeight - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
-                    this._draw();
-                }
-            },
+            // _onResize: function() {
+            //     var self = this;
+            //     // this._measurementsChanged();
+            //     if(this.chart != null) {
+            //         // var width = self.offsetWidth - 40;
+            //         // if(width < self.chartType.defaultWidth()) { width = self.chartType.defaultWidth()}
+            //         this.chart._properties.width = self.offsetWidth - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
+            //         this.chart._properties.height = self.offsetHeight - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
+            //         this._draw();
+            //     }
+            // },
 
             /**
              * Creates a epiviz GenomicRange object from chromosome, start and end.
@@ -264,6 +266,47 @@ To use, add `<epiviz-environment>` in the page
                 e.preventDefault();
                 e.stopPropagation();
             },
+
+            /**
+             * select event handler.
+             * Listens to select events fired from its children elements and propagates to other charts
+             * 
+             * @fires selectAllCharts
+             */
+             onSelect: function(e) {
+
+                /**
+                 * Propogates select event to other charts.
+                 *
+                 * @event selectAllCharts
+                 */
+                this.fire('selectAllCharts', {
+                    data: e.detail.data
+                });
+                e.preventDefault();
+                e.stopPropagation();
+            },
+
+            /**
+             * deSelect event handler.
+             * Listens to deSelect events fired from its children elements and propagates to other charts
+             * 
+             * @fires unSelectAllCharts
+             */
+             onDeSelect: function(e) {
+
+                /**
+                 * Propogates select event to other charts.
+                 *
+                 * @event unSelectAllCharts
+                 */
+                this.fire('unSelectAllCharts', {
+                    data: null
+                });
+                e.preventDefault();
+                e.stopPropagation();
+            },
+
 
             /**
              * MeasurementChange/ChartDimension event handler.
@@ -412,27 +455,27 @@ To use, add `<epiviz-environment>` in the page
                 }
 
                 self._initializeAddDialog();
-            },
-
-            /**
-             * Handles when mouse-overed on a chart to show settings and colors.
-             */
-            hostHovered: function() {
-                var currColorsIcon = this.$$('#chartSettingsContainer');
-                if(currColorsIcon) {
-                    currColorsIcon.hidden = false;
-                }
-            },
-
-            /**
-             * Handles when mouse-overed on a chart to show settings and colors.
-             */
-            hostUnhovered: function() {
-                var currColorsIcon = this.$$('#chartSettingsContainer');
-                if(currColorsIcon) {
-                    currColorsIcon.setAttribute("hidden", true);   
-                }
             }
+
+            /**
+             * Handles when mouse-overed on a chart to show settings and colors.
+             */
+            // hostHovered: function() {
+            //     var currColorsIcon = this.$$('#chartSettingsContainer');
+            //     if(currColorsIcon) {
+            //         currColorsIcon.hidden = false;
+            //     }
+            // },
+
+            /**
+             * Handles when mouse-overed on a chart to show settings and colors.
+             */
+            // hostUnhovered: function() {
+            //     var currColorsIcon = this.$$('#chartSettingsContainer');
+            //     if(currColorsIcon) {
+            //         currColorsIcon.setAttribute("hidden", true);   
+            //     }
+            // }
         });
     </script>
 </dom-module>

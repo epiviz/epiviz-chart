@@ -11,6 +11,7 @@
 
 <!-- Epiviz data behaviors dependency -->
 <link rel="import" href="chart-data-behavior.html">
+<link rel="import" href="chart-add-behavior.html">
 
 <!-- Chart elements dependency -->
 <link rel="import" href="epiviz-genes-track.html">
@@ -94,9 +95,9 @@ To use, add `<epiviz-navigation>` in the page
         </style>
 
         <!-- local DOM goes here -->
-        <div>
-            <button class="collapse-header" on-click="toggleHeader">Expand</button>
-            <button on-click="cloneNavigation">Clone</button>
+        <div class="header" id="header">
+            <paper-button raised class="collapse-header" on-click="toggleHeader">Collapse</paper-button>
+            <paper-button raised on-click="cloneNavigation">Clone</paper-button>
         </div>
         <template restamp="true" is="dom-if" if="{{collapsed}}">
             <epiviz-ideogram-track gene-in-range="{{geneInRange}}" id="navTrack" chromosome="{{chr}}" start="{{start}}" end="{{end}}"></epiviz-ideogram-track>
@@ -138,7 +139,7 @@ To use, add `<epiviz-navigation>` in the page
         Polymer({
             /* Custom element html tag */
             is: 'epiviz-navigation',
-            behaviors: [epiviz.ChartBehavior, epiviz.ChartDataBehavior, Polymer.IronResizableBehavior],
+            behaviors: [epiviz.ChartBehavior, epiviz.ChartDataBehavior, epiviz.ChartAddBehavior, Polymer.IronResizableBehavior],
 
             /* Properties that can be defined on the element */
             properties: {
@@ -292,7 +293,9 @@ To use, add `<epiviz-navigation>` in the page
             /* event listeners */
             listeners: {
                 'hover': 'onHover',
-                'unHover': 'onUnhover'
+                'unHover': 'onUnhover',
+                'select': 'onSelect',
+                'deSelect': 'onDeselect'
             },
 
             /**
@@ -301,8 +304,7 @@ To use, add `<epiviz-navigation>` in the page
             toggleHeader: function(event) {
                 this.$.navHeader.toggle();
                 this.collapsed = !this.collapsed;
-                // console.log($(this).find(".collapse-header")[0]);
-                if (!this.collapsed) {
+                if (this.collapsed) {
                     $(this).find(".collapse-header")[0].innerHTML = "Collapse";
                 } else {
                     $(this).find(".collapse-header")[0].innerHTML = "Expand";
@@ -348,6 +350,42 @@ To use, add `<epiviz-navigation>` in the page
                  * @event unHoverAllCharts
                  */
                 this.fire('unHoverAllCharts', {
+                    data: null
+                });
+            },
+
+            /**
+             * Select event handler.
+             * Listens to select events fired from its children elements and propagates to other charts.
+             *
+             * @fires selectAllCharts
+             */
+             onSelect: function(e) {
+                /**
+                 * Propogates select event to other charts.
+                 *
+                 * @event selectAllCharts
+                 * @type {object}
+                 * @property {object} data - data object currently selected.
+                 */
+                this.fire('selectAllCharts', {
+                    data: e.detail.data
+                });
+            },
+
+            /**
+             * deSelect event handler.
+             * Listens to select events fired from its children elements and propagates to other charts.
+             *
+             * @fires unSelectAllCharts
+             */
+             onDeselect: function(e) {
+                /**
+                 * Propogates select event to other charts.
+                 *
+                 * @event unSelectAllCharts
+                 */
+                this.fire('unSelectAllCharts', {
                     data: null
                 });
             },
@@ -637,6 +675,36 @@ To use, add `<epiviz-navigation>` in the page
                     }
                 }.bind(self));
 
+                parent.addEventListener('selectAllCharts', function(e) {
+                    if(!self.collapsed) {
+                        if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
+                            self.$$("#navTrack").hover();
+                        }
+                    }
+                    else {
+                        var numChildren = self.getEffectiveChildren().length;
+                        for (var index = 0; index < numChildren; index++) {
+                            var currentChild = self.getEffectiveChildren()[index];
+                            currentChild.select(e.detail.data);
+                        }
+                    }
+                }.bind(self));
+
+                parent.addEventListener('unSelectAllCharts', function(e) {
+                    if(!self.collapsed) {
+                        if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
+                            self.$$("#navTrack").hover();
+                        }
+                    }
+                    else {
+                        var numChildren = self.getEffectiveChildren().length;
+                        for (var index = 0; index < numChildren; index++) {
+                            var currentChild = self.getEffectiveChildren()[index];
+                            currentChild.deSelect();
+                        }
+                    }
+                }.bind(self));
+
                 // if(self.collapsed) {
                     var numChildren = self.getEffectiveChildren().length;
                     for (var index = 0; index < numChildren; index++) {
@@ -690,6 +758,8 @@ To use, add `<epiviz-navigation>` in the page
                 else {
                     self.transformFunc = self.epivizToJSON;
                 }
+
+                self._initializeAddDialog();
             },
 
             /**
