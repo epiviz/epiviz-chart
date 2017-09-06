@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>epiviz-charts</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../../epiviz-data-source/epiviz-data-source.html">
+    <link rel="import" href="../epiviz-charts.html">
+
+</head>
+
+<body>
+    <h3>Environment and charts</h3>
+    <epiviz-data-source provider-type="epiviz.data.WebServerDataProvider" provider-id="umd" provider-url="https://epiviz.cbcb.umd.edu/data/main.php">
+    </epiviz-data-source>
+    
+    <epiviz-environment id="testEnv"
+        chr="chr11">
+    </epiviz-environment>
+</body>
+
+</html>

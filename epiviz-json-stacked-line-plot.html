@@ -30,6 +30,8 @@ To use, add `<epiviz-json-stacked-line-plot>` in the page
                 width: 100%;
                 height: 100%;
                 display: inline-block;
+                overflow: auto;
+                transition:width 0.01s, height 0.01s;
                 /*margin: 10px;*/
             }
         </style>
@@ -44,7 +46,7 @@ To use, add `<epiviz-json-stacked-line-plot>` in the page
         Polymer({
             /* Custom element html tag */
             is: 'epiviz-json-stacked-line-plot',
-            behaviors: [epiviz.ChartJSONBehavior],
+            behaviors: [epiviz.ChartJSONBehavior, Polymer.IronResizableBehavior],
 
             properties: {
                 /**
@@ -77,6 +79,14 @@ To use, add `<epiviz-json-stacked-line-plot>` in the page
 
                 parent.addEventListener('unHoverAllCharts', function(e) {
                     self.$.epivizChart.unHover();
+                }.bind(self));
+
+                parent.addEventListener('selectAllCharts', function(e) {
+                    self.$.epivizChart.select(e.detail.data);
+                }.bind(self));
+
+                parent.addEventListener('unSelectAllCharts', function(e) {
+                    self.$.epivizChart.deSelect();
                 }.bind(self));
             }
 
