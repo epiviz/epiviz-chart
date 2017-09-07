@@ -119,7 +119,8 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
             _chartSelectionChanged: function() {
                 var self = this;
 
-                var envElement = self.parentNode.parentNode.parentNode;
+                var envElement = self.parentNode.parentNode.nodeName == "EPIVIZ-NAVIGATION" ? self.parentNode.parentNode : self.parentNode.parentNode.parentNode;
+                
                 self.selection = {};
                 self.selection.chartType = self._charts[self.selectedChart];
 

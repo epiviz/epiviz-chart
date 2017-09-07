@@ -96,7 +96,7 @@ To use, add `<epiviz-navigation>` in the page
 
         <!-- local DOM goes here -->
         <div class="header" id="header">
-            <paper-button raised class="collapse-header" on-click="toggleHeader">Collapse</paper-button>
+            <paper-button raised class="collapse-header" on-click="toggleHeader">Expand</paper-button>
             <paper-button raised on-click="cloneNavigation">Clone</paper-button>
         </div>
         <template restamp="true" is="dom-if" if="{{collapsed}}">
@@ -305,9 +305,22 @@ To use, add `<epiviz-navigation>` in the page
                 this.$.navHeader.toggle();
                 this.collapsed = !this.collapsed;
                 if (this.collapsed) {
-                    $(this).find(".collapse-header")[0].innerHTML = "Collapse";
-                } else {
                     $(this).find(".collapse-header")[0].innerHTML = "Expand";
+
+                    Polymer.dom(this).unobserveNodes(this._observer);
+
+                } else {
+                    $(this).find(".collapse-header")[0].innerHTML = "Collapse";
+
+                    this._observer =
+                    Polymer.dom(this.$$("#chartEnv")).observeNodes(function(info) {
+                        info.addedNodes.forEach(function(node) {
+                            // self._updateChart(node.plotId);
+                            this._getElementData(node, this, this.parentNode.parentNode.measurements);
+                        });
+                                                // self.saveWorkspace();
+                    });
+        
                 }
                 event.preventDefault();
                 event.stopPropagation();
