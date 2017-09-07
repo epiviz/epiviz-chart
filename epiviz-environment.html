@@ -318,7 +318,6 @@ To use, add `<epiviz-environment>` in the page
                 e.stopPropagation();
             },
 
-
             /**
              * MeasurementChange/ChartDimension event handler.
              * Listens to when a chart dimensions(axes) are changed and updates chart
@@ -409,15 +408,6 @@ To use, add `<epiviz-environment>` in the page
                                     self._getElementData(currentNavChild, self, self.measurements);
                                 }
                             }
-
-                            // currentChild._observer =
-                            //     Polymer.dom(currentChild.$$("#chartEnv")).observeNodes(function(info) {
-                            //         info.addedNodes.forEach(function(node) {
-                            //             // self._updateChart(node.plotId);
-                            //             currentChild._getElementData(node, self, 
-                            //                         self.measurements);
-                            //         });
-                            //     });
                         }
                         else {
                             self._getElementData(currentChild, self, self.measurements);
@@ -440,16 +430,6 @@ To use, add `<epiviz-environment>` in the page
                                         var currentNavChild = node.getEffectiveChildren()[nindex];
                                         self._getElementData(currentNavChild, self, self.measurements);
                                     }
-
-                                // node._observer =
-                                //     Polymer.dom(node.$$("#chartEnv")).observeNodes(function(info) {
-                                //         info.addedNodes.forEach(function(node2) {
-                                //             // self._updateChart(node.plotId);
-                                //             node._getElementData(node2, self, 
-                                //                         self.measurements);
-                                //         });
-                                //     });
-                                // }
                             }
                             else {
                                 self._getElementData(node, self, self.measurements);
