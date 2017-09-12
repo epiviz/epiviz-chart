@@ -112,8 +112,32 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
                 }   
             },
 
+            /**
+             * Get Available Chart Types
+             */
             _getCharts: function(chartTypes) {
                 return Object.keys(chartTypes);
+            },
+
+            /**
+             * helper function to add a chart
+             * @param {chartType}: chart type to add/create. Must be one of the defined chart types in _chartTypes attribute.
+             * @param {measurements}: measurements to use.
+             * TODO:
+             * @param {data}: data for the chart (for json-based-charts). 
+             */
+            _addChart: function(chartType, measurements) {
+
+                var self = this;
+                var envElement = self.parentNode.parentNode.nodeName == "EPIVIZ-NAVIGATION" ? self.parentNode.parentNode : self.parentNode.parentNode.parentNode;
+
+                var chartElem = document.createElement(self._chartTypes[chartType]);
+                chartElem.className = "charts";
+                chartElem.range = envElement.range;
+                var chartElemType = chartElem._createChart();
+
+                chartElem.setAttribute("measurements", JSON.stringify(measurements));
+                Polymer.dom(envElement).appendChild(chartElem);
             },
 
             _chartSelectionChanged: function() {
