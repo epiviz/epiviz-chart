@@ -87,7 +87,7 @@
             var self = this;
 
             var workspaceObj = {};
-            workspaceObj.measurements = self.measurements;
+            workspaceObj.measurements = self.measurements ? self.measurements : null;
             workspaceObj.plotId = self.plotId;
             workspaceObj.chr = self.chr;
             workspaceObj.start = self.start;
@@ -114,8 +114,8 @@
                         var currentNavChild = currentChild.getEffectiveChildren()[nindex];
                         childObj[currentChild.plotId].children[currentNavChild.plotId] = {
                             "node": currentNavChild.nodeName,
-                            "measurements": currentNavChild.measurements,
-                            "dims": currentNavChild.dimS,
+                            "measurements": currentNavChild.measurements ? currentNavChild.measurements : null,
+                            "dims": currentNavChild.dimS ? currentNavChild.dimS : null,
                             "chartSettings": currentNavChild.chartSettings,
                             "chartColors": currentNavChild.chartColors
                         }
@@ -124,8 +124,8 @@
                 else {
                     childObj[currentChild.plotId] = {
                         "node": currentChild.nodeName,
-                        "measurements": currentChild.measurements,
-                        "dims": currentChild.dimS,
+                        "measurements": currentChild.measurements ? currentChild.measurements : null,
+                        "dims": currentChild.dimS ? currentChild.dimS : null,
                         "chartSettings": currentChild.chartSettings,
                         "chartColors": currentChild.chartColors
                     };
