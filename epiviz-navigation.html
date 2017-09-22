@@ -49,7 +49,7 @@ To use, add `<epiviz-navigation>` in the page
                 border: 1px solid black;
                 padding: 10px;
                 resize: both;
-                width: 90%;
+                /* width: 90%; */
                 /* height: 100%; */
                 overflow: auto;
                 transition:width 0.01s, height 0.01s;
@@ -426,7 +426,7 @@ To use, add `<epiviz-navigation>` in the page
                     }
                 }
 
-                self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined);
+                self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined, self.chr);
 
                 self.fire('navigationRangeUpdate', {
                     plotId: self.plotId,
@@ -667,8 +667,18 @@ To use, add `<epiviz-navigation>` in the page
                 var parent = self.parentNode.parentNode;
                 parent.addEventListener('hoverAllCharts', function(e) {
                     if(self.collapsed) {
-                        if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
-                            self.$$("#navTrack").hover();
+                        if(Array.isArray(e.detail.data)) {
+                            for (var rIndex = 0; rIndex < e.detail.data.length; rIndex++) {
+                                if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data[rIndex])) {
+                                    self.$$("#navTrack").hover();
+                                    break;
+                                }
+                            }
+                        }
+                        else {
+                            if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
+                                self.$$("#navTrack").hover();
+                            }
                         }
                     }
                     else {
@@ -695,8 +705,18 @@ To use, add `<epiviz-navigation>` in the page
 
                 parent.addEventListener('selectAllCharts', function(e) {
                     if(!self.collapsed) {
-                        if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
-                            self.$$("#navTrack").hover();
+                        if(Array.isArray(e.detail.data)) {
+                            for (var rIndex = 0; rIndex < e.detail.data.length; rIndex++) {
+                                if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data[rIndex])) {
+                                    self.$$("#navTrack").hover();
+                                    break;
+                                }
+                            }
+                        }
+                        else {
+                            if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
+                                self.$$("#navTrack").hover();
+                            }
                         }
                     }
                     else {
@@ -710,9 +730,7 @@ To use, add `<epiviz-navigation>` in the page
 
                 parent.addEventListener('unSelectAllCharts', function(e) {
                     if(!self.collapsed) {
-                        if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
-                            self.$$("#navTrack").hover();
-                        }
+                        self.$$("#navTrack").unHover();
                     }
                     else {
                         var numChildren = self.getEffectiveChildren().length;
@@ -761,13 +779,13 @@ To use, add `<epiviz-navigation>` in the page
                         self.end = data[0].end;
                         self.range = self.getGenomicRange(self.chr, self.start, self.end);
 
-                        self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined);
+                        self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined, self.chr);
                     });
                 }
                 else if(self.chr && self.start && self.end) {
                     self.range = self.getGenomicRange(self.chr, self.start, self.end);
 
-                    self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined);
+                    self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined, self.chr);
                 }
 
                 if(self.transformDataFunc) {
