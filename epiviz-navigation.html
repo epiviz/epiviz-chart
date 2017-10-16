@@ -46,22 +46,15 @@ To use, add `<epiviz-navigation>` in the page
         <style>
             :host {
                 display: inline-block;
-                border: 1px solid black;
-                padding: 10px;
-                resize: both;
-                /* width: 90%; */
-                /* height: 100%; */
-                overflow: auto;
+                /* border: 1px solid black; */
+                border-radius: 10px;
                 transition:width 0.01s, height 0.01s;
-                /*margin: 10px;*/
-                /* width: auto;
-                height: auto; */
             }
 
-            .container {
+            /* .container {
                 width: 600px;
                 display: inline;
-            }
+            } */
 
             .flex {
                 @apply(--layout-horizontal);
@@ -79,6 +72,36 @@ To use, add `<epiviz-navigation>` in the page
                 @apply(--layout-end-justified);
             }
 
+            #disableHeader {
+                pointer-events: none;
+                opacity: 0.4;
+            }
+
+            paper-header-panel {
+                float: left;
+                min-width: 1000px;
+                min-height: 1000px;
+                margin: 12px;
+                @apply(--shadow-elevation-2dp);
+            }
+
+            .paper-header {
+                height: 60px;
+                font-size: 16px;
+                /* line-height: 60px; */
+                padding: 0 10px;
+                color: white;
+                transition: height 0.2s;
+                vertical-align: middle;
+            }
+
+            paper-button {
+                display: inline-block;
+                background: #4285f4;
+                color: #fff;
+                vertical-align: middle;
+            }
+
             paper-icon-button {
                 background-color: #dedede;
                 color: black;
@@ -88,52 +111,65 @@ To use, add `<epiviz-navigation>` in the page
                 height: 28px;
             }
 
-            #disableHeader {
-                pointer-events: none;
-                opacity: 0.4;
+            .content {
+                /* height: 800px; */
+                height: 100%;
+                padding: 10px;
+                /* min-height: 500px; */
+            }
+
+            /* .blue .content {
+                background: linear-gradient(white, #e0e2e2);
+            } */
+
+            .blue .paper-header {
+                background-color: #e0e2e2;
             }
 
         </style>
 
-        <!-- local DOM goes here -->
-        <div class="header" id="header">
-            <paper-button raised class="collapse-header" on-click="toggleHeader">Expand</paper-button>
-            <paper-button raised on-click="cloneNavigation">Clone</paper-button>
-        </div>
-        <template is="dom-if" if="{{collapsed}}">
-            <epiviz-ideogram-track gene-in-range="{{geneInRange}}" id="navTrack" chromosome="{{chr}}" start="{{start}}" end="{{end}}"></epiviz-ideogram-track>
-        </template>
-        
-        <iron-collapse id="navHeader">
-            <template is="dom-if" if="{{!collapsed}}" notifyDomChange="true">
-                <div class="container flex" id="{{_headerName}}">
-                    <div class="flexchild">
-                        <paper-icon-button title="move left" icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
-                        <paper-icon-button title="move right" icon="icons:chevron-right" on-click="moveRight"></paper-icon-button>
-                        <paper-icon-button title="zoom out" icon="icons:zoom-out" on-click="zoomOut"></paper-icon-button>
-                        <paper-icon-button title="zoom in" icon="icons:zoom-in" on-click="zoomIn"></paper-icon-button>
-                    </div>
-                    <div class="flexchild" on-mouseover="locationHovered" on-mouseout="locationUnhovered">
-                        <paper-input value="{{_strRange]]" label="Chromosome Location" on-change="_updateStrRange"></paper-input>
-                    </div>
-                    <div class="flexchild">
-                        <paper-autocomplete id="geneSearch" label="Search Gene/Probe" remote-source="true" min-length="2" 
-                            on-autocomplete-selected="_selectGene"
-                            on-autocomplete-change="_searchGene"
-                            value-property="gene"
-                            text-property="gene">
-                            <template autocomplete-custom-template>
-                                <paper-item on-tap="_onSelect" id$="[[_getSuggestionId(index)]]" role="option" aria-selected="false">
-                                <div>[[item.gene]] [[item.seqName]]: [[item.start]] - [[item.end]]</div>
-                                <paper-ripple></paper-ripple>
-                                </paper-item>
-                            </template>
-                        </paper-autocomplete>
-                    </div>
-                </div>
-                <content id="chartNav" select=".charts"></content>
-            </template>
-        </iron-collapse>
+        <paper-header-panel class="blue">
+            <div id="header" class="paper-header">
+                <paper-button raised class="collapse-header" on-click="toggleHeader">Expand</paper-button>
+                <paper-button raised on-click="cloneNavigation">Clone</paper-button>               
+            </div>
+            <div class="content fit">
+                <template is="dom-if" if="{{collapsed}}">
+                    <epiviz-ideogram-track gene-in-range="{{geneInRange}}" id="navTrack" chromosome="{{chr}}" start="{{start}}" end="{{end}}"></epiviz-ideogram-track>
+                </template>
+                
+                <iron-collapse id="navHeader">
+                    <template is="dom-if" if="{{!collapsed}}" notifyDomChange="true">
+                        <div class="container flex" id="{{_headerName}}">
+                            <div class="flexchild">
+                                <paper-icon-button title="move left" icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
+                                <paper-icon-button title="move right" icon="icons:chevron-right" on-click="moveRight"></paper-icon-button>
+                                <paper-icon-button title="zoom out" icon="icons:zoom-out" on-click="zoomOut"></paper-icon-button>
+                                <paper-icon-button title="zoom in" icon="icons:zoom-in" on-click="zoomIn"></paper-icon-button>
+                            </div>
+                            <div class="flexchild" on-mouseover="locationHovered" on-mouseout="locationUnhovered">
+                                <paper-input value="{{_strRange]]" label="Chromosome Location" on-change="_updateStrRange"></paper-input>
+                            </div>
+                            <div class="flexchild">
+                                <paper-autocomplete id="geneSearch" label="Search Gene/Probe" remote-source="true" min-length="2" 
+                                    on-autocomplete-selected="_selectGene"
+                                    on-autocomplete-change="_searchGene"
+                                    value-property="gene"
+                                    text-property="gene">
+                                    <template autocomplete-custom-template>
+                                        <paper-item on-tap="_onSelect" id$="[[_getSuggestionId(index)]]" role="option" aria-selected="false">
+                                        <div>[[item.gene]] [[item.seqName]]: [[item.start]] - [[item.end]]</div>
+                                        <paper-ripple></paper-ripple>
+                                        </paper-item>
+                                    </template>
+                                </paper-autocomplete>
+                            </div>
+                        </div>
+                        <content id="chartNav" select=".charts"></content>
+                    </template>
+                </iron-collapse>
+            </div>
+        </paper-header-panel>
     </template>
 
     <script>
