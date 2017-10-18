@@ -31,30 +31,31 @@ To use, add `<epiviz-genes-track>` in the page
         <style include="chart-shared-css"></style>
         <style>
             :host {
+                box-sizing: border-box;
                 /*min-width: 450px;
                 min-height: 90px;*/
                 width: 100%;
-                height: 100%;
+                /*height: 100%;*/
                 /*height: auto;*/
                 display: inline-block;
-                /*border: 1px solid black;
-                padding: 10px;*/
+                /*border: 1px solid black;*/
                 /*resize: both;*/
-                overflow: auto;
+                /*overflow: auto;*/
                 /*-moz-transition:width 0.01s, height 0.01s;
                 -webkit-transition:width 0.01s, height 0.01s;
-                -o-transition:width 0.01s, height 0.01s;*/
-                transition:width 0.01s, height 0.01s;
+                -o-transition:width 0.01s, height 0.01s;
+                transition:width 0.01s, height 0.01s;*/
                 /*margin: 10px;*/
             }
 
             #chart {
                 position:relative;
             }
+
         </style>
 
         <!-- local DOM goes here -->
-        <div id="chart" on-mouseover="hostHovered" on-mouseout="hostUnhovered">
+        <div id="chart" on-drag="hostDragged" on-mouseover="hostHovered" on-mouseout="hostUnhovered">
             <div id="{{plotId}}"></div>
         </div>
     
@@ -185,26 +186,34 @@ To use, add `<epiviz-genes-track>` in the page
                 var self = this;
 
                 // listen to events 
-                var parent = self.parentNode.parentNode;
+                var parent = self.parentNode.parentNode.parentNode;
 
                 if(parent.nodeName === "IRON-COLLAPSE") {
                     parent = parent.parentNode;
                 }
-
                 parent.addEventListener('hoverAllCharts', function(e) {
-                    self.hover(e.detail.data);
+                    if (!self.hostDragging) {
+                        self.hover(e.detail.data);
+                    }
+
                 }.bind(self));
 
                 parent.addEventListener('unHoverAllCharts', function(e) {
-                    self.unHover();
+                    if (!self.hostDragging) {
+                        self.unHover();
+                    }
                 }.bind(self));
 
                 parent.addEventListener('selectAllCharts', function(e) {
-                    self.select(e.detail.data);
+                    if (!self.hostDragging) {
+                        self.select(e.detail.data);
+                    }
                 }.bind(self));
 
                 parent.addEventListener('unSelectAllCharts', function(e) {
-                    self.deSelect();
+                    if (!self.hostDragging) {
+                        self.deSelect();
+                    }
                 }.bind(self));
 
                 // if(parent.nodeName === "EPIVIZ-NAVIGATION") {
@@ -260,9 +269,7 @@ To use, add `<epiviz-genes-track>` in the page
                 self.plotId = self.plotId || self._generatePlotId();
                 self.scopeSubtree(self.$.chart, true);
                 self.config = new epiviz.Config(self.configSrc);
-
                 // self.listen(self.$.chart, 'iron-resize', 'onElementResize');
-
                 // this.addEventListener("transitionend","onElementResize");
             },
 

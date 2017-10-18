@@ -38,7 +38,7 @@ To use, add `<epiviz-stacked-line-plot>` in the page
                 /*border: 1px solid black;
                 padding: 10px;
                 resize: both;*/
-                overflow: auto;
+                /*overflow: auto;*/
                 transition:width 0.01s, height 0.01s;
                 /*margin: 10px;*/
             }
@@ -186,7 +186,7 @@ To use, add `<epiviz-stacked-line-plot>` in the page
                 var self = this;
 
                 // listen to events 
-                var parent = self.parentNode.parentNode;
+                var parent = self.parentNode.parentNode.parentNode;
 
                 if(parent.nodeName === "IRON-COLLAPSE") {
                     parent = parent.parentNode;

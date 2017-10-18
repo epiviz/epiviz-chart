@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/HCBravoLab/epiviz-chart-to-polymer#readme",
   "dependencies": {
+    "@shopify/draggable": "^1.0.0-beta",
     "bower": "latest"
   }
 }

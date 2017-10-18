@@ -5,6 +5,11 @@
 <dom-module id="shared-settings">
   <template>
     <style>
+        :host {
+            border: 1px solid black;
+            border-radius: 5px;
+            overflow: hidden;
+        };
         #chartSettingsContainer {
             /*float: right;*/
             position:absolute;
@@ -135,6 +140,11 @@
                 type: Array,
                 notify: true,
                 observer: '_chartColorsChanged'
+            },
+
+            hostDragging: {
+                type: Boolean,    
+                value: false,            
             }
         },
 
@@ -144,7 +154,7 @@
 
         listeners: {
             'iron-resize': '_onResize',
-            'transitionend': '_onResize'
+            // 'transitionend': '_onResize'
         },
 
         // onElementResize: function(event) {
@@ -429,14 +439,18 @@
          * @param {object} data data object currently hovered.
          */
         hover: function(data) {
-            this.chart.doHover(data);
+            if (!this.hostDragging && this.hostDragging !== undefined && this.chart) {
+                this.chart.doHover(data);    
+            }
         },
 
         /**
          * unHover event handler.
          */
         unHover: function() {
-            this.chart.doUnhover();
+            if (!this.hostDragging && this.hostDragging !== undefined && this.chart) {
+                this.chart.doUnhover();    
+            }
         },
 
         /**
@@ -465,7 +479,6 @@
                 var iconElem = document.createElement('div');
                 iconElem.hidden = true;
                 iconElem.id = "chartSettingsContainer";
-
                 // iconElem.addEventListener("click", this._showColorsDialog.bind(this));
                 Polymer.dom(chartContainer).appendChild(iconElem);
             }
@@ -476,7 +489,7 @@
          */
         hostHovered: function() {
             var currColorsIcon = this.$$('#chartSettingsContainer');
-            if(currColorsIcon) {
+            if(currColorsIcon && false) {
                 currColorsIcon.hidden = false;
             }
         },
@@ -489,6 +502,36 @@
             if(currColorsIcon) {
                 currColorsIcon.setAttribute("hidden", true);   
             }
+        },
+
+        hostDragged: function(e, ui) {
+            this.hostDragging = true;
+        },
+
+        hostDropped: function(e, ui) {
+            console.log(this.hostDragging);
+            this.hostDragging = false;
+        },
+
+        attached: function() {
+            var self = this;
+            var parentId = $(this).parent().parent().attr("id");
+            $(self).draggable({
+                grid: [10, 10],
+                start: self.hostDragged,
+                stop: self.hostDropped,
+                cursor: "crosshair",
+                // containment: "parent",
+                connectToSortable: "epiviz-environment #chartContainer",
+                obstacle: "#test",
+                iframeFix: true,
+            });
+            $(self).resizable({
+                stop: self._onResize,
+                minHeight: self.chartType ? self.chartType.defaultHeight() : 0,
+                minWidth: self.chartType ? self.chartType.defaultWidth() : 0,
+            });
+            console.log(self);
         }
     }
 </script>

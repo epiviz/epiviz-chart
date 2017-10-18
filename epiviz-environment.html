@@ -3,12 +3,12 @@
 
 <!-- Epiviz imports dependency -->
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
+<link rel="import" href="../epiviz-imports/epiviz-common-css.html">
 
 <!-- Epiviz Polymer Behaviors dependency -->
 <link rel="import" href="chart-data-behavior.html">
 <link rel="import" href="chart-workspace-behavior.html">
 <link rel="import" href="chart-add-behavior.html">
-
 <!--
 `<epiviz-environment>` is a wrapper element that manages measurements, handles events and brushing across all of its children `<epiviz-charts>` elements.
 
@@ -32,7 +32,7 @@ To use, add `<epiviz-environment>` in the page
                 /*min-height: 400px;*/
                 /*resize: both;*/
                 width: 100%;
-                /* height: 100%; */
+                 height: 2000px; 
                 overflow: none;
                 transition:width 0.01s, height 0.01s;
                 /*margin: 10px;*/
@@ -62,7 +62,9 @@ To use, add `<epiviz-environment>` in the page
             <div class="header" id="header">
                 <a href="http://epiviz.github.io" target="_blank"><img src="epiviz_4_logo_medium.png" alt="Epiviz" width="100" height="21"></a>
             </div>
-            <content id="chartEnv" select=".charts"></content>
+            <div id="chartContainer">
+                <content id="chartEnv" select=".charts"></content>
+            </div>
         </div>
     </template>
 
@@ -365,15 +367,15 @@ To use, add `<epiviz-environment>` in the page
 
             /* callback function after the element is attached to the DOM */
             attached: function() {
-
                 var self = this;
 
-                if(!(self.start && self.end && self.seqInfo[self.chr])) {
-                    if(self.chr && self.seqInfo) {
-                        self.start = 0;
-                        self.end = self.seqInfo[self.chr].max;
-                    }
-                }
+                // if(!(self.start && self.end && self.seqInfo[self.chr])) {
+                //     if(self.chr && self.seqInfo) {
+                //         self.start = 0;
+                //         self.end = self.seqInfo[self.chr].max;
+                //     }
+                // }
+                $(this).find("#chartContainer").sortable();
 
                 if(self.initializeRegions.length > 0) {
                     for(var i=0; i< self.initializeRegions.length; i++) {

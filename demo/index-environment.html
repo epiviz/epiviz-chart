@@ -7,9 +7,15 @@
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="../epiviz-environment.html">
     <link rel="import" href="../../epiviz-data-source/epiviz-data-source.html">
-
     <link rel="import" href="../epiviz-charts.html">
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="../bower_components/jquery-collision/js/jquery-collision.js"></script>
+    <script src="../bower_components/jquery-ui-drag-collide/js/jquery-ui-draggable-collision.js"></script>
   </head>
+    <style>
+  .draggable { width: 90px; height: 80px; padding: 5px; float: left; margin: 0 10px 10px 0; font-size: .9em; border:1px solid black;}
+  </style>
   <body>
       <h3>epiviz-environment Demo</h3>
       
@@ -17,6 +23,8 @@
 
           <epiviz-environment 
             chr="chr6"
+            start=44076201
+            end=45076201
             measurements='{"affy1":{
                     "id":"cancer",
                     "name":"Expression Colon Cancer",
@@ -60,9 +68,9 @@
                     "metadata": ["gene", "entrez", "exon_starts", "exon_ends"]
                 }
               }'>
-                <epiviz-genes-track class="charts" dim-s='["genes"]'></epiviz-genes-track>
+                <epiviz-genes-track id="test" class="charts" dim-s='["genes"]'></epiviz-genes-track>
                 <epiviz-scatter-plot class="charts" dim-s='["affy1", "affy2"]'></epiviz-scatter-plot>
-                <epiviz-navigation                   
+<!--                 <epiviz-navigation                   
                     chr="chr6"
                     start="64076201"
                     end="95088740" 
@@ -70,15 +78,15 @@
                     >
                       <epiviz-genes-track class="charts" dim-s='["genes"]'></epiviz-genes-track>
                       <epiviz-scatter-plot class="charts" dim-s='["affy1", "affy2"]'></epiviz-scatter-plot>
-                </epiviz-navigation>
+                </epiviz-navigation> -->
           </epiviz-environment>
 
       <h3>epiviz-environment with initialize-regions</h3>
 
-          <epiviz-environment 
+<!--           <epiviz-environment 
             chr="chr6"
             start=44076201
-            end=105088740
+            end=45076201
             initialize-regions='[
                   {
                     "gene": "esr2"
@@ -134,6 +142,29 @@
                     "metadata": ["gene", "entrez", "exon_starts", "exon_ends"]
                 }
               }'>
-          </epiviz-environment>
+          </epiviz-environment> -->
+          <div id="draggable2" class="draggable ui-widget-content">
+  <p>I only snap to the big box</p>
+</div>
+ 
+<div id="draggable3" class="draggable ui-widget-content">
+  <p>I only snap to the outer edges of the big box</p>
+</div>
+ 
+<div id="draggable4" class="draggable ui-widget-content">
+  <p>I snap to a 20 x 20 grid</p>
+</div>
+ 
+<div id="draggable5" class="draggable ui-widget-content">
+  <p>I snap to a 80 x 80 grid</p>
+</div>
   </body>
+  <script>
+    $(function(){ //DOM Ready
+        // $(".charts").resizable();
+        // $(".charts").draggable({ grid: [ 80, 80 ] });
+        // $(".draggable").draggable();
+        // $(".draggable").resizable();
+    });
+  </script>
 </html>
