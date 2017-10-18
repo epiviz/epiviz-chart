@@ -33,23 +33,31 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
             #addChart {
                 display: inline-block;
             }
+
+            paper-button {
+                display: block;
+                background: #4285f4;
+                color: #fff;
+            }
+
+            iron-image {
+                padding: 1em;
+            }
         </style>
         <!-- local DOM goes here -->
-        <div id="addChart">
-            <!-- <paper-dialog id="modal" modal> -->
-                <paper-menu-button>
-                    <paper-button class="dropdown-trigger" raised>
-                        <iron-icon icon="editor:insert-chart"></iron-icon>
-                        <span>Add Visualization</span>
-                    </paper-button>
-                    <paper-menu class="dropdown-content" selected="{{selectedChart}}">
-                        <template is="dom-repeat" items="{{_charts}}">
-                            <paper-item>[[item]]</paper-item>
-                        </template>
-                    </paper-menu>
-                </paper-menu-button>
-            <!-- </paper-dialog> -->
-        </div>
+        <!-- <div id="addChart"> -->
+            <paper-menu-button>
+                <paper-button class="dropdown-trigger" raised>
+                    <iron-icon icon="editor:insert-chart"></iron-icon>
+                    <span>Add Visualization</span>
+                </paper-button>
+                <paper-menu class="dropdown-content" selected="{{selectedChart}}">
+                    <template is="dom-repeat" items="{{_charts}}">
+                        <paper-item>[[item]]</paper-item>
+                    </template>
+                </paper-menu>
+            </paper-menu-button>
+        <!-- </div> -->
     
     </template>
 
