@@ -47,7 +47,7 @@ To use, add `<epiviz-navigation>` in the page
             :host {
                 display: inline-block;
                 /* border: 1px solid black; */
-                border-radius: 10px;
+                /* border-radius: 10px; */
                 transition:width 0.01s, height 0.01s;
             }
 
@@ -130,6 +130,7 @@ To use, add `<epiviz-navigation>` in the page
 
         <paper-header-panel class="blue">
             <div id="header" class="paper-header">
+                <!-- <span>{{_strRange}}</span> -->
                 <paper-button raised class="collapse-header" on-click="toggleHeader">Expand</paper-button>
                 <paper-button raised on-click="cloneNavigation">Clone</paper-button>               
             </div>
