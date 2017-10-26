@@ -131,7 +131,7 @@ To use, add `<epiviz-navigation>` in the page
         <paper-header-panel class="blue">
             <div id="header" class="paper-header">
                 <!-- <span>{{_strRange}}</span> -->
-                <paper-button raised class="collapse-header" on-click="toggleHeader">Expand</paper-button>
+                <paper-button raised class="collapse-header" on-click="toggleHeader">Collapse</paper-button>
                 <paper-button raised on-click="cloneNavigation">Clone</paper-button>               
             </div>
             <div class="content fit">
@@ -139,8 +139,8 @@ To use, add `<epiviz-navigation>` in the page
                     <epiviz-ideogram-track gene-in-range="{{geneInRange}}" id="navTrack" chromosome="{{chr}}" start="{{start}}" end="{{end}}"></epiviz-ideogram-track>
                 </template>
                 
-                <iron-collapse id="navHeader">
-                    <template is="dom-if" if="{{!collapsed}}" notifyDomChange="true">
+                <iron-collapse id="navHeader" opened>
+                    <template is="dom-if" if="{{!collapsed}}">
                         <div class="container flex" id="{{_headerName}}">
                             <div class="flexchild">
                                 <paper-icon-button title="move left" icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
@@ -287,7 +287,7 @@ To use, add `<epiviz-navigation>` in the page
                 collapsed: {
                     type: Boolean,
                     notify: true,
-                    value: true
+                    value: false
                 },
 
                 /**
@@ -333,47 +333,64 @@ To use, add `<epiviz-navigation>` in the page
                 'hover': 'onHover',
                 'unHover': 'onUnhover',
                 'select': 'onSelect',
-                'deSelect': 'onDeselect',
-                'dom-change' : 'onDomChange'
+                'deSelect': 'onDeselect'
+                // 'dom-change' : 'onDomChange'
             },
 
             /**
              * Toggle handler (expand/collapse)
              */
             toggleHeader: function(event) {
+                var self = this;
+
                 this.$.navHeader.toggle();
                 this.collapsed = !this.collapsed;
-                if (this.collapsed) {
+                
+                if (!this.collapsed) {
                     $(this).find(".collapse-header")[0].innerHTML = "Expand";
+                    Polymer.dom(self).unobserveNodes(self._observer);
                 } else {
                     $(this).find(".collapse-header")[0].innerHTML = "Collapse";
+                    self._observer =
+                    Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
+                        info.addedNodes.forEach(function(node) {
+                            if(node.nodeName.indexOf("PLOT") != -1 || node.nodeName.indexOf("TRACK") != -1) {
+                                // self._updateChart(node.plotId);
+                                self._getElementData(node, self, self);
+                            }
+                        });
+                        // self.saveWorkspace();
+                    });
                 }
-                event.preventDefault();
-                event.stopPropagation();
+
+                if(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
             },
 
             /**
              * Dom Change handler (for observing nodes)
              */
-             onDomChange: function(event) {
+            //  onDomChange: function(event) {
 
-                 var self = this;
-                 if(this.$$("#chartNav")) {
-                    this._observer =
-                    Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
-                        info.addedNodes.forEach(function(node) {
-                            if(node.nodeName.indexOf("PLOT") != -1 || node.nodeName.indexOf("TRACK") != -1) {
-                                // self._updateChart(node.plotId);
-                                self._getElementData(node, self, self.parentNode.parentNode.measurements);
-                            }
-                        });
-                        // self.saveWorkspace();
-                    });
-                 }
-                 else {
-                    Polymer.dom(this).unobserveNodes(this._observer);
-                 }
-            },
+            //      var self = this;
+            //      if(this.$$("#chartNav")) {
+            //         this._observer =
+            //         Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
+            //             info.addedNodes.forEach(function(node) {
+            //                 if(node.nodeName.indexOf("PLOT") != -1 || node.nodeName.indexOf("TRACK") != -1) {
+            //                     // self._updateChart(node.plotId);
+            //                     self._getElementData(node, self, self.parentNode.parentNode.measurements);
+            //                 }
+            //             });
+            //             // self.saveWorkspace();
+            //         });
+            //      }
+            //      else {
+            //         Polymer.dom(this).unobserveNodes(this._observer);
+            //      }
+            // },
 
             /**
              * Hover event handler.
@@ -804,6 +821,19 @@ To use, add `<epiviz-navigation>` in the page
                             seqinfo[s.seqName] = s;
                         });
                         self.seqInfo = seqinfo;
+                    });
+                }
+
+                if(!self.collapsed) {
+                    self._observer =
+                    Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
+                        info.addedNodes.forEach(function(node) {
+                            if(node.nodeName.indexOf("PLOT") != -1 || node.nodeName.indexOf("TRACK") != -1) {
+                                // self._updateChart(node.plotId);
+                                self._getElementData(node, self, self);
+                            }
+                        });
+                        // self.saveWorkspace();
                     });
                 }
             },
