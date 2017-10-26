@@ -362,7 +362,7 @@ To use, add `<epiviz-navigation>` in the page
                     this._observer =
                     Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
                         info.addedNodes.forEach(function(node) {
-                            if(node.nodeName.indexOf("PLOT-") != -1 || node.nodeName.indexOf("TRACK-") != -1) {
+                            if(node.nodeName.indexOf("PLOT") != -1 || node.nodeName.indexOf("TRACK") != -1) {
                                 // self._updateChart(node.plotId);
                                 self._getElementData(node, self, self.parentNode.parentNode.measurements);
                             }
