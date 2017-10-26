@@ -472,8 +472,10 @@ To use, add `<epiviz-environment>` in the page
                     });
             },
 
-            // created: function() {
-            // },
+            created: function() {
+                var self = this;
+                self._getElementSeqInfo(self, self);
+            },
 
             /* callback function after the element is initialized & attached */
             ready: function() {
@@ -489,7 +491,7 @@ To use, add `<epiviz-environment>` in the page
                     self.transformFunc = self.epivizToJSON;
                 }
 
-                self._getElementSeqInfo(self, self);
+                // self._getElementSeqInfo(self, self);
 
                 if(self.workspace) {
                     self.loadWorkspace(self.workspace);

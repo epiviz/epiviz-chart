@@ -362,8 +362,10 @@ To use, add `<epiviz-navigation>` in the page
                     this._observer =
                     Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
                         info.addedNodes.forEach(function(node) {
-                            // self._updateChart(node.plotId);
-                            self._getElementData(node, self, self.parentNode.parentNode.measurements);
+                            if(node.nodeName.indexOf("PLOT-") != -1 || node.nodeName.indexOf("TRACK-") != -1) {
+                                // self._updateChart(node.plotId);
+                                self._getElementData(node, self, self.parentNode.parentNode.measurements);
+                            }
                         });
                         // self.saveWorkspace();
                     });
@@ -458,9 +460,9 @@ To use, add `<epiviz-navigation>` in the page
                     var currentChild = self.getEffectiveChildren()[index];
                     if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
                     currentChild.range = self.range;
-                    if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
+                    // if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
                         self._getElementData(currentChild, self, self.parentNode.measurements);  
-                    }
+                    // }
                 }
 
                 self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined, self.chr);
@@ -504,9 +506,9 @@ To use, add `<epiviz-navigation>` in the page
                     }, gene);
                 }
                 else {
-                    if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
+                    // if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
                         var result = self._getElementSearch(gene, self, self);  
-                    }
+                    // }
                 }
             },
 
@@ -634,9 +636,9 @@ To use, add `<epiviz-navigation>` in the page
                     var currentChild = self.getEffectiveChildren()[index];
                     if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
                     currentChild.range = self.range;
-                    if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
+                    // if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
                         self._getElementData(currentChild, self, self.parentNode.measurements);  
-                    }
+                    // }
                 }
             },
 
@@ -689,7 +691,10 @@ To use, add `<epiviz-navigation>` in the page
             },
 
             // Initialization that should happen or use FactoryImpl 
-            // created: function() {},
+            created: function() {
+                var self = this;
+                self._getElementSeqInfo(self, self);
+            },
             
             /* callback function after the element is attached to the DOM */
             attached: function() {
@@ -701,7 +706,7 @@ To use, add `<epiviz-navigation>` in the page
                 }
 
                 // listen to events 
-                var parent = self.parentNode.parentNode.parentNode.parentNode.parentNode;;
+                var parent = self;
                 
                 parent.addEventListener('hoverAllCharts', function(e) {
                     if(self.collapsed) {
