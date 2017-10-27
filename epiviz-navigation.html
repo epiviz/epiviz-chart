@@ -62,14 +62,9 @@ To use, add `<epiviz-navigation>` in the page
             }
 
             .flexchild {
-                @apply(--layout-flex);
+                /* @apply(--layout-flex); */
                 padding: 10px;
-                flex: 1 1 auto;
-            }
-
-            .flex-end-justified {
-                @apply(--layout-horizontal);
-                @apply(--layout-end-justified);
+                /* flex: 1 1 auto; */
             }
 
             #disableHeader {
@@ -355,8 +350,13 @@ To use, add `<epiviz-navigation>` in the page
                     Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
                         info.addedNodes.forEach(function(node) {
                             if(node.nodeName.indexOf("PLOT") != -1 || node.nodeName.indexOf("TRACK") != -1) {
-                                // self._updateChart(node.plotId);
-                                self._getElementData(node, self, self);
+                                node._parentContainer = self;
+                                
+                                var measurements = self.measurements;
+                                if(self._parentContainer) {
+                                    measurements = self._parentContainer.measurements;
+                                }
+                                self._getElementData(node, self, measurements);
                             }
                         });
                         // self.saveWorkspace();
@@ -477,9 +477,11 @@ To use, add `<epiviz-navigation>` in the page
                     var currentChild = self.getEffectiveChildren()[index];
                     if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
                     currentChild.range = self.range;
-                    // if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
-                        self._getElementData(currentChild, self, self.parentNode.measurements);  
-                    // }
+                    var measurements = self.measurements;
+                    if(self._parentContainer) {
+                        measurements = self._parentContainer.measurements;
+                    }
+                    self._getElementData(currentChild, self, measurements);
                 }
 
                 self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined, self.chr);
@@ -653,9 +655,12 @@ To use, add `<epiviz-navigation>` in the page
                     var currentChild = self.getEffectiveChildren()[index];
                     if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
                     currentChild.range = self.range;
-                    // if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
-                        self._getElementData(currentChild, self, self.parentNode.measurements);  
-                    // }
+                    currentChild._parentContainer = self;
+                    var measurements = self.measurements;
+                    if(self._parentContainer) {
+                        measurements = self._parentContainer.measurements;
+                    }
+                    self._getElementData(currentChild, self, measurements);
                 }
             },
 
@@ -682,7 +687,7 @@ To use, add `<epiviz-navigation>` in the page
                     childElem.measurements = currentChild.measurements;
                     childElem.chartSettings = currentChild.chartSettings;
                     childElem.chartColors = currentChild.chartColors;
-
+                    childElem._parentContainer = self;
                     Polymer.dom(navElem).appendChild(childElem);
                 }
             },
@@ -722,91 +727,18 @@ To use, add `<epiviz-navigation>` in the page
                     self._headerName = "disableHeader";
                 }
 
-                // listen to events 
-                var parent = self;
-                
-                parent.addEventListener('hoverAllCharts', function(e) {
-                    if(self.collapsed) {
-                        if(Array.isArray(e.detail.data)) {
-                            for (var rIndex = 0; rIndex < e.detail.data.length; rIndex++) {
-                                if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data[rIndex])) {
-                                    self.$$("#navTrack").hover();
-                                    break;
-                                }
-                            }
-                        }
-                        else {
-                            if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
-                                self.$$("#navTrack").hover();
-                            }
-                        }
-                    }
-                    else {
-                        var numChildren = self.getEffectiveChildren().length;
-                        for (var index = 0; index < numChildren; index++) {
-                            var currentChild = self.getEffectiveChildren()[index];
-                            currentChild.hover(e.detail.data);
-                        }
-                    }
-                }.bind(self));
-
-                parent.addEventListener('unHoverAllCharts', function(e) {
-                    if(self.collapsed) {
-                        self.$$("#navTrack").unHover();
-                    }
-                    else {
-                        var numChildren = self.getEffectiveChildren().length;
-                        for (var index = 0; index < numChildren; index++) {
-                            var currentChild = self.getEffectiveChildren()[index];
-                            currentChild.unHover();
-                        }
-                    }
-                }.bind(self));
-
-                parent.addEventListener('selectAllCharts', function(e) {
-                    if(!self.collapsed) {
-                        if(Array.isArray(e.detail.data)) {
-                            for (var rIndex = 0; rIndex < e.detail.data.length; rIndex++) {
-                                if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data[rIndex])) {
-                                    self.$$("#navTrack").hover();
-                                    break;
-                                }
-                            }
-                        }
-                        else {
-                            if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
-                                self.$$("#navTrack").hover();
-                            }
-                        }
-                    }
-                    else {
-                        var numChildren = self.getEffectiveChildren().length;
-                        for (var index = 0; index < numChildren; index++) {
-                            var currentChild = self.getEffectiveChildren()[index];
-                            currentChild.select(e.detail.data);
-                        }
-                    }
-                }.bind(self));
-
-                parent.addEventListener('unSelectAllCharts', function(e) {
-                    if(!self.collapsed) {
-                        self.$$("#navTrack").unHover();
-                    }
-                    else {
-                        var numChildren = self.getEffectiveChildren().length;
-                        for (var index = 0; index < numChildren; index++) {
-                            var currentChild = self.getEffectiveChildren()[index];
-                            currentChild.deSelect();
-                        }
-                    }
-                }.bind(self));
-
                 // if(self.collapsed) {
                     var numChildren = self.getEffectiveChildren().length;
                     for (var index = 0; index < numChildren; index++) {
                         var currentChild = self.getEffectiveChildren()[index];
                         currentChild.range = self.range;
-                        self._getElementData(currentChild, self, self.parentNode.parentNode.measurements);
+                        currentChild._parentContainer = self;
+
+                        var measurements = self.measurements;
+                        if(self._parentContainer) {
+                            measurements = self._parentContainer.measurements;
+                        }
+                        self._getElementData(currentChild, self, measurements);
                     }
                 // }
 
@@ -830,7 +762,12 @@ To use, add `<epiviz-navigation>` in the page
                         info.addedNodes.forEach(function(node) {
                             if(node.nodeName.indexOf("PLOT") != -1 || node.nodeName.indexOf("TRACK") != -1) {
                                 // self._updateChart(node.plotId);
-                                self._getElementData(node, self, self);
+                                node._parentContainer = self;
+                                var measurements = self.measurements;
+                                if(self._parentContainer) {
+                                    measurements = self._parentContainer.measurements;
+                                }
+                                self._getElementData(node, self, measurements);
                             }
                         });
                         // self.saveWorkspace();

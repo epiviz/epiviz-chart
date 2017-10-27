@@ -55,6 +55,18 @@
                 notify: true
             },
 
+
+            /**
+             * Parent Container if chart is part of Nav or Env
+             *
+             * @type {Object}
+             */            
+             _parentContainer: {
+                type: Object,
+                notify: true,
+                observer: "_parentContainerChanged"
+            },
+
             /**
              * Whether to use a default data provider. only for testing & development. 
              *
@@ -160,6 +172,122 @@
                 this.chart._properties.width = Math.max(self.chartType.defaultWidth()/2, self.offsetWidth - epiviz.ui.charts.Visualization.SVG_MARGIN);
                 this.chart._properties.height = Math.max(self.chartType.defaultHeight(), self.offsetHeight - epiviz.ui.charts.Visualization.SVG_MARGIN);
                 self._dataChanged();
+            }
+        },
+
+        /**
+         * Assign Parent Container
+         * intiialize chart brushing events
+         * 
+         * @return {string}
+         */
+        _parentContainerChanged: function() {
+            var self = this;
+
+            var parent = self._parentContainer;
+
+            if(self.nodeName == "EPIVIZ-NAVIGATION") {
+                
+                parent.addEventListener('hoverAllCharts', function(e) {
+                    if(self.collapsed) {
+                        if(Array.isArray(e.detail.data)) {
+                            for (var rIndex = 0; rIndex < e.detail.data.length; rIndex++) {
+                                if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data[rIndex])) {
+                                    self.$$("#navTrack").hover();
+                                    break;
+                                }
+                            }
+                        }
+                        else {
+                            if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
+                                self.$$("#navTrack").hover();
+                            }
+                        }
+                    }
+                    else {
+                        var numChildren = self.getEffectiveChildren().length;
+                        for (var index = 0; index < numChildren; index++) {
+                            var currentChild = self.getEffectiveChildren()[index];
+                            currentChild.hover(e.detail.data);
+                        }
+                    }
+                }.bind(self));
+
+                parent.addEventListener('unHoverAllCharts', function(e) {
+                    if(self.collapsed) {
+                        self.$$("#navTrack").unHover();
+                    }
+                    else {
+                        var numChildren = self.getEffectiveChildren().length;
+                        for (var index = 0; index < numChildren; index++) {
+                            var currentChild = self.getEffectiveChildren()[index];
+                            currentChild.unHover();
+                        }
+                    }
+                }.bind(self));
+
+                parent.addEventListener('selectAllCharts', function(e) {
+                    if(!self.collapsed) {
+                        if(Array.isArray(e.detail.data)) {
+                            for (var rIndex = 0; rIndex < e.detail.data.length; rIndex++) {
+                                if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data[rIndex])) {
+                                    self.$$("#navTrack").hover();
+                                    break;
+                                }
+                            }
+                        }
+                        else {
+                            if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
+                                self.$$("#navTrack").hover();
+                            }
+                        }
+                    }
+                    else {
+                        var numChildren = self.getEffectiveChildren().length;
+                        for (var index = 0; index < numChildren; index++) {
+                            var currentChild = self.getEffectiveChildren()[index];
+                            currentChild.select(e.detail.data);
+                        }
+                    }
+                }.bind(self));
+
+                parent.addEventListener('unSelectAllCharts', function(e) {
+                    if(!self.collapsed) {
+                        self.$$("#navTrack").unHover();
+                    }
+                    else {
+                        var numChildren = self.getEffectiveChildren().length;
+                        for (var index = 0; index < numChildren; index++) {
+                            var currentChild = self.getEffectiveChildren()[index];
+                            currentChild.deSelect();
+                        }
+                    }
+                }.bind(self));
+            }
+            else {
+                parent.addEventListener('hoverAllCharts', function(e) {
+                    if (!self.hostDragging) {
+                        self.hover(e.detail.data);
+                    }
+                }.bind(self));
+
+                parent.addEventListener('unHoverAllCharts', function(e) {
+                    if (!self.hostDragging) {
+                        self.unHover();
+                    }
+                }.bind(self));
+
+                parent.addEventListener('selectAllCharts', function(e) {
+                    if (!self.hostDragging) {
+                        self.select(e.detail.data);
+                    }
+                }.bind(self));
+
+                parent.addEventListener('unSelectAllCharts', function(e) {
+                    if (!self.hostDragging) {
+                        self.deSelect();
+                    }
+                }.bind(self));
             }
         },
 
@@ -518,7 +646,6 @@
                 minHeight: self.chartType ? self.chartType.defaultHeight() : 0,
                 minWidth: self.chartType ? self.chartType.defaultWidth() : 0,
             });
-            console.log(self);
         }
     }
 </script>

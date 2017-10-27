@@ -184,29 +184,6 @@ To use, add `<epiviz-line-plot>` in the page
 
                 var self = this;
 
-                // listen to events 
-                var parent = self.parentNode.parentNode.parentNode.parentNode.parentNode;;
-
-                if(parent.nodeName === "IRON-COLLAPSE") {
-                    parent = parent.parentNode;
-                }
-
-                parent.addEventListener('hoverAllCharts', function(e) {
-                    self.hover(e.detail.data);
-                }.bind(self));
-
-                parent.addEventListener('unHoverAllCharts', function(e) {
-                    self.unHover();
-                }.bind(self));
-
-                parent.addEventListener('selectAllCharts', function(e) {
-                    self.select(e.detail.data);
-                }.bind(self));
-
-                parent.addEventListener('unSelectAllCharts', function(e) {
-                    self.deSelect();
-                }.bind(self));
-
                 self._measurementsChanged();
                 self._dataChanged();
 

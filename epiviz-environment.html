@@ -419,7 +419,7 @@ To use, add `<epiviz-environment>` in the page
                     var numChildren = self.getEffectiveChildren().length;
                     for (var index = 0; index < numChildren; index++) {
                         var currentChild = self.getEffectiveChildren()[index];
-
+                        currentChild._parentContainer = self;
                         if(currentChild.nodeName === "EPIVIZ-NAVIGATION") {
 
                             self.push("navigationRegions", {"plotId": currentChild.plotId, "range": currentChild.range});
@@ -429,6 +429,7 @@ To use, add `<epiviz-environment>` in the page
                                 var navChildren = currentChild.getEffectiveChildren().length;
                                 for (var nindex = 0; nindex < navChildren; nindex++) {
                                     var currentNavChild = currentChild.getEffectiveChildren()[nindex];
+                                    currentNavChild._parentContainer = self;
                                     if(!currentNavChild.data) {
                                         self._getElementData(currentNavChild, self, self.measurements);
                                     }
@@ -447,6 +448,7 @@ To use, add `<epiviz-environment>` in the page
                     Polymer.dom(self.$.chartEnv).observeNodes(function(info) {
                         info.addedNodes.forEach(function(node) {
                             // self._updateChart(node.plotId);
+                            node._parentContainer = self;
                             if(node.nodeName === "EPIVIZ-NAVIGATION") {
                                 self._getElementSeqInfo(node, Polymer.dom(self));
 
@@ -456,6 +458,7 @@ To use, add `<epiviz-environment>` in the page
                                     var navChildren = node.getEffectiveChildren().length;
                                     for (var nindex = 0; nindex < navChildren; nindex++) {
                                         var currentNavChild = node.getEffectiveChildren()[nindex];
+                                        currentNavChild._parentContainer = self;
                                         if(!currentNavChild.data) {
                                             self._getElementData(currentNavChild, self, self.measurements);
                                         }                                    
@@ -499,26 +502,6 @@ To use, add `<epiviz-environment>` in the page
 
                 self._initializeAddDialog();
             }
-
-            /**
-             * Handles when mouse-overed on a chart to show settings and colors.
-             */
-            // hostHovered: function() {
-            //     var currColorsIcon = this.$$('#chartSettingsContainer');
-            //     if(currColorsIcon) {
-            //         currColorsIcon.hidden = false;
-            //     }
-            // },
-
-            /**
-             * Handles when mouse-overed on a chart to show settings and colors.
-             */
-            // hostUnhovered: function() {
-            //     var currColorsIcon = this.$$('#chartSettingsContainer');
-            //     if(currColorsIcon) {
-            //         currColorsIcon.setAttribute("hidden", true);   
-            //     }
-            // }
         });
     </script>
 </dom-module>

@@ -185,47 +185,6 @@ To use, add `<epiviz-genes-track>` in the page
 
                 var self = this;
 
-                // listen to events 
-                var parent = self.parentNode.parentNode.parentNode.parentNode.parentNode;
-
-                if(parent.nodeName === "IRON-COLLAPSE") {
-                    parent = parent.parentNode;
-                }
-                parent.addEventListener('hoverAllCharts', function(e) {
-                    if (!self.hostDragging) {
-                        self.hover(e.detail.data);
-                    }
-
-                }.bind(self));
-
-                parent.addEventListener('unHoverAllCharts', function(e) {
-                    if (!self.hostDragging) {
-                        self.unHover();
-                    }
-                }.bind(self));
-
-                parent.addEventListener('selectAllCharts', function(e) {
-                    if (!self.hostDragging) {
-                        self.select(e.detail.data);
-                    }
-                }.bind(self));
-
-                parent.addEventListener('unSelectAllCharts', function(e) {
-                    if (!self.hostDragging) {
-                        self.deSelect();
-                    }
-                }.bind(self));
-
-                // if(parent.nodeName === "EPIVIZ-NAVIGATION") {
-                //     parent.addEventListener('hover', function(e) {
-                //         self.hover(e.detail.data);
-                //     }.bind(self));
-
-                //     parent.addEventListener('unHover', function(e) {
-                //         self.unHover();
-                //     }.bind(self));
-                // }
-
                 self._measurementsChanged();
                 self._dataChanged();
 
