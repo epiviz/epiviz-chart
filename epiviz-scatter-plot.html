@@ -231,9 +231,6 @@ To use, add `<epiviz-scatter-plot>` in the page
             attached: function() {
                 var self = this;
 
-                self._measurementsChanged();
-                self._dataChanged();
-
                 if (self.useDefaultDataProvider) {
 
                     self.measurements = self.measurements || [{
