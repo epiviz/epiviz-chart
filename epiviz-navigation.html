@@ -50,12 +50,7 @@ To use, add `<epiviz-navigation>` in the page
                 /* border-radius: 10px; */
                 transition:width 0.01s, height 0.01s;
             }
-
-            /* .container {
-                width: 600px;
-                display: inline;
-            } */
-
+            
             .flex {
                 @apply(--layout-horizontal);
                 align-items: center;
@@ -125,7 +120,6 @@ To use, add `<epiviz-navigation>` in the page
 
         <paper-header-panel class="blue">
             <div id="header" class="paper-header">
-                <!-- <span>{{_strRange}}</span> -->
                 <paper-button raised class="collapse-header" on-click="toggleHeader">Collapse</paper-button>
                 <paper-button raised on-click="cloneNavigation">Clone</paper-button>               
             </div>
@@ -229,8 +223,6 @@ To use, add `<epiviz-navigation>` in the page
                  */
                 range: {
                     type: Object,
-                    // notify: true,
-		            computed: 'getGenomicRange(chr, start, end)',
                     observer: '_rangeUpdate'
                 },
 
@@ -329,7 +321,6 @@ To use, add `<epiviz-navigation>` in the page
                 'unHover': 'onUnhover',
                 'select': 'onSelect',
                 'deSelect': 'onDeselect'
-                // 'dom-change' : 'onDomChange'
             },
 
             /**
@@ -368,29 +359,6 @@ To use, add `<epiviz-navigation>` in the page
                     event.stopPropagation();
                 }
             },
-
-            /**
-             * Dom Change handler (for observing nodes)
-             */
-            //  onDomChange: function(event) {
-
-            //      var self = this;
-            //      if(this.$$("#chartNav")) {
-            //         this._observer =
-            //         Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
-            //             info.addedNodes.forEach(function(node) {
-            //                 if(node.nodeName.indexOf("PLOT") != -1 || node.nodeName.indexOf("TRACK") != -1) {
-            //                     // self._updateChart(node.plotId);
-            //                     self._getElementData(node, self, self.parentNode.parentNode.measurements);
-            //                 }
-            //             });
-            //             // self.saveWorkspace();
-            //         });
-            //      }
-            //      else {
-            //         Polymer.dom(this).unobserveNodes(this._observer);
-            //      }
-            // },
 
             /**
              * Hover event handler.
@@ -525,9 +493,7 @@ To use, add `<epiviz-navigation>` in the page
                     }, gene);
                 }
                 else {
-                    // if(Polymer.dom(self).parentNode.nodeName === "EPIVIZ-ENVIRONMENT") {
-                        var result = self._getElementSearch(gene, self, self);  
-                    // }
+                    var result = self._getElementSearch(gene, self, self);  
                 }
             },
 
@@ -541,6 +507,8 @@ To use, add `<epiviz-navigation>` in the page
                 this.chr = selected.seqName;
                 this.start = selected.start - Math.round(selected.start * 0.01);
                 this.end = selected.end + Math.round(selected.end * 0.01);
+
+                this.range = this.getGenomicRange(this.chr, this.start, this.end);
             },
 
             /**
@@ -642,7 +610,7 @@ To use, add `<epiviz-navigation>` in the page
              * @return {epiviz.datatypes.GenomicRange} Genomic Range object
              */
             getGenomicRange: function(chr, start, end) {
-                    return new epiviz.datatypes.GenomicRange(chr, start, end-start);
+                return new epiviz.datatypes.GenomicRange(chr, start, end-start);
             },
 
             /**
@@ -760,12 +728,21 @@ To use, add `<epiviz-navigation>` in the page
                 }
             },
 
+            _measurementsChanged: function() {
+                // console.log("ovverriding measurementsChanged function");
+            },
+
+            _rangeChanged: function() { 
+                // console.log("overriding rangeChanged function");
+            },
+
             /* callback function after the element is initialized */
             ready: function() {
                 var self = this;
 
                 self.plotId = self.plotId || self._generatePlotId();
                 self.config = new epiviz.Config(self.configSrc);
+                self.range = self.getGenomicRange(self.chr, self.start, self.end);
 
                 if(self.gene) {
                     self._getElementSearch(self.gene, null, null, function(data) {
