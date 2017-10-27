@@ -415,35 +415,6 @@ To use, add `<epiviz-environment>` in the page
                     }
                 }
 
-                if(self.measurements) {
-                    var numChildren = self.getEffectiveChildren().length;
-                    for (var index = 0; index < numChildren; index++) {
-                        var currentChild = self.getEffectiveChildren()[index];
-                        currentChild._parentContainer = self;
-                        if(currentChild.nodeName === "EPIVIZ-NAVIGATION") {
-
-                            self.push("navigationRegions", {"plotId": currentChild.plotId, "range": currentChild.range});
-                            self._getElementSeqInfo(currentChild, self);
-
-                            if(currentChild.collapsed) {
-                                var navChildren = currentChild.getEffectiveChildren().length;
-                                for (var nindex = 0; nindex < navChildren; nindex++) {
-                                    var currentNavChild = currentChild.getEffectiveChildren()[nindex];
-                                    currentNavChild._parentContainer = self;
-                                    if(!currentNavChild.data) {
-                                        self._getElementData(currentNavChild, self, self.measurements);
-                                    }
-                                }
-                            }
-                        }
-                        else {
-                            if(!currentChild.data) {
-                                self._getElementData(currentChild, self, self.measurements);
-                            }
-                        }
-                    }
-                }
-
                 self._observer =
                     Polymer.dom(self.$.chartEnv).observeNodes(function(info) {
                         info.addedNodes.forEach(function(node) {

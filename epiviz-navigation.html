@@ -727,21 +727,6 @@ To use, add `<epiviz-navigation>` in the page
                     self._headerName = "disableHeader";
                 }
 
-                // if(self.collapsed) {
-                    var numChildren = self.getEffectiveChildren().length;
-                    for (var index = 0; index < numChildren; index++) {
-                        var currentChild = self.getEffectiveChildren()[index];
-                        currentChild.range = self.range;
-                        currentChild._parentContainer = self;
-
-                        var measurements = self.measurements;
-                        if(self._parentContainer) {
-                            measurements = self._parentContainer.measurements;
-                        }
-                        self._getElementData(currentChild, self, measurements);
-                    }
-                // }
-
                 if (self.useDefaultDataProvider) {
 
                     var dataProviderFactory = new epiviz.data.DataProviderFactory(new epiviz.Config(self.configSrc));
