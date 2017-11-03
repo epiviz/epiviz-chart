@@ -30,6 +30,13 @@
             height: 24px;
             padding: 2px;
         }
+
+        #chartRemoveIcon {
+            float: right;
+            width: 24px;
+            height: 24px;
+            padding: 2px;
+        }
     </style>
   </template>
 </dom-module>
@@ -433,6 +440,7 @@
 
                     self._initializeSettingsDialog();
                     self._initializeColorsDialog();
+                    self._initializeRemoveDialog();
 
                     // Listen to hover event on the chart
                     /**

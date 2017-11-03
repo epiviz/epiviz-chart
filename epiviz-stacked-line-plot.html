@@ -8,6 +8,8 @@
 <link rel="import" href="chart-behavior.html">
 <link rel="import" href="chart-settings.html">
 <link rel="import" href="chart-colors.html">
+<link rel="import" href="chart-remove.html">
+
 
 <!-- Epiviz Shared css -->
 <link rel="import" href="chart-shared-css.html">
@@ -58,7 +60,7 @@ To use, add `<epiviz-stacked-line-plot>` in the page
         Polymer({
             /* Custom element html tag */
             is: 'epiviz-stacked-line-plot',
-            behaviors: [epiviz.ChartBehavior, epiviz.ChartSettingsBehavior, epiviz.ChartColorsBehavior, Polymer.IronResizableBehavior],
+            behaviors: [epiviz.ChartBehavior, epiviz.ChartSettingsBehavior, epiviz.ChartColorsBehavior, epiviz.ChartRemoveBehavior, Polymer.IronResizableBehavior],
 
             /* Properties that can be defined on the element */
             properties: {

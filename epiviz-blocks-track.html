@@ -8,6 +8,8 @@
 <link rel="import" href="chart-behavior.html">
 <link rel="import" href="chart-settings.html">
 <link rel="import" href="chart-colors.html">
+<link rel="import" href="chart-remove.html">
+
 
 <!-- Epiviz Shared css -->
 <link rel="import" href="chart-shared-css.html">
@@ -60,7 +62,7 @@ To use, add `<epiviz-blocks-track>` in the page
         Polymer({
             /* Custom element html tag */
             is: 'epiviz-blocks-track',
-            behaviors: [epiviz.ChartBehavior, epiviz.ChartSettingsBehavior, epiviz.ChartColorsBehavior, Polymer.IronResizableBehavior],
+            behaviors: [epiviz.ChartBehavior, epiviz.ChartSettingsBehavior, epiviz.ChartColorsBehavior, Polymer.IronResizableBehavior, epiviz.ChartRemoveBehavior],
 
             /* Properties that can be defined on the element */
             properties: {
