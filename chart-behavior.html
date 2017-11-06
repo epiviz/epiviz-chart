@@ -7,6 +7,7 @@
     <style>
         :host {
             overflow: hidden;
+            border: 1px solid black;
         };
         #chartSettingsContainer {
             position:absolute;
@@ -648,6 +649,7 @@
                 obstacle: "#test",
                 iframeFix: true,
             });
+            console.log(self.chartType);
             $(self).resizable({
                 stop: self._onResize,
                 minHeight: self.chartType ? self.chartType.defaultHeight() : 0,
