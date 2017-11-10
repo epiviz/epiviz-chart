@@ -21,16 +21,20 @@
             // Polymer.dom(self).remove();
 
             if(self._parentContainer) {
+                Polymer.dom(self._parentContainer).removeChild(self);
+
                 var navChildren = self._parentContainer.getEffectiveChildren().length;
                 for (var nindex = 0; nindex < navChildren; nindex++) {
                     var child = self._parentContainer.getEffectiveChildren()[nindex];
                     if (child.plotId == self.plotId) {
                         $(self._parentContainer.getEffectiveChildren()[nindex]).remove();
+                        $("[plot-id=" + self.plotId + "]").remove();
                     }         
                 }
             }
             else {
                 $(self.root).remove();
+                $("[plot-id=" + self.plotId + "]").remove();
             }
         },
 

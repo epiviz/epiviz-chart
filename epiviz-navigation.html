@@ -107,6 +107,10 @@ To use, add `<epiviz-navigation>` in the page
                 /* min-height: 500px; */
             }
 
+            #logo {
+                vertical-align: middle;
+            }
+
             /* .blue .content {
                 background: linear-gradient(white, #e0e2e2);
             } */
@@ -119,6 +123,9 @@ To use, add `<epiviz-navigation>` in the page
 
         <paper-header-panel class="blue">
             <div id="header" class="paper-header">
+                <a href="http://epiviz.github.io" target="_blank" hidden$={{showLogo}}>
+                    <img id="logo" src="epiviz_4_logo_medium.png" alt="Epiviz" width="100" height="21">
+                </a> 
                 <paper-button raised class="collapse-header" on-click="toggleHeader">Collapse</paper-button>
                 <paper-button raised on-click="cloneNavigation">Clone</paper-button>               
             </div>
@@ -293,6 +300,13 @@ To use, add `<epiviz-navigation>` in the page
                 headerClassName: {
                     type: String,
                     notify: true
+                },
+
+                showLogo: {
+                    type: Boolean,
+                    notify: true,
+                    reflectToAttribute: true,
+                    value: false
                 },
 
                 /**
