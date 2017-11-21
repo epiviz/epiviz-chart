@@ -48,7 +48,8 @@
     "paper-header-panel": "PolymerElements/paper-header-panel#^1.1.7",
     "iron-list": "PolymerElements/iron-list#1.4.6",
     "jquery-ui-drag-collide": "*",
-    "jquery-collision": "dsbaars/jquery-collision"
+    "jquery-collision": "dsbaars/jquery-collision",
+    "paper-menu-button": "polymerElements/paper-menu-button#1.5.2"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.1.8",

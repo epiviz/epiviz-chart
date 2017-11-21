@@ -12,6 +12,7 @@
 <!-- Epiviz data behaviors dependency -->
 <link rel="import" href="chart-data-behavior.html">
 <link rel="import" href="chart-add-behavior.html">
+<link rel="import" href="chart-draggable-behavior.html">
 
 <!-- Chart elements dependency -->
 <link rel="import" href="epiviz-genes-track.html">
@@ -22,6 +23,10 @@
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-autocomplete/paper-autocomplete.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-item/paper-item.html">
 
 <!--
 `<epiviz-navigation>` is similar to `<epiviz-environment>`. It is a wrapper element that handles events 
@@ -47,6 +52,7 @@ To use, add `<epiviz-navigation>` in the page
             :host {
                 display: inline-block;
                 border: none;
+                width: 100%;
                 /* border: 1px solid black; */
                 /* border-radius: 10px; */
                 transition:width 0.01s, height 0.01s;
@@ -70,8 +76,8 @@ To use, add `<epiviz-navigation>` in the page
 
             paper-header-panel {
                 float: left;
-                min-width: 1000px;
-                min-height: 1000px;
+                /*min-width: 1000px;
+                min-height: 1000px;*/
                 margin: 12px;
                 @apply(--shadow-elevation-2dp);
             }
@@ -119,6 +125,9 @@ To use, add `<epiviz-navigation>` in the page
             .blue .paper-header {
                 background-color: #e0e2e2;
             }
+            paper-menu-button {
+                float: right;
+            }
 
         </style>
 
@@ -127,8 +136,16 @@ To use, add `<epiviz-navigation>` in the page
                 <a href="http://epiviz.github.io" target="_blank" hidden$={{showLogo}}>
                     <img id="logo" src="epiviz_4_logo_medium.png" alt="Epiviz" width="100" height="21">
                 </a> 
-                <paper-button raised class="collapse-header" on-click="toggleHeader">Collapse</paper-button>
-                <paper-button raised on-click="cloneNavigation">Clone</paper-button>               
+<!--                 <paper-button raised class="collapse-header" on-click="toggleHeader">Collapse</paper-button>
+                <paper-button raised on-click="cloneNavigation">Clone</paper-button>     -->
+                <paper-menu-button>
+                    <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
+                    <paper-menu class="dropdown-content">
+                        <paper-item>Delete</paper-item>
+                        <paper-item on-click="cloneNavigation">Clone</paper-item>
+                        <paper-item on-click="toggleHeader">Collapse</paper-item>
+                    </paper-menu>
+                </paper-menu-button>           
             </div>
             <div class="content fit">
                 <!-- <template is="dom-if" if="{{collapsed}}"> -->
@@ -358,16 +375,19 @@ To use, add `<epiviz-navigation>` in the page
                 this.collapsed = !this.collapsed;
                 
                 if (!this.collapsed) {
-                    $(this).find(".collapse-header")[0].innerHTML = "Expand";
+                    if ($(this).find(".collapse-header")[0]) {
+                        $(this).find(".collapse-header")[0].innerHTML = "Expand";
+                    }
                     Polymer.dom(self).unobserveNodes(self._observer);
                 } else {
-                    $(this).find(".collapse-header")[0].innerHTML = "Collapse";
+                    if ($(this).find(".collapse-header")[0]) {
+                        $(this).find(".collapse-header")[0].innerHTML = "Collapse";
+                    }
                     self._observer =
                     Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
                         info.addedNodes.forEach(function(node) {
                             if(node.nodeName.indexOf("PLOT") != -1 || node.nodeName.indexOf("TRACK") != -1) {
                                 node._parentContainer = self;
-                                
                                 var measurements = self.measurements;
                                 if(self._parentContainer) {
                                     measurements = self._parentContainer.measurements;
@@ -378,6 +398,7 @@ To use, add `<epiviz-navigation>` in the page
                         // self.saveWorkspace();
                     });
                 }
+                self._onResize();
 
                 if(event) {
                     event.preventDefault();

@@ -627,34 +627,5 @@
                 currColorsIcon.setAttribute("hidden", true);   
             }
         },
-
-        hostDragged: function(e, ui) {
-            this.hostDragging = true;
-        },
-
-        hostDropped: function(e, ui) {
-            this.hostDragging = false;
-        },
-
-        attached: function() {
-            var self = this;
-            var parentId = $(this).parent().parent().attr("id");
-            $(self).draggable({
-                grid: [10, 10],
-                start: self.hostDragged,
-                stop: self.hostDropped,
-                cursor: "crosshair",
-                // containment: "parent",
-                connectToSortable: "epiviz-environment #chartContainer",
-                obstacle: "#test",
-                iframeFix: true,
-            });
-            console.log(self.chartType);
-            $(self).resizable({
-                stop: self._onResize,
-                minHeight: self.chartType ? self.chartType.defaultHeight() : 0,
-                minWidth: self.chartType ? self.chartType.defaultWidth() : 0,
-            });
-        }
     }
 </script>
