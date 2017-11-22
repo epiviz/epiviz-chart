@@ -1,0 +1,45 @@
+
+<script>
+    /**
+     * `ChartDraggableBehavior` object initializes draggable and resizable behaviors for charts. 
+     * All elements that should be draggable should include this behavior.
+     *
+     * @polymerBehavior
+    **/
+    epiviz.ChartDraggableBehavior = {
+
+        /**
+         * Initializes draggable behavior
+         */
+        _initializeDraggable: function() {
+            var self = this;
+            var parentId = $(this).parent().parent().attr("id");
+            $(self).draggable({
+                grid: [10, 10],
+                start: self.hostDragged,
+                stop: self.hostDropped,
+                cursor: "crosshair",
+                connectToSortable: "epiviz-environment #chartContainer",
+                obstacle: "#test",
+                iframeFix: true,
+            });
+            $(self).resizable({
+                stop: self._onResize,
+                minHeight: self.chartType ? self.chartType.defaultHeight() : 0,
+                minWidth: self.chartType ? self.chartType.defaultWidth() : 0,
+            });
+        },
+
+        hostDragged: function(e, ui) {
+            this.hostDragging = true;
+        },
+
+        hostDropped: function(e, ui) {
+            this.hostDragging = false;
+        },
+
+        ready: function() {
+            this._initializeDraggable();
+        }
+    }
+</script>
