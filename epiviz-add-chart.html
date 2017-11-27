@@ -138,7 +138,7 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
             _addChart: function(chartType, measurements) {
 
                 var self = this;
-                var envElement = self.parentNode.parentNode.nodeName == "EPIVIZ-NAVIGATION" ? self.parentNode.parentNode : self.parentNode.parentNode.parentNode;
+                var envElement = self.parentNode.parentNode.parentNode.nodeName == "EPIVIZ-NAVIGATION" ? self.parentNode.parentNode.parentNode : self.parentNode.parentNode.parentNode;
 
                 var chartElem = document.createElement(self._chartTypes[chartType]);
                 chartElem.className = "charts";
@@ -152,7 +152,7 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
             _chartSelectionChanged: function() {
                 var self = this;
 
-                var envElement = self.parentNode.parentNode.nodeName == "EPIVIZ-NAVIGATION" ? self.parentNode.parentNode : self.parentNode.parentNode.parentNode;
+                var envElement = self.parentNode.parentNode.parentNode.nodeName == "EPIVIZ-NAVIGATION" ? self.parentNode.parentNode.parentNode : self.parentNode.parentNode.parentNode;
                 
                 self.selection = {};
                 self.selection.chartType = self._charts[self.selectedChart];
