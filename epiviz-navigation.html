@@ -143,7 +143,7 @@ To use, add `<epiviz-navigation>` in the page
                     <paper-menu class="dropdown-content">
                         <paper-item>Delete</paper-item>
                         <paper-item on-click="cloneNavigation">Clone</paper-item>
-                        <paper-item on-click="toggleHeader">Collapse</paper-item>
+                        <paper-item on-click="toggleHeader">{{_toggleText}}</paper-item>
                     </paper-menu>
                 </paper-menu-button>  
                 <epiviz-add-chart></epiviz-add-chart>         
@@ -271,6 +271,12 @@ To use, add `<epiviz-navigation>` in the page
                     value : "enableHeader"
                 },
 
+                _toggleText: {
+                    type: String,
+                    notify: true,
+                    computed: '_computeToggleText(collapsed)'
+                },
+
                 /**
                  * Default scroll left/right ratio
                  *
@@ -361,6 +367,14 @@ To use, add `<epiviz-navigation>` in the page
                 // 'transitioning-changed': 'onOpenChanged'
             },
 
+            _computeToggleText: function(collapsed) {
+                if(collapsed) {
+                    return "Expand";
+                }
+
+                return "Collapse";
+            },
+
             // onOpenChanged: function(event) {
             //     console.log(this.$.navHeader.transitioning);
             //     console.log("here");
@@ -376,14 +390,8 @@ To use, add `<epiviz-navigation>` in the page
                 this.collapsed = !this.collapsed;
                 
                 if (!this.collapsed) {
-                    if ($(this).find(".collapse-header")[0]) {
-                        $(this).find(".collapse-header")[0].innerHTML = "Expand";
-                    }
                     Polymer.dom(self).unobserveNodes(self._observer);
                 } else {
-                    if ($(this).find(".collapse-header")[0]) {
-                        $(this).find(".collapse-header")[0].innerHTML = "Collapse";
-                    }
                     self._observer =
                     Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
                         info.addedNodes.forEach(function(node) {
