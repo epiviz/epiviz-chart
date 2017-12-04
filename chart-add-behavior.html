@@ -27,9 +27,9 @@
             var chartContainer = this.$.header;
             var currAddElem = this.$$('epiviz-add-chart');
 
-            if(currAddElem == null) {
-                var currAddElem = document.createElement('epiviz-add-chart');
-                Polymer.dom(chartContainer).appendChild(currAddElem);
+            if(currAddElem) {
+                // var currAddElem = document.createElement('epiviz-add-chart');
+                // Polymer.dom(chartContainer).appendChild(currAddElem);
                 
                 var dataManagerElem = document.querySelector('epiviz-data-source');
                 if(dataManagerElem) {
