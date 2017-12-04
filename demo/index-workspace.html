@@ -7,7 +7,8 @@
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <link rel="import" href="../epiviz-environment.html">
     <link rel="import" href="../../epiviz-data-source/epiviz-data-source.html">
-
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <link rel="import" href="../epiviz-charts.html">
   </head>
   <body>
@@ -18,6 +19,8 @@
           <epiviz-environment 
             chr="chr6"
             id="chartEnv"
+            start="64076201"
+            end="95088740" 
             measurements='{"affy1":{
                     "id":"cancer",
                     "name":"Expression Colon Cancer",
@@ -66,7 +69,7 @@
                 <epiviz-navigation                   
                     chr="chr6"
                     start="64076201"
-                    end="95088740" 
+                    end="95088740"
                     class="charts"
                     >
                       <epiviz-genes-track class="charts" dim-s='["genes"]'></epiviz-genes-track>

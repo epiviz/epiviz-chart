@@ -18,11 +18,15 @@
 <link rel="import" href="epiviz-genes-track.html">
 <link rel="import" href="epiviz-ideogram-track.html">
 
+<!-- Polymer Behavior dependency -->
+<link rel="import" href="../iron-fit-behavior/iron-fit-behavior.html">
+
 <!-- External Polymer Styles/elements dependency -->
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-autocomplete/paper-autocomplete.html">
-<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../paper-menu/paper-menu.html">
@@ -133,17 +137,17 @@ To use, add `<epiviz-navigation>` in the page
 
         <paper-header-panel class="blue">
             <div id="header" class="paper-header">
-                <a href="http://epiviz.github.io" target="_blank" hidden$={{showLogo}}>
+                <a href="http://epiviz.github.io" target="_blank" hidden$={{noLogo}}>
                     <img id="logo" src="epiviz_4_logo_medium.png" alt="Epiviz" width="100" height="21">
                 </a> 
 <!--                 <paper-button raised class="collapse-header" on-click="toggleHeader">Collapse</paper-button>
                 <paper-button raised on-click="cloneNavigation">Clone</paper-button>     -->
-                <paper-menu-button>
+                <paper-menu-button dynamic-align vertical-align="bottom" vertical-offset=24>
                     <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
                     <paper-menu class="dropdown-content">
-                        <paper-item>Delete</paper-item>
+                        <paper-item toggles on-click="toggleSelected">Delete</paper-item>
                         <paper-item on-click="cloneNavigation">Clone</paper-item>
-                        <paper-item on-click="toggleHeader">Collapse</paper-item>
+                        <paper-item on-click="toggleHeader" class="collapse-header">Collapse</paper-item>
                     </paper-menu>
                 </paper-menu-button>           
             </div>
@@ -192,7 +196,7 @@ To use, add `<epiviz-navigation>` in the page
         Polymer({
             /* Custom element html tag */
             is: 'epiviz-navigation',
-            behaviors: [epiviz.ChartBehavior, epiviz.ChartDataBehavior, epiviz.ChartAddBehavior, epiviz.ChartWorkspaceBehavior, Polymer.IronResizableBehavior],
+            behaviors: [epiviz.ChartBehavior, epiviz.ChartDataBehavior, epiviz.ChartAddBehavior, epiviz.ChartWorkspaceBehavior, Polymer.IronResizableBehavior, Polymer.IronFitBehavior],
 
             /* Properties that can be defined on the element */
             properties: {
@@ -320,7 +324,7 @@ To use, add `<epiviz-navigation>` in the page
                     notify: true
                 },
 
-                showLogo: {
+                noLogo: {
                     type: Boolean,
                     notify: true,
                     reflectToAttribute: true,
@@ -365,23 +369,31 @@ To use, add `<epiviz-navigation>` in the page
             //     console.log("here");
             // },
 
+            toggleSelected: function(event) {
+                $(event.target).parent().parent()[0].selected = null;
+            },
+
             /**
              * Toggle handler (expand/collapse)
              */
             toggleHeader: function(event) {
                 var self = this;
-
                 this.$.navHeader.toggle();
                 this.collapsed = !this.collapsed;
-                
+                // unselect the selected paper-item;
+                this.toggleSelected(event);
+                // unsafe to reference index 0, but works for now
+                var menuButton = $(this).find("paper-menu-button")[0];
+                menuButton.close();
                 if (!this.collapsed) {
+                    // only one .collapse-header element here
                     if ($(this).find(".collapse-header")[0]) {
-                        $(this).find(".collapse-header")[0].innerHTML = "Expand";
+                        $(this).find(".collapse-header")[0].innerHTML = "Collapse";
                     }
                     Polymer.dom(self).unobserveNodes(self._observer);
                 } else {
                     if ($(this).find(".collapse-header")[0]) {
-                        $(this).find(".collapse-header")[0].innerHTML = "Collapse";
+                        $(this).find(".collapse-header")[0].innerHTML = "Expand";
                     }
                     self._observer =
                     Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
@@ -681,9 +693,10 @@ To use, add `<epiviz-navigation>` in the page
             /**
              * Clones a navigation element and add it to the page
              */
-            cloneNavigation: function() {
+            cloneNavigation: function(event) {
                 var self = this;
 
+                this.toggleSelected(event);
                 var navElem = document.createElement('epiviz-navigation');
                 navElem.chr = self.chr;
                 navElem.start = self.start;
