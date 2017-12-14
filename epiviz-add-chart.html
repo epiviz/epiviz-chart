@@ -47,17 +47,17 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
         </style>
         <!-- local DOM goes here -->
         <!-- <div id="addChart"> -->
-            <paper-menu-button>
+            <paper-menu-button dynamic-align horizontal-align="right" vertical-offset=42>
                 <paper-button class="dropdown-trigger" raised>
                     <iron-icon icon="editor:insert-chart"></iron-icon>
                     <span>Add Visualization</span>
                 </paper-button>
                 <paper-menu class="dropdown-content" selected="{{selectedChart}}">
                     <template is="dom-repeat" items="{{_charts}}">
-                        <paper-item>[[item]]</paper-item>
+                        <paper-item on-click="_chartSelectionChanged">[[item]]</paper-item>
                     </template>
                 </paper-menu>
-            </paper-menu-button>
+            </paper-menu-button>  
         <!-- </div> -->
     
     </template>
@@ -93,7 +93,7 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
                 selectedChart: {
                     type: String,
                     notify: true,
-                    observer: "_chartSelectionChanged"
+                    // observer: "_chartSelectionChanged"
                 },
 
                 _chartTypes: {
@@ -149,11 +149,10 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
                 Polymer.dom(envElement).appendChild(chartElem);
             },
 
-            _chartSelectionChanged: function() {
+            _chartSelectionChanged: function(event) {
                 var self = this;
-
                 var envElement = self.parentNode.parentNode.parentNode.nodeName == "EPIVIZ-NAVIGATION" ? self.parentNode.parentNode.parentNode : self.parentNode.parentNode.parentNode;
-                
+
                 self.selection = {};
                 self.selection.chartType = self._charts[self.selectedChart];
 
@@ -161,6 +160,8 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
                 chartElem.className = "charts";
                 chartElem.range = envElement.range;
                 var chartElemType = chartElem._createChart();
+                $(event.target).parent().parent()[0].selected = null;
+
 
                 if (self.selection.chartType == "GenesTrack") {
                     var data = envElement.measurementSet.subset(function(m) { return m.defaultChartType() == "Genes Track"});
