@@ -69,15 +69,12 @@ function rightAccordion(measurements) {
             field.id = point.datasourceId + "-" + sanitized;
             field.style = "padding-left: 2.5%";
             checkbox.className = "ui checkbox";
-            //point, source, and index to allow for easy indexing in measurements list
             checkbox.id = "item-" + sanitized + "-" + index + "-" + source;
             input.type = "checkbox";
-            //input.id = "item-" + point.id + "-" + source;
             input.name = "small";
             span1.innerHTML = point.name + " (" + point.datasourceGroup + ")";
 
             label.appendChild(span1);
-            // fields.appendChild(field);
             field.appendChild(checkbox);
             checkbox.appendChild(input);
             checkbox.appendChild(label);
@@ -102,19 +99,11 @@ function rightAccordion(measurements) {
         title.appendChild(icon);
         titlecheckbox.appendChild(checkboxinput);
         titlecheckbox.appendChild(checkboxlabel);
-        // content.appendChild(fields);
 
         table.appendChild(tableBody);
         content.appendChild(table);
-
-        // $(table).tablesort();
-
         $('#rightmenu').append(item);
         $(titlecheckbox).unbind("click");
-
-        //for some reason this fixes my checkbox issue
-        // $($(titlecheckbox).children()[0]).click(function() {
-        // });
     });
     $('#rightmenu').accordion({
         exclusive : false,
@@ -130,24 +119,22 @@ function loadMeasurements(measurements, input) {
     var ranges = {};
     var checkboxIndex = 0;
     var i = 0;
-    // var measurements = {};
-	// _.forEach(input, function(row, index) {
-	// 	if(!measurements[row.datasourceId]) {
-	// 		measurements[row.datasourceId] = [];
-	// 	}
-	// 	measurements[row.datasourceId].push(row);
-	// });
-    // measurements[datasource] = input;
 
     tinput = {};
-
     tinput["epiviz"] = input;
-    
-    // while(i < input.length && measurements[datasource][i].annotation === null) {
-    //     i++;
-    // }
-    // measurements[datasource] = _.sortBy(measurements[datasource], [function(o) {return o.id}])
-    annotations = ["tissue", "subtype"];
+    annotations = [];
+
+    for(m in measurements) {
+	ds = measurements[m];
+        ds.forEach(function(s) {
+         if(s.annotation) {
+           annotations.push(Object.keys(s.annotation));
+         }
+        });
+    }
+
+    annotations = _.flatten(annotations);
+    annotations = _.uniq(annotations);
     annotations = annotations.sort(sortAlphaNum);
     annotations.forEach(function(text) {
         var item = document.createElement('div');
@@ -175,9 +162,7 @@ function loadMeasurements(measurements, input) {
             });
         });
         values = values.sort(sortAlphaNum);
-        // console.log(parseInt(values[getRandom(0, values.length - 1)]));
         if (parseInt(values[getRandom(0, values.length - 1)]) && values.length > 5) {
-            // console.log("values" + values.length);
             filters[text] = {values: [], type: "range"};
             var field = document.createElement('div');
             var range1 = document.createElement('div');
@@ -220,13 +205,7 @@ function loadMeasurements(measurements, input) {
         item.className = "item";
         item.id = sanitized;
         title.className = "title";
-        // if(fieldType == "category") {
-        //     title.innerHTML = text + "<div class=\"ui mini circular horizontal label\"> filtered: <span class=\"data-count\">0</span> of " + fieldCount + "</div>";
-        // }
-        // else {
-            title.innerHTML = text;
-
-        // }
+        title.innerHTML = text;
         icon.className = "dropdown icon";
         content.className = "active content";
         form.className = "ui form";
@@ -242,11 +221,9 @@ function loadMeasurements(measurements, input) {
         $('#checkbox' + i).checkbox({
 
             onChecked: function() {
-                // $($(this).parent().parent().parent().parent().parent().find("span.data-count")).text( parseInt($($(this).parent().parent().parent().parent().parent().find("span.data-count")).text()) + parseInt($(this).parent().find("div.label").text()) );
                 filter($(this).val().split("-")[1], $(this).val().split("-")[0], true, measurements);
             },
             onUnchecked: function() {
-                // $($(this).parent().parent().parent().parent().parent().find("span.data-count")).text( parseInt($($(this).parent().parent().parent().parent().parent().find("span.data-count")).text()) - parseInt($(this).parent().find("div.label").text()) );
                 filter($(this).val().split("-")[1], $(this).val().split("-")[0], false, measurements);
             }
         });
@@ -270,22 +247,6 @@ function loadMeasurements(measurements, input) {
                 $('#' + ids).off('mouseup');
             });
         });
-
-        // $('#' + ids).on("mousemove", function(event) {
-        //     event.preventDefault();
-        //     // $(document).off('mousemove');
-        // });
-        // $('#' + ids).on("mouseup", function(event) {
-        //     // $(document).off('mousemove');
-        //     // $(document).off('mouseup');
-        //     event.preventDefault();
-        // });
-
-        // $('#' + ids).on("mousedown", function(event) {
-        //     // $(document).off('mousedown');
-        //     event.preventDefault();
-        // });
-
     });
 
     $('.active.content').each(function(index) {
