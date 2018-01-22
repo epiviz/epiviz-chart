@@ -22,7 +22,7 @@
   ],
   "dependencies": {
     "polymer": "Polymer#^1.6.1",
-    "epiviz-imports": "https://github.com/epiviz/epiviz-imports.git",
+    "epiviz-imports": "https://github.com/epiviz/epiviz-imports.git#epiviz-5",
     "cyto-chromosome-vis": "^1.3.3",
     "iron-icons": "^1.2.0",
     "paper-item": "^1.2.1",

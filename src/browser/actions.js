@@ -71,24 +71,6 @@ function initialize_dropdown(source) {
 			// }
 		}
 	});
-
-	// $('#sample-size').on("mousemove", function(event) {
-	// 	selectionDrag = true;
-	// 	event.preventDefault();
-	// 	// $(document).off('mousemove');
-	// });
-	// $('#sample-size').on("mouseup", function(event) {
-	// 	selectionDrag = false;
-	// 	selectionDown = false;
-	// 	// $(document).off('mousemove');
-	// 	// $(document).off('mouseup');
-	// 	event.preventDefault();
-	// });
-
-	// $('#sample-size').on("mousedown", function(event) {
-	// 	selectionDown = true;
-	// 	event.preventDefault();
-	// });
 }
 
 function selectSamples() {
@@ -108,17 +90,6 @@ function selectSamples() {
 		switch(selectionType) {
 			case 'Random':
 				var randomSamples = _.sampleSize(checkboxes, count);
-				// randomSamples.forEach(function(rs) {
-					// console.log(rs);
-				// 	if((rs.context != null && rs.context != 'document') || (typeof(rs) != "number") ) {
-				// 		if($(rs).parent().prop('id') != undefined) {
-				// 			var split = $(rs).parent().prop('id').split('-');
-				// 			$(rs).parent().checkbox('set checked');
-				// 			selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
-				// 			// $(rs).click();
-				// 		}
-				// 	}
-				// });
 				_.each(randomSamples, function(rs) {
 					if((rs.context != null && rs.context != 'document') || (typeof(rs) != "number") ) {
 						if($(rs).parent().prop('id') != undefined) {
@@ -132,16 +103,6 @@ function selectSamples() {
 				});
 				break;
 			case 'Top':
-				// _.slice(checkboxes,0, count).forEach(function(rs) {
-				// 	if((rs.context != null && rs.context != 'document') || (typeof(rs) != "number") ) {
-				// 		if($(rs).parent().prop('id') != undefined) {
-				// 			var split = $(rs).parent().prop('id').split('-');
-				// 			$(rs).parent().checkbox('set checked');
-				// 			selections[split[1] + '-' + split[2] + '-' + split[3]] = 0;
-				// 			// $(rs).click();
-				// 		}
-				// 	}
-				// });
 				_.each(_.slice(checkboxes,0, count), function(rs) {
 					if((rs.context != null && rs.context != 'document') || (typeof(rs) != "number") ) {
 						if($(rs).parent().prop('id') != undefined) {
@@ -266,8 +227,6 @@ function showModal(source, input, cb) {
 		}
 		measurements[row.datasourceId].push(row);
 	});
-	// measurements[source] = input;
-	// measurements[source] = _.sortBy(measurements[source], [function(o) {return o.id}])
 	$('body').append(modal);
 	initialize_dropdown(source);
 	$('#newmodal').modal({
@@ -296,7 +255,6 @@ function showModal(source, input, cb) {
 		},
 	});
 	$('#newmodal').modal('show');
-	// loadMeasurements(source, input);
 	loadMeasurements(measurements, input);
 }
 
@@ -376,7 +334,6 @@ function initialize(sources) {
 		checkbox.appendChild(input);
 		checkbox.appendChild(label);
 		field.appendChild(checkbox);
-		// fields.appendChild(field);
 
 		var tr = document.createElement("tr");
 		var td = document.createElement("td");
@@ -394,7 +351,6 @@ function initialize(sources) {
 		});
 
 	});
-	// $('#form').append(fields);
 	$('#form').form();
 }
 
@@ -403,7 +359,6 @@ function attachActions(measurements) {
 	$('#rightmenu .ui.checkbox input[type="checkbox"]').click(function(e) {
 		var split = this.id.split('-');
 		split[1] = _.join(_.slice(split, 1), separator="-");
-		// console.log('source clicked');
 		//this means that you selected the measurement checkbox
 		if (split[0] === "source") {
 			var checked = $(this).parent().prop('class').indexOf('checked') !== -1;
@@ -466,61 +421,6 @@ function attachActions(measurements) {
 			toggleParent(split[3]);
 		}
 	});
-
-	// $('#rightmenu .field .checkbox label').mouseenter(function() {
-	// 	var parent = $(this).parent();
-	// 	var split = parent.attr('id').split('-');
-	// 	split[1] = split[1].replace(/[^a-zA-Z0-9]/g,'');
-	// 	split[3] = _.join(_.slice(split, 3), separator="-");
-	// 	var popup_id = "popup-" + split[1] + "-" + split[3];
-	// 	if ($("#" + popup_id).length === 0) {
-	// 		var point = measurements[split[3]][split[2]];
-	// 		var headers = ['id', 'name', 'datasourcegroup'];
-	// 		var contents = [point.id, point.name, point.datasourcegroup];
-	// 		if (point.annotation != null) {
-	// 			Object.keys(point.annotation).forEach(function(val) {
-	// 				headers.push(val);
-	// 				contents.push(point.annotation[val]);
-	// 			});
-	// 		}
-
-	// 		//sanitize id for any periods or pound signs
-	// 		point.id = point.id.replace(/[^a-zA-Z0-9]/g,'');
-
-	// 		//creating popup as seperate div to give it columns
-	// 		var popup = document.createElement('div');
-	// 		var table = document.createElement('table');
-	// 		var t_body = document.createElement('tbody');
-	// 		popup.className = 'ui popup';
-	// 		popup.id = "popup-" + point.id + "-" + split[3];
-	// 		table.className = 'ui collapsing table';
-	// 		table.appendChild(t_body);
-	// 		//add columns to the grid
-	// 		for (var j = 0; j < contents.length; j++) {
-	// 			var row = document.createElement('tr');
-	// 			var col1 = document.createElement('td');
-	// 			var col2 = document.createElement('td');
-	// 			row.appendChild(col1);
-	// 			row.appendChild(col2);
-	// 			col1.innerHTML = headers[j];
-	// 			col2.innerHTML = contents[j];
-	// 			t_body.appendChild(row);
-	// 		}
-	// 		popup.appendChild(table);
-	// 		$('body').append(popup);
-	// 		$(this).popup({
-	// 			popup: '#' + popup.id,
-	// 			position: 'right center',
-	// 			lastResort: 'right center', 
-	// 			hoverable: true,
-	// 			delay: {
-	// 				show: 50,
-	// 				hide: 100,
-	// 			}
-	// 		});      
-	// 		$(this).popup('show');     
-	// 	}   
-	// });
 }
 
 function toggleParent(source) {
@@ -696,7 +596,6 @@ function storeMeasurement(measurements, cb) {
 	// resultTable(name, new_list, cb);
 }
 
-
 function resultTable(name, list, cb) {
 	$('#resultTable').append()
 	var header = document.createElement('thead');
@@ -752,4 +651,3 @@ function resultTable(name, list, cb) {
 	});
 	$('#resultmodal').modal('show');
 }
-
