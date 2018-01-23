@@ -477,9 +477,11 @@ To use, add `<epiviz-navigation>` in the page
                  * @type {object}
                  * @property {object} data - data object currently selected.
                  */
-                this.fire('selectAllCharts', {
-                    data: e.detail.data
-                });
+                if(e.detail && e.detail.data) {
+                    this.fire('selectAllCharts', {
+                        data: e.detail.data
+                    });
+                }
             },
 
             /**
