@@ -595,6 +595,8 @@ To use, add `<epiviz-navigation>` in the page
                 this.chr = chr;
                 this.start = start;
                 this.end = end;
+
+                this.range = this.getGenomicRange(this.chr, this.start, this.end);
             },
 
             /**
