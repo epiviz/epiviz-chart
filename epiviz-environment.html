@@ -20,6 +20,7 @@
 <link rel="import" href="../iron-dropdown/iron-dropdown.html">
 <link rel="import" href="../paper-item/paper-item.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-label/iron-label.html">
 
 <!--
 `<epiviz-environment>` is a wrapper element that manages measurements, handles events and brushing across all of its children `<epiviz-charts>` elements.
@@ -95,10 +96,17 @@ To use, add `<epiviz-environment>` in the page
                 float: right;
             }
 
+            iron-label {
+                color: #4285f4;
+                font-weight: bold;
+                font-size: 16px;
+            }
+
         </style>
 
         <paper-header-panel class="blue">
             <div id="header" class="paper-header">
+                <iron-label>EPIVIZ ENVIRONMENT</iron-label>
                 <a href="http://epiviz.github.io" target="_blank" hidden$={{noLogo}}>
                     <img id="logo" src="epiviz_4_logo_medium.png" alt="Epiviz" width="100" height="21">
                 </a>
@@ -234,7 +242,6 @@ To use, add `<epiviz-environment>` in the page
                 'select': 'onSelect',
                 'deSelect': 'onDeSelect',
                 'dimChanged': 'onDimChanged'
-                // 'iron-resize': '_onResize'
             },
 
             _updateNavRegion: function(e) {
