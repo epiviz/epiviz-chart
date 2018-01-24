@@ -30,6 +30,7 @@
 <link rel="import" href="../paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../paper-menu/paper-menu.html">
 <link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../iron-label/iron-label.html">
 
 <!--
 `<epiviz-navigation>` is similar to `<epiviz-environment>`. It is a wrapper element that handles events 
@@ -132,10 +133,17 @@ To use, add `<epiviz-navigation>` in the page
                 float: right;
             }
 
+            iron-label {
+                color: #4285f4;
+                font-weight: bold;
+                font-size: 16px;
+            }
+
         </style>
 
         <paper-header-panel class="blue">
             <div id="header" class="paper-header">
+                <iron-label>EPIVIZ NAVIGATION</iron-label>
                 <a href="http://epiviz.github.io" target="_blank" hidden$={{noLogo}}>
                     <img id="logo" src="epiviz_4_logo_medium.png" alt="Epiviz" width="100" height="21">
                 </a> 
@@ -368,8 +376,6 @@ To use, add `<epiviz-navigation>` in the page
                 'unHover': 'onUnhover',
                 'select': 'onSelect',
                 'deSelect': 'onDeselect'
-                // ,
-                // 'transitioning-changed': 'onOpenChanged'
             },
 
             _computeToggleText: function(collapsed) {
@@ -379,11 +385,6 @@ To use, add `<epiviz-navigation>` in the page
 
                 return "Collapse";
             },
-
-            // onOpenChanged: function(event) {
-            //     console.log(this.$.navHeader.transitioning);
-            //     console.log("here");
-            // },
 
             toggleSelected: function(event) {
                 $(event.target).parent().parent()[0].selected = null;
