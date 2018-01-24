@@ -241,7 +241,9 @@ To use, add `<epiviz-environment>` in the page
                 'unHover': 'onUnhover',
                 'select': 'onSelect',
                 'deSelect': 'onDeSelect',
-                'dimChanged': 'onDimChanged'
+                'dimChanged': 'onDimChanged',
+                'iron-resize': '_onResize',
+                'transitionend': '_onResize'
             },
 
             _updateNavRegion: function(e) {
@@ -260,15 +262,21 @@ To use, add `<epiviz-environment>` in the page
             /**
              * Resizes the chart.
              */
-            // _onResize: function() {
-            //     var self = this;
-            //     // this._measurementsChanged();
-            //     // if(this.chart != null) {
-            //     //     this.chart._properties.width = self.offsetWidth - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
-            //     //     this.chart._properties.height = self.offsetHeight - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
-            //     //     this._draw();
-            //     // }
-            // },
+            _onResize: function() {
+                // console.log("env resize");
+                var self = this;
+                var numChildren = self.getEffectiveChildren().length;
+                for (var index = 0; index < numChildren; index++) {
+                    var currentChild = self.getEffectiveChildren()[index];
+                    currentChild._onResize();
+                }
+                // this._measurementsChanged();
+                // if(this.chart != null) {
+                //     this.chart._properties.width = self.offsetWidth - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
+                //     this.chart._properties.height = self.offsetHeight - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
+                //     this._draw();
+                // }
+            },
 
             /**
              * Creates a epiviz GenomicRange object from chromosome, start and end.
