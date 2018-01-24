@@ -816,6 +816,15 @@ To use, add `<epiviz-navigation>` in the page
                         });
                         // self.saveWorkspace();
                     });
+
+                    if(self.measurementSet) {
+                        var genesTrack = document.createElement("epiviz-genes-track");
+                        var genes = self.measurementSet.subset(function(m) { return m.defaultChartType() == "Genes Track" && m.datasourceGroup() === "genes"; });
+                        genesTrack.setAttribute("measurements", JSON.stringify(genes.raw()));
+                        genesTrack.className = "charts";
+
+                        Polymer.dom(self).appendChild(genesTrack);
+                    }
                 }
             },
 
