@@ -102,12 +102,19 @@ To use, add `<epiviz-environment>` in the page
                 font-size: 16px;
             }
 
+            .isempty {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translateX(-50%) translateY(-50%);
+            }
+
         </style>
 
         <paper-header-panel class="blue">
             <div id="header" class="paper-header">
                 <iron-label>EPIVIZ ENVIRONMENT</iron-label>
-                <a href="http://epiviz.github.io" target="_blank" hidden$={{noLogo}}>
+                <a href="http://epiviz.github.io" target="_blank" hidden$="[[noLogo]]">
                     <img id="logo" src="epiviz_4_logo_medium.png" alt="Epiviz" width="100" height="21">
                 </a>
                 <iron-dropdown>
@@ -120,6 +127,7 @@ To use, add `<epiviz-environment>` in the page
                 <epiviz-add-chart></epiviz-add-chart> 
             </div>
             <div id="chartContainer" class="content fit">
+                <div class="isempty" hidden$="[[_isEmpty]]">Add a New Chart to the Workspace</div>
                 <content id="chartEnv" select=".charts"></content>
             </div>
         </paper-header-panel>
@@ -214,6 +222,11 @@ To use, add `<epiviz-environment>` in the page
                     value: []
                 },
 
+                /**
+                 * Whether to show/hide the epiviz logo
+                 *
+                 * @type {boolean}
+                 */  
                 noLogo: {
                     type: Boolean,
                     notify: true,
@@ -221,12 +234,30 @@ To use, add `<epiviz-environment>` in the page
                     value: false
                 },
 
+                /**
+                 * Whether to use the default layout
+                 *
+                 * @type {boolean}
+                 */  
                 useLayout: {
                     type: Boolean,
                     notify: true,
                     reflectToAttribute: true,
                     value: true
-                }
+                },
+
+                /**
+                 * Whether the element has no children
+                 *
+                 * @type {boolean}
+                 */   
+                 _isEmpty: {
+                    type: Boolean,
+                    notify: true,
+                    value: function () {
+                        return false;
+                    }
+                },
             },
 
             observers: [
@@ -266,16 +297,11 @@ To use, add `<epiviz-environment>` in the page
                 // console.log("env resize");
                 var self = this;
                 var numChildren = self.getEffectiveChildren().length;
+                if(numChildren > 0) {self.set('_isEmpty', true);}
                 for (var index = 0; index < numChildren; index++) {
                     var currentChild = self.getEffectiveChildren()[index];
                     currentChild._onResize();
                 }
-                // this._measurementsChanged();
-                // if(this.chart != null) {
-                //     this.chart._properties.width = self.offsetWidth - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
-                //     this.chart._properties.height = self.offsetHeight - 20 - epiviz.ui.charts.Visualization.SVG_MARGIN;
-                //     this._draw();
-                // }
             },
 
             /**
@@ -306,6 +332,7 @@ To use, add `<epiviz-environment>` in the page
                     }
 
                     var numChildren = self.getEffectiveChildren().length;
+                    if(numChildren > 0) {self.set('_isEmpty', true);}
                     for (var index = 0; index < numChildren; index++) {
                         var currentChild = self.getEffectiveChildren()[index];
                         if(currentChild.nodeName === "EPIVIZ-SCATTER-PLOT") {
@@ -435,6 +462,7 @@ To use, add `<epiviz-environment>` in the page
                 var self = this;
 
                 var numChildren = self.getEffectiveChildren().length;
+                if(numChildren > 0) {self.set('_isEmpty', true);}
                 for (var index = 0; index < numChildren; index++) {
                     var currentChild = self.getEffectiveChildren()[index];
                     if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
@@ -497,6 +525,8 @@ To use, add `<epiviz-environment>` in the page
                                     self._getElementData(node, self, self.measurements);
                                 }
                             }
+
+                            self.set('_isEmpty', true);
                         });
 
                         self.saveWorkspace();
