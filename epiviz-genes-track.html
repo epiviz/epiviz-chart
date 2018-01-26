@@ -43,9 +43,9 @@ To use, add `<epiviz-genes-track>` in the page
                 /*border: 1px solid black;*/
                 /*resize: both;*/
                 /*overflow: auto;*/
-                /* -moz-transition:width 0.01s, height 0.01s;
+                -moz-transition:width 0.01s, height 0.01s;
                 -webkit-transition:width 0.01s, height 0.01s;
-                -o-transition:width 0.01s, height 0.01s; */
+                -o-transition:width 0.01s, height 0.01s;
                 transition:width 0.01s, height 0.01s; 
                 /*margin: 10px;*/
             }
@@ -57,6 +57,7 @@ To use, add `<epiviz-genes-track>` in the page
         </style>
 
         <!-- local DOM goes here -->
+        <paper-spinner-lite active class="green" hidden$="[[_hideLoader]]"></paper-spinner-lite>
         <div id="chart" on-drag="hostDragged" on-mouseover="hostHovered" on-mouseout="hostUnhovered">
             <div id="{{plotId}}"></div>
         </div>
@@ -227,8 +228,6 @@ To use, add `<epiviz-genes-track>` in the page
                 self.plotId = self.plotId || self._generatePlotId();
                 self.scopeSubtree(self.$.chart, true);
                 self.config = new epiviz.Config(self.configSrc);
-                // self.listen(self.$.chart, 'iron-resize', 'onElementResize');
-                // this.addEventListener("transitionend","onElementResize");
             },
 
             /**
@@ -239,6 +238,7 @@ To use, add `<epiviz-genes-track>` in the page
              */
             _draw: function() {
                 this.chart.draw(this.range, this.data);
+                this.set("_hideLoader", true);
             },
 
             /**

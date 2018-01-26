@@ -50,7 +50,8 @@
     "jquery-ui-drag-collide": "*",
     "jquery-collision": "dsbaars/jquery-collision",
     "paper-menu-button": "polymerElements/paper-menu-button#1.5.2",
-    "iron-fit-behavior": "1.2.6"
+    "iron-fit-behavior": "1.2.6",
+    "paper-spinner": "PolymerElements/paper-spinner#1.2.1"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.1.8",

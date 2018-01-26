@@ -1,6 +1,9 @@
 <!-- External Polymer Styles/elements dependency -->
 <link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
 
+<link rel="import" href="../paper-spinner/paper-spinner.html">
+<link rel="import" href="../paper-spinner/paper-spinner-lite.html">
+
 
 <dom-module id="shared-settings">
   <template>
@@ -38,10 +41,18 @@
             height: 24px;
             padding: 2px;
         }
+
+        paper-spinner-lite {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%); 
+            height:75px;
+            width: 75px;
+        }
     </style>
   </template>
 </dom-module>
-
 
 <script>
     /**
@@ -154,6 +165,12 @@
             hostDragging: {
                 type: Boolean,    
                 value: false,            
+            },
+
+            _hideLoader: {
+                type: Boolean,
+                notify: true,
+                value: false
             }
         },
 
