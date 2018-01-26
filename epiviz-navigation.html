@@ -139,6 +139,13 @@ To use, add `<epiviz-navigation>` in the page
                 font-size: 16px;
             }
 
+            .isempty {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translateX(-50%) translateY(-50%);
+            }
+
         </style>
 
         <paper-header-panel class="blue">
@@ -195,6 +202,7 @@ To use, add `<epiviz-navigation>` in the page
                                 </paper-autocomplete>
                             </div>
                         </div>
+                        <div class="isempty" hidden$="{{_isEmpty}}">Add a New Chart to the Workspace</div>
                         <content id="chartNav" select=".charts"></content>
                     </iron-collapse>
                 <!-- </template> -->
@@ -321,6 +329,19 @@ To use, add `<epiviz-navigation>` in the page
                     type: Boolean,
                     notify: true,
                     value: function () {
+                        return true;
+                    }
+                },
+
+                /**
+                 * Whether the element has no children
+                 *
+                 * @type {boolean}
+                 */   
+                _isEmpty: {
+                    type: Boolean,
+                    notify: true,
+                    value: function () {
                         return false;
                     }
                 },
@@ -375,14 +396,28 @@ To use, add `<epiviz-navigation>` in the page
                 'hover': 'onHover',
                 'unHover': 'onUnhover',
                 'select': 'onSelect',
-                'deSelect': 'onDeselect'
+                'deSelect': 'onDeselect',
+                'iron-resize': '_onResize',
+                'transitionend': '_onResize'
+            },
+
+            /**
+             * Resizes the chart.
+             */
+             _onResize: function() {
+                var self = this;
+                var numChildren = self.getEffectiveChildren().length;
+                if(numChildren > 0) {self.set('_isEmpty', true);}
+                for (var index = 0; index < numChildren; index++) {
+                    var currentChild = self.getEffectiveChildren()[index];
+                    currentChild._onResize();
+                }
             },
 
             _computeToggleText: function(collapsed) {
                 if(collapsed) {
                     return "Expand";
                 }
-
                 return "Collapse";
             },
 
@@ -511,6 +546,7 @@ To use, add `<epiviz-navigation>` in the page
                 self._getGenesInRange(self, self);
                 
                 var numChildren = self.getEffectiveChildren().length;
+                if(numChildren > 0) {self.set('_isEmpty', true);}
                 for (var index = 0; index < numChildren; index++) {
                     var currentChild = self.getEffectiveChildren()[index];
                     if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
@@ -691,6 +727,7 @@ To use, add `<epiviz-navigation>` in the page
             _getData: function() {
                 var self = this;
                 var numChildren = self.getEffectiveChildren().length;
+                if(numChildren > 0) {self.set('_isEmpty', true);}
                 for (var index = 0; index < numChildren; index++) {
                     var currentChild = self.getEffectiveChildren()[index];
                     if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
@@ -720,6 +757,7 @@ To use, add `<epiviz-navigation>` in the page
                 Polymer.dom(self.parentNode).appendChild(navElem);
 
                 var numChildren = self.getEffectiveChildren().length;
+                if(numChildren > 0) {self.set('_isEmpty', true);}
                 for (var index = 0; index < numChildren; index++) {
                     var currentChild = self.getEffectiveChildren()[index];
                     var childElem = document.createElement(currentChild.nodeName);
@@ -812,6 +850,8 @@ To use, add `<epiviz-navigation>` in the page
                                     measurements = self._parentContainer.measurements;
                                 }
                                 self._getElementData(node, self, measurements);
+
+                                self.set('_isEmpty', true);
                             }
                         });
                         // self.saveWorkspace();
