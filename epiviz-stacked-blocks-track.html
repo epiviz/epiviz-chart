@@ -52,6 +52,7 @@ To use, add `<epiviz-stacked-blocks-track>` in the page
         </style>
 
         <!-- local DOM goes here -->
+        <paper-spinner-lite active class="green" hidden$="[[_hideLoader]]"></paper-spinner-lite>
         <div id="chart" on-mouseover="hostHovered" on-mouseout="hostUnhovered">
             <div id="{{plotId}}"></div>
         </div>
@@ -243,6 +244,7 @@ To use, add `<epiviz-stacked-blocks-track>` in the page
              */
             _draw: function() {
                 this.chart.draw(this.range, this.data);
+                this.set("_hideLoader", true);
             },
 
             /**

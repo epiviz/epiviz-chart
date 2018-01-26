@@ -45,12 +45,14 @@ To use, add `<epiviz-scatter-plot>` in the page
                 transition:width 0.01s, height 0.01s;
                 /*margin: 10px;*/
             }
+
             #chart {
                 position:relative;
             }
         </style>
 
         <!-- local DOM goes here -->
+        <paper-spinner-lite active class="green" hidden$="[[_hideLoader]]"></paper-spinner-lite>
         <div id="chart" on-mouseover="hostHovered" on-mouseout="hostUnhovered" >
             <div id="{{plotId}}"></div>
         </div>
@@ -300,6 +302,7 @@ To use, add `<epiviz-scatter-plot>` in the page
                 if(this.colorByRegions) {
                     this._colorByRegionsChanged();
                 }
+                this.set("_hideLoader", true);
             },
 
             /**
