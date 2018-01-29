@@ -397,8 +397,8 @@ To use, add `<epiviz-navigation>` in the page
                 'unHover': 'onUnhover',
                 'select': 'onSelect',
                 'deSelect': 'onDeselect',
-                'iron-resize': '_onResize',
-                'transitionend': '_onResize'
+                'iron-resize': '_onResize'
+                // 'transitionend': '_onResize'
             },
 
             /**
@@ -550,6 +550,7 @@ To use, add `<epiviz-navigation>` in the page
                 for (var index = 0; index < numChildren; index++) {
                     var currentChild = self.getEffectiveChildren()[index];
                     if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
+                    currentChild.set("_hideLoader", false);
                     currentChild.range = self.range;
                     var measurements = self.measurements;
                     if(self._parentContainer) {
@@ -732,6 +733,7 @@ To use, add `<epiviz-navigation>` in the page
                     var currentChild = self.getEffectiveChildren()[index];
                     if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
                     currentChild.range = self.range;
+                    currentChild.set("_hideLoader", false);
                     currentChild._parentContainer = self;
                     var measurements = self.measurements;
                     if(self._parentContainer) {

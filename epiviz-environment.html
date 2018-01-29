@@ -161,7 +161,8 @@ To use, add `<epiviz-environment>` in the page
                  */
                 chr: {
                     type: String,
-                    notify: true
+                    notify: true,
+                    value : "all"
                 },
 
                 /**
@@ -172,7 +173,8 @@ To use, add `<epiviz-environment>` in the page
                  */
                 start: {
                     type: Number,
-                    notify: true
+                    notify: true,
+                    value : null
                 },
 
                 /**
@@ -183,7 +185,8 @@ To use, add `<epiviz-environment>` in the page
                  */
                 end: {
                     type: Number,
-                    notify: true
+                    notify: true,
+                    value : null
                 },
 
                 /**
@@ -432,6 +435,8 @@ To use, add `<epiviz-environment>` in the page
                 var chartId = e.detail.id;
 
                 if (chartId != null) {
+                    var currentChild = Polymer.dom(self).querySelector('[plot-id$="' + cId + '"]');
+                    currentChild.set("_hideLoader", false);
                     this._updateChart(chartId);
                 }
                 self._initializeRemoveDialog();
@@ -533,10 +538,9 @@ To use, add `<epiviz-environment>` in the page
                     });
             },
 
-            created: function() {
-                var self = this;
-                self._getElementSeqInfo(self, self);
-            },
+            // created: function() {
+            //     var self = this;
+            // },
 
             /* callback function after the element is initialized & attached */
             ready: function() {
@@ -553,6 +557,10 @@ To use, add `<epiviz-environment>` in the page
                 }
 
                 // self._getElementSeqInfo(self, self);
+
+                if(self.chr != "all") {
+                    self._getElementSeqInfo(self, self);
+                }
 
                 if(self.workspace) {
                     self.loadWorkspace(self.workspace);
