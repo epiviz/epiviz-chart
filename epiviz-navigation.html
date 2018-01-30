@@ -31,6 +31,7 @@
 <link rel="import" href="../paper-menu/paper-menu.html">
 <link rel="import" href="../paper-item/paper-item.html">
 <link rel="import" href="../iron-label/iron-label.html">
+<link rel="import" href="../paper-toast/paper-toast.html">
 
 <!--
 `<epiviz-navigation>` is similar to `<epiviz-environment>`. It is a wrapper element that handles events 
@@ -628,12 +629,25 @@ To use, add `<epiviz-navigation>` in the page
                 var rsplit = split[1].split("-");
                 var start = parseInt(rsplit[0]);
                 var end = parseInt(rsplit[1]);
+                var width = end - start;
 
-                this.chr = chr;
-                this.start = start;
-                this.end = end;
+                if(chr in this.seqInfo) {
+                    this.chr = chr;
+                    this.end = Math.min(end, this.seqInfo[this.chr].max);
+                    if(start > this.end) {
+                        start = this.end - width;
+                    }
+                    this.start = Math.max(0, start);
 
-                this.range = this.getGenomicRange(this.chr, this.start, this.end);
+                    this.range = this.getGenomicRange(this.chr, this.start, this.end);
+                }
+                else {
+                    var toast = document.createElement("paper-toast");
+                    toast.setAttribute("text", "Chromosome does not exist");
+                    // toast.setAttribute("openned", true);
+                    Polymer.dom(this.root).appendChild(toast);
+                    toast.show();
+                }
             },
 
             /**
