@@ -41361,6 +41361,7 @@ It will also ensure that focus remains in the dialog.
 
                     self.dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
                         //currentChild.data = data;
+                        console.log("Data Returned : " + Date.now());
 
                         var nItems = data.firstSeries().globalEndIndex() - data.firstSeries().globalStartIndex();
 

@@ -2,3 +2,4 @@ bower_components/
 node_modules/
 .vscode/
 data__
+performance/node_modules
