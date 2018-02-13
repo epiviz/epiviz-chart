@@ -1,0 +1,2 @@
+isntall phantomas
+phantomas http://localhost:8081/components/epiviz-charts/performance/index-test.html --runs 10
