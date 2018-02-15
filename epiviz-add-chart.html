@@ -146,8 +146,9 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
                 chartElem.range = envElement.range;
                 var chartElemType = chartElem._createChart();
 
-                chartElem.setAttribute("measurements", JSON.stringify(measurements));
                 Polymer.dom(envElement).appendChild(chartElem);
+                chartElem.setAttribute("measurements", JSON.stringify(measurements));
+
             },
 
             _chartSelectionChanged: function(event) {
@@ -206,8 +207,9 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
                     source = "epiviz";
 
                     showModal(source, data.raw(), function(selected) {
-                        chartElem.setAttribute("measurements", JSON.stringify(selected));
                         Polymer.dom(envElement).appendChild(chartElem);
+                        chartElem.setAttribute("measurements", JSON.stringify(selected));
+
                         // self.$.modal.close();
                     });
                     $('#sourcemodal').modal('show');
