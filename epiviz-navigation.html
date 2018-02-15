@@ -272,7 +272,9 @@ To use, add `<epiviz-navigation>` in the page
                  */
                 range: {
                     type: Object,
-                    observer: '_rangeUpdate'
+                    observer: '_rangeUpdate',
+                    notify: true,
+		            computed: 'getGenomicRange(chr, start, end)'
                 },
 
                 /**
@@ -453,7 +455,7 @@ To use, add `<epiviz-navigation>` in the page
                                 self._getElementData(node, self, measurements);
                             }
                         });
-                        // self.saveWorkspace();
+                        self.saveWorkspace();
                     });
                 }
                 self._onResize();
@@ -543,6 +545,7 @@ To use, add `<epiviz-navigation>` in the page
              */
             _rangeUpdate: function() {
                 var self = this;
+                self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined, self.chr);
 
                 self._getGenesInRange(self, self);
                 
@@ -559,8 +562,6 @@ To use, add `<epiviz-navigation>` in the page
                     }
                     self._getElementData(currentChild, self, measurements);
                 }
-
-                self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined, self.chr);
 
                 self.fire('navigationRangeUpdate', {
                     plotId: self.plotId,
@@ -870,7 +871,7 @@ To use, add `<epiviz-navigation>` in the page
                                 self.set('_isEmpty', true);
                             }
                         });
-                        // self.saveWorkspace();
+                        self.saveWorkspace();
                     });
 
                     if(self.measurementSet) {
