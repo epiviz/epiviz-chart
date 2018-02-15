@@ -313,7 +313,9 @@
             var id = currentChild.plotId;
             if(tMeasurements.length != 0) {
                 currentChild.range = currentChild.range || self.range || pDom.range;
-                currentChild.measurements = tMeasurements;
+                if(!currentChild.measurements) {
+                    currentChild.measurements = tMeasurements;
+                }
                 var chartMeasMap = {};
                 chartMeasMap[id] = mSet;
 
@@ -322,6 +324,7 @@
 
                     self.dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
                         //currentChild.data = data;
+                        // console.log("Data Returned : " + Date.now());
 
                         var nItems = data.firstSeries().globalEndIndex() - data.firstSeries().globalStartIndex();
 
