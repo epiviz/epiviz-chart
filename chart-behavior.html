@@ -436,7 +436,7 @@
                         null
                     );
 
-                    self.chart = self.chartType.createNew(self.plotId, $('#' + self.plotId), self.chartProperties);
+                    self.chart = self.chartType.createNew(self.plotId, $(Polymer.dom(self.root).querySelector("#" + self.plotId)), self.chartProperties);
 
                     if(self.chartSettings != null || self.chartSettings != undefined) {
                         self.chart.setCustomSettingsValues(self.chartSettings);
