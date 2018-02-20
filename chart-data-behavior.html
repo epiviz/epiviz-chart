@@ -40,6 +40,18 @@
                 this.dataManager.getMeasurements(function(result) {
                     // self.measurements = result.raw();
                     self.measurementSet = result;
+
+                    if(self.measurementSet) {
+                        var genesTrack = document.createElement("epiviz-genes-track");
+                        var genes = self.measurementSet.subset(function(m) { return m.defaultChartType() == "Genes Track" && m.datasourceGroup() === "genes"; });
+                        // self.geneMeasurements = genes.raw();
+                        genesTrack.setAttribute("measurements", JSON.stringify(genes.raw()));
+                        genesTrack.className = "charts";
+
+                        Polymer.dom(self).appendChild(genesTrack);
+                    }
+
+
                 }, function(jqXHR, textStatus, errorThrown) {
                         var toast = document.createElement("paper-toast");
                         toast.setAttribute("text", textStatus + " - " + errorThrown);
