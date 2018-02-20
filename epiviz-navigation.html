@@ -204,7 +204,9 @@ To use, add `<epiviz-navigation>` in the page
                             </div>
                         </div>
                         <div class="isempty" hidden$="{{_isEmpty}}">Add a New Chart to the Workspace</div>
-                        <content id="chartNav" select=".charts"></content>
+                        <content id="chartNav" select=".charts">
+                            <!-- <epiviz-genes-track class="charts" measurements="{{geneMeasurements}}"></epiviz-genes-track> -->
+                        </content>
                     </iron-collapse>
                 <!-- </template> -->
             </div>
@@ -391,6 +393,11 @@ To use, add `<epiviz-navigation>` in the page
                         };
                         return epiviz.Config.SETTINGS;
                     }
+                },
+
+                geneMeasurements: {
+                    type: Object,
+                    notify: true 
                 }
             },
 
@@ -877,15 +884,6 @@ To use, add `<epiviz-navigation>` in the page
                         });
                         self.saveWorkspace();
                     });
-
-                    if(self.measurementSet) {
-                        var genesTrack = document.createElement("epiviz-genes-track");
-                        var genes = self.measurementSet.subset(function(m) { return m.defaultChartType() == "Genes Track" && m.datasourceGroup() === "genes"; });
-                        genesTrack.setAttribute("measurements", JSON.stringify(genes.raw()));
-                        genesTrack.className = "charts";
-
-                        Polymer.dom(self).appendChild(genesTrack);
-                    }
                 }
             },
 
