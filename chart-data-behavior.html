@@ -40,6 +40,18 @@
                 this.dataManager.getMeasurements(function(result) {
                     // self.measurements = result.raw();
                     self.measurementSet = result;
+
+                    if(self.measurementSet) {
+                        var genesTrack = document.createElement("epiviz-genes-track");
+                        var genes = self.measurementSet.subset(function(m) { return m.defaultChartType() == "Genes Track" && m.datasourceGroup() === "genes"; });
+                        // self.geneMeasurements = genes.raw();
+                        genesTrack.setAttribute("measurements", JSON.stringify(genes.raw()));
+                        genesTrack.className = "charts";
+
+                        Polymer.dom(self).appendChild(genesTrack);
+                    }
+
+
                 }, function(jqXHR, textStatus, errorThrown) {
                         var toast = document.createElement("paper-toast");
                         toast.setAttribute("text", textStatus + " - " + errorThrown);
@@ -313,7 +325,9 @@
             var id = currentChild.plotId;
             if(tMeasurements.length != 0) {
                 currentChild.range = currentChild.range || self.range || pDom.range;
-                currentChild.measurements = tMeasurements;
+                if(!currentChild.measurements) {
+                    currentChild.measurements = tMeasurements;
+                }
                 var chartMeasMap = {};
                 chartMeasMap[id] = mSet;
 
@@ -322,6 +336,7 @@
 
                     self.dataManager.getData(currentChild.range, chartMeasMap, function(id, data) {
                         //currentChild.data = data;
+                        // console.log("Data Returned : " + Date.now());
 
                         var nItems = data.firstSeries().globalEndIndex() - data.firstSeries().globalStartIndex();
 

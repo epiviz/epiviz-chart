@@ -3,7 +3,7 @@
 
 <!-- Epiviz imports dependency -->
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
-<link rel="import" href="../epiviz-imports/epiviz-common-css.html">
+<!-- <link rel="import" href="../epiviz-imports/epiviz-common-css.html"> -->
 
 <!-- Epiviz Polymer Behaviors dependency -->
 <link rel="import" href="chart-data-behavior.html">
@@ -279,8 +279,8 @@ To use, add `<epiviz-environment>` in the page
                 'select': 'onSelect',
                 'deSelect': 'onDeSelect',
                 'dimChanged': 'onDimChanged',
-                'iron-resize': '_onResize',
-                'transitionend': '_onResize'
+                'iron-resize': '_onResize'
+                // 'transitionend': '_onResize'
             },
 
             _updateNavRegion: function(e) {
@@ -537,7 +537,7 @@ To use, add `<epiviz-environment>` in the page
                             self.set('_isEmpty', true);
                         });
 
-                        self.saveWorkspace();
+                        // self.saveWorkspace();
                     });
             },
 
