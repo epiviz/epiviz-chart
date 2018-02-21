@@ -84,7 +84,9 @@ To use, add `<epiviz-navigation>` in the page
                 width: 95%;
                 min-height: 500px;
                 margin: 12px;
-                @apply(--shadow-elevation-2dp);
+                --paper-header-panel-shadow: {
+                    box-shadow: none
+                };
             }
 
             .paper-header {
@@ -94,6 +96,7 @@ To use, add `<epiviz-navigation>` in the page
                 color: white;
                 transition: height 0.2s;
                 vertical-align: middle;
+                z-index: -1;
             }
 
             paper-button {
