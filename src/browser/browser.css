@@ -1,86 +1,7 @@
-/*.ui.grid .row {
-    padding:2px;
-}
-#resultmodal {
-    max-height: 400px;
-}
-.ui.long.modal {
-    position: fixed;
-    top: 15%;
-    left: 40%;
-} 
-.bounds {
-    max-height: 100%;
-    overflow: scroll;
-}
-#button {
-    float: right;
-}
-.ui.input {
-    width: 100%;
-}
-#newmodal {
-    left: 50%;
-    top: 40%;
-    max-height: 400px !important;
-}
 .ui.grid {
     padding: 0px;
-    max-height: inherit;
-}
-.content.m {
-    overflow: hidden;
-    max-height: 400px;
-    padding: 0px;
-}
-.content {
-    overflow: scroll !important;
-    max-height: 280px;
-    padding: 0px; 
-}
-#rightmenu {
-    overflow: auto;
-    height: 82%;
-    max-height: inherit;
-}
-
-#rightmenu.item {
-    display: inline-block;
-}
-
-#leftmenu {
-    max-height: 100%;
-    overflow: auto;
-}
-.tab {
-    height: 80%;
-}
-#test {
-    position: absolute;
-    top:500px;
-}
-.ui.table {
-    font-size: .8em;
-}
-.ui.popup {
-    padding: 3px;
-    padding-left: 10px;
-}
-.ui.collapsing.table td {
-    padding: 0;
-    padding-right: .7em;
-}
-#sourcemodal {
-    width: auto;
-    left: 60%;
-}
-.ui.menu {
-    padding: 0;
-}*/
-
-.ui.grid {
-    padding: 0px;
-    max-height: inherit;
+    /*max-height: inherit;*/
+    height: 100%;
 }
 
 #titleRow {
@@ -88,33 +9,60 @@
 }
 
 #sourcemodal {
-    width: auto;
-    left: 60%;
+    /*top:40%;*/
+    /*left: 60%;*/
 }
 
 #newmodal {
-        left: 50%;
-    top: 40%
-    max-height: 400px;
+    /*left: 50%;*/
+    top: 40%;
+    /*max-height: 400px;*/
+    height: 90%;
+    width: 85%;
 }
 
 #leftRightRow {
     height: 350px;
+    overflow:auto;
+}
+
+#leftRightRow #annoMenu {
+    overflow: auto;
+    padding-right: 0px;
 }
 
 #leftmenu {
-    height: 335px;
+    width: 100%;
     overflow: auto;
 }
 
+#leftmenu .item .title{
+    word-wrap: break-word;
+}
+
+#leftmenu #annoSearch .icon.input {
+    margin: 5px;
+    width: 95%;
+    height: 30px;
+}
+
 #rightmenu {
-    height: 335px;
-    overflow:auto;
+    /*height: 335px;*/
+    /* height: 100%; */
 }
 
 #rightmenu .content {
     overflow: auto;
     /*height: 290px;*/
+    height: 100%;
+}
+
+#rightmenu .item {
+    height: 100%;
+}
+
+#leftRightRow {
+    height: 100%;
 }
 
 #titleRow {
@@ -134,9 +82,14 @@
 
 #startScreenApp {
     height: 250px;
+    top: 40%;
 }
 
 #startScreenApp > div.content.m > div {
     overflow: scroll;
     height: 180px;
+}
+
+#newmodal > div.content.m {
+    height: 80%;
 }
