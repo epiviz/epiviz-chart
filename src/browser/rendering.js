@@ -34,7 +34,7 @@ function rightAccordion(measurements) {
         checkboxlabel.appendChild(checkboxcount);
 
         icon.className = "dropdown icon";
-        content.className = "content";
+        content.className = "content active";
         form.className = "ui form";
         
         var table = document.createElement("table");
@@ -45,7 +45,7 @@ function rightAccordion(measurements) {
         var tr = document.createElement("tr");
 
         var th = document.createElement("th");
-        th.innerHTML = "Measurement ID";
+        th.innerHTML = "Sample ID";
         tr.appendChild(th);
         _.each(currAnnos, function(ca) {
             var th = document.createElement("th");
@@ -66,13 +66,14 @@ function rightAccordion(measurements) {
 
             fields.className = "grouped fields";
             field.className = "field";
-            field.id = point.datasourceId + "-" + sanitized;
+            field.id = sanitized
             field.style = "padding-left: 2.5%";
             checkbox.className = "ui checkbox";
+            //point, source, and index to allow for easy indexing in measurements list
             checkbox.id = "item-" + sanitized + "-" + index + "-" + source;
             input.type = "checkbox";
             input.name = "small";
-            span1.innerHTML = point.name + " (" + point.datasourceGroup + ")";
+            span1.innerHTML = point.id;
 
             label.appendChild(span1);
             field.appendChild(checkbox);
@@ -80,7 +81,7 @@ function rightAccordion(measurements) {
             checkbox.appendChild(label);
 
             var tr = document.createElement("tr");
-            tr.id = "table-" + source + "-" + sanitized;
+            tr.id = "table-" + sanitized;
             var td = document.createElement("td");
             td.appendChild(field);
             tr.appendChild(td);
@@ -102,8 +103,13 @@ function rightAccordion(measurements) {
 
         table.appendChild(tableBody);
         content.appendChild(table);
+
         $('#rightmenu').append(item);
         $(titlecheckbox).unbind("click");
+
+        //for some reason this fixes my checkbox issue
+        $($(titlecheckbox).children()[0]).click(function() {
+        });
     });
     $('#rightmenu').accordion({
         exclusive : false,
@@ -114,28 +120,32 @@ function rightAccordion(measurements) {
     });
 }
 
-function loadMeasurements(measurements, input) {
+function loadMeasurements(datasource, input) {
     var values;
     var ranges = {};
     var checkboxIndex = 0;
     var i = 0;
+    // var measurements = {};
+    var fTracker= {};
+    var searchList = [];
+    // measurements[datasource] = input;
+    // measurements[datasource] = _.sortBy(measurements[datasource], [function(o) {return o.id}])
 
-    tinput = {};
-    tinput["epiviz"] = input;
     annotations = [];
-
     for(m in measurements) {
-	ds = measurements[m];
+        ds = measurements[m];
         ds.forEach(function(s) {
-         if(s.annotation) {
-           annotations.push(Object.keys(s.annotation));
-         }
+            if(s.annotation) {
+            annotations.push(Object.keys(s.annotation));
+            }
         });
     }
-
+    
     annotations = _.flatten(annotations);
     annotations = _.uniq(annotations);
-    annotations = annotations.sort(sortAlphaNum);
+
+    // annotations = Object.keys(measurements[datasource][i].annotation);
+    // annotations = annotations.sort(sortAlphaNum);
     annotations.forEach(function(text) {
         var item = document.createElement('div');
         var title = document.createElement('a');
@@ -143,13 +153,14 @@ function loadMeasurements(measurements, input) {
         var content = document.createElement('div');
         var form = document.createElement('div');
         var fields = document.createElement('div');
-        var sanitized = text.replace(/[^a-zA-Z0-9]/g, '');
+        var sanitized = text.replace(/[^a-zA-Z0-9_]/g, '');
+        fTracker[sanitized] = text;
         values = [];
         var allCounts = {};
         var fieldCount = 0;
         var fieldType = null;
 
-        _.forEach(tinput, function(value, data_source) {
+        _.forEach(measurements, function(value, data_source) {
             allValues = _.chain(value).map(function(id) {
                 if (id.annotation != null && text in id.annotation) {
                     return id.annotation[text];
@@ -162,25 +173,63 @@ function loadMeasurements(measurements, input) {
             });
         });
         values = values.sort(sortAlphaNum);
+        // check if the values are all numbers
         if (parseInt(values[getRandom(0, values.length - 1)]) && values.length > 5) {
-            filters[text] = {values: [], type: "range"};
+            // filter keys should be sanitized because ids are sanitized and used to index into the filter hash
+            filters[sanitized] = {values: [], type: "range", hideNa: false};
+            var filterUndefined = removeUndefined(values);
+
             var field = document.createElement('div');
-            var range1 = document.createElement('div');
-            var display1 = document.createElement('span');
-            var cont1 = document.createElement('p');
-            var cont2 = document.createElement('p');
-            field.className = "field";
-            field.width = "inherit";
-            range1.className = "ui range"
-            range1.id = sanitized + "-range";
-            display1.id = sanitized + "-display";
+            field.className = "ui mini"
+            var minInput = document.createElement('input');
+            minInput.type = "number";
+            minInput.className = "ui minInput";
+            minInput.placeholder = "min";
+            minInput.id = sanitized + "-min";
+            minInput.value = filterUndefined[0];
+            minInput.style.width = "60px";
+            var maxInput = document.createElement('input');
+            maxInput.type = "number";
+            maxInput.placeholder = "max";
+            maxInput.className = "ui maxInput";
+            maxInput.id = sanitized + "-max";
+            maxInput.value = filterUndefined[filterUndefined.length-1];
+            maxInput.style.width = "60px";
+
+            field.appendChild(minInput);
+
+            var span = document.createElement("span");
+            span.textContent = " - ";
+            field.appendChild(span);
+            field.appendChild(maxInput);
+
+            var button = document.createElement("button");
+            button.id = sanitized + "-filter";
+            button.textContent = "filter";
+            button.className = "mini ui button";
+
             fields.appendChild(field);
-            field.appendChild(range1);
-            cont1.appendChild(display1);
-            field.appendChild(cont1);
-            ranges[range1.id] = values;
+            ranges[sanitized] = ["#" + sanitized + "-filter", "#" + sanitized + "-min", "#" + sanitized + "-max"];
+            
+            if (filterUndefined.length !== values.length) {
+                var checkbox = document.createElement('div');
+                var input = document.createElement('input');
+                var label = document.createElement('label');
+
+                input.type = "checkbox";
+                input.value = sanitized + "-NA";
+                label.innerHTML = "Hide NA values";
+
+                checkbox.className = "ui checkbox";
+                checkbox.id = "checkbox" + checkboxIndex;
+                checkbox.appendChild(input);
+                checkbox.appendChild(label);
+                field.appendChild(checkbox);
+                checkboxIndex++;
+            }
         } else {
-            filters[text] = {values: [], type: "normal"};
+            // filter keys should be sanitized because ids are sanitized and used to index into the filter hash
+            filters[sanitized] = {values: [], type: "normal", hideNa: false};
             fieldType = "category";
             values.forEach(function(anno) {
                 var field = document.createElement('div');
@@ -206,6 +255,7 @@ function loadMeasurements(measurements, input) {
         item.id = sanitized;
         title.className = "title";
         title.innerHTML = text;
+
         icon.className = "dropdown icon";
         content.className = "active content";
         form.className = "ui form";
@@ -216,11 +266,24 @@ function loadMeasurements(measurements, input) {
         title.appendChild(icon);
         content.appendChild(fields);
         $('#leftmenu').append(item);
+
+        searchList.push({title: text, selector: item});
     });
+    
+    $('.ui.search').search({
+        minCharacters: 0,
+        source: searchList,
+        maxResults: searchList.length,
+        cache: false,
+        onResults: (results) => {searchFilter(results.results, searchList)},
+    });
+
+    $('#annoSearchResults').remove();
+
     for (var i = 0; i < checkboxIndex; i++) {
         $('#checkbox' + i).checkbox({
-
             onChecked: function() {
+                // value, anno, filter, measurements
                 filter($(this).val().split("-")[1], $(this).val().split("-")[0], true, measurements);
             },
             onUnchecked: function() {
@@ -233,19 +296,15 @@ function loadMeasurements(measurements, input) {
     });
 
     Object.keys(ranges).forEach(function(ids) {
-        $('#' + ids).range({
-            start: ranges[ids][0],
-            values: [ranges[ids][0], ranges[ids][ranges[ids].length-1]],
-            step: 1,
-            onChange: function(min, max) {
-                $('#'+ ids.split('-')[0] + "-display").html("Min: " + min + " " + "Max:" + max);
-            }
+
+        $(ranges[ids][1]).change(function() {
+            filter([parseInt($(ranges[ids][1]).val()), parseInt($(ranges[ids][2]).val())], 
+            fTracker[ids.split('-')[0]], true, measurements);        
         });
-        $('#' + ids + " .thumb").on('mousedown', function() {
-            $('#' + ids).on('mouseup', function() {
-                $('#' + ids).range('get value', function(val) {filter(val, ids.split('-')[0], true, measurements)});
-                $('#' + ids).off('mouseup');
-            });
+
+        $(ranges[ids][2]).change(function() {
+            filter([parseInt($(ranges[ids][1]).val()), parseInt($(ranges[ids][2]).val())], 
+            fTracker[ids.split('-')[0]], true, measurements);
         });
     });
 
@@ -255,3 +314,14 @@ function loadMeasurements(measurements, input) {
     rightAccordion(measurements);
     attachActions(measurements);
 }
+
+function searchFilter(results, searchList) {
+    var diff = _.differenceBy(searchList, results, "title")
+    _.forEach(diff, function(anno) {
+        $(anno.selector).hide();
+    });
+    _.forEach(results, function(anno) {
+        $(anno.selector).show();
+    })
+}
+

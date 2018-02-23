@@ -59,6 +59,7 @@ To use, add `<epiviz-navigation>` in the page
                 display: inline-block;
                 border: none;
                 width: 100%;
+                /* height: 100%; */
                 /* border: 1px solid black; */
                 /* border-radius: 10px; */
                 transition:width 0.01s, height 0.01s;
@@ -81,8 +82,8 @@ To use, add `<epiviz-navigation>` in the page
             }
 
             paper-header-panel {
-                float: left;
-                width: 95%;
+                /* float: left; */
+                min-width: 300px;
                 min-height: 500px;
                 margin: 12px;
                 @apply(--shadow-elevation-2dp);

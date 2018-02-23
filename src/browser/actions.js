@@ -42,6 +42,13 @@ function initialize_dropdown(source) {
 			$("#leftMenuCount span.data-count").text(countUpdate.attr('data-total'));
 		}
 	});
+
+	$("#autoClickSelect").click(function(e) {
+		if($("#sample-type").hasClass("disabled") && e.target.parentNode.id != "select-type" && e.target.parentNode.parentNode.id != "select-type") {
+			$("#select-type").dropdown("set selected", "Auto");
+		}
+	});	
+
 	$('#sample-type').dropdown({
 		allowTab : false,
 		onChange: function(value, text, $choice) {
@@ -56,20 +63,10 @@ function initialize_dropdown(source) {
 			selectSamples();
 		}
 	});
-	$('#sample-size').range({
-		start: selectionCount,
-		min: 0,
-		max: 100,
-		step: 1,
-		value: selectionCount,
-		onChange: function(min, max) {
-			selectionCount = min;
-			$('#sampleSizeValue').text(min + "% samples");
-			// if((selectionDrag && selectionDown)) {
-			// 	// return;
-			// 	selectSamples();
-			// }
-		}
+
+	$('#sample-size').change(function(e) {
+		selectionCount = parseInt($('#sample-size').val());
+		$('#sampleSizeValue').text(selectionCount + "% samples");  
 	});
 }
 
@@ -144,89 +141,98 @@ function showModal(source, input, cb) {
 
 	//measurements placeholder for callback
 	var modal = 
-	`<div id ="newmodal" class="ui long modal">
-		<div class="header">
-			Choose measurements:
-			<div id="warning-message" class="ui negative message" style="display:none;">
-				<i class="close icon"></i>
-				<div class="header">
-					No measurements selected
-				</div>
-			</div>
-		</div>
-		<div class="content m">
-			<div class="ui grid">
-				<div id="titleRow" class="row">
-					<div class="four wide column">
-						Filter Samples <div id=\"leftMenuCount\" class=\"ui mini circular horizontal label\"> <span class=\"data-count\">0</span> of ` + input.length + `</div>
-					</div>
-					<div style="display:none;" class="twelve wide column">
-						Sample selection type: 
-						<div class="ui compact selection dropdown" id="select-type">
-						  	<i class="dropdown icon"></i>
-						  	<div class="text">Manual</div>
-						  	<div class="menu">
-						    	<div class="item" data-value="1">Auto</div>
-						    	<div class="item" data-value="default">Manual</div>
-						  	</div>
-						</div>
-						select: 
-						<div class="ui disabled compact selection dropdown" id="sample-type">
-						  	<i class="dropdown icon"></i>
-						  	<span class="text">Random</span>
-						  	<div class="menu">
-						    	<div class="item" data-value="1">Random</div>
-						    	<div class="item" data-value="0">Top</div>
-						  	</div>
-						</div>
-						<div class="ui disabled compact dropdown" id="sample-size-dropdown">
-						  	<i class="dropdown icon"></i>
-						  	<span class="text" id="sampleSizeValue">0%: samples</span>
-						  	<div class="menu">
-							  <div class="item">
-								<div class="ui range disabled inline" style="width: 75px;"id="sample-size"></div>
-								</div>
-						  	</div>
-						</div>
-					</div>
-				</div>
-				<div id="leftRightRow" class="row">
-					<div class="four wide column">
-						<div id="leftmenu" class="ui vertical scrolling accordion menu"> 
-						</div>
-					</div>
-					<div class="twelve wide column">
-						<div id="rightmenu" class="ui vertical fluid accordion menu">
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="actions">
-			<div class="ui grey button" id="cancel">Cancel</div>
-			<div class="ui primary button" id="ok">Ok</div>
-		</div>
-	</div>
-	<div id="resultmodal" class="ui modal">
-		<div class="content">
-			<div class="bounds">
-				<table id="resultTable" class="ui sortable selectable striped table">
-				</table>
-			</div>
-		</div>
-		<div class="actions">
-			<div class="ui grey back button" id="cancel">Cancel</div>
-			<div class="ui primary button" id="ok">Ok</div>
-		</div>
-	</div>`
+	'<div id ="newmodal" class="ui long modal">' +
+		'<div class="header">'+
+			'Choose measurements from: ' + source +
+			'<div id="warning-message" class="ui negative message" style="display:none;">'+
+				'<i class="close icon"></i>'+
+				'<div class="header">'+
+					'No measurements selected'+
+				'</div>'+
+			'</div>'+
+		'</div>'+
+		'<div class="content m">'+
+			'<div class="ui grid">'+
+				'<div id="titleRow" class="row">'+
+					'<div class="four wide column">'+
+						'Filter Samples <div id=\"leftMenuCount\" class=\"ui mini circular horizontal label\"> <span class=\"data-count\">0</span> of ' + input.length + '</div>'+
+					'</div>'+
+					'<div id="autoClickSelect" class="twelve wide column">'+
+						'Sample selection type: '+
+						'<div class="ui compact selection dropdown" id="select-type">'+
+						  	'<i class="dropdown icon"></i>'+
+						  	'<div class="text">Manual</div>'+
+						  	'<div class="menu">'+
+						    	'<div class="item" data-value="1">Auto</div>'+
+						    	'<div class="item" data-value="default">Manual</div>'+
+						  	'</div>'+
+						'</div>'+
+						'select: '+
+						'<div class="ui disabled compact selection dropdown" id="sample-type">'+
+							'<i class="dropdown icon"></i>'+
+							'<span class="text">Random</span>'+
+							'<div class="menu">'+
+								'<div class="item" data-value="1">Random</div>'+
+								'<div class="item" data-value="0">Top</div>'+
+							'</div>'+
+						'</div>'+
+						'<div class="ui disabled compact dropdown" id="sample-size-dropdown">'+
+							'<i class="dropdown icon"></i>'+
+							'<span class="text" id="sampleSizeValue">0%: samples</span>'+
+							'<div class="menu">'+
+							'<div class="item">'+
+								'<input class="ui" type="number" id="sample-size" value="0">'+
+							'</div>'+
+							'</div>'+
+						'</div>'+
+					'</div>'+
+				'</div>'+
+				'<div id="leftRightRow" class="row">'+
+					'<div id="annoMenu" class="four wide column">'+
+						'<div id="leftmenu" class="ui vertical scrolling accordion menu"> '+
+							'<div id="annoSearch" class="ui search"> '+
+								'<div class="ui icon input">'+
+									'<input class="prompt" type="text" placeholder="Search Annotations"> '+
+									// '<i class="search icon"></i>'+
+								'</div>'+
+  								'<div id="annoSearchResults" class="results"></div>'+
+							'</div>'+
+						'</div>'+
+					'</div>'+
+					'<div class="twelve wide column">'+
+						'<div id="rightmenu" class="ui vertical fluid accordion menu">'+
+						'</div>'+
+					'</div>'+
+				'</div>'+
+			'</div>'+
+		'</div>'+
+		'<div class="actions">'+
+			'<div class="ui grey button" id="cancel">Cancel</div>'+
+			'<div class="ui primary button" id="ok">Ok</div>'+
+		'</div>'+
+	'</div>'+
+	'<div id="resultmodal" class="ui modal">'+
+		'<div class="content">'+
+			'<div class="bounds">'+
+				'<table id="resultTable" class="ui sortable selectable striped table">'+
+				'</table>'+
+			'</div>'+
+		'</div>'+
+		'<div class="actions">'+
+			'<div class="ui grey back button" id="cancel">Cancel</div>'+
+			'<div class="ui primary button" id="ok">Ok</div>'+
+		'</div>' +
+	'</div>';
 	currentSource = source;
 	measurements = {};
 	_.forEach(input, function(row, index) {
-		if(!measurements[row.datasourceId]) {
-			measurements[row.datasourceId] = [];
+		if(!measurements[row.datasourceGroup]) {
+			measurements[row.datasourceGroup] = [];
 		}
-		measurements[row.datasourceId].push(row);
+		measurements[row.datasourceGroup].push(row);
 	});
+	// measurements[source] = input;
+	// measurements[source] = _.sortBy(measurements[source], [function(o) {return o.id}])
 	$('body').append(modal);
 	initialize_dropdown(source);
 	$('#newmodal').modal({
@@ -237,11 +243,9 @@ function showModal(source, input, cb) {
 			approve: '.ui.primary.button'
 		},
 		onDeny: function() {
-			// $('#sourcemodal').modal('show');
 			$('#leftmenu').empty();
 			$('#rightmenu').empty();
 			$('#resultmodal').remove();
-			$('#sourcemodal').remove();
 
 		},
 		onApprove: function() {
@@ -253,14 +257,13 @@ function showModal(source, input, cb) {
 			else {
 				storeMeasurement(measurements, cb);
 			}
-		},
+		}
 	});
 	$('#newmodal').modal('show');
-	loadMeasurements(measurements, input);
+	loadMeasurements(source, input);
 }
 
 function initialize(sources) {
-
 	current_measurements = undefined;
 	filters = {};
 	graph;
@@ -278,21 +281,21 @@ function initialize(sources) {
 	$('#resultmodal').remove();
 
 	var form =     
-	`<div class="ui small modal" id="sourcemodal">
-		<div class="header">
-			Select Data Source
-		</div>
-		<div class="content">
-			<form class="ui form" id="form">
-			</form>
-		</div>
-		<div class="actions">
-			<div class="ui grey button" id="cancel">Cancel</div>
-			<div class="ui blue submit button" id="ok">Ok</div>
-		</div>
-	</div>`
+	'<div class="ui small modal" id="sourcemodal">' +
+		'<div class="header">'+
+			'<span>Select Data Source</span>'+
+			'<div id="warning-message" class="ui negative message" style="display:none;">Please select a Data Source</div>'+
+		'</div>'+
+		'<div class="content">'+
+			'<form class="ui form" id="form">'+
+			'</form>'+
+		'</div>'+
+		'<div class="actions">'+
+			'<div class="ui grey button" id="cancel">Cancel</div>'+
+			'<div class="ui blue submit button" id="ok">Ok</div>'+
+		'</div>'+
+	'</div>';
 	$('body').append(form);
-	// sources = sources.sort(sortAlphaNum);
 	var fields = document.createElement('div');
 	fields.className = "grouped fields";
 
@@ -311,11 +314,21 @@ function initialize(sources) {
 	th.innerHTML = "Description";
 	tr.appendChild(th);
 
+	var th = document.createElement("th");
+	th.innerHTML = "Samples";
+	tr.appendChild(th);
+
+	var th = document.createElement("th");
+	th.innerHTML = "Sequencing Type";
+	tr.appendChild(th);
+
 	thead.appendChild(tr);
     table.appendChild(thead);
 
 	table.appendChild(tableBody);
 	$('form').append(table);
+
+	var old_ds;
 
 	Object.keys(sources).forEach(function(value) {
 		var field = document.createElement('div');
@@ -324,6 +337,7 @@ function initialize(sources) {
 		var label = document.createElement('label');
 		label.innerHTML = value;
 		checkbox.className = "ui radio checkbox";
+		
 		input.type = "radio";
 		input.name = "source";
 		input.value = value;
@@ -331,10 +345,12 @@ function initialize(sources) {
 			input.checked = "checked";
 		}
 		field.className = "field";
+		checkbox.style.display = "none";
 		
 		checkbox.appendChild(input);
-		checkbox.appendChild(label);
+		field.appendChild(label);
 		field.appendChild(checkbox);
+		// fields.appendChild(field);
 
 		var tr = document.createElement("tr");
 		var td = document.createElement("td");
@@ -345,12 +361,25 @@ function initialize(sources) {
 		var td = document.createElement("td");
 		td.innerHTML = sources[value][0];
 		tr.appendChild(td);
+		
+		var td = document.createElement("td");
+		td.innerHTML = sources[value][2];
+		tr.appendChild(td);
+
+		var td = document.createElement("td");
+		td.innerHTML = sources[value][3];
+		tr.appendChild(td);
+
 		tableBody.appendChild(tr);
 
 		$("#" + value).click(function() {
 			$("#"+value).find(".ui.checkbox").checkbox("check");
+			$("#"+value).addClass("active");
+			if(old_ds) {
+				$("#"+old_ds).removeClass("active");
+			}
+			old_ds = value;
 		});
-
 	});
 	$('#form').form();
 }
@@ -429,16 +458,13 @@ function toggleParent(source) {
 		var selected = parseInt($count.attr("data-selected"));
 		var total = parseInt($count.attr("data-total"));
 		if (selected > 0 && selected !== total) {
-			// console.log('hi1');
 			$('#source-' + source).parent().checkbox('set indeterminate');
 			$('#source-' + source).removeClass('hidden');
 
 		} else if (selected === total && total !== 0){
-			// console.log('hi2');
 			$('#source-' + source).parent().checkbox('set checked');
 			$('#source-' + source).removeClass('hidden');
 		} else if (selected === 0) {
-			// console.log('hi3');
 			$('#source-' + source).parent().checkbox('set unchecked');
 			$('#source-' + source).removeClass('hidden');
 		}
@@ -452,24 +478,35 @@ function filter(value, anno, filter, measurements) {
 	var recalc;
 	var new_list = {};
 	if (filter) {
-		//recalculate from original list if you are modifying an exisitng filter
+		//recalculate from original list if you are modifying an existing filter
 		recalc = filters[anno].values.length === 0 ? false : true;
 		if (filters[anno].type === "range") {
 			recalc = true;
-			filters[anno].values = value;
+			// value passed in could be just setting the na field to true or false.
+			if (Array.isArray(value)) {
+				filters[anno].values = value;
+			} else {
+				filters[anno].hideNa = !filters[anno].hideNa;
+			}
 		} else {
+			// maybe some stricter checking here incase accidentally passed in value to set na field?
 			filters[anno].values.push(value);
 		}
 	} else {
-		filters[anno].values.splice(filters[anno].values.indexOf(value),1);
+		if (value === "NA" && filters[anno].type === "range") {
+			filters[anno].hideNa = !filters[anno].hideNa;
+		} else {
+			filters[anno].values.splice(filters[anno].values.indexOf(value),1);	
+		}
 		recalc = true;
 	}
-	//If filters are all empty, show entire dataset
+	// if filters are all empty, show entire dataset
 	_.forEach(filters, function(val, key) {
-		if (val.length !== 0) {
+		if (val.length !== 0 || val.hideNa) {
 			all_empty = false;
 		}
 	});
+	// apply filter to current measurements or from all measurements
 	if (recalc || !current_measurements) {
 		list = measurements;
 		current_measurements = {};
@@ -480,52 +517,64 @@ function filter(value, anno, filter, measurements) {
 		new_list[source] = [];
 	});
 	_.forEach(list, function(val, source) {
+		// loop through all elements for the given source
 		list[source].forEach(function(data) {
-			data.id = data.id.replace(/[^a-zA-Z0-9]/g, '');
+			var sanitizedId = data.id.replace(/[^a-zA-Z0-9_]/g, '');
 			var hide = false;
-			if (!(all_empty && $('#' + data['id']).css('display') === 'none')) {
+			if (!(all_empty && $('#' + sanitizedId).css('display') === 'none')) {
 				if (recalc) {
+					// loop through all filters and see if the element passes the filters
 					Object.keys(filters).forEach(function(category) {
 						var val = filters[category].values;
 						var type = filters[category].type;
 						if (val.length !== 0) {
-							if (data['annotation'] == null || !(category in data['annotation'])) {
+							if (data['annotation'] == null) {
 								hide = true;
 							}
 							else if (type === "range") {
-								if (data['annotation'][category] < val[0] || data['annotation'][category] > val[1]) {
+								if (val[0] == val[1]) {
+									// check if it is the value, or if it is "NA" and na flag is set to false
+									if (parseInt(data['annotation'][category]) != val[0] &&
+										(!(data['annotation'][category].toLowerCase() === "na") || filters[category].hideNa)) {
+										hide = true;
+									}
+								}
+								else if (!(parseInt(data['annotation'][category]) <= val[1] && parseInt(data['annotation'][category]) >= val[0]) && 
+										 (!(data['annotation'][category].toLowerCase() === "na") || filters[category].hideNa)) {
 									hide = true;
 								}
-							}
-							else if (filters[category].values.indexOf(data['annotation'][category].replace(/[^a-zA-Z0-9]/g,'')) === -1) {
+							} else if (filters[category].values.indexOf(data['annotation'][category].replace(/[^a-zA-Z0-9_]/g,'')) === -1) {
 								hide = true;
 							}
+						} else if (type === "range" && 
+									(data['annotation'][category].toLowerCase() === "na" && filters[category].hideNa)) {
+							// case where no range but toggle hideNa checkbox
+							hide = true;
 						}
 					});
-				} else {
-					if (filters[anno].values.length !== 0) {
-						var val = filters[anno].values;
-						var type = filters[anno].type;
-						if (data['annotation'] == null || !(anno in data['annotation'])) {
+				} else if (filters[anno].values.length !== 0) {
+					var val = filters[anno].values;
+					var type = filters[anno].type;
+					if (data['annotation'] == null || !(anno in data['annotation'])) {
+						hide = true;
+					}
+					else if (type === "range") {
+						if (parseInt(data['annotation'][anno]) < val[0] || parseInt(data['annotation'][anno]) > val[1] && 
+							(!(data['annotation'][category].toLowerCase() === "na") || filters[category].hideNa)) {
 							hide = true;
 						}
-						else if (type === "range") {
-							if (data['annotation'][anno] < val[0] || data['annotation'][anno] > val[1]) {
-								hide = true;
-							}
-						}
-						else if (filters[anno].values.indexOf(data['annotation'][anno].replace(/[^a-zA-Z0-9]/g,'')) === -1) {
-							hide = true;
-						}
+					}
+					else if (filters[anno].values.indexOf(data['annotation'][anno].replace(/[^a-zA-Z0-9]/g,'')) === -1) {
+						hide = true;
 					}
 				}
 			}
 			current_measurements = new_list;
 			if (hide) {
-				$('#' + data['datasourceId'] + "-" + data['id']).hide();
-				$('#table-' + data['datasourceId'] + "-" + data['id']).hide();
+				$('#' + sanitizedId).hide();
+				$('#table-' + sanitizedId).hide();
 				_.pull(new_list[source], data);
-				var checkbox = $('#' + data['datasourceId'] + "-" + data['id']).children();
+				var checkbox = $('#' + sanitizedId).children();
 				if (checkbox.attr('class').indexOf('checked') !== -1) {
 					var split = checkbox.attr('id').split('-');
 					split[3] = _.join(_.slice(split, 3), separator="-");
@@ -535,8 +584,8 @@ function filter(value, anno, filter, measurements) {
 				}
 			} else {
 				new_list[source].push(data);
-				$('#' + data['datasourceId'] + "-" + data['id']).show();
-				$('#table-' + data['datasourceId'] + "-" + data['id']).show();
+				$('#' + sanitizedId).show();
+				$('#table-' + sanitizedId).show();
 			}
 		});
 		var $count = $('#count-' + source);
@@ -546,11 +595,9 @@ function filter(value, anno, filter, measurements) {
 		$("#leftMenuCount span.data-count").text($count.attr('data-total'));
 		toggleParent(source);
 		if ($count.attr('data-total') === "0") {
-			$("#" + source).hide();
 			var text = '<span style="padding-left: 5%">No More Measurements</span>'
 			$('#' + source + ' .content').append(text);
 		} else {
-			$("#" + source).show();
 			if ($('#' + source + ' .content').children('span').length !== 0) {
 				$('#' + source + ' .content').children('span')[0].remove();
 			}
@@ -562,6 +609,36 @@ function filter(value, anno, filter, measurements) {
 
 function getRandom(max, min) {
 	return Math.floor(Math.random() * (max - min)) + min;
+}
+
+// returns true false depending on if array is mostly numbers
+function isNumbers(arr) {
+	var length = arr.length;
+	var nums = 0;
+	for (var i = 0; i < length; i++) {
+		if (parseInt(arr[i])) {
+			nums++;
+			if (nums >= length / 4) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+// checks to see if there exists elements that are undefined, NULL, or NA in a range array
+function removeUndefined(arr) {
+	var length = arr.length;
+	var res = [];
+
+	for (var i = 0; i < length; i++) {
+		if (!isNaN(arr[i])) {
+			// remove NA from the list
+			res.push(parseInt(arr[i]));
+		}
+	}
+	res.sort((a,b) => {return a - b});
+	return res;
 }
 
 function sortAlphaNum(a,b) {
@@ -594,7 +671,6 @@ function storeMeasurement(measurements, cb) {
 	$('#resultTable').empty();
 	$('#sourcemodal').remove();
 	cb(store[name], filters);
-	// resultTable(name, new_list, cb);
 }
 
 function resultTable(name, list, cb) {
@@ -652,3 +728,4 @@ function resultTable(name, list, cb) {
 	});
 	$('#resultmodal').modal('show');
 }
+
