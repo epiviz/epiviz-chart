@@ -246,7 +246,7 @@ function showModal(source, input, cb) {
 			$('#leftmenu').empty();
 			$('#rightmenu').empty();
 			$('#resultmodal').remove();
-
+			$('#sourcemodal').remove();
 		},
 		onApprove: function() {
 			var countValue = $('#count-' + currentSource).attr("data-selected");
