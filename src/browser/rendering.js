@@ -34,7 +34,7 @@ function rightAccordion(measurements) {
         checkboxlabel.appendChild(checkboxcount);
 
         icon.className = "dropdown icon";
-        content.className = "content active";
+        content.className = "content";
         form.className = "ui form";
         
         var table = document.createElement("table");
