@@ -461,9 +461,15 @@ function toggleParent(source) {
 			$('#source-' + source).parent().checkbox('set indeterminate');
 			$('#source-' + source).removeClass('hidden');
 
-		} else if (selected === total && total !== 0){
-			$('#source-' + source).parent().checkbox('set checked');
-			$('#source-' + source).removeClass('hidden');
+		} else if (selected === total){
+			if (total !== 0) {
+				$('#source-' + source).parent().checkbox('set checked');
+				$('#source-' + source).removeClass('hidden');
+			} else {
+				$('#source-' + source).parent().checkbox('set unchecked');
+				$('#source-' + source).removeClass('hidden');
+			}
+
 		} else if (selected === 0) {
 			$('#source-' + source).parent().checkbox('set unchecked');
 			$('#source-' + source).removeClass('hidden');
@@ -478,35 +484,24 @@ function filter(value, anno, filter, measurements) {
 	var recalc;
 	var new_list = {};
 	if (filter) {
-		//recalculate from original list if you are modifying an existing filter
+		//recalculate from original list if you are modifying an exisitng filter
 		recalc = filters[anno].values.length === 0 ? false : true;
 		if (filters[anno].type === "range") {
 			recalc = true;
-			// value passed in could be just setting the na field to true or false.
-			if (Array.isArray(value)) {
-				filters[anno].values = value;
-			} else {
-				filters[anno].hideNa = !filters[anno].hideNa;
-			}
+			filters[anno].values = value;
 		} else {
-			// maybe some stricter checking here incase accidentally passed in value to set na field?
 			filters[anno].values.push(value);
 		}
 	} else {
-		if (value === "NA" && filters[anno].type === "range") {
-			filters[anno].hideNa = !filters[anno].hideNa;
-		} else {
-			filters[anno].values.splice(filters[anno].values.indexOf(value),1);	
-		}
+		filters[anno].values.splice(filters[anno].values.indexOf(value),1);
 		recalc = true;
 	}
-	// if filters are all empty, show entire dataset
+	//If filters are all empty, show entire dataset
 	_.forEach(filters, function(val, key) {
-		if (val.length !== 0 || val.hideNa) {
+		if (val.length !== 0) {
 			all_empty = false;
 		}
 	});
-	// apply filter to current measurements or from all measurements
 	if (recalc || !current_measurements) {
 		list = measurements;
 		current_measurements = {};
@@ -517,64 +512,51 @@ function filter(value, anno, filter, measurements) {
 		new_list[source] = [];
 	});
 	_.forEach(list, function(val, source) {
-		// loop through all elements for the given source
 		list[source].forEach(function(data) {
-			var sanitizedId = data.id.replace(/[^a-zA-Z0-9_]/g, '');
+			data.id = data.id.replace(/[^a-zA-Z0-9]/g, '');
 			var hide = false;
-			if (!(all_empty && $('#' + sanitizedId).css('display') === 'none')) {
+			if (!(all_empty && $('#' + data['id']).css('display') === 'none')) {
 				if (recalc) {
-					// loop through all filters and see if the element passes the filters
 					Object.keys(filters).forEach(function(category) {
 						var val = filters[category].values;
 						var type = filters[category].type;
 						if (val.length !== 0) {
-							if (data['annotation'] == null) {
+							if (data['annotation'] == null || !(category in data['annotation'])) {
 								hide = true;
 							}
 							else if (type === "range") {
-								if (val[0] == val[1]) {
-									// check if it is the value, or if it is "NA" and na flag is set to false
-									if (parseInt(data['annotation'][category]) != val[0] &&
-										(!(data['annotation'][category].toLowerCase() === "na") || filters[category].hideNa)) {
-										hide = true;
-									}
-								}
-								else if (!(parseInt(data['annotation'][category]) <= val[1] && parseInt(data['annotation'][category]) >= val[0]) && 
-										 (!(data['annotation'][category].toLowerCase() === "na") || filters[category].hideNa)) {
+								if (data['annotation'][category] < val[0] || data['annotation'][category] > val[1]) {
 									hide = true;
 								}
-							} else if (filters[category].values.indexOf(data['annotation'][category].replace(/[^a-zA-Z0-9_]/g,'')) === -1) {
+							}
+							else if (filters[category].values.indexOf(data['annotation'][category].replace(/[^a-zA-Z0-9]/g,'')) === -1) {
 								hide = true;
 							}
-						} else if (type === "range" && 
-									(data['annotation'][category].toLowerCase() === "na" && filters[category].hideNa)) {
-							// case where no range but toggle hideNa checkbox
-							hide = true;
 						}
 					});
-				} else if (filters[anno].values.length !== 0) {
-					var val = filters[anno].values;
-					var type = filters[anno].type;
-					if (data['annotation'] == null || !(anno in data['annotation'])) {
-						hide = true;
-					}
-					else if (type === "range") {
-						if (parseInt(data['annotation'][anno]) < val[0] || parseInt(data['annotation'][anno]) > val[1] && 
-							(!(data['annotation'][category].toLowerCase() === "na") || filters[category].hideNa)) {
+				} else {
+					if (filters[anno].values.length !== 0) {
+						var val = filters[anno].values;
+						var type = filters[anno].type;
+						if (data['annotation'] == null || !(anno in data['annotation'])) {
 							hide = true;
 						}
-					}
-					else if (filters[anno].values.indexOf(data['annotation'][anno].replace(/[^a-zA-Z0-9]/g,'')) === -1) {
-						hide = true;
+						else if (type === "range") {
+							if (data['annotation'][anno] < val[0] || data['annotation'][anno] > val[1]) {
+								hide = true;
+							}
+						}
+						else if (filters[anno].values.indexOf(data['annotation'][anno].replace(/[^a-zA-Z0-9]/g,'')) === -1) {
+							hide = true;
+						}
 					}
 				}
 			}
 			current_measurements = new_list;
 			if (hide) {
-				$('#' + sanitizedId).hide();
-				$('#table-' + sanitizedId).hide();
+				$('#table-row-' + data['datasourceGroup'] + "-" + data['id']).hide();
 				_.pull(new_list[source], data);
-				var checkbox = $('#' + sanitizedId).children();
+				var checkbox = $('#field-' + data['datasourceGroup'] + "-" + data['id']).children();
 				if (checkbox.attr('class').indexOf('checked') !== -1) {
 					var split = checkbox.attr('id').split('-');
 					split[3] = _.join(_.slice(split, 3), separator="-");
@@ -584,23 +566,20 @@ function filter(value, anno, filter, measurements) {
 				}
 			} else {
 				new_list[source].push(data);
-				$('#' + sanitizedId).show();
-				$('#table-' + sanitizedId).show();
+				$('#table-row-' + data['datasourceGroup'] + "-" + data['id']).show();
 			}
 		});
 		var $count = $('#count-' + source);
-		$count.attr("data-selected", _.size(selections));
+		// selections are sometimes an empty object
+		$count.attr("data-selected", _.size(selections) ? selections[source] : 0);
 		$count.attr("data-total", new_list[source].length);
 		$count.html(" (Selected: " + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
 		$("#leftMenuCount span.data-count").text($count.attr('data-total'));
 		toggleParent(source);
 		if ($count.attr('data-total') === "0") {
-			var text = '<span style="padding-left: 5%">No More Measurements</span>'
-			$('#' + source + ' .content').append(text);
+			$("#" + source).hide();
 		} else {
-			if ($('#' + source + ' .content').children('span').length !== 0) {
-				$('#' + source + ' .content').children('span')[0].remove();
-			}
+			$("#" + source).show();
 		}
 	});
 

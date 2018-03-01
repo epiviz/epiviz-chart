@@ -6,7 +6,7 @@ function rightAccordion(measurements) {
         }
 
         var currAnnos = Object.keys(value[0].annotation);
-
+        var datasourceGroup = value[0]['datasourceGroup'];
         var item = document.createElement('div');
         var title = document.createElement('a');
         var titlecheckbox = document.createElement('div');
@@ -20,7 +20,7 @@ function rightAccordion(measurements) {
         var fields = document.createElement('div');
 
         item.className = "item";
-        item.id = source;
+        item.id = datasourceGroup;
         title.className = "title";
         titlecheckbox.className = "ui checkbox";
         checkboxinput.type = "checkbox";
@@ -39,6 +39,7 @@ function rightAccordion(measurements) {
         
         var table = document.createElement("table");
         table.className = "ui celled table sortable compact";
+        table.id = "table-" + datasourceGroup;
         var tableBody = document.createElement("tbody");
 
         var thead = document.createElement("thead");
@@ -66,7 +67,7 @@ function rightAccordion(measurements) {
 
             fields.className = "grouped fields";
             field.className = "field";
-            field.id = sanitized
+            field.id = "field-" + datasourceGroup + "-" + sanitized;
             field.style = "padding-left: 2.5%";
             checkbox.className = "ui checkbox";
             //point, source, and index to allow for easy indexing in measurements list
@@ -81,7 +82,7 @@ function rightAccordion(measurements) {
             checkbox.appendChild(label);
 
             var tr = document.createElement("tr");
-            tr.id = "table-" + sanitized;
+            tr.id = "table-row-" + datasourceGroup + "-" + sanitized;
             var td = document.createElement("td");
             td.appendChild(field);
             tr.appendChild(td);
@@ -116,7 +117,7 @@ function rightAccordion(measurements) {
         selector : {
             trigger: '.title .ui.checkbox label'
         },
-        verbose : true
+        animateChildren : false,
     });
 }
 
@@ -292,7 +293,8 @@ function loadMeasurements(datasource, input) {
         });
     }
     $('#leftmenu').accordion({
-        exclusive: false
+        exclusive: false,
+        animateChildren : false,
     });
 
     Object.keys(ranges).forEach(function(ids) {

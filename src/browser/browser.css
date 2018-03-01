@@ -23,12 +23,15 @@
 
 #leftRightRow {
     height: 350px;
-    overflow:auto;
 }
 
 #leftRightRow #annoMenu {
     overflow: auto;
     padding-right: 0px;
+}
+
+#leftRightRow .twelve.wide.column {
+    overflow: auto;
 }
 
 #leftmenu {
