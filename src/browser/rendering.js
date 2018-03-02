@@ -157,21 +157,24 @@ function loadMeasurements(datasource, input) {
         var sanitized = text.replace(/[^a-zA-Z0-9_]/g, '');
         fTracker[sanitized] = text;
         values = [];
+        var allValues = [];
         var allCounts = {};
         var fieldCount = 0;
         var fieldType = null;
 
         _.forEach(measurements, function(value, data_source) {
-            allValues = _.chain(value).map(function(id) {
+            allValues = _.chain(value).filter(function(id) {
                 if (id.annotation != null && text in id.annotation) {
                     return id.annotation[text];
                 }
-            }).concat(values).value();
+            }).map(function(id) {
+                return id.annotation[text]
+            }).concat(allValues).value();
             fieldCount = allValues.length;
             allCounts = _.countBy(allValues);
-            values = _.uniq(allValues).filter(function (d) {
-                return d != undefined;
-            });
+        });
+        values = _.uniq(allValues).filter(function (d) {
+            return d != undefined;
         });
         values = values.sort(sortAlphaNum);
         // check if the values are all numbers
