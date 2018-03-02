@@ -574,7 +574,7 @@ function filter(value, anno, filter, measurements) {
 		$count.attr("data-selected", _.size(selections) ? selections[source] : 0);
 		$count.attr("data-total", new_list[source].length);
 		$count.html(" (Selected: " + $count.attr("data-selected") + " of " + $count.attr('data-total') + ")");
-		$("#leftMenuCount span.data-count").text($count.attr('data-total'));
+		$("#leftMenuCount span.data-count").text($count.attr('data-selected'));
 		toggleParent(source);
 		if ($count.attr('data-total') === "0") {
 			$("#" + source).hide();
