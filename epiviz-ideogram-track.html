@@ -194,12 +194,14 @@ To use, add `<epiviz-ideogram-track>` in the page
 
                 var self = this;
 
-                self.segment = self.chromosome.replace("chr", "");
+                $(self.$$("#" + self.plotId)).empty();
+
+                self.segment = parseInt(self.chromosome.replace("chr", ""));
 
                 self.chart = self.chromosomeFactory.chromosome()
                     .segment(self.segment)
                     // .resolution("850")
-                    // .useRelative(false)
+                    .useRelative(false)
                     .showAxis(true)
                     .target(self.$$("#" + self.plotId))
                     // .height(100)
@@ -222,20 +224,20 @@ To use, add `<epiviz-ideogram-track>` in the page
 
                     self.chart.getSVGTarget().append('text')
                         .text("chr: " + self.segment)
-                        .attr('x', self.chart.getSVGTarget().attr("width") - 85)
-                        .attr('y', self.chart.getSVGTarget().attr("height")*2/3 - 5)
+                        .attr('x', self.chart.getSVGTarget().attr("width") - 285)
+                        .attr('y', self.chart.getSVGTarget().attr("height")*1/3)
                         .attr('text-anchor','left')
                         .style('font', '12px sans-serif');
 
                     self.chart.getSVGTarget().append('text')
                         .text("Gene: " + self.geneInRange)
-                        .attr('x', self.chart.getSVGTarget().attr("width") - 85)
-                        .attr('y', self.chart.getSVGTarget().attr("height")*2/3 + 5)
+                        .attr('x', self.chart.getSVGTarget().attr("width") - 240)
+                        .attr('y', self.chart.getSVGTarget().attr("height")*1/3)
                         .attr('text-anchor','left')
                         .style('font', '12px sans-serif');
 
                     self.chart.newSelector(self.start, self.end);
-                    self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined);
+                    self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined, self.chromosome);
                 }, 1000);
             }
         });
