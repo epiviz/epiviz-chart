@@ -57,12 +57,17 @@ To use, add `<epiviz-navigation>` in the page
         <style>
             :host {
                 display: inline-block;
-                border: none;
-                width: 100%;
+                /* border: none; */
+                resize:both;
+                /* min-width: 33%; */
+                width:auto;
+                margin:10px;
+                border-radius: 5px;
                 /* height: 100%; */
                 /* border: 1px solid black; */
                 /* border-radius: 10px; */
                 transition:width 0.01s, height 0.01s;
+                @apply(--shadow-elevation-2dp);
             }
             
             .flex {
@@ -81,25 +86,25 @@ To use, add `<epiviz-navigation>` in the page
                 opacity: 0.4;
             }
 
-            paper-header-panel {
+            /* paper-header-panel { */
                 /* float: left; */
-                min-width: 300px;
-                min-height: 500px;
+                /* min-width: 300px;
+                min-height: 1000px;
                 margin: 12px;
                 @apply(--shadow-elevation-2dp);
                 --paper-header-panel-shadow: {
                     box-shadow: none
                 };
-            }
+            } */
 
-            .paper-header {
+            /* .paper-header {
                 height: 50px;
                 font-size: 12px;
                 padding: 0 10px;
                 color: white;
                 transition: height 0.2s;
                 vertical-align: middle;
-            }
+            } */
 
             paper-button {
                 display: inline-block;
@@ -117,12 +122,12 @@ To use, add `<epiviz-navigation>` in the page
                 height: 28px;
             }
 
-            .content {
+            /* .content { */
                 /* height: 800px; */
-                height: 100%;
-                padding: 10px;
+                /* height: 100%;
+                padding: 10px; */
                 /* min-height: 300px; */
-            }
+            /* } */
 
             #logo {
                 vertical-align: middle;
@@ -132,9 +137,15 @@ To use, add `<epiviz-navigation>` in the page
                 background: linear-gradient(white, #e0e2e2);
             } */
 
-            .blue .paper-header {
+            /* .blue .paper-header {
                 background-color: #e0e2e2;
+            } */
+
+            .paper-header {
+                background-color: #e0e2e2;
+                padding-left: 5px;
             }
+
             paper-menu-button {
                 float: right;
             }
@@ -146,22 +157,41 @@ To use, add `<epiviz-navigation>` in the page
             }
 
             .isempty {
-                position: absolute;
+                position: relative;
                 top: 50%;
                 left: 50%;
                 transform: translateX(-50%) translateY(-50%);
             }
 
+            #header {
+                height: 50px;
+                /* linear-gradient(white, #e0e2e2) */
+            }
+
+            .content {
+                min-height:200px;
+                padding: 5px;
+            }
+
+            #chartSettingsContainer {
+                position:absolute;
+                top: 0;
+                right: 0;
+                border: 1px solid #000;
+                border-radius: 2px;
+                margin:1px;
+            }
+
         </style>
 
-        <paper-header-panel class="blue">
+        <!-- <paper-header-panel class="blue"> -->
             <div id="header" class="paper-header">
                 <iron-label>EPIVIZ NAVIGATION</iron-label>
                 <a href="http://epiviz.github.io" target="_blank" hidden$={{noLogo}}>
                     <img id="logo" src="epiviz_4_logo_medium.png" alt="Epiviz" width="100" height="21">
                 </a> 
                 <div style="display:inline" hidden$="{{collapsed}}">
-                    <epiviz-add-chart></epiviz-add-chart>  
+                    <epiviz-add-chart id="addChart"></epiviz-add-chart>  
                 </div>  
 <!--                 <paper-button raised class="collapse-header" on-click="toggleHeader">Collapse</paper-button>
                 <paper-button raised on-click="cloneNavigation">Clone</paper-button>     -->
@@ -174,10 +204,10 @@ To use, add `<epiviz-navigation>` in the page
                     </paper-menu>
                 </paper-menu-button>       
             </div>
-            <div class="content fit">
+            <div class="content">
                 <!-- <template is="dom-if" if="{{collapsed}}"> -->
                 <div hidden$="{{!collapsed}}">
-                    <epiviz-ideogram-track gene-in-range="{{geneInRange}}" id="navTrack" chromosome="{{chr}}" start="{{start}}" end="{{end}}"></epiviz-ideogram-track>
+                    <epiviz-ideogram-track style="width:400px;" gene-in-range="{{geneInRange}}" id="navTrack" chromosome="{{chr}}" start="{{start}}" end="{{end}}"></epiviz-ideogram-track>
                 </div>
                 <!-- </template> -->
 
@@ -191,7 +221,7 @@ To use, add `<epiviz-navigation>` in the page
                                 <paper-icon-button title="zoom in" icon="icons:zoom-in" on-click="zoomIn"></paper-icon-button>
                             </div>
                             <div class="flexchild" on-mouseover="locationHovered" on-mouseout="locationUnhovered">
-                                <paper-input value="{{_strRange]]" label="Chromosome Location" on-change="_updateStrRange"></paper-input>
+                                <paper-input id="textRange" value="{{_strRange]]" label="Chromosome Location" on-change="_updateStrRange"></paper-input>
                             </div>
                             <div class="flexchild">
                                 <paper-autocomplete id="geneSearch" label="Search Gene/Probe" remote-source="true" min-length="2" 
@@ -208,21 +238,23 @@ To use, add `<epiviz-navigation>` in the page
                                 </paper-autocomplete>
                             </div>
                         </div>
-                        <div class="isempty" hidden$="{{_isEmpty}}">Add a New Chart to the Workspace</div>
-                        <content id="chartNav" select=".charts">
+                        <div id="chartContainer" class="content">
+                            <div class="isempty" hidden$="{{_isEmpty}}">Add a New Chart to the Workspace</div>
                             <!-- <epiviz-genes-track class="charts" measurements="{{geneMeasurements}}"></epiviz-genes-track> -->
-                        </content>
+                            <content id="chartNav" select=".charts"></content>
+                        </div>
+
                     </iron-collapse>
                 <!-- </template> -->
             </div>
-        </paper-header-panel>
+        <!-- </paper-header-panel> -->
     </template>
 
     <script>
         Polymer({
             /* Custom element html tag */
             is: 'epiviz-navigation',
-            behaviors: [epiviz.ChartBehavior, epiviz.ChartDataBehavior, epiviz.ChartAddBehavior, epiviz.ChartWorkspaceBehavior, Polymer.IronResizableBehavior, Polymer.IronFitBehavior],
+            behaviors: [epiviz.ChartBehavior, epiviz.ChartDataBehavior, epiviz.ChartAddBehavior, epiviz.ChartWorkspaceBehavior, epiviz.ChartDraggableBehavior, Polymer.IronResizableBehavior],
 
             /* Properties that can be defined on the element */
             properties: {
@@ -280,8 +312,8 @@ To use, add `<epiviz-navigation>` in the page
                 range: {
                     type: Object,
                     observer: '_rangeUpdate',
-                    notify: true,
-		            computed: 'getGenomicRange(chr, start, end)'
+                    notify: true
+		            // computed: 'getGenomicRange(chr, start, end)'
                 },
 
                 /**
@@ -291,8 +323,8 @@ To use, add `<epiviz-navigation>` in the page
                  */        
                 _strRange: {
                     type: String,
-                    notify: true,
-		            computed: 'getStrRange(chr, start, end)'
+                    notify: true
+		            // computed: 'getStrRange(chr, start, end)'
                 },
 
 
@@ -425,7 +457,12 @@ To use, add `<epiviz-navigation>` in the page
                 if(numChildren > 0) {self.set('_isEmpty', true);}
                 for (var index = 0; index < numChildren; index++) {
                     var currentChild = self.getEffectiveChildren()[index];
-                    currentChild._onResize();
+                    if(currentChild.nodeName.indexOf("-JSON-") != -1) {
+                        currentChild.$.epivizChart._onResize();
+                    }
+                    else {
+                        currentChild._onResize();
+                    }
                 }
             },
 
@@ -452,8 +489,11 @@ To use, add `<epiviz-navigation>` in the page
                 // unsafe to reference index 0, but works for now
                 var menuButton = $(this).find("paper-menu-button")[0];
                 menuButton.close();
-                if (!this.collapsed) {
+                if (this.collapsed) {
                     Polymer.dom(self).unobserveNodes(self._observer);
+                    // setTimeout(function() {
+                    //     self.$.navTrack._draw();
+                    // }, 500);
                 } else {
                     self._observer =
                     Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
@@ -634,6 +674,7 @@ To use, add `<epiviz-navigation>` in the page
                 this.end = selected.end + Math.round(selected.end * 0.01);
 
                 this.range = this.getGenomicRange(this.chr, this.start, this.end);
+                this._strRange = this.getStrRange(this.chr, this.start, this.end);
             },
 
             /**
@@ -679,6 +720,7 @@ To use, add `<epiviz-navigation>` in the page
                 this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
 
                 this.range = this.getGenomicRange(this.chr, this.start, this.end);
+                this._strRange = this.getStrRange(this.chr, this.start, this.end);
             },
 
             /**
@@ -693,6 +735,7 @@ To use, add `<epiviz-navigation>` in the page
                 this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
 
                 this.range = this.getGenomicRange(this.chr, this.start, this.end);
+                this._strRange = this.getStrRange(this.chr, this.start, this.end);
             },
 
             /**
@@ -709,6 +752,7 @@ To use, add `<epiviz-navigation>` in the page
                 this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
 
                 this.range = this.getGenomicRange(this.chr, this.start, this.end);
+                this._strRange = this.getStrRange(this.chr, this.start, this.end);
             },
 
             /**
@@ -725,6 +769,7 @@ To use, add `<epiviz-navigation>` in the page
                 this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
 
                 this.range = this.getGenomicRange(this.chr, this.start, this.end);
+                this._strRange = this.getStrRange(this.chr, this.start, this.end);
             },
 
             /**
@@ -809,9 +854,11 @@ To use, add `<epiviz-navigation>` in the page
              */
             locationHovered: function() {
                 var self = this;
-                self.fire('hover', {
-                    data: self.chartObject
-                });
+                if(!self.$.textRange.focused) {
+                    self.fire('hover', {
+                        data: self.chartObject
+                    });
+                }
             },
 
             /**
@@ -861,12 +908,14 @@ To use, add `<epiviz-navigation>` in the page
                         self.start = data[0].start;
                         self.end = data[0].end;
                         self.range = self.getGenomicRange(self.chr, self.start, self.end);
+                        self._strRange = self.getStrRange(self.chr, self.start, self.end);
 
                         self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined, self.chr);
                     });
                 }
                 else if(self.chr && self.start && self.end) {
                     self.range = self.getGenomicRange(self.chr, self.start, self.end);
+                    self._strRange = self.getStrRange(self.chr, self.start, self.end);
 
                     self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined, self.chr);
                 }
@@ -890,6 +939,8 @@ To use, add `<epiviz-navigation>` in the page
                         self.saveWorkspace();
                     });
                 }
+
+                self.$.addChart._parentContainer = self;
             },
 
             _measurementsChanged: function() {
