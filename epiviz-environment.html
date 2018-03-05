@@ -41,7 +41,7 @@ To use, add `<epiviz-environment>` in the page
                 width: 99%;
                 /* width: auto; */
                 /* height: 100%; */
-                margin:10px;
+                margin: 10px;
                 resize: both;
                 border-radius: 5px;
                 /* padding: 4px; */
@@ -125,7 +125,11 @@ To use, add `<epiviz-environment>` in the page
             .content {
                 min-height:200px;
                 padding: 5px;
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                grid-auto-rows: max-content;
             }
+
 
         </style>
 

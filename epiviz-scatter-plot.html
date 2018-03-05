@@ -35,9 +35,9 @@ To use, add `<epiviz-scatter-plot>` in the page
             :host {
                 /*min-width: 400px;
                 min-height: 400px;*/
-                width: 100%;
+/*                width: 1000px;
                 height: 100%;
-                display: inline-block;
+                display: inline-block;*/
                 border: 1px solid black;
                 border-radius: 5px;
                 /*border: 1px solid black;
@@ -46,11 +46,13 @@ To use, add `<epiviz-scatter-plot>` in the page
                 /*overflow: auto;*/
                 transition:width 0.01s, height 0.01s;
                 /*margin: 10px;*/
+                grid-column: span 1;
+                grid-row: span 1;
             }
 
             #chart {
-                position:relative;
-            }
+/*                position:relative;
+*/            }
         </style>
 
         <!-- local DOM goes here -->

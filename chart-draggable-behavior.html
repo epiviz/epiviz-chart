@@ -23,6 +23,7 @@
                 obstacle: "#test",
                 iframeFix: true,
             });
+            console.log(self.chartType);
             $(self).resizable({
                 stop: self._onResize,
                 minHeight: self.chartType ? self.chartType.defaultHeight() : 0,
@@ -36,10 +37,11 @@
 
         hostDropped: function(e, ui) {
             this.hostDragging = false;
+            this._onResize();
         },
 
         attached: function() {
-            this._initializeDraggable();
+            // this._initializeDraggable();
         }
     }
 </script>

@@ -36,8 +36,8 @@ To use, add `<epiviz-genes-track>` in the page
                 box-sizing: border-box;
                 /*min-width: 450px;
                 min-height: 90px;*/
-                width: 100%;
-                height: 100%;
+/*                width: 100%;
+                height: 100%;*/
                 /*height: auto;*/
                 display: inline-block;
                 border: 1px solid black;
@@ -50,6 +50,8 @@ To use, add `<epiviz-genes-track>` in the page
                 -o-transition:width 0.01s, height 0.01s;
                 transition:width 0.01s, height 0.01s; 
                 /*margin: 10px;*/
+                grid-row: span 1;
+                grid-column: span 3;
             }
 
             #chart {

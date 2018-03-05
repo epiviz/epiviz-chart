@@ -75,59 +75,12 @@
               }'>
                 <epiviz-genes-track id="test" class="charts" dim-s='["genes"]'></epiviz-genes-track>
                 <epiviz-scatter-plot class="charts" dim-s='["affy1", "affy2"]'></epiviz-scatter-plot>
+                <epiviz-scatter-plot class="charts" dim-s='["affy1", "affy2"]'></epiviz-scatter-plot>
+                <epiviz-scatter-plot class="charts" dim-s='["affy1", "affy2"]'></epiviz-scatter-plot>
+                <epiviz-scatter-plot class="charts" dim-s='["affy1", "affy2"]'></epiviz-scatter-plot>
+
           </epiviz-environment>
-            <epiviz-navigation                   
-                chr="chr6"
-                start="64076201"
-                end="95088740" 
-                class="charts"
-                measurements='{"affy1":{
-                    "id":"cancer",
-                    "name":"Expression Colon Cancer",
-                    "type":"feature",
-                    "datasourceId":"gene_expression",
-                    "datasourceGroup":"affymetrix_probeset",
-                    "dataprovider":"umd",
-                    "formula":null,
-                    "defaultChartType":null,
-                    "annotation":null,
-                    "minValue":-3,
-                    "maxValue":20,
-                    "metadata":["probe"]
-                },
-                "affy2":{
-                    "id":"normal",
-                    "name":"Expression Colon Normal",
-                    "type":"feature",
-                    "datasourceId":"gene_expression",
-                    "datasourceGroup":"affymetrix_probeset",
-                    "dataprovider":"umd",
-                    "formula":null,
-                    "defaultChartType":null,
-                    "annotation":null,
-                    "minValue":-3,
-                    "maxValue":20,
-                    "metadata":["probe"]
-                },
-                "genes": {
-                    "id": "genes",
-                    "name": "Genes",
-                    "type": "range",
-                    "datasourceId": "genes",
-                    "datasourceGroup": "genes",
-                    "dataprovider": "umd",
-                    "formula": null,
-                    "defaultChartType": "Genes Track",
-                    "annotation": null,
-                    "minValue": null,
-                    "maxValue": null,
-                    "metadata": ["gene", "entrez", "exon_starts", "exon_ends"]
-                }
-              }'
-                >
-                  <epiviz-genes-track class="charts" dim-s='["genes"]'></epiviz-genes-track>
-                  <epiviz-scatter-plot class="charts" dim-s='["affy1", "affy2"]'></epiviz-scatter-plot>
-            </epiviz-navigation>
+            
 
       <h3>epiviz-environment with initialize-regions</h3>
 
