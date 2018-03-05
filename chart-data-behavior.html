@@ -41,15 +41,15 @@
                     // self.measurements = result.raw();
                     self.measurementSet = result;
 
-                    if(self.measurementSet) {
-                        var genesTrack = document.createElement("epiviz-genes-track");
-                        var genes = self.measurementSet.subset(function(m) { return m.defaultChartType() == "Genes Track" && m.datasourceGroup() === "genes"; });
-                        // self.geneMeasurements = genes.raw();
-                        genesTrack.setAttribute("measurements", JSON.stringify(genes.raw()));
-                        genesTrack.className = "charts";
+                    // if(self.measurementSet && self.nodeName == "EPIVIZ-NAVIGATION") {
+                    //     var genesTrack = document.createElement("epiviz-genes-track");
+                    //     var genes = self.measurementSet.subset(function(m) { return m.defaultChartType() == "Genes Track" && m.datasourceGroup() === "genes"; });
+                    //     // self.geneMeasurements = genes.raw();
+                    //     genesTrack.setAttribute("measurements", JSON.stringify(genes.raw()));
+                    //     genesTrack.className = "charts";
 
-                        Polymer.dom(self).appendChild(genesTrack);
-                    }
+                    //     Polymer.dom(self).appendChild(genesTrack);
+                    // }
 
 
                 }, function(jqXHR, textStatus, errorThrown) {

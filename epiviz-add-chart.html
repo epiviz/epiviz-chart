@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="src/browser/semantic/dist/semantic.min.css">
 <link rel="stylesheet" href="src/browser/semantic-ui-range-master/range.css">
 <link rel="stylesheet" href="src/browser/browser.css">
-<script src="src/browser/semantic/dist/semantic.min.js"></script>
+<script src="src/browser/semantic/dist/semantic.js"></script>
 <script src="src/browser/semantic-ui-range-master/range.js"></script>
 <script src="src/browser/lodash/dist/lodash.min.js"></script>
 <script src="src/browser/actions.js"></script>
@@ -110,7 +110,8 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
                             "LineTrack": 'epiviz-line-track',
                             "StackedLineTrack": 'epiviz-stacked-line-track',
                             "LinePlot": 'epiviz-line-plot',
-                            "StackedLinePlot": 'epiviz-stacked-line-plot'
+                            "StackedLinePlot": 'epiviz-stacked-line-plot',
+                            "EpivizNavigation": 'epiviz-navigation'
                         }
                     }
                 },
@@ -119,6 +120,11 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
                     type: Array,
                     notify: true,
                     computed: "_getCharts(_chartTypes)"
+                },
+
+                _parentContainer: {
+                    type: Object,
+                    notify: true
                 }   
             },
 
@@ -139,7 +145,8 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
             _addChart: function(chartType, measurements) {
 
                 var self = this;
-                var envElement = self.parentNode.parentNode.parentNode.parentNode.nodeName == "EPIVIZ-NAVIGATION" ? self.parentNode.parentNode.parentNode.parentNode : self.parentNode.parentNode.parentNode;
+                // var envElement = self.parentNode.parentNode.parentNode.parentNode.nodeName == "EPIVIZ-NAVIGATION" ? self.parentNode.parentNode.parentNode.parentNode : self.parentNode.parentNode.parentNode;
+                var envElement =self._parentContainer;
 
                 var chartElem = document.createElement(self._chartTypes[chartType]);
                 chartElem.className = "charts";
@@ -153,66 +160,84 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
 
             _chartSelectionChanged: function(event) {
                 var self = this;
-                var envElement = self.parentNode.parentNode.parentNode.parentNode.nodeName == "EPIVIZ-NAVIGATION" ? self.parentNode.parentNode.parentNode.parentNode : self.parentNode.parentNode.parentNode;
+                // var envElement = self.parentNode.parentNode.parentNode.parentNode.nodeName == "EPIVIZ-NAVIGATION" ? self.parentNode.parentNode.parentNode.parentNode : self.parentNode.parentNode.parentNode;
+                var envElement =self._parentContainer;
 
                 self.selection = {};
                 self.selection.chartType = self._charts[self.selectedChart];
 
-                var chartElem = document.createElement(self._chartTypes[self.selection.chartType]);
-                chartElem.className = "charts";
-                chartElem.range = envElement.range;
-                var chartElemType = chartElem._createChart();
-                $(event.target).parent().parent()[0].selected = null;
+                if(self.selection.chartType == "EpivizNavigation") {
+                    var elem = document.createElement("epiviz-navigation");
+                    // TODO: Ask user for the location to start the element at.
+                    // current location C3P1 gene
+                    elem.setAttribute("chr", "chr19");
+                    elem.setAttribute("start", 10084603);
+                    elem.setAttribute("end", 10312571);
+                    elem.setAttribute("no-logo", true);
+                    elem.className = "charts";
 
-
-                if (self.selection.chartType == "GenesTrack") {
-                    var data = envElement.measurementSet.subset(function(m) { return m.defaultChartType() == "Genes Track"});
-                    var datasourceGroups = {};
-                    data.foreach(function(m) {
-                        if (data.dataprovider && data.dataprovider != m.dataprovider()) { return; }
-                        if (data.annotation) {
-                        for (var key in data.annotation) {
-                            if (!data.annotation.hasOwnProperty(key)) { continue; }
-                            if (!m.annotation() || m.annotation()[key] != data.annotation[key]) { return; }
-                        }
-                        }
-                        datasourceGroups[m.datasourceGroup()] = ["Genes track", false];     
-                    });
-
-                    initialize(datasourceGroups);
-                    $('#sourcemodal').modal({
-                        closable: false,
-                        selector: {
-                            deny: '.ui.grey.button',
-                            approve: '.ui.blue.submit.button'
-                        },
-                        onDeny: function() {
-                            $('#sourcemodal').modal('hide');
-                            $('form').empty();
-                            $('#newmodal').remove();
-                        },
-                        onApprove: function() {
-                            var source = $('#form').form('get value', 'source');
-                            var measurements = data.subset(function(m) { return m.datasourceGroup() === source });
-                            chartElem.setAttribute("measurements", JSON.stringify(measurements.raw()));
-                            Polymer.dom(envElement).appendChild(chartElem);
-                            // self.$.modal.close();
-                        }
-                    });
-                    $('#sourcemodal').modal('show');
+                    Polymer.dom(envElement).appendChild(elem);
+                    // envElement.appendChild(elem);
                 }
                 else {
-                    var data = envElement.measurementSet;
+                    var chartElem = document.createElement(self._chartTypes[self.selection.chartType]);
+                    chartElem.className = "charts";
+                    chartElem.range = envElement.range;
+                    var chartElemType = chartElem._createChart();
+                    $(event.target).parent().parent()[0].selected = null;
 
-                    source = "epiviz";
 
-                    showModal(source, data.raw(), function(selected) {
-                        Polymer.dom(envElement).appendChild(chartElem);
-                        chartElem.setAttribute("measurements", JSON.stringify(selected));
+                    if (self.selection.chartType == "GenesTrack") {
+                        var data = envElement.measurementSet.subset(function(m) { return m.defaultChartType() == "Genes Track"});
+                        // var datasourceGroups = {};
+                        // data.foreach(function(m) {
+                        //     if (data.dataprovider && data.dataprovider != m.dataprovider()) { return; }
+                        //     if (data.annotation) {
+                        //     for (var key in data.annotation) {
+                        //         if (!data.annotation.hasOwnProperty(key)) { continue; }
+                        //         if (!m.annotation() || m.annotation()[key] != data.annotation[key]) { return; }
+                        //     }
+                        //     }
+                        //     datasourceGroups[m.datasourceGroup()] = ["Genes track", false];     
+                        // });
 
-                        // self.$.modal.close();
-                    });
-                    $('#sourcemodal').modal('show');
+                        // initialize(datasourceGroups);
+                        // $('#sourcemodal').modal({
+                        //     closable: false,
+                        //     selector: {
+                        //         deny: '.ui.grey.button',
+                        //         approve: '.ui.blue.submit.button'
+                        //     },
+                        //     onDeny: function() {
+                        //         $('#sourcemodal').modal('hide');
+                        //         $('form').empty();
+                        //         $('#newmodal').remove();
+                        //     },
+                        //     onApprove: function() {
+                        //         var source = $('#form').form('get value', 'source');
+                                var measurements = data.subset(function(m) { return m.datasourceGroup() === "genes" });
+                                chartElem.setAttribute("measurements", JSON.stringify(measurements.raw()));
+                                Polymer.dom(envElement).appendChild(chartElem);
+                                // envElement.appendChild(elem);
+                                // self.$.modal.close();
+                        //     }
+                        // });
+                        // $('#sourcemodal').modal('show');
+                    }
+                    else {
+                        var data = envElement.measurementSet;
+
+                        source = "epiviz";
+
+                        showModal(source, data.raw(), function(selected) {
+                            Polymer.dom(envElement).appendChild(chartElem);
+                            // envElement.appendChild(elem);
+                            chartElem.setAttribute("measurements", JSON.stringify(selected));
+
+                            // self.$.modal.close();
+                        });
+                        $('#sourcemodal').modal('show');
+                    }
                 }
             },
 
