@@ -56,6 +56,8 @@
                     chart.start = chartWorkspaceObj.start;
                     chart.end = chartWorkspaceObj.end;
                     chart.node = chartWorkspaceObj.nodeName;
+                    chart.range = chart.getGenomicRange(chart.chr, chart.start, chart.end);
+                    chart._strRange = chart.getStrRange(chart.chr, chart.start, chart.end);
 
                     Polymer.dom(self).appendChild(chart);
 
@@ -70,7 +72,7 @@
                         navChart.chartColors = chartNavWorkspaceObj.chartColors;
 
                         Polymer.dom(chart).appendChild(navChart);
-                    }
+                    }   
                 }
                 else {
                     chart.measurements = chartWorkspaceObj.measurements;
@@ -135,10 +137,29 @@
             }
             self.workspace = workspaceObj;
 
-            self.fire('workspaceChanged', {
-                id: self.plotId,
-                data: self.workspace 
-            });
+            if(self.nodeName == "EPIVIZ-NAVIGATION") {
+
+                if(self._parentContainer && self._parentContainer.nodeName == "EPIVIZ-ENVIRONMENT") {
+                    self._parentContainer.fire('navWorkspaceChanged', {
+                        id: self.plotId
+                    });
+                }
+                else {
+
+                    self.fire('workspaceChanged', {
+                        id: self.plotId,
+                        data: self.workspace 
+                    });
+                }
+            }
+            else {
+                
+
+                self.fire('workspaceChanged', {
+                    id: self.plotId,
+                    data: self.workspace 
+                });
+            }
         }
     }
 </script>

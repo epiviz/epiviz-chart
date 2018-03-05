@@ -38,10 +38,16 @@ To use, add `<epiviz-environment>` in the page
             :host{
                 display: inline-block;
                 /* padding: 15px; */
-                width: 100%;
+                width: 99%;
+                /* width: auto; */
                 /* height: 100%; */
-                overflow: none;
+                margin:10px;
+                resize: both;
+                border-radius: 5px;
+                /* padding: 4px; */
+                /* margin:5px; */
                 transition:width 0.01s, height 0.01s;
+                @apply(--shadow-elevation-2dp);
             }
 
             #chartSettingsContainer {
@@ -53,49 +59,47 @@ To use, add `<epiviz-environment>` in the page
                 margin:1px;
             }
 
-            paper-header-panel {
+            /* paper-header-panel { */
                 /* float: left; */
-                min-width: 300px;
+                /* min-width: 300px;
                 min-height: 500px;
                 margin: 12px;
                 @apply(--shadow-elevation-2dp);
                 --paper-header-panel-shadow: {
                     box-shadow: none
                 };
-            }
+            } */
 
-            .paper-header {
+            /* .paper-header {
                 height: 50px;
-                font-size: 12px;
+                font-size: 12px; */
                 /* line-height: 60px; */
-                padding: 0 10px;
+                /* padding: 0 10px;
                 transition: height 0.2s;
                 vertical-align: middle;
-            }
+            } */
 
-            .content {
+            /* .content { */
                 /* height: 800px; */
-                height: 100%;
-                padding: 10px;
+                /* height: 100%;
+                padding: 10px; */
                 /* min-height: 500px; */
-            }
+            /* } */
 
 /*            .blue .content {
                 background: linear-gradient(white, #e0e2e2);
             }*/
 
-            .blue .paper-header {
+            .paper-header {
                 background-color: #e0e2e2;
+                padding-left: 5px;
             }
 
             #logo {
                 vertical-align: middle;
             }
-            .removeButton {
-                float:right;
-                vertical-align: middle;
-                background-color: red;
-            }
+
+
             paper-menu-button {
                 float: right;
             }
@@ -107,34 +111,47 @@ To use, add `<epiviz-environment>` in the page
             }
 
             .isempty {
-                position: absolute;
+                position: relative;
                 top: 50%;
                 left: 50%;
                 transform: translateX(-50%) translateY(-50%);
             }
 
+            #header {
+                height: 50px;
+                /* linear-gradient(white, #e0e2e2) */
+            }
+
+            .content {
+                min-height:200px;
+                padding: 5px;
+            }
+
         </style>
 
-        <paper-header-panel class="blue">
+        <!-- <paper-header-panel class="blue"> -->
             <div id="header" class="paper-header">
                 <iron-label>EPIVIZ ENVIRONMENT</iron-label>
                 <a href="http://epiviz.github.io" target="_blank" hidden$="[[noLogo]]">
                     <img id="logo" src="epiviz_4_logo_medium.png" alt="Epiviz" width="100" height="21">
                 </a>
-                <iron-dropdown>
-                    <paper-icon-button icon="menu" slot="dropdown-trigger"></paper-icon-button>
-                    <paper-menu slot="dropdown-content">
+                <!-- <iron-dropdown> -->
+                <!-- </iron-dropdown> -->
+
+                <epiviz-add-chart id="addChart"></epiviz-add-chart> 
+                <paper-menu-button dynamic-align vertical-align="bottom" vertical-offset=24>
+                    <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
+                    <paper-menu class="dropdown-content">
                         <paper-item>Delete</paper-item>
                         <paper-item>Clone</paper-item>
                     </paper-menu>
-                </iron-dropdown>
-                <epiviz-add-chart></epiviz-add-chart> 
+                </paper-menu-button>
             </div>
-            <div id="chartContainer" class="content fit">
-                <div class="isempty" hidden$="[[_isEmpty]]">Add a New Chart to the Workspace</div>
+            <div id="chartContainer" class="content">
+                <div class="isempty" hidden$="{{_isEmpty}}">Add a New Chart to the Workspace</div>
                 <content id="chartEnv" select=".charts"></content>
             </div>
-        </paper-header-panel>
+        <!-- </paper-header-panel> -->
     </template>
 
     <script>
@@ -264,7 +281,7 @@ To use, add `<epiviz-environment>` in the page
                     value: function () {
                         return false;
                     }
-                },
+                }
             },
 
             observers: [
@@ -280,7 +297,8 @@ To use, add `<epiviz-environment>` in the page
                 'select': 'onSelect',
                 'deSelect': 'onDeSelect',
                 'dimChanged': 'onDimChanged',
-                'iron-resize': '_onResize'
+                'iron-resize': '_onResize',
+                'navWorkspaceChanged': '_childWorkspaceChanged',
                 // 'transitionend': '_onResize'
             },
 
@@ -297,6 +315,12 @@ To use, add `<epiviz-environment>` in the page
                 }
             },
 
+            _childWorkspaceChanged: function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.saveWorkspace();
+            },
+
             /**
              * Resizes the chart.
              */
@@ -307,7 +331,12 @@ To use, add `<epiviz-environment>` in the page
                 if(numChildren > 0) {self.set('_isEmpty', true);}
                 for (var index = 0; index < numChildren; index++) {
                     var currentChild = self.getEffectiveChildren()[index];
-                    currentChild._onResize();
+                    if(currentChild.nodeName.indexOf("-JSON-") != -1) {
+                        currentChild.$.epivizChart._onResize();
+                    }
+                    else {
+                        currentChild._onResize();
+                    }
                 }
             },
 
@@ -538,8 +567,10 @@ To use, add `<epiviz-environment>` in the page
                             self.set('_isEmpty', true);
                         });
 
-                        // self.saveWorkspace();
+                        self.saveWorkspace();
                     });
+
+                    self.$.addChart._parentContainer = self;
             },
 
             // created: function() {
