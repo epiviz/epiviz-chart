@@ -23,25 +23,15 @@
             margin:1px;
         }
 
-        #chartSettingsIcon {
+        #chartSettingsIcon, 
+        #chartColorsIcon, 
+        #chartRemoveIcon,
+        #chartExpandIcon,
+        #chartContractIcon {
             float: right;
             width: 24px;
             height: 24px;
             padding: 1px;
-        }
-
-        #chartColorsIcon {
-            float: right;
-            width: 24px;
-            height: 24px;
-            padding: 2px;
-        }
-
-        #chartRemoveIcon {
-            float: right;
-            width: 24px;
-            height: 24px;
-            padding: 2px;
         }
 
         paper-spinner-lite {
@@ -462,6 +452,7 @@
                     self._initializeColorsDialog();
                     self._initializeRemoveDialog();
                     self._initializeDraggable();
+                    self._initializeResizeButtons();
 
 
                     // Listen to hover event on the chart
