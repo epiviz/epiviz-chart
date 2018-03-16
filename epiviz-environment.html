@@ -33,7 +33,7 @@ To use, add `<epiviz-environment>` in the page
 -->
 
 <dom-module id="epiviz-environment">
-    <template>	
+    <template>
         <style>
             :host{
                 display: inline-block;
@@ -49,6 +49,7 @@ To use, add `<epiviz-environment>` in the page
                 transition:width 0.01s, height 0.01s;
                 @apply(--shadow-elevation-2dp);
             }
+
 
             #chartSettingsContainer {
                 position:absolute;
@@ -126,10 +127,24 @@ To use, add `<epiviz-environment>` in the page
                 min-height:200px;
                 padding: 5px;
                 display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                grid-auto-rows: max-content;
+                grid-template-columns: repeat(6, 1fr);
+                grid-auto-rows: minmax(max-content, 100px);
             }
+        ::content .grid-plot {
+            grid-row: span 1;
+            grid-column: span 2;
+        }
 
+        ::content .grid-track {
+            grid-column: span 6;
+            grid-row: span 1;
+        }
+
+        ::content .grid-navigation {
+            grid-row: span 1;
+            grid-column: span 6;
+            order: 2;
+        }
 
         </style>
 
@@ -301,7 +316,7 @@ To use, add `<epiviz-environment>` in the page
                 'select': 'onSelect',
                 'deSelect': 'onDeSelect',
                 'dimChanged': 'onDimChanged',
-                'iron-resize': '_onResize',
+                // 'iron-resize': '_onResize',
                 'navWorkspaceChanged': '_childWorkspaceChanged',
                 // 'transitionend': '_onResize'
             },
@@ -524,7 +539,7 @@ To use, add `<epiviz-environment>` in the page
                 //         self.end = self.seqInfo[self.chr].max;
                 //     }
                 // }
-                $(this).find("#chartContainer").sortable();
+                // $(this).find("#chartContainer").sortable();
 
                 if(self.initializeRegions.length > 0) {
                     for(var i=0; i< self.initializeRegions.length; i++) {
@@ -547,6 +562,7 @@ To use, add `<epiviz-environment>` in the page
                         info.addedNodes.forEach(function(node) {
                             // self._updateChart(node.plotId);
                             node._parentContainer = self;
+
                             if(node.nodeName === "EPIVIZ-NAVIGATION") {
                                 self._getElementSeqInfo(node, Polymer.dom(self));
 

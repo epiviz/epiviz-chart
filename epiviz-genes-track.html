@@ -10,6 +10,7 @@
 <link rel="import" href="chart-colors.html">
 <link rel="import" href="chart-remove.html">
 <link rel="import" href="chart-draggable-behavior.html">
+<link rel="import" href="chart-grid-behavior.html">
 
 <!-- Epiviz Shared css -->
 <link rel="import" href="chart-shared-css.html">
@@ -50,8 +51,8 @@ To use, add `<epiviz-genes-track>` in the page
                 -o-transition:width 0.01s, height 0.01s;
                 transition:width 0.01s, height 0.01s; 
                 /*margin: 10px;*/
-                grid-row: span 1;
-                grid-column: span 3;
+                resize: vertical;
+                overflow: auto;
             }
 
             #chart {
@@ -72,7 +73,7 @@ To use, add `<epiviz-genes-track>` in the page
         Polymer({
             /* Custom element html tag */
             is: 'epiviz-genes-track',
-            behaviors: [epiviz.ChartBehavior, epiviz.ChartSettingsBehavior, epiviz.ChartColorsBehavior, epiviz.ChartRemoveBehavior, Polymer.IronResizableBehavior, epiviz.ChartDraggableBehavior],
+            behaviors: [epiviz.ChartBehavior, epiviz.ChartSettingsBehavior, epiviz.ChartColorsBehavior, epiviz.ChartRemoveBehavior, Polymer.IronResizableBehavior, epiviz.ChartDraggableBehavior, epiviz.ChartGridBehavior],
 
             /* Properties that can be defined on the element */
             properties: {
@@ -223,7 +224,7 @@ To use, add `<epiviz-genes-track>` in the page
                         self.data = data;
                     });
                 }
-
+                self._initializeGrid();
                 self._measurementsChanged();
             },
 

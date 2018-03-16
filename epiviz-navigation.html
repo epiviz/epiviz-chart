@@ -13,6 +13,7 @@
 <link rel="import" href="chart-data-behavior.html">
 <link rel="import" href="chart-add-behavior.html">
 <link rel="import" href="chart-workspace-behavior.html">
+<link rel="import" href="chart-grid-behavior.html">
 
 <!-- Chart elements dependency -->
 <link rel="import" href="epiviz-genes-track.html">
@@ -56,11 +57,10 @@ To use, add `<epiviz-navigation>` in the page
         <style include="shared-settings"></style>
         <style>
             :host {
-                display: inline-block;
                 /* border: none; */
                 resize:both;
                 /* min-width: 33%; */
-                width:auto;
+                width: 99%;
                 margin:10px;
                 border-radius: 5px;
                 /* height: 100%; */
@@ -171,6 +171,9 @@ To use, add `<epiviz-navigation>` in the page
             .content {
                 min-height:200px;
                 padding: 5px;
+                display: grid;
+                grid-template-columns: repeat(6, 1fr);
+                grid-auto-rows: max-content;
             }
 
             #chartSettingsContainer {
@@ -204,7 +207,7 @@ To use, add `<epiviz-navigation>` in the page
                     </paper-menu>
                 </paper-menu-button>       
             </div>
-            <div class="content">
+            <div>
                 <!-- <template is="dom-if" if="{{collapsed}}"> -->
                 <div hidden$="{{!collapsed}}">
                     <epiviz-ideogram-track style="width:400px;" gene-in-range="{{geneInRange}}" id="navTrack" chromosome="{{chr}}" start="{{start}}" end="{{end}}"></epiviz-ideogram-track>
@@ -254,7 +257,7 @@ To use, add `<epiviz-navigation>` in the page
         Polymer({
             /* Custom element html tag */
             is: 'epiviz-navigation',
-            behaviors: [epiviz.ChartBehavior, epiviz.ChartDataBehavior, epiviz.ChartAddBehavior, epiviz.ChartWorkspaceBehavior, epiviz.ChartDraggableBehavior, Polymer.IronResizableBehavior],
+            behaviors: [epiviz.ChartBehavior, epiviz.ChartDataBehavior, epiviz.ChartAddBehavior, epiviz.ChartWorkspaceBehavior, Polymer.IronResizableBehavior, epiviz.ChartGridBehavior],
 
             /* Properties that can be defined on the element */
             properties: {
@@ -444,7 +447,7 @@ To use, add `<epiviz-navigation>` in the page
                 'unHover': 'onUnhover',
                 'select': 'onSelect',
                 'deSelect': 'onDeselect',
-                'iron-resize': '_onResize'
+                // 'iron-resize': '_onResize'
                 // 'transitionend': '_onResize'
             },
 
@@ -881,6 +884,7 @@ To use, add `<epiviz-navigation>` in the page
             attached: function() {
 
                 var self = this;
+                // $(this).find("#chartContainer").sortable();
 
                 self.collapsed = false;
 
@@ -967,6 +971,7 @@ To use, add `<epiviz-navigation>` in the page
                 }
 
                 self._initializeAddDialog();
+                self._initializeGrid();
             },
 
             /**
