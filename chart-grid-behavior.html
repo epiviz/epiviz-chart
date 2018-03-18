@@ -1,0 +1,81 @@
+<script>
+    /**
+     * `ChartGridBehavior` object initializes grid layout system for plots and tracks. 
+     * All elements that need to conform to a grid should include and call this behavior. 
+     *
+     * @polymerBehavior
+    **/
+    epiviz.ChartGridBehavior = {
+
+        /**
+         * Initializes grid behavior
+         */
+        _initializeGrid: function() {
+            if (this.nodeName.indexOf("TRACK") != -1) {
+                this.classList.add("grid-track");
+            } else if (this.nodeName.indexOf("NAVIGATION") != -1) {
+                this.classList.add("grid-navigation");
+            } else {
+                // is plot
+                this.classList.add("grid-plot");
+            }
+        },
+
+        _initializeResizeButtons: function() {
+            var chartSettingsContainer = this.$$('#chartSettingsContainer');
+            var chartContainer = this.$$('#' + this.plotId);
+            var currExpandIcon = this.$$('#chartExpandIcon');
+            var currContractIcon = this.$$('#chartContractIcon');
+
+            if(currExpandIcon == null) {
+                var iconElem = document.createElement('paper-icon-button');
+                iconElem.id = "chartExpandIcon";
+                iconElem.icon = "chevron-right";
+
+                iconElem.addEventListener("click", this._expand.bind(this));
+                Polymer.dom(chartSettingsContainer).appendChild(iconElem);
+            }
+
+
+            if(currContractIcon == null) {
+                var iconElem = document.createElement('paper-icon-button');
+                iconElem.id = "chartContractIcon";
+                iconElem.icon = "chevron-left";
+
+                iconElem.addEventListener("click", this._contract.bind(this));
+                Polymer.dom(chartSettingsContainer).appendChild(iconElem);
+            }
+        },
+
+        _expand: function() {
+            console.log(this);
+            var columnSpan = this._getColumnSpan(this.getComputedStyleValue("grid-column"));
+            if (columnSpan < 6) {
+                $(this).css("grid-column", "span " + (columnSpan+1));
+                this._onResize();
+            }
+        },
+
+        _contract: function() {
+            var columnSpan = this._getColumnSpan(this.getComputedStyleValue("grid-column"));
+
+            if (columnSpan < 6) {
+                $(this).css("grid-column", "span " + (columnSpan-1));
+                this._onResize();
+            }
+        },
+
+        _getColumnSpan: function(gridColumn) {
+            // span 2 / auto
+            var val = parseInt(gridColumn.split(' ')[1]);
+            if (!val) {
+                console.log("grid column error, not a number");
+            }
+            return val;
+        },
+
+        attached: function() {
+
+        }
+    }
+</script>
