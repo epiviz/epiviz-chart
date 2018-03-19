@@ -10,6 +10,7 @@
 <link rel="import" href="chart-colors.html">
 <link rel="import" href="chart-remove.html">
 <link rel="import" href="chart-draggable-behavior.html">
+<link rel="import" href="chart-grid-behavior.html">
 
 <!-- Epiviz Shared css -->
 <link rel="import" href="chart-shared-css.html">
@@ -34,22 +35,15 @@ To use, add `<epiviz-stacked-blocks-track>` in the page
         <style include="chart-shared-css"></style>
         <style>
             :host {
-                /*width: 900px;
-                min-height: 90px;*/
                 width: 100%;
                 height: 100%;
                 display: inline-block;
                 border: 1px solid black;
                 border-radius: 5px;
-                /* border: 1px solid black;
-                padding: 10px; */
-                /* resize: both; */
-                /*overflow: auto;*/
+                position: relative;
+                resize: vertical;
+                overflow: auto;
                 transition:width 0.01s, height 0.01s;
-                /*margin: 10px;*/
-            }
-            #chart {
-                position:relative;
             }
         </style>
 
@@ -229,6 +223,7 @@ To use, add `<epiviz-stacked-blocks-track>` in the page
                     });
                 }
 
+                self._initializeGrid();
                 self._measurementsChanged();
             },
 

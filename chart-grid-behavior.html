@@ -59,7 +59,7 @@
         _contract: function() {
             var columnSpan = this._getColumnSpan(this.getComputedStyleValue("grid-column"));
 
-            if (columnSpan < 6) {
+            if (columnSpan > 2) {
                 $(this).css("grid-column", "span " + (columnSpan-1));
                 this._onResize();
             }
