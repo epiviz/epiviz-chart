@@ -519,14 +519,16 @@ To use, add `<epiviz-environment>` in the page
 
                 var self = this;
 
-                var numChildren = self.getEffectiveChildren().length;
-                if(numChildren > 0) {self.set('_isEmpty', true);}
-                for (var index = 0; index < numChildren; index++) {
-                    var currentChild = self.getEffectiveChildren()[index];
-                    if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
-                    currentChild.range = self.range;
-                    // self._updateChart(currentChild.plotId);  
-                    self._getElementData(currentChild, self, self.measurements);
+                if(self.measurements) {
+                    var numChildren = self.getEffectiveChildren().length;
+                    if(numChildren > 0) {self.set('_isEmpty', true);}
+                    for (var index = 0; index < numChildren; index++) {
+                        var currentChild = self.getEffectiveChildren()[index];
+                        if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
+                        currentChild.range = self.range;
+                        // self._updateChart(currentChild.plotId);  
+                        self._getElementData(currentChild, self, self.measurements);
+                    }
                 }
             },
 
