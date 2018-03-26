@@ -12,7 +12,6 @@
 <link rel="import" href="chart-remove.html">
 
 <!-- Polymer Elements -->
-<link rel="import" href="../paper-header-panel/paper-header-panel.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-menu-button/paper-menu-button.html">
@@ -60,37 +59,6 @@ To use, add `<epiviz-environment>` in the page
                 margin:1px;
             }
 
-            /* paper-header-panel { */
-                /* float: left; */
-                /* min-width: 300px;
-                min-height: 500px;
-                margin: 12px;
-                @apply(--shadow-elevation-2dp);
-                --paper-header-panel-shadow: {
-                    box-shadow: none
-                };
-            } */
-
-            /* .paper-header {
-                height: 50px;
-                font-size: 12px; */
-                /* line-height: 60px; */
-                /* padding: 0 10px;
-                transition: height 0.2s;
-                vertical-align: middle;
-            } */
-
-            /* .content { */
-                /* height: 800px; */
-                /* height: 100%;
-                padding: 10px; */
-                /* min-height: 500px; */
-            /* } */
-
-/*            .blue .content {
-                background: linear-gradient(white, #e0e2e2);
-            }*/
-
             .paper-header {
                 background-color: #e0e2e2;
                 padding-left: 5px;
@@ -129,6 +97,8 @@ To use, add `<epiviz-environment>` in the page
                 display: grid;
                 grid-template-columns: repeat(6, 1fr);
                 grid-auto-rows: minmax(max-content, 100px);
+                grid-row-gap: 2px;
+                grid-column-gap: 2px;
             }
 
             ::content .grid-plot {
@@ -149,7 +119,6 @@ To use, add `<epiviz-environment>` in the page
 
         </style>
 
-        <!-- <paper-header-panel class="blue"> -->
             <div id="header" class="paper-header">
                 <iron-label>EPIVIZ ENVIRONMENT</iron-label>
                 <a href="http://epiviz.github.io" target="_blank" hidden$="[[noLogo]]">
@@ -171,7 +140,6 @@ To use, add `<epiviz-environment>` in the page
                 <div class="isempty" hidden$="{{_isEmpty}}">Add a New Chart to the Workspace</div>
                 <content id="chartEnv" select=".charts"></content>
             </div>
-        <!-- </paper-header-panel> -->
     </template>
 
     <script>

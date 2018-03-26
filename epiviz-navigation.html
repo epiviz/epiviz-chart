@@ -86,26 +86,6 @@ To use, add `<epiviz-navigation>` in the page
                 opacity: 0.4;
             }
 
-            /* paper-header-panel { */
-                /* float: left; */
-                /* min-width: 300px;
-                min-height: 1000px;
-                margin: 12px;
-                @apply(--shadow-elevation-2dp);
-                --paper-header-panel-shadow: {
-                    box-shadow: none
-                };
-            } */
-
-            /* .paper-header {
-                height: 50px;
-                font-size: 12px;
-                padding: 0 10px;
-                color: white;
-                transition: height 0.2s;
-                vertical-align: middle;
-            } */
-
             paper-button {
                 display: inline-block;
                 background: #4285f4;
@@ -122,24 +102,9 @@ To use, add `<epiviz-navigation>` in the page
                 height: 28px;
             }
 
-            /* .content { */
-                /* height: 800px; */
-                /* height: 100%;
-                padding: 10px; */
-                /* min-height: 300px; */
-            /* } */
-
             #logo {
                 vertical-align: middle;
             }
-
-            /* .blue .content {
-                background: linear-gradient(white, #e0e2e2);
-            } */
-
-            /* .blue .paper-header {
-                background-color: #e0e2e2;
-            } */
 
             .paper-header {
                 background-color: #e0e2e2;
@@ -174,6 +139,8 @@ To use, add `<epiviz-navigation>` in the page
                 display: grid;
                 grid-template-columns: repeat(6, 1fr);
                 grid-auto-rows: max-content;
+                grid-row-gap: 2px;
+                grid-column-gap: 2px;
             }
 
             #chartSettingsContainer {
@@ -187,7 +154,6 @@ To use, add `<epiviz-navigation>` in the page
 
         </style>
 
-        <!-- <paper-header-panel class="blue"> -->
             <div id="header" class="paper-header">
                 <iron-label>EPIVIZ NAVIGATION</iron-label>
                 <a href="http://epiviz.github.io" target="_blank" hidden$={{noLogo}}>
@@ -250,7 +216,6 @@ To use, add `<epiviz-navigation>` in the page
                     </iron-collapse>
                 <!-- </template> -->
             </div>
-        <!-- </paper-header-panel> -->
     </template>
 
     <script>
