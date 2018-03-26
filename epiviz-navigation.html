@@ -57,6 +57,7 @@ To use, add `<epiviz-navigation>` in the page
         <style include="shared-settings"></style>
         <style>
             :host {
+                display: inline-block;
                 /* border: none; */
                 resize:both;
                 /* min-width: 33%; */
@@ -152,6 +153,21 @@ To use, add `<epiviz-navigation>` in the page
                 margin:1px;
             }
 
+            ::content .grid-plot {
+                grid-row: span 1;
+                grid-column: span 2;
+            }
+
+            ::content .grid-track {
+                grid-column: span 6;
+                grid-row: span 1;
+            }
+
+            ::content .grid-navigation {
+                grid-row: span 1;
+                grid-column: span 6;
+                order: 2;
+            }
         </style>
 
             <div id="header" class="paper-header">
@@ -222,7 +238,7 @@ To use, add `<epiviz-navigation>` in the page
         Polymer({
             /* Custom element html tag */
             is: 'epiviz-navigation',
-            behaviors: [epiviz.ChartBehavior, epiviz.ChartDataBehavior, epiviz.ChartAddBehavior, epiviz.ChartWorkspaceBehavior, Polymer.IronResizableBehavior, epiviz.ChartGridBehavior],
+            behaviors: [epiviz.ChartDataBehavior, epiviz.ChartAddBehavior, epiviz.ChartWorkspaceBehavior, Polymer.IronResizableBehavior, epiviz.ChartGridBehavior],
 
             /* Properties that can be defined on the element */
             properties: {
@@ -377,6 +393,11 @@ To use, add `<epiviz-navigation>` in the page
                     reflectToAttribute: true,
                     value: false
                 },
+                measurements: {
+                    type: Object,
+                    notify: true,
+                    reflectToAttribute: true
+                },
 
                 /**
                  * Default chart properties for navigation element.
@@ -466,8 +487,8 @@ To use, add `<epiviz-navigation>` in the page
                     self._observer =
                     Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
                         info.addedNodes.forEach(function(node) {
+                            node._parentContainer = self;
                             if(node.nodeName.indexOf("EPIVIZ-") != -1 && node.nodeName.indexOf("JSON") == -1) {
-                                node._parentContainer = self;
                                 var measurements = self.measurements;
                                 if(self._parentContainer) {
                                     measurements = self._parentContainer.measurements;
@@ -504,7 +525,9 @@ To use, add `<epiviz-navigation>` in the page
                  */
                 this.fire('hoverAllCharts', {
                     data: e.detail.data
-                });
+                });               
+                e.preventDefault();
+                e.stopPropagation();
             },
 
             /**
@@ -522,6 +545,8 @@ To use, add `<epiviz-navigation>` in the page
                 this.fire('unHoverAllCharts', {
                     data: null
                 });
+                e.preventDefault();
+                e.stopPropagation();
             },
 
             /**
@@ -543,6 +568,8 @@ To use, add `<epiviz-navigation>` in the page
                         data: e.detail.data
                     });
                 }
+                e.preventDefault();
+                e.stopPropagation();
             },
 
             /**
@@ -560,10 +587,12 @@ To use, add `<epiviz-navigation>` in the page
                 this.fire('unSelectAllCharts', {
                     data: null
                 });
+                e.preventDefault();
+                e.stopPropagation();
             },
 
             /**
-             * ChartLocation/RangeChange event handler.
+             * ChartLocation/RangeChange event handler.Z
              */
             _rangeUpdate: function() {
                 var self = this;
@@ -849,8 +878,10 @@ To use, add `<epiviz-navigation>` in the page
             attached: function() {
 
                 var self = this;
-                // $(this).find("#chartContainer").sortable();
-
+                $(this).find("#chartContainer").sortable({
+                    delay: 150,
+                });
+                
                 self.collapsed = false;
 
                 if(!self.dataManager) {
@@ -893,9 +924,9 @@ To use, add `<epiviz-navigation>` in the page
                     self._observer =
                     Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
                         info.addedNodes.forEach(function(node) {
+                            node._parentContainer = self;
                             if(node.nodeName.indexOf("EPIVIZ-") != -1 && node.nodeName.indexOf("JSON") == -1) {
                                 // self._updateChart(node.plotId);
-                                node._parentContainer = self;
                                 var measurements = self.measurements;
                                 if(self._parentContainer) {
                                     measurements = self._parentContainer.measurements;
@@ -924,7 +955,7 @@ To use, add `<epiviz-navigation>` in the page
             ready: function() {
                 var self = this;
 
-                self.plotId = self.plotId || self._generatePlotId();
+                self.plotId = "123211124" //self.plotId || self._generatePlotId();
                 self.config = new epiviz.Config(self.configSrc);
                 // self.range = self.getGenomicRange(self.chr, self.start, self.end);
 

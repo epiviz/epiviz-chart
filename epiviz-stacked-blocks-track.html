@@ -9,7 +9,6 @@
 <link rel="import" href="chart-settings.html">
 <link rel="import" href="chart-colors.html">
 <link rel="import" href="chart-remove.html">
-<link rel="import" href="chart-draggable-behavior.html">
 <link rel="import" href="chart-grid-behavior.html">
 
 <!-- Epiviz Shared css -->
@@ -59,7 +58,7 @@ To use, add `<epiviz-stacked-blocks-track>` in the page
         Polymer({
             /* Custom element html tag */
             is: 'epiviz-stacked-blocks-track',
-            behaviors: [epiviz.ChartBehavior, epiviz.ChartSettingsBehavior, epiviz.ChartColorsBehavior, Polymer.IronResizableBehavior, epiviz.ChartRemoveBehavior, epiviz.ChartDraggableBehavior],
+            behaviors: [epiviz.ChartBehavior, epiviz.ChartSettingsBehavior, epiviz.ChartColorsBehavior, Polymer.IronResizableBehavior, epiviz.ChartRemoveBehavior],
 
             /* Properties that can be defined on the element */
             properties: {

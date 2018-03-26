@@ -510,7 +510,10 @@ To use, add `<epiviz-environment>` in the page
                 //         self.end = self.seqInfo[self.chr].max;
                 //     }
                 // }
-                // $(this).find("#chartContainer").sortable();
+                $(this).find("#chartContainer").sortable({
+                    delay: 150,
+                    items: "> :not(epiviz-navigation)",
+                });
 
                 if(self.initializeRegions.length > 0) {
                     for(var i=0; i< self.initializeRegions.length; i++) {
@@ -533,7 +536,6 @@ To use, add `<epiviz-environment>` in the page
                         info.addedNodes.forEach(function(node) {
                             // self._updateChart(node.plotId);
                             node._parentContainer = self;
-
                             if(node.nodeName === "EPIVIZ-NAVIGATION") {
                                 self._getElementSeqInfo(node, Polymer.dom(self));
 

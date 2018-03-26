@@ -9,7 +9,6 @@
 <link rel="import" href="chart-settings.html">
 <link rel="import" href="chart-colors.html">
 <link rel="import" href="chart-remove.html">
-<link rel="import" href="chart-draggable-behavior.html">
 <link rel="import" href="chart-grid-behavior.html">
 
 <!-- Epiviz Shared css -->
@@ -58,7 +57,7 @@ To use, add `<epiviz-line-plot>` in the page
         Polymer({
             /* Custom element html tag */
             is: 'epiviz-line-plot',
-            behaviors: [epiviz.ChartBehavior, epiviz.ChartSettingsBehavior, epiviz.ChartColorsBehavior, epiviz.ChartRemoveBehavior, Polymer.IronResizableBehavior, epiviz.ChartDraggableBehavior],
+            behaviors: [epiviz.ChartBehavior, epiviz.ChartSettingsBehavior, epiviz.ChartColorsBehavior, epiviz.ChartRemoveBehavior, Polymer.IronResizableBehavior],
 
             /* Properties that can be defined on the element */
             properties: {
