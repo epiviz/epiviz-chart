@@ -1,98 +1,98 @@
 .ui.grid {
-    padding: 0px;
-    /*max-height: inherit;*/
-    height: 100%;
+  padding: 0px;
+  /*max-height: inherit;*/
+  height: 100%;
 }
 
 #titleRow {
-    padding: 0;
+  padding: 0;
 }
 
 #sourcemodal {
-    /*top:40%;*/
-    /*left: 60%;*/
+  /*top:40%;*/
+  /*left: 60%;*/
 }
 
 #newmodal {
-    /*left: 50%;*/
-    top: 40%;
-    /*max-height: 400px;*/
-    height: 90%;
-    width: 85%;
+  /*left: 50%;*/
+  top: 40%;
+  /*max-height: 400px;*/
+  height: 90%;
+  width: 85%;
 }
 
 #leftRightRow {
-    height: 350px;
+  height: 350px;
 }
 
 #leftRightRow #annoMenu {
-    overflow: auto;
-    padding-right: 0px;
+  overflow: auto;
+  padding-right: 0px;
 }
 
 #leftRightRow .twelve.wide.column {
-    overflow: auto;
+  overflow: auto;
 }
 
 #leftmenu {
-    width: 100%;
-    overflow: auto;
+  width: 100%;
+  overflow: auto;
 }
 
-#leftmenu .item .title{
-    word-wrap: break-word;
+#leftmenu .item .title {
+  word-wrap: break-word;
 }
 
 #leftmenu #annoSearch .icon.input {
-    margin: 5px;
-    width: 95%;
-    height: 30px;
+  margin: 5px;
+  width: 95%;
+  height: 30px;
 }
 
 #rightmenu {
-    /*height: 335px;*/
-    /* height: 100%; */
+  /*height: 335px;*/
+  /* height: 100%; */
 }
 
 #rightmenu .content {
-    overflow: auto;
-    /*height: 290px;*/
-    height: 100%;
+  overflow: auto;
+  /*height: 290px;*/
+  height: 100%;
 }
 
 #rightmenu .item {
-    height: 100%;
+  height: 100%;
 }
 
 #leftRightRow {
-    height: 100%;
+  height: 100%;
 }
 
 #titleRow {
-    height: 30px;
+  height: 30px;
 }
 
 #titleRow div.four {
-    vertical-align: middle;
-    height: 30px;
-    line-height: 30px;
+  vertical-align: middle;
+  height: 30px;
+  line-height: 30px;
 }
 
 #titleRow div.twelve {
-    height: 30px;
-    line-height: 30px;
+  height: 30px;
+  line-height: 30px;
 }
 
 #startScreenApp {
-    height: 250px;
-    top: 40%;
+  height: 250px;
+  top: 40%;
 }
 
 #startScreenApp > div.content.m > div {
-    overflow: scroll;
-    height: 180px;
+  overflow: scroll;
+  height: 180px;
 }
 
 #newmodal > div.content.m {
-    height: 80%;
+  height: 80%;
 }

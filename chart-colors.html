@@ -7,8 +7,8 @@
 
 <script>
     /**
-     * `ChartColorsBehavior` object manages the `<epiviz-chart-colors>` element for each chart. 
-     * All charts automatically inherit this behavior to update chart colors.
+     * `ChartColorsBehavior` manages the `<epiviz-chart-colors>` element for each chart. 
+     * All charts inherit this behavior to update chart colors.
      *
      * @polymerBehavior
     **/
@@ -16,18 +16,16 @@
         /**
          * Shows the `<epiviz-chart-colors>` element
          */
-        _showColorsDialog: function() {
+        _showColorsDialog: function () {
             var self = this;
             var chartContainer = this.$$('#' + this.plotId);
             var currColors = this.$$('epiviz-chart-colors');
 
-            if(currColors == null) {
+            if (currColors == null) {
                 var currColors = document.createElement('epiviz-chart-colors');
                 currColors.setAttribute('labels', JSON.stringify(self.chart.colorLabels()));
                 currColors.palettes = self.config.colorPalettes;
                 currColors.selected = self.chart.colors();
-                // chartSettingsElem.setAttribute('palettes', JSON.stringify(palettes));
-                // chartSettingsElem.setAttribute('selected', JSON.stringify(selected));
                 Polymer.dom(chartContainer).appendChild(currColors);
             }
             else {
@@ -35,20 +33,20 @@
                 currColors.selected = self.chart.colors();
             }
 
-            currColors.showColors(self, function(newColors) {
+            currColors.showColors(self, function (newColors) {
                 self.chartColors = newColors;
             });
         },
 
         /**
-         * Initializes the `<epiviz-chart-colors>` element
+         * Initializes the `<epiviz-chart-colors>` element.
          */
-        _initializeColorsDialog: function() {
+        _initializeColorsDialog: function () {
             var chartSettingsContainer = this.$$('#chartSettingsContainer');
             var chartContainer = this.$$('#' + this.plotId);
             var currColorIcon = this.$$('#chartColorsIcon');
 
-            if(currColorIcon == null) {
+            if (currColorIcon == null) {
                 var iconElem = document.createElement('paper-icon-button');
                 // iconElem.hidden = true;
                 iconElem.id = "chartColorsIcon";
@@ -57,6 +55,6 @@
                 iconElem.addEventListener("click", this._showColorsDialog.bind(this));
                 Polymer.dom(chartSettingsContainer).appendChild(iconElem);
             }
-        }        
+        }
     }
 </script>

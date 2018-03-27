@@ -15,11 +15,22 @@
 <link rel="import" href="chart-shared-css.html">
 
 <!--
-`<epiviz-genes-track>` creates a genes track chart.
+<h2> Chart Component </h2>
+epiviz-chart components are a collection of reusable and extensible visualization components for
+genomic data. 
 
-Most element attributes are defined in `<epiviz.ChartBehavior>` element.
+An epiviz-chart component requires two attributes to render a visualization on the page 
+<ul>
+    <li>data attribute,  </li>
+    <li>dimensions (or columns) from the data attribute to visualize.</li>
+</ul>
 
-To use, add `<epiviz-genes-track>` in the page
+`<epiviz-genes-track>` creates a genes track chart. Genes track visualizes the 
+    location of genes in a genomic region and the exon positions.
+
+Element attributes are defined in <a href="#epiviz.ChartBehavior">`<epiviz.ChartBehavior>`</a> element.
+
+To create a genes track on a HTML page, add
 
       <epiviz-genes-track></epiviz-genes-track>
 
@@ -39,7 +50,7 @@ To use, add `<epiviz-genes-track>` in the page
                 display: inline-block;
                 border: 1px solid black;
                 border-radius: 5px;
-                transition: width 0.01s, height 0.01s; 
+                transition: width 0.01s, height 0.01s;
                 resize: vertical;
                 overflow: auto;
                 position: relative;
@@ -51,7 +62,7 @@ To use, add `<epiviz-genes-track>` in the page
         <div id="chart" on-drag="hostDragged" on-mouseover="hostHovered" on-mouseout="hostUnhovered">
             <div id="{{plotId}}"></div>
         </div>
-    
+
     </template>
 
     <script>
@@ -71,11 +82,11 @@ To use, add `<epiviz-genes-track>` in the page
                 configSrc: {
                     type: Object,
                     notify: true,
-                    value: function() {
+                    value: function () {
 
                         epiviz.Config.SETTINGS = {
                             dataProviders: [
-                                ["epiviz.data.WebServerDataProvider", "umd", "https://epiviz.cbcb.umd.edu/data/main.php"]
+                                ["epiviz.data.WebServerDataProvider", "umd", "http://epiviz-dev.cbcb.umd.edu/api/"]
                             ],
                             workspacesDataProvider: sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''),
                             useCache: true,
@@ -174,7 +185,7 @@ To use, add `<epiviz-genes-track>` in the page
             // created: function() {},
 
             /* callback function after the element is attached to the DOM */
-            attached: function() {
+            attached: function () {
 
                 var self = this;
 
@@ -205,7 +216,7 @@ To use, add `<epiviz-genes-track>` in the page
                     var dataProviderFactory = new epiviz.data.DataProviderFactory(self.config);
                     var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);
 
-                    dataManager.getData(self.range, chartMeasMap, function(id, data) {
+                    dataManager.getData(self.range, chartMeasMap, function (id, data) {
                         self.data = data;
                     });
                 }
@@ -214,7 +225,7 @@ To use, add `<epiviz-genes-track>` in the page
             },
 
             /* callback function after the element is initialized */
-            ready: function() {
+            ready: function () {
                 var self = this;
                 // style observer on charts
                 self.plotId = self.plotId || self._generatePlotId();
@@ -228,7 +239,7 @@ To use, add `<epiviz-genes-track>` in the page
              * @param {Object<epiviz.datatypes.GenomicRange>} range genomic range.
              * @param {Object<epiviz.datatypes.MapGenomicData>} data to plot
              */
-            _draw: function() {
+            _draw: function () {
                 this.chart.draw(this.range, this.data);
                 this.set("_hideLoader", true);
             },
@@ -238,7 +249,7 @@ To use, add `<epiviz-genes-track>` in the page
              *
              * @return {epiviz.plugins.charts.GenesTrackType} GenesTrack chart object
              */
-            _createChart: function() {
+            _createChart: function () {
                 var self = this;
                 return new epiviz.plugins.charts.GenesTrackType(self.config);
             }

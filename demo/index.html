@@ -6,7 +6,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js" integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="../bower_components/jquery-collision/js/jquery-collision.js"></script>
     <link rel="import" href="../epiviz-scatter-plot.html">
     <link rel="import" href="../epiviz-genes-track.html">
     <link rel="import" href="../epiviz-line-track.html">
@@ -19,7 +22,7 @@
 
 <body>
     <h3>Environment and charts</h3>
-    <!--<epiviz-data-source provider-type="epiviz.data.WebServerDataProvider" provider-id="umd" provider-url="https://epiviz.cbcb.umd.edu/data/main.php">
+    <!--<epiviz-data-source provider-type="epiviz.data.WebServerDataProvider" provider-id="umd" provider-url="http://epiviz-dev.cbcb.umd.edu/api/">
     </epiviz-data-source>-->
     <!--<epiviz-environment>
         <epiviz-genes-track use-default-data-provider="true"></epiviz-genes-track>
@@ -33,17 +36,23 @@
     </epiviz-environment>-->
 
     <div id="charts">
-        <epiviz-genes-track use-default-data-provider="true"></epiviz-genes-track><br/>
-        <epiviz-scatter-plot use-default-data-provider="true"></epiviz-scatter-plot><br/>
-        <epiviz-blocks-track use-default-data-provider="true"></epiviz-blocks-track><br/>
-        <epiviz-stacked-line-plot use-default-data-provider="true"></epiviz-stacked-line-plot><br/>
-        <epiviz-stacked-line-track use-default-data-provider="true"></epiviz-stacked-line-track><br/>
-        <epiviz-heatmap-plot use-default-data-provider="true"></epiviz-heatmap-plot><br/>
+        <epiviz-genes-track use-default-data-provider="true"></epiviz-genes-track>
+        <br/>
+        <epiviz-scatter-plot use-default-data-provider="true"></epiviz-scatter-plot>
+        <br/>
+        <epiviz-blocks-track use-default-data-provider="true"></epiviz-blocks-track>
+        <br/>
+        <epiviz-stacked-line-plot use-default-data-provider="true"></epiviz-stacked-line-plot>
+        <br/>
+        <epiviz-stacked-line-track use-default-data-provider="true"></epiviz-stacked-line-track>
+        <br/>
+        <epiviz-heatmap-plot use-default-data-provider="true"></epiviz-heatmap-plot>
+        <br/>
     </div>
 
     <!--<epiviz-environment id="testEnv">-->
-        <!--<epiviz-genes-track use-default-data-provider="true"></epiviz-genes-track>-->
-        <!--<epiviz-line-track use-default-data-provider="true"></epiviz-line-track>
+    <!--<epiviz-genes-track use-default-data-provider="true"></epiviz-genes-track>-->
+    <!--<epiviz-line-track use-default-data-provider="true"></epiviz-line-track>
         <epiviz-scatter-plot use-default-data-provider="true"></epiviz-scatter-plot>
         <epiviz-scatter-plot use-default-data-provider="true"></epiviz-scatter-plot>
         <epiviz-blocks-track use-default-data-provider="true"></epiviz-blocks-track>

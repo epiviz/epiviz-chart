@@ -15,11 +15,11 @@
 
 <!--
 `<epiviz-chart-colors>` is a view element that manages chart colors. 
-All charts automatically create an instance of `<epiviz-chart-colors>` element.
+
+All charts implement the `epiviz.ChartColorsBehavior` that manages this element.
 -->
 
 <dom-module id="epiviz-chart-colors">
-
     <template>
         <style>
             .flex {
@@ -71,7 +71,7 @@ All charts automatically create an instance of `<epiviz-chart-colors>` element.
                             <div class="flexchild">
                                 <template is="dom-repeat" items="{{labels}}">
                                     <template restamp="true" is="dom-if" if="[[_isIndexGroup(index, 1)]]">
-                                        <div class="color-item">                                        
+                                        <div class="color-item">
                                             <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
                                             <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
                                         </div>
@@ -98,7 +98,7 @@ All charts automatically create an instance of `<epiviz-chart-colors>` element.
                 </form>
             </paper-dialog>
         </div>
-    
+
     </template>
 
     <script>
@@ -152,7 +152,7 @@ All charts automatically create an instance of `<epiviz-chart-colors>` element.
              *
              * @return {Object} color set for the given label
              */
-            _getColor: function(label) {
+            _getColor: function (label) {
                 return this.selected.getByKey(label);
             },
 
@@ -163,8 +163,8 @@ All charts automatically create an instance of `<epiviz-chart-colors>` element.
              * @param {number} expeced expected group
              * @return {boolean} returns True if value in expected
              */
-            _isIndexGroup: function(value, expected) {
-                if( value % 3 == expected ) {
+            _isIndexGroup: function (value, expected) {
+                if (value % 3 == expected) {
                     return true;
                 }
 
@@ -178,26 +178,26 @@ All charts automatically create an instance of `<epiviz-chart-colors>` element.
              * 
              * @return {string} return label ignoring white spaces
              */
-            _getId: function(label) {
+            _getId: function (label) {
                 return label.split(' ').join('');
             },
 
             /**
              * handles form submit action
              */
-            _submit: function(event) {
+            _submit: function (event) {
                 this.$.formSettings.submit();
             },
 
             /**
              * handles form submit action
              */
-            _form_submit: function(event) {
+            _form_submit: function (event) {
                 var self = this;
 
                 //collect all colors set
                 colors = [];
-                for (var i=0; i < this.labels.length; i++) {
+                for (var i = 0; i < this.labels.length; i++) {
                     var swatch = self.$$('#' + this._getId(this.labels[i]));
                     colors.push(swatch.color);
                 }
@@ -212,14 +212,14 @@ All charts automatically create an instance of `<epiviz-chart-colors>` element.
             /**
              * handles form cancel action
              */
-            _cancel: function(event) {
+            _cancel: function (event) {
                 this.closeColors();
             },
 
             /**
              * handles element modal show action
              */
-            showColors: function(target, callback) {
+            showColors: function (target, callback) {
                 this.callback = callback;
                 this.$.modal.positionTarget = target;
                 this.$.modal.open();
@@ -228,15 +228,15 @@ All charts automatically create an instance of `<epiviz-chart-colors>` element.
             /**
              * handles element modal close action
              */
-            closeColors: function() {
+            closeColors: function () {
                 this.$.modal.close();
             },
 
             // Initialization that should happen or use FactoryImpl 
             // created: function() {},
 
-            /* callback function after the element is initialized */
-            ready: function() {
+            /* lifecycle callback function after the element is ready */
+            ready: function () {
                 var self = this;
                 self.$.scrollContent.dialogElement = self.$.modal;
                 self.$.formSettings.addEventListener('iron-form-submit', this._form_submit.bind(self));

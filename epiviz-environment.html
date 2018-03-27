@@ -3,7 +3,6 @@
 
 <!-- Epiviz imports dependency -->
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
-<!-- <link rel="import" href="../epiviz-imports/epiviz-common-css.html"> -->
 
 <!-- Epiviz Polymer Behaviors dependency -->
 <link rel="import" href="chart-data-behavior.html">
@@ -22,11 +21,33 @@
 <link rel="import" href="../iron-label/iron-label.html">
 
 <!--
-`<epiviz-environment>` is a wrapper element that manages measurements, handles events and brushing across all of its children `<epiviz-charts>` elements.
+<h2> App Component </h2>
 
-To use, add `<epiviz-environment>` in the page
+epiviz-chart components are pure user interface (UI) elements. They cannot make data requests
+or can directly interact with other epiviz elements on the page. Chart elements emit hover events
+that propagate up the DOM hierarchy. To build interactive web applications or to coordinate
+events, interactions and data requests across different chart elements, we encapsulate charts inside
+app components.
 
-      <epiviz-environment></epiviz-environment>
+Another essential part of the epiviz design is that data and plots are separated: you can visualize
+multiple charts from the same data object without having to replicate the data. This way, data
+queries are made by the data object, not per chart, which leads to a more responsive design of the
+system.
+
+epiviz-app components are abstract components that 1) manage layouts, 2) coordinate interactions
+across charts by genomic position and 3) handle and cache data across charts.
+
+<h2> `epiviz-environment` </h2>
+`epiviz-environment` is an app component and is not linked to a specific genomic region. If a genomic region is
+not set, the charts visualize the entire data set. 
+
+To create an environment element on a HTML page, add
+
+      <epiviz-environment>
+          .. can have epiviz-charts as children html nodes
+          <epiviz-genes-track></epiviz-genes-track>
+          <epiviz-scatter-plot></epiviz-scatter-plot>
+      </epiviz-environment>
 
 @demo demo/index-environment.html Example page showing a environment element with charts 
 -->
@@ -34,7 +55,7 @@ To use, add `<epiviz-environment>` in the page
 <dom-module id="epiviz-environment">
     <template>
         <style>
-            :host{
+            :host {
                 display: inline-block;
                 /* padding: 15px; */
                 width: 99%;
@@ -45,18 +66,18 @@ To use, add `<epiviz-environment>` in the page
                 border-radius: 5px;
                 /* padding: 4px; */
                 /* margin:5px; */
-                transition:width 0.01s, height 0.01s;
+                transition: width 0.01s, height 0.01s;
                 @apply(--shadow-elevation-2dp);
             }
 
 
             #chartSettingsContainer {
-                position:absolute;
+                position: absolute;
                 top: 0;
                 right: 0;
                 border: 1px solid #000;
                 border-radius: 2px;
-                margin:1px;
+                margin: 1px;
             }
 
             .paper-header {
@@ -92,8 +113,12 @@ To use, add `<epiviz-environment>` in the page
             }
 
             .content {
+<<<<<<< HEAD
                 /* min height should be height of largest plot */
                 min-height:500px;
+=======
+                min-height: 200px;
+>>>>>>> updating documentation
                 padding: 5px;
                 display: grid;
                 grid-template-columns: repeat(6, 1fr);
@@ -117,30 +142,29 @@ To use, add `<epiviz-environment>` in the page
                 grid-column: span 6;
                 order: 2;
             }
-
         </style>
 
-            <div id="header" class="paper-header">
-                <iron-label>EPIVIZ ENVIRONMENT</iron-label>
-                <a href="http://epiviz.github.io" target="_blank" hidden$="[[noLogo]]">
-                    <img id="logo" src="epiviz_4_logo_medium.png" alt="Epiviz" width="100" height="21">
-                </a>
-                <!-- <iron-dropdown> -->
-                <!-- </iron-dropdown> -->
+        <div id="header" class="paper-header">
+            <iron-label>EPIVIZ ENVIRONMENT</iron-label>
+            <a href="http://epiviz.github.io" target="_blank" hidden$="[[noLogo]]">
+                <img id="logo" src="epiviz_4_logo_medium.png" alt="Epiviz" width="100" height="21">
+            </a>
+            <!-- <iron-dropdown> -->
+            <!-- </iron-dropdown> -->
 
-                <epiviz-add-chart id="addChart"></epiviz-add-chart> 
-                <paper-menu-button dynamic-align vertical-align="bottom" vertical-offset=24>
-                    <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
-                    <paper-menu class="dropdown-content">
-                        <paper-item>Delete</paper-item>
-                        <paper-item>Clone</paper-item>
-                    </paper-menu>
-                </paper-menu-button>
-            </div>
-            <div id="chartContainer" class="content">
-                <div class="isempty" hidden$="{{_isEmpty}}">Add a New Chart to the Workspace</div>
-                <content id="chartEnv" select=".charts"></content>
-            </div>
+            <epiviz-add-chart id="addChart"></epiviz-add-chart>
+            <paper-menu-button dynamic-align vertical-align="bottom" vertical-offset=24>
+                <paper-icon-button icon="menu" class="dropdown-trigger"></paper-icon-button>
+                <paper-menu class="dropdown-content">
+                    <paper-item>Delete</paper-item>
+                    <paper-item>Clone</paper-item>
+                </paper-menu>
+            </paper-menu-button>
+        </div>
+        <div id="chartContainer" class="content">
+            <div class="isempty" hidden$="{{_isEmpty}}">Add a New Chart to the Workspace</div>
+            <content id="chartEnv" select=".charts"></content>
+        </div>
     </template>
 
     <script>
@@ -149,7 +173,7 @@ To use, add `<epiviz-environment>` in the page
             behaviors: [epiviz.ChartDataBehavior, epiviz.ChartWorkspaceBehavior, epiviz.ChartAddBehavior, Polymer.IronResizableBehavior],
 
             properties: {
-                
+
                 /**
                  * Measurement Object mapped to measurements provided from `<epiviz-data-source>`.
                  *
@@ -172,7 +196,7 @@ To use, add `<epiviz-environment>` in the page
                 chr: {
                     type: String,
                     notify: true,
-                    value : "all"
+                    value: "all"
                 },
 
                 /**
@@ -184,7 +208,7 @@ To use, add `<epiviz-environment>` in the page
                 start: {
                     type: Number,
                     notify: true,
-                    value : null
+                    value: null
                 },
 
                 /**
@@ -196,7 +220,7 @@ To use, add `<epiviz-environment>` in the page
                 end: {
                     type: Number,
                     notify: true,
-                    value : null
+                    value: null
                 },
 
                 /**
@@ -207,7 +231,7 @@ To use, add `<epiviz-environment>` in the page
                 range: {
                     type: Object,
                     notify: true,
-		            computed: 'getGenomicRange(chr, start, end)'
+                    computed: 'getGenomicRange(chr, start, end)'
                 },
 
                 /**
@@ -239,7 +263,7 @@ To use, add `<epiviz-environment>` in the page
                  * Whether to show/hide the epiviz logo
                  *
                  * @type {boolean}
-                 */  
+                 */
                 noLogo: {
                     type: Boolean,
                     notify: true,
@@ -251,7 +275,7 @@ To use, add `<epiviz-environment>` in the page
                  * Whether to use the default layout
                  *
                  * @type {boolean}
-                 */  
+                 */
                 useLayout: {
                     type: Boolean,
                     notify: true,
@@ -263,8 +287,8 @@ To use, add `<epiviz-environment>` in the page
                  * Whether the element has no children
                  *
                  * @type {boolean}
-                 */   
-                 _isEmpty: {
+                 */
+                _isEmpty: {
                     type: Boolean,
                     notify: true,
                     value: function () {
@@ -291,20 +315,20 @@ To use, add `<epiviz-environment>` in the page
                 // 'transitionend': '_onResize'
             },
 
-            _updateNavRegion: function(e) {
+            _updateNavRegion: function (e) {
 
-                for(var regIndex = 0; regIndex < this.navigationRegions.length; regIndex++) {
+                for (var regIndex = 0; regIndex < this.navigationRegions.length; regIndex++) {
                     // nRegions.push(this.navigationRegions[regIndex]["range"]);
-                    if(e.detail.plotId == this.navigationRegions[regIndex]["plotId"]
-                            && (e.detail.range != this.navigationRegions[regIndex]["range"])
-                            ) {
+                    if (e.detail.plotId == this.navigationRegions[regIndex]["plotId"]
+                        && (e.detail.range != this.navigationRegions[regIndex]["range"])
+                    ) {
                         this.navigationRegions.splice(regIndex, 1);
-                        this.push("navigationRegions", {"plotId": e.detail.plotId, "range": e.detail.range});
+                        this.push("navigationRegions", { "plotId": e.detail.plotId, "range": e.detail.range });
                     }
                 }
             },
 
-            _childWorkspaceChanged: function(e) {
+            _childWorkspaceChanged: function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 this.saveWorkspace();
@@ -313,14 +337,14 @@ To use, add `<epiviz-environment>` in the page
             /**
              * Resizes the chart.
              */
-            _onResize: function() {
+            _onResize: function () {
                 // console.log("env resize");
                 var self = this;
                 var numChildren = self.getEffectiveChildren().length;
-                if(numChildren > 0) {self.set('_isEmpty', true);}
+                if (numChildren > 0) { self.set('_isEmpty', true); }
                 for (var index = 0; index < numChildren; index++) {
                     var currentChild = self.getEffectiveChildren()[index];
-                    if(currentChild.nodeName.indexOf("-JSON-") != -1) {
+                    if (currentChild.nodeName.indexOf("-JSON-") != -1) {
                         currentChild.$.epivizChart._onResize();
                     }
                     else {
@@ -338,29 +362,29 @@ To use, add `<epiviz-environment>` in the page
              * 
              * @return {epiviz.datatypes.GenomicRange}
              */
-            getGenomicRange: function(chr, start, end) {
-                return new epiviz.datatypes.GenomicRange(chr, start, end-start);
+            getGenomicRange: function (chr, start, end) {
+                return new epiviz.datatypes.GenomicRange(chr, start, end - start);
             },
 
-            _navigationRegionsChanged: function() {
+            _navigationRegionsChanged: function () {
                 var self = this;
                 // console.log(this.navigationRegions);
-                if(this.navigationRegions && this.navigationRegions.length > 0) {
+                if (this.navigationRegions && this.navigationRegions.length > 0) {
                     // this.fire('navigationRegions', {
                     //     data: this.navigationRegions
                     // });
 
                     var nRegions = [];
 
-                    for(var regIndex = 0; regIndex < this.navigationRegions.length; regIndex++) {
+                    for (var regIndex = 0; regIndex < this.navigationRegions.length; regIndex++) {
                         nRegions.push(this.navigationRegions[regIndex]["range"]);
                     }
 
                     var numChildren = self.getEffectiveChildren().length;
-                    if(numChildren > 0) {self.set('_isEmpty', true);}
+                    if (numChildren > 0) { self.set('_isEmpty', true); }
                     for (var index = 0; index < numChildren; index++) {
                         var currentChild = self.getEffectiveChildren()[index];
-                        if(currentChild.nodeName === "EPIVIZ-SCATTER-PLOT") {
+                        if (currentChild.nodeName === "EPIVIZ-SCATTER-PLOT") {
                             currentChild.colorByRegions = nRegions;
                         }
                     }
@@ -373,7 +397,7 @@ To use, add `<epiviz-environment>` in the page
              *
              * @fires hoverAllCharts
              */
-            onHover: function(e) {
+            onHover: function (e) {
 
                 /**
                  * Propogates hover event to other charts.
@@ -395,7 +419,7 @@ To use, add `<epiviz-environment>` in the page
              * 
              * @fires unHoverAllCharts
              */
-            onUnhover: function(e) {
+            onUnhover: function (e) {
 
                 /**
                  * Propogates unHover event to other charts.
@@ -415,7 +439,7 @@ To use, add `<epiviz-environment>` in the page
              * 
              * @fires selectAllCharts
              */
-             onSelect: function(e) {
+            onSelect: function (e) {
 
                 /**
                  * Propogates select event to other charts.
@@ -435,7 +459,7 @@ To use, add `<epiviz-environment>` in the page
              * 
              * @fires unSelectAllCharts
              */
-             onDeSelect: function(e) {
+            onDeSelect: function (e) {
 
                 /**
                  * Propogates select event to other charts.
@@ -453,7 +477,7 @@ To use, add `<epiviz-environment>` in the page
              * MeasurementChange/ChartDimension event handler.
              * Listens to when a chart dimensions(axes) are changed and updates chart
              */
-            onDimChanged: function(e) {
+            onDimChanged: function (e) {
                 var chartId = e.detail.id;
 
                 if (chartId != null) {
@@ -470,7 +494,7 @@ To use, add `<epiviz-environment>` in the page
              * 
              * @return {string}
              */
-            _generatePlotId: function() {
+            _generatePlotId: function () {
                 var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 var result = '';
                 var size = 7;
@@ -484,16 +508,16 @@ To use, add `<epiviz-environment>` in the page
             /**
              * ChartLocation/RangeChange event handler.
              */
-            _rangeChanged: function() {
+            _rangeChanged: function () {
 
                 var self = this;
 
-                if(self.measurements) {
+                if (self.measurements) {
                     var numChildren = self.getEffectiveChildren().length;
-                    if(numChildren > 0) {self.set('_isEmpty', true);}
+                    if (numChildren > 0) { self.set('_isEmpty', true); }
                     for (var index = 0; index < numChildren; index++) {
                         var currentChild = self.getEffectiveChildren()[index];
-                        if(currentChild == undefined || currentChild.plotId == undefined) {return ;}
+                        if (currentChild == undefined || currentChild.plotId == undefined) { return; }
                         currentChild.range = self.range;
                         // self._updateChart(currentChild.plotId);  
                         self._getElementData(currentChild, self, self.measurements);
@@ -502,7 +526,7 @@ To use, add `<epiviz-environment>` in the page
             },
 
             /* callback function after the element is attached to the DOM */
-            attached: function() {
+            attached: function () {
                 var self = this;
 
                 // if(!(self.start && self.end && self.seqInfo[self.chr])) {
@@ -518,11 +542,11 @@ To use, add `<epiviz-environment>` in the page
                     cursorAt: {top: 10},
                 });
 
-                if(self.initializeRegions.length > 0) {
-                    for(var i=0; i< self.initializeRegions.length; i++) {
+                if (self.initializeRegions.length > 0) {
+                    for (var i = 0; i < self.initializeRegions.length; i++) {
                         var navElem = document.createElement("epiviz-navigation");
                         navElem.className = "charts";
-                        if(Object.keys(self.initializeRegions[i]).indexOf("gene") != -1) {
+                        if (Object.keys(self.initializeRegions[i]).indexOf("gene") != -1) {
                             navElem.gene = self.initializeRegions[i].gene;
                         }
                         else {
@@ -535,27 +559,27 @@ To use, add `<epiviz-environment>` in the page
                 }
 
                 self._observer =
-                    Polymer.dom(self.$.chartEnv).observeNodes(function(info) {
-                        info.addedNodes.forEach(function(node) {
+                    Polymer.dom(self.$.chartEnv).observeNodes(function (info) {
+                        info.addedNodes.forEach(function (node) {
                             // self._updateChart(node.plotId);
                             node._parentContainer = self;
-                            if(node.nodeName === "EPIVIZ-NAVIGATION") {
+                            if (node.nodeName === "EPIVIZ-NAVIGATION") {
                                 self._getElementSeqInfo(node, Polymer.dom(self));
 
-                                self.push("navigationRegions", {"plotId": node.plotId, "range": node.range});
+                                self.push("navigationRegions", { "plotId": node.plotId, "range": node.range });
 
                                 // if(node.collapsed) {
-                                    var navChildren = node.getEffectiveChildren().length;
-                                    for (var nindex = 0; nindex < navChildren; nindex++) {
-                                        var currentNavChild = node.getEffectiveChildren()[nindex];
-                                        currentNavChild._parentContainer = self;
-                                        if(!currentNavChild.data) {
-                                            self._getElementData(currentNavChild, self, self.measurements);
-                                        }                                    
+                                var navChildren = node.getEffectiveChildren().length;
+                                for (var nindex = 0; nindex < navChildren; nindex++) {
+                                    var currentNavChild = node.getEffectiveChildren()[nindex];
+                                    currentNavChild._parentContainer = self;
+                                    if (!currentNavChild.data) {
+                                        self._getElementData(currentNavChild, self, self.measurements);
                                     }
+                                }
                             }
                             else {
-                                if(!node.data) {
+                                if (!node.data) {
                                     self._getElementData(node, self, self.measurements);
                                 }
                             }
@@ -566,7 +590,7 @@ To use, add `<epiviz-environment>` in the page
                         self.saveWorkspace();
                     });
 
-                    self.$.addChart._parentContainer = self;
+                self.$.addChart._parentContainer = self;
             },
 
             // created: function() {
@@ -574,13 +598,13 @@ To use, add `<epiviz-environment>` in the page
             // },
 
             /* callback function after the element is initialized & attached */
-            ready: function() {
+            ready: function () {
                 // this.scopeSubtree(this, true);
                 var self = this;
 
                 self.plotId = self.plotId || self._generatePlotId();
 
-                if(self.transformDataFunc) {
+                if (self.transformDataFunc) {
                     self.transformFunc = new Function('return ' + self.transformDataFunc);
                 }
                 else {
@@ -589,11 +613,11 @@ To use, add `<epiviz-environment>` in the page
 
                 // self._getElementSeqInfo(self, self);
 
-                if(self.chr != "all") {
+                if (self.chr != "all") {
                     self._getElementSeqInfo(self, self);
                 }
 
-                if(self.workspace) {
+                if (self.workspace) {
                     self.loadWorkspace(self.workspace);
                 }
                 self._initializeAddDialog();

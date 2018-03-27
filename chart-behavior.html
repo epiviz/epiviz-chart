@@ -4,63 +4,79 @@
 <link rel="import" href="../paper-spinner/paper-spinner.html">
 <link rel="import" href="../paper-spinner/paper-spinner-lite.html">
 
-
 <dom-module id="shared-settings">
-  <template>
-    <style>
-        :host {
-            /* overflow: hidden;
-            border: 1px solid black;
-            border-radius: 5px; */
-            margin:2px;
-        };
-        #chartSettingsContainer {
-            position:absolute;
-            top: 0;
-            right: 0;
-            border: 1px solid #000;
-            border-radius: 2px;
-            margin:1px;
-        }
+    <template>
+        <style>
+            :host {
+                margin: 2px;
+            }
 
-        #chartSettingsIcon, 
-        #chartColorsIcon, 
-        #chartRemoveIcon,
-        #chartExpandIcon,
-        #chartContractIcon {
-            float: right;
-            width: 24px;
-            height: 24px;
-            padding: 1px;
-        }
+            #chartSettingsContainer {
+                position: absolute;
+                top: 0;
+                right: 0;
+                border: 1px solid #000;
+                border-radius: 2px;
+                margin: 1px;
+            }
 
-        paper-spinner-lite {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translateX(-50%) translateY(-50%); 
-            height:75px;
-            width: 75px;
-        }
-    </style>
-  </template>
+            #chartSettingsIcon,
+            #chartColorsIcon,
+            #chartRemoveIcon,
+            #chartExpandIcon,
+            #chartContractIcon {
+                float: right;
+                width: 24px;
+                height: 24px;
+                padding: 1px;
+            }
+
+            paper-spinner-lite {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translateX(-50%) translateY(-50%);
+                height: 75px;
+                width: 75px;
+            }
+        </style>
+    </template>
 </dom-module>
 
 <script>
     /**
-     * `ChartBehavior` is an interface to all epiviz-charts. 
-     * all charts inherit this behavior.
+     * `ChartBehavior` is an interface to all epiviz-charts. It implements common methods and properties
+     * on all plots and tracks. All charts inherit this behavior.
      *
      * @polymerBehavior
     **/
     epiviz.ChartBehavior = {
-        properties : {
+        properties: {
+
+
+            /**
+             * Measurements for the chart. (x and y axis measurements)
+             * Charts automatically sets measurements from `dimS`.
+             *
+             * Note: Either `measurements` or `dimS` have to be defined on the chart.
+             * 
+             * @type {Array<Object>}
+             */
+            measurements: {
+                type: Array,
+                notify: true,
+                observer: '_measurementsChanged'
+            },
 
             /**
              * Dimensions for a chart. (x and y axis measurements).
+             * if the parent container (navigation or environment) defines measurements, those can be
+             * used as measurements for charts.
              *
+             * Note: Either `measurements` or `dimS` have to be defined on the chart.
+             * 
              * @type {Array<string>}
-             */            
+             */
             dimS: {
                 type: Array,
                 notify: true
@@ -68,21 +84,22 @@
 
 
             /**
-             * Parent Container if chart is part of Nav or Env
+             * Parent Container if chart is part of Nav or Env.
              *
              * @type {Object}
-             */            
-             _parentContainer: {
+             */
+            _parentContainer: {
                 type: Object,
                 notify: true,
                 observer: "_parentContainerChanged"
             },
 
             /**
-             * Whether to use a default data provider. only for testing & development. 
+             * Whether to use a default data provider.
+             * Note: only for testing & development.
              *
              * @type {boolean}
-             */   
+             */
             useDefaultDataProvider: {
                 type: Boolean,
                 notify: true
@@ -92,7 +109,7 @@
              * Chart data object.
              *
              * @type {Object<epiviz.datatypes.MapGenomicData>}
-             */   
+             */
             data: {
                 type: Object,
                 notify: true,
@@ -100,25 +117,14 @@
             },
 
             /**
-             * Unique chart Id
+             * Unique plot-id. an id will be assigned if not set
              *
              * @type {string}
-             */   
+             */
             plotId: {
                 type: String,
                 reflectToAttribute: true,
                 notify: true
-            },
-
-            /**
-             * Measurements for the chart. Charts automatically sets measurements from `dimS`.
-             *
-             * @type {Array<Object>}
-             */   
-            measurements: {
-                type: Array,
-                notify: true,
-                observer: '_measurementsChanged'
             },
 
             /**
@@ -144,7 +150,7 @@
             },
 
             /**
-             * Chart Colors. 
+             * Color palette to use.
              *
              * @type {Array<epiviz.ui.charts.ColorPalette>}
              */
@@ -154,11 +160,22 @@
                 observer: '_chartColorsChanged'
             },
 
+            /**
+             * if host is dragged. 
+             * used to remove events when a chart dragging is in progress.
+             *
+             * @type {boolean}
+             */
             hostDragging: {
-                type: Boolean,    
-                value: false,            
+                type: Boolean,
+                value: false,
             },
 
+            /**
+             * Show/Hide loading screen.
+             *
+             * @type {boolean}
+             */
             _hideLoader: {
                 type: Boolean,
                 notify: true,
@@ -175,48 +192,45 @@
             'transitionend': '_onResize'
         },
 
-        // onElementResize: function(event) {
-        //     console.log(event);
-        // },
-
         /**
          * Resizes the chart.
+         * Automatically triggered when the browser window or the css for the element changes.
          */
-        _onResize: function() {
+        _onResize: function () {
             var self = this;
             // this._measurementsChanged();
-            if(this.chart != null) {
-                this.chart._properties.width = Math.max(self.chartType.defaultWidth()/2, self.offsetWidth - epiviz.ui.charts.Visualization.SVG_MARGIN);
+            if (this.chart != null) {
+                this.chart._properties.width = Math.max(self.chartType.defaultWidth() / 2, self.offsetWidth - epiviz.ui.charts.Visualization.SVG_MARGIN);
                 this.chart._properties.height = Math.max(self.chartType.defaultHeight(), self.offsetHeight - epiviz.ui.charts.Visualization.SVG_MARGIN);
                 self._dataChanged();
             }
         },
 
         /**
-         * Assign Parent Container
-         * intiialize chart brushing events
+         * Callback when a parent container is assigned to charts. 
+         * Initialize chart brushing and other interaction events.
          * 
          * @return {string}
          */
-        _parentContainerChanged: function() {
+        _parentContainerChanged: function () {
             var self = this;
 
             var parent = self._parentContainer;
 
-            if(self.nodeName == "EPIVIZ-NAVIGATION") {
-                
-                parent.addEventListener('hoverAllCharts', function(e) {
-                    if(self.collapsed) {
-                        if(Array.isArray(e.detail.data)) {
+            if (self.nodeName == "EPIVIZ-NAVIGATION") {
+
+                parent.addEventListener('hoverAllCharts', function (e) {
+                    if (self.collapsed) {
+                        if (Array.isArray(e.detail.data)) {
                             for (var rIndex = 0; rIndex < e.detail.data.length; rIndex++) {
-                                if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data[rIndex])) {
+                                if (self.$$("#navTrack").chartObject.overlapsWith(e.detail.data[rIndex])) {
                                     self.$$("#navTrack").hover();
                                     break;
                                 }
                             }
                         }
                         else {
-                            if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
+                            if (self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
                                 self.$$("#navTrack").hover();
                             }
                         }
@@ -230,8 +244,8 @@
                     }
                 }.bind(self));
 
-                parent.addEventListener('unHoverAllCharts', function(e) {
-                    if(self.collapsed) {
+                parent.addEventListener('unHoverAllCharts', function (e) {
+                    if (self.collapsed) {
                         self.$$("#navTrack").unHover();
                     }
                     else {
@@ -243,18 +257,18 @@
                     }
                 }.bind(self));
 
-                parent.addEventListener('selectAllCharts', function(e) {
-                    if(!self.collapsed) {
-                        if(Array.isArray(e.detail.data)) {
+                parent.addEventListener('selectAllCharts', function (e) {
+                    if (!self.collapsed) {
+                        if (Array.isArray(e.detail.data)) {
                             for (var rIndex = 0; rIndex < e.detail.data.length; rIndex++) {
-                                if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data[rIndex])) {
+                                if (self.$$("#navTrack").chartObject.overlapsWith(e.detail.data[rIndex])) {
                                     self.$$("#navTrack").hover();
                                     break;
                                 }
                             }
                         }
                         else {
-                            if(self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
+                            if (self.$$("#navTrack").chartObject.overlapsWith(e.detail.data)) {
                                 self.$$("#navTrack").hover();
                             }
                         }
@@ -268,8 +282,8 @@
                     }
                 }.bind(self));
 
-                parent.addEventListener('unSelectAllCharts', function(e) {
-                    if(!self.collapsed) {
+                parent.addEventListener('unSelectAllCharts', function (e) {
+                    if (!self.collapsed) {
                         self.$$("#navTrack").unHover();
                     }
                     else {
@@ -282,25 +296,25 @@
                 }.bind(self));
             }
             else {
-                parent.addEventListener('hoverAllCharts', function(e) {
+                parent.addEventListener('hoverAllCharts', function (e) {
                     if (!self.hostDragging) {
                         self.hover(e.detail.data);
                     }
                 }.bind(self));
 
-                parent.addEventListener('unHoverAllCharts', function(e) {
+                parent.addEventListener('unHoverAllCharts', function (e) {
                     if (!self.hostDragging) {
                         self.unHover();
                     }
                 }.bind(self));
 
-                parent.addEventListener('selectAllCharts', function(e) {
+                parent.addEventListener('selectAllCharts', function (e) {
                     if (!self.hostDragging) {
                         self.select(e.detail.data);
                     }
                 }.bind(self));
 
-                parent.addEventListener('unSelectAllCharts', function(e) {
+                parent.addEventListener('unSelectAllCharts', function (e) {
                     if (!self.hostDragging) {
                         self.deSelect();
                     }
@@ -309,11 +323,11 @@
         },
 
         /**
-         * Generates a unique chart ID
+         * Helper Function to generate a unique plot-id
          * 
          * @return {string}
          */
-        _generatePlotId: function() {
+        _generatePlotId: function () {
             var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
             var result = '';
             var size = 7;
@@ -327,18 +341,18 @@
 
         /**
          * MeasurementChange/ChartDimension event handler.
-         * Listens to when a chart dimensions(axes) are changed and updates chart
+         * Listens to when a chart dimensions(axes) are changed and redraws the chart.
          *
          * @fires dimChanged
          */
-        _dimChanged: function() {
+        _dimChanged: function () {
 
             /**
              * fires event when a chart dimensions are changed.
              *
              * @event dimChanged
              * @type {string}
-             * @property {string} id - Id of the chart element.
+             * @property {string} id - plot-id of the chart element.
              */
             $('#' + this.plotId).empty();
             this.fire('dimChanged', {
@@ -348,21 +362,22 @@
 
         /**
          * chartSettings change event handler.
+         * Listens to when a chart settings are changed and redraws the chart.
          */
-        _chartSettingsChanged: function() {
+        _chartSettingsChanged: function () {
             var self = this;
-            if(self.chartSettings && self.chart) {
+            if (self.chartSettings && self.chart) {
                 self.chart.setCustomSettingsValues(self.chartSettings);
             }
-            // self._dataChanged();
         },
 
         /**
          * chartColors change event handler.
+         * Listens to when a chart colors are changed and redraws the chart.
          */
-        _chartColorsChanged: function() {
+        _chartColorsChanged: function () {
             var self = this;
-            if(self.chartColors && self.chart) {
+            if (self.chartColors && self.chart) {
                 self.chartColorPalette = new epiviz.ui.charts.ColorPalette(self.chartColors);
                 self.chart.setColors(self.chartColorPalette);
                 self._dataChanged();
@@ -372,15 +387,13 @@
         /**
          * ChartLocation/RangeChange event handler.
          */
-        _rangeChanged: function() {
-            // this._measurementsChanged();
-        },
+        _rangeChanged: function () { },
 
         /**
          * MeasurementChange/ChartDimension event handler.
          * Listens to when a chart dimensions(axes) are changed and updates chart
          */
-        _measurementsChanged: function() {
+        _measurementsChanged: function () {
 
             var self = this;
 
@@ -413,9 +426,9 @@
                 self.chartType = self._createChart();
 
                 var width = self.offsetWidth - 40;
-                if(width < self.chartType.defaultWidth()/2) { width = self.chartType.defaultWidth()/2;}
+                if (width < self.chartType.defaultWidth() / 2) { width = self.chartType.defaultWidth() / 2; }
 
-                if(self.chartType) {
+                if (self.chartType) {
                     self.chartProperties = new epiviz.ui.charts.VisualizationProperties(
                         width,
                         self.chartType.defaultHeight(),
@@ -430,14 +443,14 @@
 
                     self.chart = self.chartType.createNew(self.plotId, $(Polymer.dom(self.root).querySelector("#" + self.plotId)), self.chartProperties);
 
-                    if(self.chartSettings != null || self.chartSettings != undefined) {
+                    if (self.chartSettings != null || self.chartSettings != undefined) {
                         self.chart.setCustomSettingsValues(self.chartSettings);
                     }
                     else {
                         self.chartSettings = self.chart._customSettingsValues;
                     }
 
-                    if(self.chartColors != null || self.chartColors != undefined) {
+                    if (self.chartColors != null || self.chartColors != undefined) {
                         self.chartColorPalette = new epiviz.ui.charts.ColorPalette(self.chartColors);
                         self.chart.setColors(self.chartColorPalette);
                     }
@@ -463,7 +476,7 @@
                      * @property {object} data - data object currently hovered.
                      */
                     self.chart.onHover().addListener(new epiviz.events.EventListener(
-                        function(e) {
+                        function (e) {
                             var id = e.id;
                             var data = e.args;
                             self.hover(data);
@@ -482,7 +495,7 @@
                      * @property {object} data - data object currently hovered.
                      */
                     self.chart.onUnhover().addListener(new epiviz.events.EventListener(
-                        function(e) {
+                        function (e) {
                             var id = e.id;
                             var data = e.args;
                             self.unHover();
@@ -499,8 +512,8 @@
                      * @type {object}
                      * @property {object} data - data object currently selected.
                      */
-                     self.chart.onSelect().addListener(new epiviz.events.EventListener(
-                        function(e) {
+                    self.chart.onSelect().addListener(new epiviz.events.EventListener(
+                        function (e) {
                             var id = e.id;
                             var data = e.args;
                             self.select(data);
@@ -518,8 +531,8 @@
                      * @event deSelect
                      * @type {object}
                      */
-                     self.chart.onDeselect().addListener(new epiviz.events.EventListener(
-                        function(e) {
+                    self.chart.onDeselect().addListener(new epiviz.events.EventListener(
+                        function (e) {
                             var id = e.id;
                             self.deSelect();
                             self.fire('deSelect', {
@@ -551,7 +564,7 @@
                         var dataProviderFactory = new epiviz.data.DataProviderFactory(self.config);
                         var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);
 
-                        dataManager.getData(self.range, chartMeasMap, function(id, data) {
+                        dataManager.getData(self.range, chartMeasMap, function (id, data) {
                             self.data = data;
                         });
                     }
@@ -561,8 +574,9 @@
 
         /**
          * ChartData change event handler.
+         * Listens to when chart data is updated and redraws the chart.
          */
-        _dataChanged: function() {
+        _dataChanged: function () {
             if (this.data != null && this.chart != null) {
                 this._draw();
             }
@@ -573,48 +587,48 @@
          *
          * @param {object} data data object currently hovered.
          */
-        hover: function(data) {
+        hover: function (data) {
             if (!this.hostDragging && this.hostDragging !== undefined && this.chart) {
-                this.chart.doHover(data);    
+                this.chart.doHover(data);
             }
         },
 
         /**
          * unHover event handler.
          */
-        unHover: function() {
+        unHover: function () {
             if (!this.hostDragging && this.hostDragging !== undefined && this.chart) {
-                this.chart.doUnhover();    
+                this.chart.doUnhover();
             }
         },
 
         /**
          * select event handler.
+         *
          * @param {object} data data object currently hovered.
          */
-         select: function(data) {
+        select: function (data) {
             this.chart.doSelect(data);
         },
 
         /**
          * deSelect event handler.
          */
-         deSelect: function() {
+        deSelect: function () {
             this.chart.doDeselect();
         },
 
         /**
-         * Intilizes chart container DOM element for settings and colors elements.
+         * Intializes chart container element for settings and colors elements.
          */
-        _initializeSettingsContainer: function() {
+        _initializeSettingsContainer: function () {
             var chartContainer = this.$$('#' + this.plotId);
             var settingsContainer = this.$$('#' + this.plotId + '-chartSettingsContainer');
 
-            if(settingsContainer == null) {
+            if (settingsContainer == null) {
                 var iconElem = document.createElement('div');
                 iconElem.hidden = true;
                 iconElem.id = "chartSettingsContainer";
-                // iconElem.addEventListener("click", this._showColorsDialog.bind(this));
                 Polymer.dom(chartContainer).appendChild(iconElem);
             }
         },
@@ -622,20 +636,20 @@
         /**
          * Handles when mouse-overed on a chart to show settings and colors.
          */
-        hostHovered: function() {
+        hostHovered: function () {
             var currColorsIcon = this.$$('#chartSettingsContainer');
-            if(currColorsIcon) {
+            if (currColorsIcon) {
                 currColorsIcon.hidden = false;
             }
         },
 
         /**
-         * Handles when mouse-overed on a chart to show settings and colors.
+         * Handles when mouse-overed on a chart to hide settings and colors.
          */
-        hostUnhovered: function() {
+        hostUnhovered: function () {
             var currColorsIcon = this.$$('#chartSettingsContainer');
-            if(currColorsIcon) {
-                currColorsIcon.setAttribute("hidden", true);   
+            if (currColorsIcon) {
+                currColorsIcon.setAttribute("hidden", true);
             }
         },
     }

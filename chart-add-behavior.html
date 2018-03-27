@@ -8,7 +8,7 @@
 <script>
     /**
      * `ChartAddBehavior` object manages the `<epiviz-add-chart>` element. 
-     * All environment and navigation charts automatically inherit this behavior to add a new chart.
+     * Environment and Navigation elements inherit this behavior to add a new chart.
      *
      * @polymerBehavior
     **/
@@ -17,34 +17,30 @@
         /**
          * Shows the `<epiviz-add-chart>` element
          */
-        _showAddDialog: function() {
-        },
+        _showAddDialog: function () { },
 
         /**
          * Initializes the `<epiviz-add-chart>` element
          */
-        _initializeAddDialog: function() {
+        _initializeAddDialog: function () {
             var chartContainer = this.$.header;
             var currAddElem = this.$$('epiviz-add-chart');
 
-            if(currAddElem) {
-                // var currAddElem = document.createElement('epiviz-add-chart');
-                // Polymer.dom(chartContainer).appendChild(currAddElem);
-                
+            if (currAddElem) {
                 var dataManagerElem = document.querySelector('epiviz-data-source');
-                if(dataManagerElem) {
+                if (dataManagerElem) {
                     Polymer.dom(currAddElem).measurements = dataManagerElem.measurementSet;
-                }               
+                }
             }
         },
 
         /**
-         * Intilizes chart container DOM element for settings and colors elements.
+         * Intializes chart container DOM element for settings and colors elements.
          */
-        _initializeDialogContainer: function() {
-        },
+        _initializeDialogContainer: function () { },
 
-        ready: function() {
+        /** lifecycle callback called when the behavior is ready. */
+        ready: function () {
             this._initializeDialogContainer();
         }
     }

@@ -22,8 +22,8 @@
 <script src="src/browser/tablesort.js"></script>
 
 <!--
-`<epiviz-add-chart>` is a view element that manages chart settings. 
-All charts automatically create an instance of `<epiviz-add-chart>` element.
+`<epiviz-add-chart>` allows adding new charts to the `epiviz-navigation` or `epiviz-environment`. 
+    Creates an Instance of the measurement browser.
 -->
 <dom-module id="epiviz-add-chart">
 
@@ -46,20 +46,17 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
             }
         </style>
         <!-- local DOM goes here -->
-        <!-- <div id="addChart"> -->
-            <paper-menu-button dynamic-align horizontal-align="right" vertical-offset=42>
-                <paper-button class="dropdown-trigger" raised>
-                    <iron-icon icon="editor:insert-chart"></iron-icon>
-                    <span>Add Visualization</span>
-                </paper-button>
-                <paper-menu class="dropdown-content" selected="{{selectedChart}}">
-                    <template is="dom-repeat" items="{{_charts}}">
-                        <paper-item on-click="_chartSelectionChanged">[[item]]</paper-item>
-                    </template>
-                </paper-menu>
-            </paper-menu-button>  
-        <!-- </div> -->
-    
+        <paper-menu-button dynamic-align horizontal-align="right" vertical-offset=42>
+            <paper-button class="dropdown-trigger" raised>
+                <iron-icon icon="editor:insert-chart"></iron-icon>
+                <span>Add Visualization</span>
+            </paper-button>
+            <paper-menu class="dropdown-content" selected="{{selectedChart}}">
+                <template is="dom-repeat" items="{{_charts}}">
+                    <paper-item on-click="_chartSelectionChanged">[[item]]</paper-item>
+                </template>
+            </paper-menu>
+        </paper-menu-button>
     </template>
 
     <script>
@@ -71,7 +68,8 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
             properties: {
 
                 /**
-                * Default chart setting definitions.
+                * currently available measurements on the app 
+                * uses measurements available from the `epiviz-data-source` element.
                 *
                 * @type {Array.<epiviz.ui.charts.CustomSetting>}
                 */
@@ -81,28 +79,36 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
                 },
 
                 /**
-                * selection object from browser
+                * selected measurements from browser.
                 * chartType:
                 * measurement:
+                * @type {Object}
                 */
                 selection: {
                     type: Object,
                     notify: true
                 },
 
+                /**
+                * selected chart from the browser.
+                *
+                * @type {Array.<epiviz.ui.charts.CustomSetting>}
+                */
                 selectedChart: {
                     type: String,
-                    notify: true,
-                    // observer: "_chartSelectionChanged"
+                    notify: true
                 },
 
+                /**
+                * currently available chart types on the app.
+                */
                 _chartTypes: {
                     type: Object,
                     notify: true,
                     reflectToAttribute: true,
-                    value: function() {
-                        return {                    
-                            "GenesTrack" : "epiviz-genes-track",
+                    value: function () {
+                        return {
+                            "GenesTrack": "epiviz-genes-track",
                             "BlocksTrack": 'epiviz-blocks-track',
                             "StackedBlocksTrack": 'epiviz-stacked-blocks-track',
                             "HeatmapPlot": "epiviz-heatmap-plot",
@@ -122,31 +128,34 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
                     computed: "_getCharts(_chartTypes)"
                 },
 
+                /**
+                * parentContainer
+                */
                 _parentContainer: {
                     type: Object,
                     notify: true
-                }   
+                }
             },
 
             /**
              * Get Available Chart Types
              */
-            _getCharts: function(chartTypes) {
+            _getCharts: function (chartTypes) {
                 return Object.keys(chartTypes);
             },
 
             /**
-             * helper function to add a chart
+             * API to add a chart
              * @param {chartType}: chart type to add/create. Must be one of the defined chart types in _chartTypes attribute.
              * @param {measurements}: measurements to use.
              * TODO:
              * @param {data}: data for the chart (for json-based-charts). 
              */
-            _addChart: function(chartType, measurements) {
+            _addChart: function (chartType, measurements) {
 
                 var self = this;
                 // var envElement = self.parentNode.parentNode.parentNode.parentNode.nodeName == "EPIVIZ-NAVIGATION" ? self.parentNode.parentNode.parentNode.parentNode : self.parentNode.parentNode.parentNode;
-                var envElement =self._parentContainer;
+                var envElement = self._parentContainer;
 
                 var chartElem = document.createElement(self._chartTypes[chartType]);
                 chartElem.className = "charts";
@@ -158,15 +167,17 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
 
             },
 
-            _chartSelectionChanged: function(event) {
+            /**
+             * Callback triggered when measurement selections are made on the measurement browser.
+             */
+            _chartSelectionChanged: function (event) {
                 var self = this;
-                // var envElement = self.parentNode.parentNode.parentNode.parentNode.nodeName == "EPIVIZ-NAVIGATION" ? self.parentNode.parentNode.parentNode.parentNode : self.parentNode.parentNode.parentNode;
-                var envElement =self._parentContainer;
+                var envElement = self._parentContainer;
 
                 self.selection = {};
                 self.selection.chartType = self._charts[self.selectedChart];
 
-                if(self.selection.chartType == "EpivizNavigation") {
+                if (self.selection.chartType == "EpivizNavigation") {
                     var elem = document.createElement("epiviz-navigation");
                     // TODO: Ask user for the location to start the element at.
                     // current location C3P1 gene
@@ -177,7 +188,6 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
                     elem.className = "charts";
 
                     Polymer.dom(envElement).appendChild(elem);
-                    // envElement.appendChild(elem);
                 }
                 else {
                     var chartElem = document.createElement(self._chartTypes[self.selection.chartType]);
@@ -186,55 +196,18 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
                     var chartElemType = chartElem._createChart();
                     $(event.target).parent().parent()[0].selected = null;
 
-
                     if (self.selection.chartType == "GenesTrack") {
-                        var data = envElement.measurementSet.subset(function(m) { return m.defaultChartType() == "Genes Track"});
-                        // var datasourceGroups = {};
-                        // data.foreach(function(m) {
-                        //     if (data.dataprovider && data.dataprovider != m.dataprovider()) { return; }
-                        //     if (data.annotation) {
-                        //     for (var key in data.annotation) {
-                        //         if (!data.annotation.hasOwnProperty(key)) { continue; }
-                        //         if (!m.annotation() || m.annotation()[key] != data.annotation[key]) { return; }
-                        //     }
-                        //     }
-                        //     datasourceGroups[m.datasourceGroup()] = ["Genes track", false];     
-                        // });
-
-                        // initialize(datasourceGroups);
-                        // $('#sourcemodal').modal({
-                        //     closable: false,
-                        //     selector: {
-                        //         deny: '.ui.grey.button',
-                        //         approve: '.ui.blue.submit.button'
-                        //     },
-                        //     onDeny: function() {
-                        //         $('#sourcemodal').modal('hide');
-                        //         $('form').empty();
-                        //         $('#newmodal').remove();
-                        //     },
-                        //     onApprove: function() {
-                        //         var source = $('#form').form('get value', 'source');
-                                var measurements = data.subset(function(m) { return m.datasourceGroup() === "genes" });
-                                chartElem.setAttribute("measurements", JSON.stringify(measurements.raw()));
-                                Polymer.dom(envElement).appendChild(chartElem);
-                                // envElement.appendChild(elem);
-                                // self.$.modal.close();
-                        //     }
-                        // });
-                        // $('#sourcemodal').modal('show');
+                        var data = envElement.measurementSet.subset(function (m) { return m.defaultChartType() == "Genes Track" });
+                        var measurements = data.subset(function (m) { return m.datasourceGroup() === "genes" });
+                        chartElem.setAttribute("measurements", JSON.stringify(measurements.raw()));
+                        Polymer.dom(envElement).appendChild(chartElem);
                     }
                     else {
                         var data = envElement.measurementSet;
-
                         source = "epiviz";
-
-                        showModal(source, data.raw(), function(selected) {
+                        showModal(source, data.raw(), function (selected) {
                             Polymer.dom(envElement).appendChild(chartElem);
-                            // envElement.appendChild(elem);
                             chartElem.setAttribute("measurements", JSON.stringify(selected));
-
-                            // self.$.modal.close();
                         });
                         $('#sourcemodal').modal('show');
                     }
@@ -244,7 +217,7 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
             /**
              * handles form show modal action
              */
-            showAdd: function(target, callback) {
+            showAdd: function (target, callback) {
                 this.callback = callback;
                 this.$.modal.positionTarget = target;
                 this.$.modal.open();
@@ -253,12 +226,12 @@ All charts automatically create an instance of `<epiviz-add-chart>` element.
             /**
              * handles form close modal action
              */
-            closeAddDialog: function() {
+            closeAddDialog: function () {
                 this.$.modal.close();
             },
 
-            /* callback function after the element is initialized */
-            ready: function() {
+            /* lifecycle callback function after the element is ready */
+            ready: function () {
                 var self = this;
             },
 

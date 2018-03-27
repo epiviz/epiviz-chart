@@ -8,11 +8,23 @@
 <script src="src/cyto-chromosome-vis/cyto-chromosome.js"></script>
 
 <!--
-`<epiviz-ideogram-track>` creates a ideogram track chart for a given chromosome.
+<h2> Chart Component </h2>
+epiviz-chart components are a collection of reusable and extensible visualization components for
+genomic data. 
 
-To use, add `<epiviz-ideogram-track>` in the page
+<a href="http://biojs.io/d/cyto-chromosome-vis">Ideogram Track</a> is a biojs visualization and
+creates a ideogram track chart for a given chromosome.
 
-      <epiviz-ideogram-track></epiviz-ideogram-track>
+`epiviz-ideogram-track` integrates ideogram track in a web component framework and adds additional features to 
+highlight region of interest, display the gene close to the center
+
+To create a ideogram track on a HTML page, add
+
+      <epiviz-ideogram-track
+        chr="chr11"
+        start=1000
+        end=250000
+      ></epiviz-ideogram-track>
 
 @demo demo/index-ideogram.html Example page showing a ideogram track
 -->
@@ -20,20 +32,21 @@ To use, add `<epiviz-ideogram-track>` in the page
 <dom-module id="epiviz-ideogram-track">
     <template>
         <style>
-        :host {
-            display: inline-block;
-            min-width: 250px;
-        }
-        #chart {
-            position:relative;
-        }
+            :host {
+                display: inline-block;
+                min-width: 250px;
+            }
+
+            #chart {
+                position: relative;
+            }
         </style>
 
         <!-- local DOM goes here -->
         <div id="chart">
             <div id="{{plotId}}"></div>
         </div>
-    
+
     </template>
 
     <script>
@@ -104,7 +117,7 @@ To use, add `<epiviz-ideogram-track>` in the page
                  * Current gene in range (set automatically)
                  *
                  * @type {string}
-                 */   
+                 */
                 geneInRange: {
                     type: String,
                     notify: true
@@ -120,7 +133,7 @@ To use, add `<epiviz-ideogram-track>` in the page
              * 
              * @return {string}
              */
-            _generatePlotId: function() {
+            _generatePlotId: function () {
                 var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 var result = '';
                 var size = 7;
@@ -135,10 +148,10 @@ To use, add `<epiviz-ideogram-track>` in the page
             /**
              * ChartLocation/RangeChange event handler.
              */
-            _rangeChanged: function() {
+            _rangeChanged: function () {
 
                 if (this.chromosome != null && this.start != null && this.end != null) {
-                    if(this.plotId) {
+                    if (this.plotId) {
                         this._draw();
                     }
                 }
@@ -149,36 +162,36 @@ To use, add `<epiviz-ideogram-track>` in the page
              *
              * @param {object} data data object currently hovered.
              */
-            hover: function(data) {
+            hover: function (data) {
                 this.chart.doHover(data);
             },
 
             /**
              * unHover event handler.
              */
-            unHover: function() {
+            unHover: function () {
                 this.chart.doUnhover();
             },
 
             // Initialization that should happen or use FactoryImpl 
             // created: function() {},
 
-            /* callback function after the element is initialized */
-            ready: function() {
+            /* lifecycle callback function after the element is ready */
+            ready: function () {
                 var self = this;
 
                 self.plotId = self.plotId || self._generatePlotId();
                 var parent = self.parentNode;
-                
-                if(parent.nodeName === "IRON-COLLAPSE") {
+
+                if (parent.nodeName === "IRON-COLLAPSE") {
                     parent = parent.parentNode;
                 }
 
-                parent.addEventListener('hoverAllCharts', function(e) {
+                parent.addEventListener('hoverAllCharts', function (e) {
                     self.chart.hover(e.detail.data);
                 }.bind(self));
 
-                parent.addEventListener('unHoverAllCharts', function(e) {
+                parent.addEventListener('unHoverAllCharts', function (e) {
                     self.chart.unHover();
                 }.bind(self));
 
@@ -190,7 +203,7 @@ To use, add `<epiviz-ideogram-track>` in the page
             /**
              * Draws the chart.
              */
-            _draw: function() {
+            _draw: function () {
 
                 var self = this;
 
@@ -209,14 +222,14 @@ To use, add `<epiviz-ideogram-track>` in the page
                     .render();
 
                 // TODO: use callback instead after the chart is rendered
-                setTimeout(function(){ 
-                    self.chart.on("selectorhover", function(e) {
+                setTimeout(function () {
+                    self.chart.on("selectorhover", function (e) {
                         self.fire('hover', {
                             data: self.chartObject
                         });
                     }.bind(self));
-                    
-                    self.chart.on("selectorunhover", function(e) {
+
+                    self.chart.on("selectorunhover", function (e) {
                         self.fire('unHover', {
                             data: null
                         });
@@ -225,15 +238,15 @@ To use, add `<epiviz-ideogram-track>` in the page
                     self.chart.getSVGTarget().append('text')
                         .text("chr: " + self.segment)
                         .attr('x', self.chart.getSVGTarget().attr("width") - 285)
-                        .attr('y', self.chart.getSVGTarget().attr("height")*1/3)
-                        .attr('text-anchor','left')
+                        .attr('y', self.chart.getSVGTarget().attr("height") * 1 / 3)
+                        .attr('text-anchor', 'left')
                         .style('font', '12px sans-serif');
 
                     self.chart.getSVGTarget().append('text')
                         .text("Gene: " + self.geneInRange)
                         .attr('x', self.chart.getSVGTarget().attr("width") - 240)
-                        .attr('y', self.chart.getSVGTarget().attr("height")*1/3)
-                        .attr('text-anchor','left')
+                        .attr('y', self.chart.getSVGTarget().attr("height") * 1 / 3)
+                        .attr('text-anchor', 'left')
                         .style('font', '12px sans-serif');
 
                     self.chart.newSelector(self.start, self.end);
