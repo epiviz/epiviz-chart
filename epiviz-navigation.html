@@ -135,7 +135,8 @@ To use, add `<epiviz-navigation>` in the page
             }
 
             .content {
-                min-height:200px;
+                /* min height should be height of largest plot */
+                min-height: 500px;
                 padding: 5px;
                 display: grid;
                 grid-template-columns: repeat(6, 1fr);
@@ -880,6 +881,8 @@ To use, add `<epiviz-navigation>` in the page
                 var self = this;
                 $(this).find("#chartContainer").sortable({
                     delay: 150,
+                    containment: "parent",
+                    cursorAt: {top: 10},
                 });
                 
                 self.collapsed = false;
@@ -951,11 +954,22 @@ To use, add `<epiviz-navigation>` in the page
                 // console.log("overriding rangeChanged function");
             },
 
+            _generatePlotId: function() {
+                var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                var result = '';
+                var size = 7;
+
+                for (var i = 0; i < size; ++i) {
+                    result += chars[Math.round(Math.random() * (chars.length - 1))];
+                }
+                return 'epiviz-' + result;
+            },
+
             /* callback function after the element is initialized */
             ready: function() {
                 var self = this;
 
-                self.plotId = "123211124" //self.plotId || self._generatePlotId();
+                self.plotId = self.plotId || self._generatePlotId();
                 self.config = new epiviz.Config(self.configSrc);
                 // self.range = self.getGenomicRange(self.chr, self.start, self.end);
 

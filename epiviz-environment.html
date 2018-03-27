@@ -92,7 +92,8 @@ To use, add `<epiviz-environment>` in the page
             }
 
             .content {
-                min-height:200px;
+                /* min height should be height of largest plot */
+                min-height:500px;
                 padding: 5px;
                 display: grid;
                 grid-template-columns: repeat(6, 1fr);
@@ -513,6 +514,8 @@ To use, add `<epiviz-environment>` in the page
                 $(this).find("#chartContainer").sortable({
                     delay: 150,
                     items: "> :not(epiviz-navigation)",
+                    containment: "parent",
+                    cursorAt: {top: 10},
                 });
 
                 if(self.initializeRegions.length > 0) {
