@@ -149,12 +149,7 @@ To create an navigation element on a HTML page, add
             }
 
             .content {
-<<<<<<< HEAD
-                /* min height should be height of largest plot */
-                min-height: 500px;
-=======
                 min-height: 200px;
->>>>>>> updating documentation
                 padding: 5px;
                 display: grid;
                 grid-template-columns: repeat(6, 1fr);
@@ -921,7 +916,7 @@ To create an navigation element on a HTML page, add
                 $(this).find("#chartContainer").sortable({
                     delay: 150,
                     containment: "parent",
-                    cursorAt: {top: 10},
+                    cursorAt: { top: 10 },
                 });
 
                 self.collapsed = false;
@@ -993,24 +988,8 @@ To create an navigation element on a HTML page, add
                 // console.log("overriding rangeChanged function");
             },
 
-<<<<<<< HEAD
-            _generatePlotId: function() {
-                var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                var result = '';
-                var size = 7;
-
-                for (var i = 0; i < size; ++i) {
-                    result += chars[Math.round(Math.random() * (chars.length - 1))];
-                }
-                return 'epiviz-' + result;
-            },
-
-            /* callback function after the element is initialized */
-            ready: function() {
-=======
             /* lifecycle callback function after the element is ready */
             ready: function () {
->>>>>>> updating documentation
                 var self = this;
 
                 self.plotId = self.plotId || self._generatePlotId();
