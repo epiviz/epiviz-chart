@@ -1,28 +1,15 @@
 {
   "name": "epiviz-charts",
-  "authors": [
-    "Jayaram Kancherla <jayaram.kancherla@gmail.com>"
-  ],
+  "authors": ["Jayaram Kancherla <jayaram.kancherla@gmail.com>"],
   "description": "using epiviz code",
   "main": "",
-  "keywords": [
-    "epiviz",
-    "charts",
-    "genomics",
-    "bioinformatics"
-  ],
+  "keywords": ["epiviz", "charts", "genomics", "bioinformatics"],
   "license": "MIT",
   "homepage": "",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
+  "ignore": ["**/.*", "node_modules", "bower_components", "test", "tests"],
   "dependencies": {
     "polymer": "Polymer#^1.6.1",
-    "epiviz-imports": "https://github.com/epiviz/epiviz-imports.git#epiviz-5",
+    "epiviz-imports": "https://github.com/epiviz/epiviz-imports.git",
     "cyto-chromosome-vis": "^1.3.3",
     "iron-icons": "^1.2.0",
     "paper-item": "^1.2.1",
@@ -42,7 +29,7 @@
     "paper-swatch-picker": "^1.0.2",
     "paper-autocomplete": "2.6.1",
     "iron-collapse": "^1.3.0",
-    "iron-label": "PolymerElements/iron-label#^2.0.0",
+    "iron-label": "PolymerElements/iron-label#^1.0.2",
     "ideogram": "eweitz/ideogram#^0.5.0",
     "paper-menu": "^1.3.0",
     "paper-header-panel": "PolymerElements/paper-header-panel#^1.1.7",
@@ -60,7 +47,6 @@
   },
   "resolutions": {
     "paper-toast": "1.3.1",
-    "paper-spinner": "1.2.1",
-    "epiviz-imports": "epiviz-5"
+    "paper-spinner": "1.2.1"
   }
 }
