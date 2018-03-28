@@ -149,7 +149,8 @@ To create an navigation element on a HTML page, add
             }
 
             .content {
-                min-height: 200px;
+                /* min height should be height of largest plot */
+                min-height: 500px;
                 padding: 5px;
                 display: grid;
                 grid-template-columns: repeat(6, 1fr);
@@ -916,7 +917,7 @@ To create an navigation element on a HTML page, add
                 $(this).find("#chartContainer").sortable({
                     delay: 150,
                     containment: "parent",
-                    cursorAt: { top: 10 },
+                    cursorAt: { left: 10, top: 10 },
                 });
 
                 self.collapsed = false;
@@ -978,6 +979,17 @@ To create an navigation element on a HTML page, add
                 }
 
                 self.$.addChart._parentContainer = self;
+            },
+
+            _generatePlotId: function () {
+                var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                var result = '';
+                var size = 7;
+
+                for (var i = 0; i < size; ++i) {
+                    result += chars[Math.round(Math.random() * (chars.length - 1))];
+                }
+                return 'epiviz-' + result;
             },
 
             _measurementsChanged: function () {
