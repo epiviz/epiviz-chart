@@ -117,6 +117,17 @@
             },
 
             /**
+             * Chart json data object.
+             *
+             * @type {Object}
+             */
+            jsonData: {
+                type: Object,
+                notify: true,
+                observer: '_jsonDataChanged'
+            },
+
+            /**
              * Unique plot-id. an id will be assigned if not set
              *
              * @type {string}
@@ -580,6 +591,136 @@
             if (this.data != null && this.chart != null) {
                 this._draw();
             }
+        },
+
+        /**
+         * JSONChartData change event handler.
+         * Listens to when chart json data is updated and redraws the chart.
+         */
+        _jsonDataChanged: function () {
+            var genomic_data = this._parseData(this.jsonData);
+            this.data = genomic_data;
+        },
+
+        /**
+         *  json format {cols: {"aff1": [], "affy2": []}, rows: {id: [], chr: [], start: [], end: [], strand: null, metadata: {probe: []}}} 
+         * 
+         * 
+         */
+        _parseData: function (json) {
+            var self = this;
+            var chr = json.rows.chr[0];
+            var start = json.rows.start[0];
+            var end = 0
+            var measurements = [];
+            json.rows.end.forEach(function (k) { end = end + k; });
+            var mSet = new epiviz.measurements.MeasurementSet();
+
+            if (self.nodeName == "EPIVIZ-GENES-TRACK") {
+                var key = "genes";
+
+                measurements.push({
+                    "id": key,
+                    "name": key,
+                    "type": "range",
+                    "datasourceId": key,
+                    "datasourceGroup": key,
+                    "dataprovider": "static",
+                    "formula": null,
+                    "defaultChartType": "Genes Track",
+                    "annotation": null,
+                    "minValue": null,
+                    "maxValue": null,
+                    "metadata": ["probe"]
+                });
+
+                var mea = new epiviz.measurements.Measurement(
+                    key, key, "range", key,
+                    key, "static", null, "Genes Track",
+                    null, null, null, []
+                )
+
+                mSet.add(mea);
+
+                self.measurements = measurements;
+
+                var chartData = new epiviz.measurements.MeasurementHashtable();
+                var range = new epiviz.datatypes.GenomicRange(chr, start, end - start);
+                var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
+                var datasource = "static";
+
+                var rowDataObj = new epiviz.datatypes.GenomicRangeArray(datasource, range, start, json.rows, true);
+
+                sumExp.addRowData(rowDataObj);
+                mSet.foreach(function (m) {
+                    var msData = new epiviz.datatypes.MeasurementGenomicDataWrapper(m, sumExp);
+                    chartData.put(m, msData);
+                });
+
+                var genomicData = new epiviz.datatypes.MapGenomicData(chartData);
+
+                self.range = range;
+                return genomicData;
+            }
+
+
+            if (self.dimS) {
+                self.dimS.forEach(function (key) {
+
+                    measurements.push({
+                        "id": key,
+                        "name": key,
+                        "type": "feature",
+                        "datasourceId": key,
+                        "datasourceGroup": key,
+                        "dataprovider": "static",
+                        "formula": null,
+                        "defaultChartType": null,
+                        "annotation": null,
+                        "minValue": -3,
+                        "maxValue": 10,
+                        "metadata": ["probe"]
+                    });
+
+                    mSet.add(new epiviz.measurements.Measurement(
+                        key, key, "feature", key,
+                        key, "static", null, null,
+                        null, -1, 10, ["probe"]
+                    ));
+                });
+
+                var range_mea = new epiviz.measurements.Measurement(
+                    key, key, "range", key,
+                    key, "static", null, null,
+                    null, -1, 10, []
+                )
+            }
+
+            self.measurements = measurements;
+
+            var chartData = new epiviz.measurements.MeasurementHashtable();
+            var range = new epiviz.datatypes.GenomicRange(chr, start, end - start);
+            var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
+            // var datasource = "static";
+
+            var rowDataObj = new epiviz.datatypes.GenomicRangeArray(range_mea, range, start, json.rows, true);
+
+            sumExp.addRowData(rowDataObj);
+
+            mSet.foreach(function (m) {
+                var valueData = new epiviz.datatypes.FeatureValueArray(m, range, start, json.cols[m.id()]);
+                sumExp.addValues(valueData);
+            });
+
+
+            mSet.foreach(function (m) {
+                var msData = new epiviz.datatypes.MeasurementGenomicDataWrapper(m, sumExp);
+                chartData.put(m, msData);
+            });
+
+            var genomicData = new epiviz.datatypes.MapGenomicData(chartData);
+            self.range = range;
+            return genomicData;
         },
 
         /**
