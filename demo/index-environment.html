@@ -5,7 +5,6 @@
     <title> epiviz-environment demo</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js" integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
@@ -109,8 +108,11 @@
                     "metadata": ["gene", "entrez", "exon_starts", "exon_ends"]
                 }
               }'>
-            <epiviz-genes-track class="charts" dim-s='["genes"]'></epiviz-genes-track>
+
             <epiviz-scatter-plot class="charts" dim-s='["affy1", "affy2"]'></epiviz-scatter-plot>
+                        <epiviz-scatter-plot class="charts" dim-s='["affy1", "affy2"]'></epiviz-scatter-plot>
+                                    <epiviz-scatter-plot class="charts" dim-s='["affy1", "affy2"]'></epiviz-scatter-plot>
+                                                <epiviz-scatter-plot class="charts" dim-s='["affy1", "affy2"]'></epiviz-scatter-plot>
     </epiviz-environment>
 
     <h3>epiviz-environment with initialize-regions</h3>

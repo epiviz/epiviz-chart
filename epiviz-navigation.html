@@ -14,6 +14,7 @@
 <link rel="import" href="chart-add-behavior.html">
 <link rel="import" href="chart-workspace-behavior.html">
 <link rel="import" href="chart-grid-behavior.html">
+<link rel="import" href="chart-draggable-behavior.html">
 
 <!-- Chart elements dependency -->
 <link rel="import" href="epiviz-genes-track.html">
@@ -234,7 +235,7 @@ To create an navigation element on a HTML page, add
                         </paper-autocomplete>
                     </div>
                 </div>
-                <div id="chartContainer" class="content">
+                <div class="content chartContainer">
                     <div class="isempty" hidden$="{{_isEmpty}}">Add a New Chart to the Workspace</div>
                     <!-- <epiviz-genes-track class="charts" measurements="{{geneMeasurements}}"></epiviz-genes-track> -->
                     <content id="chartNav" select=".charts"></content>
@@ -248,7 +249,7 @@ To create an navigation element on a HTML page, add
         Polymer({
             /* Custom element html tag */
             is: 'epiviz-navigation',
-            behaviors: [epiviz.ChartDataBehavior, epiviz.ChartAddBehavior, epiviz.ChartWorkspaceBehavior, Polymer.IronResizableBehavior, epiviz.ChartGridBehavior],
+            behaviors: [epiviz.ChartDataBehavior, epiviz.ChartAddBehavior, epiviz.ChartWorkspaceBehavior, Polymer.IronResizableBehavior, epiviz.ChartGridBehavior, epiviz.ChartDraggableBehavior],
 
             /* Properties that can be defined on the element */
             properties: {
@@ -914,12 +915,9 @@ To create an navigation element on a HTML page, add
             attached: function () {
 
                 var self = this;
-                $(this).find("#chartContainer").sortable({
-                    delay: 150,
-                    containment: "parent",
-                    cursorAt: { left: 10, top: 10 },
-                    handle: "svg",
-                });
+
+                self._initializeGrid();
+                self._initializeSortable();
 
                 self.collapsed = false;
 
@@ -974,6 +972,7 @@ To create an navigation element on a HTML page, add
 
                                     self.set('_isEmpty', true);
                                 }
+
                             });
                             self.saveWorkspace();
                         });

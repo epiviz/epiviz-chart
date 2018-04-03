@@ -9,6 +9,7 @@
 <link rel="import" href="chart-workspace-behavior.html">
 <link rel="import" href="chart-add-behavior.html">
 <link rel="import" href="chart-remove.html">
+<link rel="import" href="chart-draggable-behavior.html">
 
 <!-- Polymer Elements -->
 <link rel="import" href="../paper-button/paper-button.html">
@@ -157,7 +158,7 @@ To create an environment element on a HTML page, add
                 </paper-menu>
             </paper-menu-button>
         </div>
-        <div id="chartContainer" class="content">
+        <div class="content chartContainer">
             <div class="isempty" hidden$="{{_isEmpty}}">Add a New Chart to the Workspace</div>
             <content id="chartEnv" select=".charts"></content>
         </div>
@@ -166,7 +167,7 @@ To create an environment element on a HTML page, add
     <script>
         Polymer({
             is: 'epiviz-environment',
-            behaviors: [epiviz.ChartDataBehavior, epiviz.ChartWorkspaceBehavior, epiviz.ChartAddBehavior, Polymer.IronResizableBehavior],
+            behaviors: [epiviz.ChartDataBehavior, epiviz.ChartWorkspaceBehavior, epiviz.ChartAddBehavior, Polymer.IronResizableBehavior, epiviz.ChartDraggableBehavior],
 
             properties: {
 
@@ -531,14 +532,9 @@ To create an environment element on a HTML page, add
                 //         self.end = self.seqInfo[self.chr].max;
                 //     }
                 // }
-                $(this).find("#chartContainer").sortable({
-                    delay: 150,
-                    items: "> :not(epiviz-navigation)",
-                    containment: "parent",
-                    cursorAt: { left: 10, top: 10 },
-                    handle: "svg",
-                });
 
+
+                // this.$.chartContainer._parentPlot = this.plotId;                
                 if (self.initializeRegions.length > 0) {
                     for (var i = 0; i < self.initializeRegions.length; i++) {
                         var navElem = document.createElement("epiviz-navigation");
@@ -580,12 +576,12 @@ To create an environment element on a HTML page, add
                                     self._getElementData(node, self, self.measurements);
                                 }
                             }
-
                             self.set('_isEmpty', true);
                         });
 
                         self.saveWorkspace();
                     });
+                self._initializeSortable();
 
                 self.$.addChart._parentContainer = self;
             },
