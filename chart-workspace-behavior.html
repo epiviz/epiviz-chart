@@ -45,6 +45,8 @@
             self.start = self.workspace.start;
             self.end = self.workspace.end;
             self.plotId = self.workspace.plotId;
+            self.collapsed = self.workspace.collapsed ? self.workspace.collapsed : false;
+            self.noLogo = true;
 
             for (var key in self.workspace.children) {
                 chartWorkspaceObj = self.workspace.children[key];
@@ -56,8 +58,10 @@
                     chart.start = chartWorkspaceObj.start;
                     chart.end = chartWorkspaceObj.end;
                     chart.node = chartWorkspaceObj.nodeName;
+                    chart.collapsed = chartWorkspaceObj.collapsed ? chartWorkspaceObj.collapsed : false;
                     chart.range = chart.getGenomicRange(chart.chr, chart.start, chart.end);
                     chart._strRange = chart.getStrRange(chart.chr, chart.start, chart.end);
+                    chart.noLogo = true;
 
                     Polymer.dom(self).appendChild(chart);
 
@@ -101,6 +105,7 @@
             workspaceObj.end = self.end;
             workspaceObj.node = self.nodeName;
             workspaceObj.children = {};
+            workspaceObj.collapsed = self.collapsed ? self.collapsed : null;
 
             var numChildren = self.getEffectiveChildren().length;
             for (var index = 0; index < numChildren; index++) {
@@ -116,6 +121,7 @@
                     childObj[currentChild.plotId].end = currentChild.end;
                     childObj[currentChild.plotId].node = currentChild.nodeName;
                     childObj[currentChild.plotId].children = {};
+                    childObj[currentChild.plotId].collapsed = currentChild.collapsed;
 
                     var navChildren = currentChild.getEffectiveChildren().length;
                     for (var nindex = 0; nindex < navChildren; nindex++) {
