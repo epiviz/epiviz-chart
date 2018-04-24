@@ -232,6 +232,17 @@ To create an environment element on a HTML page, add
                 },
 
                 /**
+                * Unique plot-id. an id will be assigned if not set
+                *
+                * @type {string}
+                */
+                plotId: {
+                    type: String,
+                    reflectToAttribute: true,
+                    notify: true
+                },
+
+                /**
                  * Intiliazes an environment with `<epiviz-navigation>` elements.
                  * 
                  * Can be one of these {region: {chr , start, end}} or {gene} 

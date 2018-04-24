@@ -290,6 +290,17 @@ To create an navigation element on a HTML page, add
                 },
 
                 /**
+                * Unique plot-id. an id will be assigned if not set
+                *
+                * @type {string}
+                */
+                plotId: {
+                    type: String,
+                    reflectToAttribute: true,
+                    notify: true
+                },
+
+                /**
                  * Updates location attributes(chr, start, end) to this gene's location.
                  *
                  * @type {string}
@@ -374,7 +385,7 @@ To create an navigation element on a HTML page, add
                     type: Boolean,
                     notify: true,
                     value: function () {
-                        return true;
+                        return false;
                     }
                 },
 
@@ -510,12 +521,17 @@ To create an navigation element on a HTML page, add
                 this.$.navHeader.toggle();
                 this.collapsed = !this.collapsed;
                 // unselect the selected paper-item;
-                this.toggleSelected(event);
+                if (event) {
+                    this.toggleSelected(event);
+                }
                 // unsafe to reference index 0, but works for now
                 var menuButton = $(this).find("paper-menu-button")[0];
                 menuButton.close();
                 if (this.collapsed) {
                     Polymer.dom(self).unobserveNodes(self._observer);
+
+                    $(this).css("grid-column", "span " + 2);
+
                     // setTimeout(function() {
                     //     self.$.navTrack._draw();
                     // }, 500);
@@ -536,7 +552,10 @@ To create an navigation element on a HTML page, add
                             });
                             self.saveWorkspace();
                         });
+
+                    $(this).css("grid-column", "span " + 6);
                 }
+
                 self._onResize();
 
                 if (event) {
@@ -631,25 +650,27 @@ To create an navigation element on a HTML page, add
              * ChartLocation/RangeChange event handler.
              * @fires navigationRangeUpdate
              */
-            _rangeUpdate: function () {
+            _rangeUpdate: function (newVal, oldVal) {
                 var self = this;
                 self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined, self.chr);
 
                 self._getGenesInRange(self, self);
 
-                var numChildren = self.getEffectiveChildren().length;
-                if (numChildren > 0) { self.set('_isEmpty', true); }
-                for (var index = 0; index < numChildren; index++) {
-                    var currentChild = self.getEffectiveChildren()[index];
-                    if (currentChild == undefined || currentChild.plotId == undefined) { return; }
-                    if (currentChild.nodeName.indexOf("EPIVIZ-") != -1 && currentChild.nodeName.indexOf("JSON") == -1) {
-                        currentChild.set("_hideLoader", false);
-                        currentChild.range = self.range;
-                        var measurements = self.measurements;
-                        if (self._parentContainer) {
-                            measurements = self._parentContainer.measurements;
+                if (!self.collapsed && oldVal) {
+                    var numChildren = self.getEffectiveChildren().length;
+                    if (numChildren > 0) { self.set('_isEmpty', true); }
+                    for (var index = 0; index < numChildren; index++) {
+                        var currentChild = self.getEffectiveChildren()[index];
+                        if (currentChild == undefined || currentChild.plotId == undefined) { return; }
+                        if (currentChild.nodeName.indexOf("EPIVIZ-") != -1 && currentChild.nodeName.indexOf("JSON") == -1) {
+                            currentChild.set("_hideLoader", false);
+                            currentChild.range = self.range;
+                            var measurements = self.measurements;
+                            if (self._parentContainer) {
+                                measurements = self._parentContainer.measurements;
+                            }
+                            self._getElementData(currentChild, self, measurements);
                         }
-                        self._getElementData(currentChild, self, measurements);
                     }
                 }
 
@@ -919,6 +940,8 @@ To create an navigation element on a HTML page, add
                 self._initializeGrid();
                 self._initializeSortable();
 
+                var origCollapsed = self.collapsed || false;
+
                 self.collapsed = false;
 
                 if (!self.dataManager) {
@@ -957,7 +980,7 @@ To create an navigation element on a HTML page, add
                     self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined, self.chr);
                 }
 
-                if (!self.collapsed) {
+                if (!origCollapsed) {
                     self._observer =
                         Polymer.dom(self.$$("#chartNav")).observeNodes(function (info) {
                             info.addedNodes.forEach(function (node) {
@@ -976,6 +999,10 @@ To create an navigation element on a HTML page, add
                             });
                             self.saveWorkspace();
                         });
+                }
+
+                if (origCollapsed != self.collapsed) {
+                    self.toggleHeader();
                 }
 
                 self.$.addChart._parentContainer = self;
