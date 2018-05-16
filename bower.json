@@ -1,12 +1,25 @@
 {
   "name": "epiviz-charts",
-  "authors": ["Jayaram Kancherla <jayaram.kancherla@gmail.com>"],
+  "authors": [
+    "Jayaram Kancherla <jayaram.kancherla@gmail.com>"
+  ],
   "description": "using epiviz code",
   "main": "",
-  "keywords": ["epiviz", "charts", "genomics", "bioinformatics"],
+  "keywords": [
+    "epiviz",
+    "charts",
+    "genomics",
+    "bioinformatics"
+  ],
   "license": "MIT",
   "homepage": "",
-  "ignore": ["**/.*", "node_modules", "bower_components", "test", "tests"],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
   "dependencies": {
     "polymer": "Polymer#^1.6.1",
     "epiviz-imports": "https://github.com/epiviz/epiviz-imports.git",
@@ -39,7 +52,8 @@
     "paper-menu-button": "polymerElements/paper-menu-button#1.5.2",
     "iron-fit-behavior": "1.2.6",
     "paper-spinner": "^2.1.0",
-    "paper-toast": "^2.1.0"
+    "paper-toast": "^2.1.0",
+    "poly-filter": "jkanche/table-filter"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.1.8",
