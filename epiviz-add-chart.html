@@ -1,17 +1,17 @@
 <!-- Polymer dependency -->
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer/polymer-element.html">
 
 <!-- External Polymer Styles/elements dependency -->
 <link rel="import" href="../paper-dialog/paper-dialog.html">
 <link rel="import" href="../paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-listbox/paper-listbox.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-item/paper-item.html">
 <link rel="import" href="../iron-icons/editor-icons.html">
 
 <!--Semantic-->
-<link rel="stylesheet" href="src/browser/semantic/dist/semantic.css">
+<link rel="stylesheet" href="src/browser/semantic/dist/semantic.min.css">
 <link rel="stylesheet" href="src/browser/semantic-ui-range-master/range.css">
 <link rel="stylesheet" href="src/browser/browser.css">
 <script src="src/browser/semantic/dist/semantic.js"></script>
@@ -46,103 +46,126 @@
             }
         </style>
         <!-- local DOM goes here -->
+        <!-- <div id="addChart"> -->
         <paper-menu-button dynamic-align horizontal-align="right" vertical-offset=42>
-            <paper-button class="dropdown-trigger" raised>
+            <paper-button slot="dropdown-trigger" raised>
                 <iron-icon icon="editor:insert-chart"></iron-icon>
                 <span>Add Visualization</span>
             </paper-button>
-            <paper-menu class="dropdown-content" selected="{{selectedChart}}">
+            <paper-listbox slot="dropdown-content" selected="{{selectedChart}}">
                 <template is="dom-repeat" items="{{_charts}}">
                     <paper-item on-click="_chartSelectionChanged">[[item]]</paper-item>
                 </template>
-            </paper-menu>
+            </paper-listbox>
         </paper-menu-button>
+        <!-- </div> -->
+
     </template>
 
     <script>
-        Polymer({
-            /* Custom element html tag */
-            is: 'epiviz-add-chart',
 
-            /* Properties that can be defined on the element */
-            properties: {
+        // Extend Polymer.Element base class
+        class EpivizAddChart extends Polymer.Element {
 
-                /**
-                * currently available measurements on the app 
-                * uses measurements available from the `epiviz-data-source` element.
-                *
-                * @type {Array.<epiviz.ui.charts.CustomSetting>}
-                */
-                measurements: {
-                    type: Object,
-                    notify: true
-                },
+            static get is() { return 'epiviz-add-chart'; }
 
-                /**
-                * selected measurements from browser.
-                * chartType:
-                * measurement:
-                * @type {Object}
-                */
-                selection: {
-                    type: Object,
-                    notify: true
-                },
+            static get properties() {
+                return {
+                    /**
+                    * currently available measurements on the app 
+                    * uses measurements available from the `epiviz-data-source` element.
+                    *
+                    * @type {Array.<epiviz.ui.charts.CustomSetting>}
+                    */
+                    measurements: {
+                        type: Object,
+                        notify: true
+                    },
 
-                /**
-                * selected chart from the browser.
-                *
-                * @type {Array.<epiviz.ui.charts.CustomSetting>}
-                */
-                selectedChart: {
-                    type: String,
-                    notify: true
-                },
+                    /**
+                    * selected measurements from browser.
+                    * chartType:
+                    * measurement:
+                    * @type {Object}
+                    */
+                    selection: {
+                        type: Object,
+                        notify: true
+                    },
 
-                /**
-                * currently available chart types on the app.
-                */
-                _chartTypes: {
-                    type: Object,
-                    notify: true,
-                    reflectToAttribute: true,
-                    value: function () {
-                        return {
-                            "GenesTrack": "epiviz-genes-track",
-                            "BlocksTrack": 'epiviz-blocks-track',
-                            "StackedBlocksTrack": 'epiviz-stacked-blocks-track',
-                            "HeatmapPlot": "epiviz-heatmap-plot",
-                            "ScatterPlot": "epiviz-scatter-plot",
-                            "LineTrack": 'epiviz-line-track',
-                            "StackedLineTrack": 'epiviz-stacked-line-track',
-                            "LinePlot": 'epiviz-line-plot',
-                            "StackedLinePlot": 'epiviz-stacked-line-plot',
-                            "EpivizNavigation": 'epiviz-navigation'
+                    /**
+                    * selected chart from the browser.
+                    *
+                    * @type {Array.<epiviz.ui.charts.CustomSetting>}
+                    */
+                    selectedChart: {
+                        type: String,
+                        notify: true
+                    },
+
+                    /**
+                    * currently available chart types on the app.
+                    */
+                    _chartTypes: {
+                        type: Object,
+                        notify: true,
+                        reflectToAttribute: true,
+                        value: function () {
+                            return {
+                                "GenesTrack": "epiviz-genes-track",
+                                "BlocksTrack": 'epiviz-blocks-track',
+                                "StackedBlocksTrack": 'epiviz-stacked-blocks-track',
+                                "HeatmapPlot": "epiviz-heatmap-plot",
+                                "ScatterPlot": "epiviz-scatter-plot",
+                                "LineTrack": 'epiviz-line-track',
+                                "StackedLineTrack": 'epiviz-stacked-line-track',
+                                "LinePlot": 'epiviz-line-plot',
+                                "StackedLinePlot": 'epiviz-stacked-line-plot',
+                                "EpivizNavigation": 'epiviz-navigation'
+                            }
                         }
+                    },
+
+                    _charts: {
+                        type: Array,
+                        notify: true,
+                        computed: "_getCharts(_chartTypes)"
+                    },
+
+                    /**
+                    * parentContainer
+                    */
+                    _parentContainer: {
+                        type: Object,
+                        notify: true
                     }
-                },
-
-                _charts: {
-                    type: Array,
-                    notify: true,
-                    computed: "_getCharts(_chartTypes)"
-                },
-
-                /**
-                * parentContainer
-                */
-                _parentContainer: {
-                    type: Object,
-                    notify: true
                 }
-            },
+            }
+
+            static get observers() {
+                return [
+                    /* observer array just like 1.x */
+                ]
+            }
+
+            constructor() {
+                super();
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+            }
+
+            disconnectedCallback() {
+                super.connectedCallback();
+            }
 
             /**
              * Get Available Chart Types
              */
-            _getCharts: function (chartTypes) {
+            _getCharts(chartTypes) {
                 return Object.keys(chartTypes);
-            },
+            }
 
             /**
              * API to add a chart
@@ -151,26 +174,25 @@
              * TODO:
              * @param {data}: data for the chart (for json-based-charts). 
              */
-            _addChart: function (chartType, measurements) {
+            _addChart(chartType, measurements) {
 
                 var self = this;
-                // var envElement = self.parentNode.parentNode.parentNode.parentNode.nodeName == "EPIVIZ-NAVIGATION" ? self.parentNode.parentNode.parentNode.parentNode : self.parentNode.parentNode.parentNode;
+                var envElement = self.parentNode.parentNode.parentNode.parentNode.nodeName == "EPIVIZ-NAVIGATION" ? self.parentNode.parentNode.parentNode.parentNode : self.parentNode.parentNode.parentNode;
                 var envElement = self._parentContainer;
 
                 var chartElem = document.createElement(self._chartTypes[chartType]);
-                chartElem.className = "charts";
+                chartElem.slot = "charts";
                 chartElem.range = envElement.range;
                 var chartElemType = chartElem._createChart();
 
-                Polymer.dom(envElement).appendChild(chartElem);
                 chartElem.setAttribute("measurements", JSON.stringify(measurements));
-
-            },
+                envElement.appendChild(chartElem);
+            }
 
             /**
              * Callback triggered when measurement selections are made on the measurement browser.
              */
-            _chartSelectionChanged: function (event) {
+            _chartSelectionChanged(event) {
                 var self = this;
                 var envElement = self._parentContainer;
 
@@ -185,56 +207,82 @@
                     elem.setAttribute("start", 10084603);
                     elem.setAttribute("end", 10312571);
                     elem.setAttribute("no-logo", true);
-                    elem.className = "charts";
+                    elem.slot = "charts";
 
-                    Polymer.dom(envElement).appendChild(elem);
+                    envElement.appendChild(elem);
                 }
                 else {
                     var chartElem = document.createElement(self._chartTypes[self.selection.chartType]);
-                    chartElem.className = "charts";
+                    chartElem.slot = "charts";
                     chartElem.range = envElement.range;
                     var chartElemType = chartElem._createChart();
                     $(event.target).parent().parent()[0].selected = null;
 
                     if (self.selection.chartType == "GenesTrack") {
                         var data = envElement.measurementSet.subset(function (m) { return m.defaultChartType() == "Genes Track" });
-                        var measurements = data.subset(function (m) { return m.datasourceGroup() === "genes" });
-                        chartElem.setAttribute("measurements", JSON.stringify(measurements.raw()));
-                        Polymer.dom(envElement).appendChild(chartElem);
+                        var datasourceGroups = {};
+                        data.foreach(function (m) {
+                            if (data.dataprovider && data.dataprovider != m.dataprovider()) { return; }
+                            if (data.annotation) {
+                                for (var key in data.annotation) {
+                                    if (!data.annotation.hasOwnProperty(key)) { continue; }
+                                    if (!m.annotation() || m.annotation()[key] != data.annotation[key]) { return; }
+                                }
+                            }
+                            datasourceGroups[m.datasourceGroup()] = ["Genes track", false];
+                        });
+
+                        initialize(datasourceGroups);
+                        $('#sourcemodal').modal({
+                            closable: false,
+                            selector: {
+                                deny: '.ui.grey.button',
+                                approve: '.ui.blue.submit.button'
+                            },
+                            onDeny() {
+                                $('#sourcemodal').modal('hide');
+                                $('form').empty();
+                                $('#newmodal').remove();
+                            },
+                            onApprove() {
+                                var source = $('#form').form('get value', 'source');
+                                var measurements = data.subset(function (m) { return m.datasourceGroup() === source });
+                                chartElem.setAttribute("measurements", JSON.stringify(measurements.raw()));
+                                envElement.appendChild(chartElem);
+                                // self.$.modal.close();
+                            }
+                        });
+                        $('#sourcemodal').modal('show');
                     }
                     else {
                         var data = envElement.measurementSet;
-                        source = "epiviz";
+                        var source = "epiviz";
                         showModal(source, data.raw(), function (selected) {
-                            Polymer.dom(envElement).appendChild(chartElem);
+                            envElement.appendChild(chartElem);
                             chartElem.setAttribute("measurements", JSON.stringify(selected));
                         });
                         $('#sourcemodal').modal('show');
                     }
                 }
-            },
+            }
 
             /**
              * handles form show modal action
              */
-            showAdd: function (target, callback) {
+            showAdd(target, callback) {
                 this.callback = callback;
                 this.$.modal.positionTarget = target;
                 this.$.modal.open();
-            },
+            }
 
             /**
              * handles form close modal action
              */
-            closeAddDialog: function () {
+            closeAddDialog() {
                 this.$.modal.close();
-            },
+            }
+        };
 
-            /* lifecycle callback function after the element is ready */
-            ready: function () {
-                var self = this;
-            },
-
-        });
+        customElements.define(EpivizAddChart.is, EpivizAddChart);
     </script>
 </dom-module>

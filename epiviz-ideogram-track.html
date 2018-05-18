@@ -1,5 +1,5 @@
 <!-- Polymer dependency -->
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer/polymer-element.html">
 
 <!-- Epiviz imports dependency -->
 <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
@@ -50,134 +50,103 @@ To create a ideogram track on a HTML page, add
     </template>
 
     <script>
-        Polymer({
-            /* Custom element html tag */
-            is: 'epiviz-ideogram-track',
+        // Extend Polymer.Element base class
+        class EpivizIdeogramTrack extends Polymer.Element {
 
-            /* Properties that can be defined on the element */
-            properties: {
+            static get is() { return 'epiviz-ideogram-track'; }
 
-                /**
-                 * Chromosome location.
-                 * Default Location Attribute to set to all the children chart elements.
-                 *
-                 * @example: chr1
-                 *
-                 * @type {string}
-                 */
-                chromosome: {
-                    type: String,
-                    notify: true
-                },
+            static get properties() {
+                return {
 
-                /**
-                 * Chromosome start. 
-                 * Default Chromosome start value to use. (defaults to 0).
-                 *
-                 * @type {number}
-                 */
-                start: {
-                    type: Number,
-                    notify: true
-                },
+                    /**
+                    * Chromosome location.
+                    * Default Location Attribute to set to all the children chart elements.
+                    *
+                    * @example: chr1
+                    *
+                    * @type {string}
+                    */
+                    chromosome: {
+                        type: String,
+                        notify: true
+                    },
 
-                /**
-                 * Chromosome end. 
-                 * Default Chromosome end value to use. (defaults to the `<chr>` length).
-                 *
-                 * @type {number}
-                 */
-                end: {
-                    type: Number,
-                    notify: true
-                },
+                    /**
+                    * Chromosome start. 
+                    * Default Chromosome start value to use. (defaults to 0).
+                    *
+                    * @type {number}
+                    */
+                    start: {
+                        type: Number,
+                        notify: true
+                    },
 
-                /**
-                 * Unique plot ID for the chart
-                 *
-                 * @type {string}
-                 */
-                plotId: {
-                    type: String,
-                    reflectToAttribute: true,
-                    notify: true
-                },
+                    /**
+                    * Chromosome end. 
+                    * Default Chromosome end value to use. (defaults to the `<chr>` length).
+                    *
+                    * @type {number}
+                    */
+                    end: {
+                        type: Number,
+                        notify: true
+                    },
 
-                /**
-                 * Computed Range from `<chr>`, `<start>` & `<end>`. 
-                 *
-                 * @type {Object<epiviz.datatypes.GenomicRange>}
-                 */
-                range: {
-                    type: Object,
-                    notify: true
-                },
+                    /**
+                    * Unique plot ID for the chart
+                    *
+                    * @type {string}
+                    */
+                    plotId: {
+                        type: String,
+                        reflectToAttribute: true,
+                        notify: true
+                    },
 
-                /**
-                 * Current gene in range (set automatically)
-                 *
-                 * @type {string}
-                 */
-                geneInRange: {
-                    type: String,
-                    notify: true
-                }
-            },
+                    /**
+                    * Computed Range from `<chr>`, `<start>` & `<end>`. 
+                    *
+                    * @type {Object<epiviz.datatypes.GenomicRange>}
+                    */
+                    range: {
+                        type: Object,
+                        notify: true
+                    },
 
-            observers: [
-                '_rangeChanged(chromosome.*, start.*, end.*)'
-            ],
-
-            /**
-             * Generates a unique chart ID
-             * 
-             * @return {string}
-             */
-            _generatePlotId: function () {
-                var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                var result = '';
-                var size = 7;
-
-                for (var i = 0; i < size; ++i) {
-                    result += chars[Math.round(Math.random() * (chars.length - 1))];
-                }
-
-                return 'epiviz-' + result;
-            },
-
-            /**
-             * ChartLocation/RangeChange event handler.
-             */
-            _rangeChanged: function () {
-
-                if (this.chromosome != null && this.start != null && this.end != null) {
-                    if (this.plotId) {
-                        this._draw();
+                    /**
+                    * Current gene in range (set automatically)
+                    *
+                    * @type {string}
+                    */
+                    geneInRange: {
+                        type: String,
+                        notify: true
                     }
                 }
-            },
+            }
 
-            /**
-             * Hover event handler.
-             *
-             * @param {object} data data object currently hovered.
-             */
-            hover: function (data) {
-                this.chart.doHover(data);
-            },
+            static get observers() {
+                return [
+                    /* observer array just like 1.x */
+                    '_rangeChanged(chromosome.*, start.*, end.*)'
+                ]
+            }
 
-            /**
-             * unHover event handler.
-             */
-            unHover: function () {
-                this.chart.doUnhover();
-            },
+            constructor() {
+                super();
+            }
 
-            // Initialization that should happen or use FactoryImpl 
-            // created: function() {},
+            connectedCallback() {
+                super.connectedCallback();
+            }
 
-            /* lifecycle callback function after the element is ready */
-            ready: function () {
+            disconnectedCallback() {
+                super.connectedCallback();
+            }
+
+            ready() {
+                super.ready();
                 var self = this;
 
                 self.plotId = self.plotId || self._generatePlotId();
@@ -198,25 +167,25 @@ To create a ideogram track on a HTML page, add
                 self.chromosomeFactory = cyto_chr;
                 self._rangeChanged();
                 self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined);
-            },
+            }
 
             /**
              * Draws the chart.
              */
-            _draw: function () {
+            _draw() {
 
                 var self = this;
 
-                $(self.$$("#" + self.plotId)).empty();
+                $(self.shadowRoot.querySelector("#" + self.plotId)).empty();
 
-                self.segment = parseInt(self.chromosome.replace("chr", ""));
+                self.segment = self.chromosome.replace("chr", "");
 
                 self.chart = self.chromosomeFactory.chromosome()
                     .segment(self.segment)
                     // .resolution("850")
                     .useRelative(false)
                     .showAxis(true)
-                    .target(self.$$("#" + self.plotId))
+                    .target(self.shadowRoot.querySelector("#" + self.plotId))
                     // .height(100)
                     .width(300)
                     .render();
@@ -253,6 +222,53 @@ To create a ideogram track on a HTML page, add
                     self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined, self.chromosome);
                 }, 1000);
             }
-        });
+
+            /**
+             * Generates a unique chart ID
+             * 
+             * @return {string}
+             */
+            _generatePlotId() {
+                var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                var result = '';
+                var size = 7;
+
+                for (var i = 0; i < size; ++i) {
+                    result += chars[Math.round(Math.random() * (chars.length - 1))];
+                }
+
+                return 'epiviz-' + result;
+            }
+
+            /**
+             * ChartLocation/RangeChange event handler.
+             */
+            _rangeChanged() {
+
+                if (!(this.chromosome === undefined || this.start === undefined || this.end === undefined)) {
+                    if (this.plotId) {
+                        this._draw();
+                    }
+                }
+            }
+
+            /**
+             * Hover event handler.
+             *
+             * @param {object} data data object currently hovered.
+             */
+            hover(data) {
+                this.chart.doHover(data);
+            }
+
+            /**
+             * unHover event handler.
+             */
+            unHover() {
+                this.chart.doUnhover();
+            }
+        };
+
+        customElements.define(EpivizIdeogramTrack.is, EpivizIdeogramTrack);
     </script>
 </dom-module>

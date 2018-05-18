@@ -12,36 +12,46 @@
      *
      * @polymerBehavior
     **/
-    epiviz.ChartAddBehavior = {
 
-        /**
-         * Shows the `<epiviz-add-chart>` element
-         */
-        _showAddDialog: function () { },
+    EpivizChartAddBehavior = function (superClass) {
+        return class extends superClass {
+            constructor() {
+                super();
+            }
 
-        /**
-         * Initializes the `<epiviz-add-chart>` element
-         */
-        _initializeAddDialog: function () {
-            var chartContainer = this.$.header;
-            var currAddElem = this.$$('epiviz-add-chart');
+            static get properties() {
+                return {};
+            }
 
-            if (currAddElem) {
-                var dataManagerElem = document.querySelector('epiviz-data-source');
-                if (dataManagerElem) {
-                    Polymer.dom(currAddElem).measurements = dataManagerElem.measurementSet;
+            /**
+             * Shows the `<epiviz-add-chart>` element
+             */
+            _showAddDialog() { }
+
+            /**
+             * Initializes the `<epiviz-add-chart>` element
+             */
+            _initializeAddDialog() {
+                var chartContainer = this.$.header;
+                var currAddElem = this.shadowRoot.querySelector('epiviz-add-chart');
+
+                if (currAddElem) {
+                    var dataManagerElem = document.querySelector('epiviz-data-source');
+                    if (dataManagerElem) {
+                        Polymer.dom(currAddElem).measurements = dataManagerElem.measurementSet;
+                    }
                 }
             }
-        },
 
-        /**
-         * Intializes chart container DOM element for settings and colors elements.
-         */
-        _initializeDialogContainer: function () { },
+            /**
+             * Intializes chart container DOM element for settings and colors elements.
+             */
+            _initializeDialogContainer() { }
 
-        /** lifecycle callback called when the behavior is ready. */
-        ready: function () {
-            this._initializeDialogContainer();
+            ready() {
+                super.ready();
+                this._initializeDialogContainer();
+            }
         }
     }
 </script>

@@ -1,5 +1,5 @@
 <!-- Polymer dependency -->
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer/polymer-element.html">
 
 <!-- External Polymer Styles/elements dependency -->
 <link rel="import" href="../paper-button/paper-button.html">
@@ -71,8 +71,9 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
             <!--no-overlap horizontal-align="left" vertical-align="top"-->
             <paper-dialog id="modal" modal>
                 <h2>Title and Margins</h2>
-                <form is="iron-form" id="formSettings">
-                    <paper-dialog-scrollable id="scrollContent">
+                <iron-form id="formSettings">
+                    <form>
+                        <!-- <paper-dialog-scrollable id="scrollContent"> -->
                         <button class="collapse-header" on-click="toggleCommon">Chart Title and Margins</button>
                         <iron-collapse id="commonSettings">
                             <div class="collapse-content">
@@ -119,7 +120,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                             </div>
                         </iron-collapse>
                         <!--<template is="dom-repeat" items="{{defs}}", filter="isCommonSettings">
-                        </template>-->
+                            </template>-->
 
                         <button class="collapse-header" on-click="toggleStats">Chart Settings</button>
                         <iron-collapse id="statsSettings">
@@ -167,69 +168,99 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                             </div>
                         </iron-collapse>
 
-                    </paper-dialog-scrollable>
-                    <div class="container flex-end-justified">
-                        <paper-button id="submit" raised>Apply</paper-button>
-                        <paper-button id="cancel" raised>Cancel</paper-button>
-                    </div>
-                </form>
+                        <!-- </paper-dialog-scrollable> -->
+                        <div class="container flex-end-justified">
+                            <paper-button id="submit" on-tap="_submit" raised>Apply</paper-button>
+                            <paper-button id="cancel" on-tap="_cancel" raised>Cancel</paper-button>
+                        </div>
+                    </form>
+                </iron-form>
             </paper-dialog>
         </div>
 
     </template>
 
     <script>
-        Polymer({
-            /* Custom element html tag */
-            is: 'epiviz-chart-settings',
+        // Extend Polymer.Element base class
+        class EpivizChartSettings extends Polymer.Element {
 
-            /* Properties that can be defined on the element */
-            properties: {
+            static get is() { return 'epiviz-chart-settings'; }
 
-                /**
-                * Default chart setting definitions.
-                *
-                * @type {Array.<epiviz.ui.charts.CustomSetting>}
-                */
-                defs: {
-                    type: Array,
-                    notify: true
-                },
+            static get properties() {
+                return {
+                    /**
+                    * Default chart setting definitions.
+                    *
+                    * @type {Array.<epiviz.ui.charts.CustomSetting>}
+                    */
+                    defs: {
+                        type: Array,
+                        notify: true
+                    },
 
-                /**
-                * Currently set chart setting values.
-                *
-                * @type {Object.<string, *>}
-                */
-                vals: {
-                    type: Object,
-                    notify: true
+                    /**
+                    * Currently set chart setting values.
+                    *
+                    * @type {Object.<string, *>}
+                    */
+                    vals: {
+                        type: Object,
+                        notify: true
+                    }
                 }
-            },
+            }
 
-            listeners: {
-                'submit.click': '_submit',
-                'cancel.click': '_cancel'
-            },
+            static get observers() {
+                return [
+                    /* observer array just like 1.x */
+                ]
+            }
+
+            constructor() {
+                super();
+                // this.addEventListener('submit.click', e => this._submit(e));
+                // this.addEventListener('cancel.click', e => this._cancel(e));
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+                for (var i = 0; i < this.defs.length; i++) {
+                    // def = this.defs[i];
+                    var id = this.defs[i].id;
+                    var expected = ['categorical', 'measurementsMetadata', 'measurementsAnnotation']
+                    if (expected.indexOf(this.defs[i].type) != -1) {
+                        if (this.defs[i].possibleValues == null) {
+                            this.defs[i].possibleValues = [this.vals[id]];
+                        }
+                        else if (this.defs[i].possibleValues.indexOf(this.vals[id]) === -1) {
+                            this.defs[i].possibleValues.push(this.vals[id]);
+                        }
+                    }
+                }
+            }
+
+            disconnectedCallback() {
+                super.connectedCallback();
+            }
 
             /**
              * Toggle handler for showing chart settings
              */
-            toggleCommon: function (event) {
+            toggleCommon(event) {
                 this.$.commonSettings.toggle();
                 event.preventDefault();
                 event.stopPropagation();
 
-            },
+            }
 
             /**
              * Toggle handler for showing chart stat settings
              */
-            toggleStats: function (event) {
+            toggleStats(event) {
                 this.$.statsSettings.toggle();
                 event.preventDefault();
                 event.stopPropagation();
-            },
+            }
 
             /**
              * whether a setting is a common setting.
@@ -238,14 +269,14 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
              *
              * @return {boolean} if item is common setting
              */
-            _isCommonSetting: function (item) {
+            _isCommonSetting(item) {
                 var commonSettings = ['title', 'marginTop', 'marginBottom', 'marginRight', 'marginLeft'];
                 if (commonSettings.indexOf(item.id) != -1) {
                     return true;
                 }
 
                 return false;
-            },
+            }
 
             /**
              * whether a setting is a stat setting.
@@ -254,9 +285,9 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
              *
              * @return {boolean} if item is stat setting
              */
-            _isStatSetting: function (item) {
+            _isStatSetting(item) {
                 return !this._isCommonSetting(item);
-            },
+            }
 
             /**
              * UI helper function for finding a setting type
@@ -265,7 +296,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
              * @param {string} expected expected setting type.
              * @return {boolean} return true if type and expected match
              */
-            _settingType: function (type, expected) {
+            _settingType(type, expected) {
                 if (expected == 'array') {
                     expected = ['categorical', 'measurementsMetadata', 'measurementsAnnotation'];
                     return expected.indexOf(type) === -1 ? false : true;
@@ -283,7 +314,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                     // }
                 }
                 return type == expected;
-            },
+            }
 
             /**
              * UI helper function for grouping settings by type
@@ -292,13 +323,13 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
              * @param {string} type expected setting group.
              * @return {boolean} return true if value and type match
              */
-            _isIndex: function (value, type) {
+            _isIndex(value, type) {
                 if ((value % 2 == 0 && type == "even") || (value % 2 == 1 && type == "odd")) {
                     return true;
                 }
 
                 return false;
-            },
+            }
 
             /**
              * UI helper function get value for a given setting id
@@ -306,22 +337,22 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
              * @param {string} id setting id.
              * @return {number|string} return setting value
              */
-            _getValue: function (id) {
+            _getValue(id) {
                 // var def = null;
                 return this.vals[id];
-            },
+            }
 
             /**
              * handles form submit action
              */
-            _submit: function (event) {
+            _submit(event) {
                 this.$.formSettings.submit();
-            },
+            }
 
             /**
              * handles form submit action
              */
-            _form_submit: function (event) {
+            _form_submit(event) {
                 var self = this;
                 this.vals = event.detail;
                 //  format vals types
@@ -341,58 +372,33 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                 });
                 this.callback(this.vals);
                 this.closeSettings();
-            },
+            }
 
             /**
              * handles form cancel action
              */
-            _cancel: function (event) {
+            _cancel(event) {
                 this.closeSettings();
-            },
+            }
 
             /**
              * handles form show modal action
              */
-            showSettings: function (target, callback) {
+            showSettings(target, callback) {
+                this.$.formSettings.addEventListener('iron-form-submit', this._form_submit.bind(this));
                 this.callback = callback;
                 this.$.modal.positionTarget = target;
                 this.$.modal.open();
-            },
+            }
 
             /**
              * handles form close modal action
              */
-            closeSettings: function () {
+            closeSettings() {
                 this.$.modal.close();
-            },
-
-            // Initialization that should happen or use FactoryImpl 
-            // created: function() {},
-
-            /* lifecycle callback function after the element is ready */
-            ready: function () {
-                var self = this;
-
-                self.$.scrollContent.dialogElement = self.$.modal;
-                self.$.formSettings.addEventListener('iron-form-submit', this._form_submit.bind(self));
-            },
-
-            /* callback function after the element is attached to the DOM (ready and created) */
-            attached: function () {
-                for (var i = 0; i < this.defs.length; i++) {
-                    // def = this.defs[i];
-                    var id = this.defs[i].id;
-                    expected = ['categorical', 'measurementsMetadata', 'measurementsAnnotation']
-                    if (expected.indexOf(this.defs[i].type) != -1) {
-                        if (this.defs[i].possibleValues == null) {
-                            this.defs[i].possibleValues = [this.vals[id]];
-                        }
-                        else if (this.defs[i].possibleValues.indexOf(this.vals[id]) === -1) {
-                            this.defs[i].possibleValues.push(this.vals[id]);
-                        }
-                    }
-                }
             }
-        });
+        };
+
+        customElements.define(EpivizChartSettings.is, EpivizChartSettings);
     </script>
 </dom-module>

@@ -1,4 +1,5 @@
 <!-- External Polymer Styles/elements dependency -->
+<link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 
 <!-- Epiviz element dependency -->
@@ -10,49 +11,58 @@
      *
      * @polymerBehavior
     **/
-    epiviz.ChartRemoveBehavior = {
+    EpivizChartRemoveBehavior = function (superClass) {
+        return class extends superClass {
+            constructor() {
+                super();
+            }
 
-        /**
-         * Shows the remove element
-         */
-        _showRemoveDialog: function () {
-            var self = this;
-            // Polymer.dom(self).remove();
+            static get properties() {
+                return {};
+            }
 
-            if (self._parentContainer) {
-                Polymer.dom(self._parentContainer).removeChild(self);
+            /**
+            * Shows the remove element
+            */
+            _showRemoveDialog() {
+                var self = this;
 
-                var navChildren = self._parentContainer.getEffectiveChildren().length;
-                for (var nindex = 0; nindex < navChildren; nindex++) {
-                    var child = self._parentContainer.getEffectiveChildren()[nindex];
-                    if (child.plotId == self.plotId) {
-                        $(self._parentContainer.getEffectiveChildren()[nindex]).remove();
-                        $("[plot-id=" + self.plotId + "]").remove();
+                if (self._parentContainer) {
+                    self._parentContainer.removeChild(self);
+
+                    let navChildren =
+                        Polymer.FlattenedNodesObserver.getFlattenedNodes(self._parentContainer).filter(n => n.nodeType === Node.ELEMENT_NODE)
+                    for (var nindex = 0; nindex < navChildren.length; nindex++) {
+                        var child = navChildren[nindex];
+                        if (child.plotId == self.plotId) {
+                            this.shadowRoot.querySelector(child).remove();
+                            this.shadowRoot.querySelector("[plot-id=" + self.plotId + "]").remove();
+                        }
                     }
                 }
+                else {
+                    this.shadowRoot.querySelector(self.root).remove();
+                    this.shadowRoot.querySelector("[plot-id=" + self.plotId + "]").remove();
+                }
             }
-            else {
-                $(self.root).remove();
-                $("[plot-id=" + self.plotId + "]").remove();
-            }
-        },
 
-        /**
-         * Initializes the `<epiviz-chart-remove>` element
-         */
-        _initializeRemoveDialog: function () {
-            var chartSettingsContainer = this.$$('#chartSettingsContainer');
-            var chartContainer = this.$$('#' + this.plotId);
-            var currSettingIcon = this.$$('#chartRemoveIcon');
+            /**
+            * Initializes the `<epiviz-chart-remove>` element
+            */
+            _initializeRemoveDialog() {
+                var chartSettingsContainer = this.shadowRoot.querySelector('#chartSettingsContainer');
+                var chartContainer = this.shadowRoot.querySelector('#' + this.plotId);
+                var currSettingIcon = this.shadowRoot.querySelector('#chartRemoveIcon');
 
-            if (currSettingIcon == null) {
-                var iconElem = document.createElement('paper-icon-button');
-                iconElem.id = "chartRemoveIcon";
-                iconElem.icon = "icons:remove-circle";
+                if (currSettingIcon == null) {
+                    var iconElem = document.createElement('paper-icon-button');
+                    iconElem.id = "chartRemoveIcon";
+                    iconElem.icon = "icons:remove-circle";
 
-                iconElem.addEventListener("click", this._showRemoveDialog.bind(this));
+                    iconElem.addEventListener("click", this._showRemoveDialog.bind(this));
 
-                Polymer.dom(chartSettingsContainer).appendChild(iconElem);
+                    chartSettingsContainer.appendChild(iconElem);
+                }
             }
         }
     }

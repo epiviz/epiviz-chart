@@ -5,21 +5,28 @@
      *
      * @polymerBehavior
     **/
-    epiviz.ChartDraggableBehavior = {
 
-        /**
-         * Initializes draggable behavior
-         */
-        _initializeSortable: function() {
-            var self = this;
-            $(this.querySelector(".chartContainer")).sortable({
-                delay: 150,
-                items: "> :not(epiviz-navigation)",
-                containment: "parent",
-                cursorAt: { left: 10, top: 10 },
-                handle: "svg",
-                tolerance: "pointer",
-            });
-        },
+    EpivizChartDraggableBehavior = function (superClass) {
+        return class extends superClass {
+            constructor() {
+                super();
+            }
+
+            static get properties() {
+                return {};
+            }
+
+            _initializeSortable() {
+                var self = this;
+                $(this.shadowRoot.querySelector(".chartContainer")).sortable({
+                    delay: 150,
+                    items: "> :not(epiviz-navigation)",
+                    containment: "parent",
+                    cursorAt: { left: 10, top: 10 },
+                    handle: "svg",
+                    tolerance: "pointer",
+                });
+            }
+        }
     }
 </script>

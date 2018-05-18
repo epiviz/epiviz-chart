@@ -5,84 +5,105 @@
      *
      * @polymerBehavior
     **/
-    epiviz.ChartGridBehavior = {
 
-        /**
-         * Initializes grid behavior
-         */
-        _initializeGrid: function () {
-            if (this.nodeName.indexOf("TRACK") != -1) {
-                this.classList.add("grid-track");
-            } else if (this.nodeName.indexOf("NAVIGATION") != -1) {
-                this.classList.add("grid-navigation");
-            } else {
-                // is plot
-                this.classList.add("grid-plot");
-            }
-        },
-
-        /**
-         * Manage resizing buttons of chats
-         */
-        _initializeResizeButtons: function () {
-            var chartSettingsContainer = this.$$('#chartSettingsContainer');
-            var chartContainer = this.$$('#' + this.plotId);
-            var currExpandIcon = this.$$('#chartExpandIcon');
-            var currContractIcon = this.$$('#chartContractIcon');
-
-            if (currExpandIcon == null) {
-                var iconElem = document.createElement('paper-icon-button');
-                iconElem.id = "chartExpandIcon";
-                iconElem.icon = "chevron-right";
-
-                iconElem.addEventListener("click", this._expand.bind(this));
-                Polymer.dom(chartSettingsContainer).appendChild(iconElem);
+    EpivizChartGridBehavior = function (superClass) {
+        return class extends superClass {
+            constructor() {
+                super();
             }
 
-            if (currContractIcon == null) {
-                var iconElem = document.createElement('paper-icon-button');
-                iconElem.id = "chartContractIcon";
-                iconElem.icon = "chevron-left";
-
-                iconElem.addEventListener("click", this._contract.bind(this));
-                Polymer.dom(chartSettingsContainer).appendChild(iconElem);
+            static get properties() {
+                return {};
             }
-        },
 
-        /**
-         * Callback to increase size of chart by 1 `grid-column`
-         */
-        _expand: function () {
-            console.log(this);
-            var columnSpan = this._getColumnSpan(this.getComputedStyleValue("grid-column"));
-            if (columnSpan < 6) {
-                $(this).css("grid-column", "span " + (columnSpan + 1));
-                this._onResize();
+            /**
+            * Initializes grid behavior
+            */
+            _initializeGrid() {
+                if (this.nodeName.indexOf("TRACK") != -1) {
+                    this.classList.add("grid-track");
+                } else if (this.nodeName.indexOf("NAVIGATION") != -1) {
+                    this.classList.add("grid-navigation");
+                } else {
+                    // is plot
+                    this.classList.add("grid-plot");
+                }
             }
-        },
 
-        /**
-         * Callback to decrease size of chart by 1 `grid-column`
-         */
-        _contract: function () {
-            var columnSpan = this._getColumnSpan(this.getComputedStyleValue("grid-column"));
+            /**
+             * Manage resizing buttons of chats
+             */
+            _initializeResizeButtons() {
+                var chartSettingsContainer = this.shadowRoot.querySelector('#chartSettingsContainer');
+                var chartContainer = this.shadowRoot.querySelector('#' + this.plotId);
+                var currExpandIcon = this.shadowRoot.querySelector('#chartExpandIcon');
+                var currContractIcon = this.shadowRoot.querySelector('#chartContractIcon');
 
-            if (columnSpan > 2) {
-                $(this).css("grid-column", "span " + (columnSpan - 1));
-                this._onResize();
+                if (currExpandIcon == null) {
+                    var iconElem = document.createElement('paper-icon-button');
+                    iconElem.id = "chartExpandIcon";
+                    iconElem.icon = "chevron-right";
+
+                    iconElem.addEventListener("click", this._expand.bind(this));
+                    chartSettingsContainer.appendChild(iconElem);
+                }
+
+                if (currContractIcon == null) {
+                    var iconElem = document.createElement('paper-icon-button');
+                    iconElem.id = "chartContractIcon";
+                    iconElem.icon = "chevron-left";
+
+                    iconElem.addEventListener("click", this._contract.bind(this));
+                    chartSettingsContainer.appendChild(iconElem);
+                }
             }
-        },
 
-        /**
-         * helper function to get `grid-column` of current chart
-         */
-        _getColumnSpan: function (gridColumn) {
-            // span 2 / auto
-            var val = parseInt(gridColumn.split(' ')[1]);
-            if (!val) {
-                console.log("grid column error, not a number");
+            _getStyle(elem, prop) {
+
+                var style;
+
+                if (window.ShadyCSS) {
+                    return ShadyCSS.getComputedStyleValue(elem, prop);
+                } else {
+                    return getComputedStyle(elem).getPropertyValue(prop);
+                }
             }
-            return val;
+
+            /**
+             * Callback to increase size of chart by 1 `grid-column`
+             */
+            _expand() {
+                var prop = this._getStyle(this, "grid-column");
+                var columnSpan = this._getColumnSpan(prop);
+                if (columnSpan < 6) {
+                    $(this).css("grid-column", "span " + (columnSpan + 1));
+                    this._onResize();
+                }
+            }
+
+            /**
+             * Callback to decrease size of chart by 1 `grid-column`
+             */
+            _contract() {
+                var prop = this._getStyle(this, "grid-column");
+                var columnSpan = this._getColumnSpan(prop);
+                if (columnSpan > 2) {
+                    $(this).css("grid-column", "span " + (columnSpan - 1));
+                    this._onResize();
+                }
+            }
+
+            /**
+             * helper function to get `grid-column` of current chart
+             */
+            _getColumnSpan(gridColumn) {
+                // span 2 / auto
+                var val = parseInt(gridColumn.split(' ')[1]);
+                if (!val) {
+                    console.log("grid column error, not a number");
+                }
+                return val;
+            }
         }
     }
 </script>
