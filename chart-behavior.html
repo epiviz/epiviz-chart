@@ -55,7 +55,8 @@
         return class extends superClass {
             constructor() {
                 super();
-                this.addEventListener('iron-resize', e => this._onResize(e));
+                // this.addEventListener('iron-resize', e => this._onResize(e));
+                this.addEventListener('transitionend', e => this._onResize(e));
             }
 
             static get properties() {

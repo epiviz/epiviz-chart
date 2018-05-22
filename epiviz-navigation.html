@@ -154,13 +154,10 @@ To create an navigation element on a HTML page, add
             .content {
                 min-height: 500px;
                 padding: 5px;
-            }
-
-            .content slot {
                 /* min height should be height of largest plot */
                 display: grid;
                 grid-template-columns: repeat(6, 1fr);
-                grid-auto-rows: max-content;
+                grid-auto-rows: minmax(max-content, 100px);
                 grid-row-gap: 2px;
                 grid-column-gap: 2px;
             }
@@ -237,7 +234,6 @@ To create an navigation element on a HTML page, add
                     </div> -->
                 </div>
                 <div class="content chartContainer">
-                    <div class="isempty" hidden$="{{_isEmpty}}">Add a New Chart to the Workspace</div>
                     <slot id="chartNav" name="charts"></slot>
                 </div>
             </iron-collapse>
