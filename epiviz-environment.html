@@ -1,7 +1,7 @@
 <!-- Polymer dependency -->
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../polymer/lib/utils/flattened-nodes-observer.html">
-<link rel="import" href="/bower_components/polymer/lib/utils/render-status.html">
+<link rel="import" href="../polymer/lib/utils/render-status.html">
 
 <!-- Epiviz imports dependency -->
 <!-- <link rel="import" href="../epiviz-imports/epiviz-common-js.html">
@@ -127,7 +127,7 @@ To create an environment element on a HTML page, add
                 grid-column-gap: 2px;
             }
 
-            ::slotted {
+            .content ::slotted {
                 /* min height should be height of largest plot */
                 display: grid;
                 grid-template-columns: repeat(6, 1fr);
@@ -136,17 +136,17 @@ To create an environment element on a HTML page, add
                 grid-column-gap: 2px;
             }
 
-            ::slotted(.grid-plot) {
+            .content ::slotted(.grid-plot) {
                 grid-row: span 1;
                 grid-column: span 2;
             }
 
-            ::slotted(.grid-track) {
+            .content ::slotted(.grid-track) {
                 grid-column: span 6;
                 grid-row: span 1;
             }
 
-            ::slotted(.grid-navigation) {
+            .content ::slotted(.grid-navigation) {
                 grid-row: span 1;
                 grid-column: span 6;
                 order: 2;

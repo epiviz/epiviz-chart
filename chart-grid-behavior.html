@@ -61,7 +61,6 @@
             _getStyle(elem, prop) {
 
                 var style;
-
                 if (window.ShadyCSS) {
                     return ShadyCSS.getComputedStyleValue(elem, prop);
                 } else {
@@ -73,10 +72,10 @@
              * Callback to increase size of chart by 1 `grid-column`
              */
             _expand() {
-                var prop = this._getStyle(this, "grid-column");
+                var prop = this._getStyle(this, "grid-column-start");
                 var columnSpan = this._getColumnSpan(prop);
                 if (columnSpan < 6) {
-                    $(this).css("grid-column", "span " + (columnSpan + 1));
+                    $(this).css("grid-column-start", "span " + (columnSpan + 1));
                     this._onResize();
                 }
             }
@@ -85,10 +84,10 @@
              * Callback to decrease size of chart by 1 `grid-column`
              */
             _contract() {
-                var prop = this._getStyle(this, "grid-column");
+                var prop = this._getStyle(this, "grid-column-start");
                 var columnSpan = this._getColumnSpan(prop);
                 if (columnSpan > 2) {
-                    $(this).css("grid-column", "span " + (columnSpan - 1));
+                    $(this).css("grid-column-start", "span " + (columnSpan - 1));
                     this._onResize();
                 }
             }

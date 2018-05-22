@@ -154,6 +154,9 @@ To create an navigation element on a HTML page, add
             .content {
                 min-height: 500px;
                 padding: 5px;
+            }
+
+            .chartContainer {
                 /* min height should be height of largest plot */
                 display: grid;
                 grid-template-columns: repeat(6, 1fr);
@@ -171,17 +174,17 @@ To create an navigation element on a HTML page, add
                 margin: 1px;
             }
 
-            ::slotted(.grid-plot) {
+            .chartContainer ::slotted(.grid-plot) {
                 grid-row: span 1;
                 grid-column: span 2;
             }
 
-            ::slotted(.grid-track) {
+            .chartContainer ::slotted(.grid-track) {
                 grid-column: span 6;
                 grid-row: span 1;
             }
 
-            ::slotted(.grid-navigation) {
+            .chartContainer ::slotted(.grid-navigation) {
                 grid-row: span 1;
                 grid-column: span 6;
                 order: 2;
