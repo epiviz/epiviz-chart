@@ -601,7 +601,8 @@ To create an environment element on a HTML page, add
 
                 if (chartId != null) {
                     var currentChild = this.shadowRoot.querySelector('[plot-id$="' + cId + '"]');
-                    currentChild.set("_hideLoader", false);
+                    currentChild.shadowRoot.querySelector("paper-spinner-lite").active = true;
+
                     this._updateChart(chartId);
                 }
                 self._initializeRemoveDialog();

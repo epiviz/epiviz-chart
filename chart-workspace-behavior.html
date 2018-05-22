@@ -56,7 +56,7 @@
                 self.noLogo = true;
 
                 for (var key in self.workspace.children) {
-                    chartWorkspaceObj = self.workspace.children[key];
+                    var chartWorkspaceObj = self.workspace.children[key];
 
                     var chart = document.createElement(chartWorkspaceObj.node);
                     chart.className = "charts";

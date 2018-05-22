@@ -56,7 +56,7 @@ To create a scatter plot on a HTML page, add
         </style>
 
         <!-- local DOM goes here -->
-        <!-- <paper-spinner-lite active class="green" hidden$="[[_hideLoader]]"></paper-spinner-lite> -->
+        <paper-spinner-lite active class="green"></paper-spinner-lite>
         <div id="chart" on-mouseover="hostHovered" on-mouseout="hostUnhovered">
             <div id="{{plotId}}"></div>
         </div>
@@ -183,11 +183,6 @@ To create a scatter plot on a HTML page, add
                         type: Array,
                         notify: true
                         // observer: "_colorByRegionsChanged"
-                    },
-
-                    _hideLoader: {
-                        type: Boolean,
-                        notify: true
                     }
                 }
             }
@@ -278,7 +273,7 @@ To create a scatter plot on a HTML page, add
                 // if (this.colorByRegions) {
                 //     this._colorByRegionsChanged();
                 // }
-                this.set("_hideLoader", true);
+                this.shadowRoot.querySelector("paper-spinner-lite").active = false;
             }
 
             /**

@@ -55,10 +55,14 @@ To create a genes track on a HTML page, add
                 overflow: auto;
                 position: relative;
             }
+
+            [hidden] {
+                display: none;
+            }
         </style>
 
         <!-- local DOM goes here -->
-        <!-- <paper-spinner-lite active class="green" active="[[_hideLoader]]"></paper-spinner-lite> -->
+        <paper-spinner-lite active class="green"></paper-spinner-lite>
         <div id="chart" on-drag="hostDragged" on-mouseover="hostHovered" on-mouseout="hostUnhovered">
             <div id="{{plotId}}"></div>
         </div>
@@ -251,7 +255,7 @@ To create a genes track on a HTML page, add
             */
             _draw() {
                 this.chart.draw(this.range, this.data);
-                this.set("_hideLoader", false);
+                this.shadowRoot.querySelector("paper-spinner-lite").active = false;
             }
 
             /**

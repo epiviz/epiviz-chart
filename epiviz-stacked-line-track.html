@@ -57,7 +57,7 @@ To create a stacked-blocks plot on a HTML page, add
         </style>
 
         <!-- local DOM goes here -->
-        <!-- <paper-spinner-lite active class="green" hidden$="[[_hideLoader]]"></paper-spinner-lite> -->
+        <paper-spinner-lite active class="green"></paper-spinner-lite>
         <div id="chart" on-mouseover="hostHovered" on-mouseout="hostUnhovered">
             <div id="{{plotId}}"></div>
         </div>
@@ -261,7 +261,7 @@ To create a stacked-blocks plot on a HTML page, add
             */
             _draw() {
                 this.chart.draw(this.range, this.data);
-                this.set("_hideLoader", true);
+                this.shadowRoot.querySelector("paper-spinner-lite").active = false;
             }
 
             /**

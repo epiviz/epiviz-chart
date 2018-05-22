@@ -518,7 +518,7 @@ To create an navigation element on a HTML page, add
 
                 if (self.gene) {
                     self._getElementSearch(self.gene, null, null, function (data) {
-                        self.chr = data[0].seqName;
+                        self.chr = data[0].chr;
                         self.start = data[0].start;
                         self.end = data[0].end;
                         self.range = self.getGenomicRange(self.chr, self.start, self.end);
@@ -767,7 +767,7 @@ To create an navigation element on a HTML page, add
                     for (var index = 0; index < numChildren; index++) {
                         var currentChild = navChildren[index];
                         if (currentChild == undefined || currentChild.plotId == undefined) { return; }
-                        currentChild.set("_hideLoader", false);
+                        currentChild.shadowRoot.querySelector("paper-spinner-lite").active = true;
                         currentChild.range = self.range;
                         var measurements = self.measurements;
                         if (self._parentContainer) {
@@ -979,7 +979,7 @@ To create an navigation element on a HTML page, add
                     var currentChild = navChildren[index];
                     if (currentChild == undefined || currentChild.plotId == undefined) { return; }
                     currentChild.range = self.range;
-                    currentChild.set("_hideLoader", false);
+                    currentChild.shadowRoot.querySelector("paper-spinner-lite").active = true;
                     currentChild._parentContainer = self;
                     var measurements = self.measurements;
                     if (self._parentContainer) {
