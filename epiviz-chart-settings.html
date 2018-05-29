@@ -59,18 +59,36 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
 
             #formSettings {
                 min-width: 400px;
+                overflow: scroll;
+                margin: 0px;
+                grid-row: 2;
             }
 
             #scrollContent {
                 margin-bottom: 10px;
+            }
+
+            #modal {
+                display: grid;
+                grid-template-rows: 50px minmax(auto, 1fr) 100px;
+                max-height: 70%;
+                top: 10%;
+            }
+
+            .header {
+                grid-row: 1;
+            }
+
+            .footer {
+                grid-row: 3;
             }
         </style>
 
         <!-- local DOM goes here -->
         <div id="settings">
             <!--no-overlap horizontal-align="left" vertical-align="top"-->
-            <paper-dialog id="modal" modal>
-                <h2>Title and Margins</h2>
+            <paper-dialog id="modal">
+                <h2 class="header">Title and Margins</h2>
                 <iron-form id="formSettings">
                     <form>
                         <!-- <paper-dialog-scrollable id="scrollContent"> -->
@@ -169,12 +187,13 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                         </iron-collapse>
 
                         <!-- </paper-dialog-scrollable> -->
-                        <div class="container flex-end-justified">
-                            <paper-button id="submit" on-tap="_submit" raised>Apply</paper-button>
-                            <paper-button id="cancel" on-tap="_cancel" raised>Cancel</paper-button>
-                        </div>
+
                     </form>
                 </iron-form>
+                <div class="footer">
+                    <paper-button id="submit" on-tap="_submit" raised>Apply</paper-button>
+                    <paper-button id="cancel" on-tap="_cancel" raised>Cancel</paper-button>
+                </div>
             </paper-dialog>
         </div>
 
@@ -250,7 +269,6 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                 this.$.commonSettings.toggle();
                 event.preventDefault();
                 event.stopPropagation();
-
             }
 
             /**
@@ -387,7 +405,6 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
             showSettings(target, callback) {
                 this.$.formSettings.addEventListener('iron-form-submit', this._form_submit.bind(this));
                 this.callback = callback;
-                this.$.modal.positionTarget = target;
                 this.$.modal.open();
             }
 
