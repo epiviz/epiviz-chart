@@ -7,6 +7,7 @@
 <link rel="import" href="../paper-dropdown-input/paper-dropdown-input.html">
 <link rel="import" href="../paper-styles/color.html">
 <link rel="import" href="../paper-styles/typography.html">
+<link rel="import" href="../paper-styles/default-theme.html">
 <link rel="import" href="../paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../iron-form/iron-form.html">
 <link rel="import" href="../paper-dialog/paper-dialog.html">
@@ -14,6 +15,7 @@
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../iron-collapse/iron-collapse.html">
 <link rel="import" href="../iron-label/iron-label.html">
+<link rel="import" href="../paper-collapse-item/paper-collapse-item.html">
 
 <!--
 `<epiviz-chart-settings>` is a view element that manages chart settings. 
@@ -30,7 +32,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
 
             .flexchild {
                 @apply(--layout-flex);
-                padding: 20px;
+                padding-right: 20px;
             }
 
             .flex-end-justified {
@@ -40,7 +42,6 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
 
             .collapse-content {
                 padding: 15px;
-                border: 1px solid #dedede;
                 border-top: none;
                 display: block;
                 margin: 3px;
@@ -60,7 +61,6 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
             #formSettings {
                 min-width: 400px;
                 overflow: scroll;
-                margin: 0px;
                 grid-row: 2;
             }
 
@@ -82,6 +82,12 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
             .footer {
                 grid-row: 3;
             }
+
+            paper-collapse-item {
+                --paper-collapse-simple-paper-item-styles: {
+                    border: 1px solid var(--light-theme-divider-color);
+                };
+            }
         </style>
 
         <!-- local DOM goes here -->
@@ -91,9 +97,8 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                 <h2 class="header">Title and Margins</h2>
                 <iron-form id="formSettings">
                     <form>
-                        <!-- <paper-dialog-scrollable id="scrollContent"> -->
-                        <button class="collapse-header" on-click="toggleCommon">Chart Title and Margins</button>
-                        <iron-collapse id="commonSettings">
+                        <!--  <button class="collapse-header" on-click="toggleCommon">Chart Title and Margins</button> -->
+                        <paper-collapse-item id="commonSettings" header="Chart Title and Margins">
                             <div class="collapse-content">
                                 <div class="container flex">
                                     <div class="flexchild">
@@ -136,12 +141,12 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                                     </div>
                                 </div>
                             </div>
-                        </iron-collapse>
+                        </paper-collapse-item>
                         <!--<template is="dom-repeat" items="{{defs}}", filter="isCommonSettings">
                             </template>-->
 
-                        <button class="collapse-header" on-click="toggleStats">Chart Settings</button>
-                        <iron-collapse id="statsSettings">
+                        <!-- <button class="collapse-header" on-click="toggleStats">Chart Settings</button> -->
+                        <paper-collapse-item id="statsSettings" header="Chart Settings">
                             <div class="collapse-content">
                                 <div class="container flex">
                                     <div class="flexchild">
@@ -184,7 +189,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                                     </div>
                                 </div>
                             </div>
-                        </iron-collapse>
+                        </paper-collapse-item>
 
                         <!-- </paper-dialog-scrollable> -->
 
