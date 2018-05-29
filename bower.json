@@ -33,7 +33,7 @@
     "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#^2.0.0",
     "paper-swatch-picker": "PolymerElements/paper-swatch-picker#^2.0.0",
     "iron-flex-layout": "PolymerElements/iron-flex-layout#^2.0.0",
-    "iron-label": "PolymerElements/iron-label#^2.0.0",
+    "iron-label": "2.1.0",
     "iron-collapse": "PolymerElements/iron-collapse#^2.0.0",
     "paper-toggle-button": "PolymerElements/paper-toggle-button#^2.0.0",
     "paper-header-panel": "PolymerElements/paper-header-panel#^2.0.0",
