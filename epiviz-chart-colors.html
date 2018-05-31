@@ -158,6 +158,9 @@ All charts implement the `epiviz.ChartColorsBehavior` that manages this element.
 
             connectedCallback() {
                 super.connectedCallback();
+
+                this.$.formSettings.addEventListener('iron-form-submit', this._form_submit.bind(this));
+
             }
 
             disconnectedCallback() {
@@ -241,7 +244,6 @@ All charts implement the `epiviz.ChartColorsBehavior` that manages this element.
             showColors(target, callback) {
                 var self = this;
                 // this.$.scrollContent.dialogElement = this.$.modal;
-                this.$.formSettings.addEventListener('iron-form-submit', this._form_submit.bind(this));
                 this.callback = callback;
                 this.$.modal.positionTarget = target;
                 this.$.modal.open();

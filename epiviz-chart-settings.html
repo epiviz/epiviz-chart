@@ -85,7 +85,8 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
             paper-collapse-item {
                 --paper-collapse-simple-paper-item-styles: {
                     border: 1px solid var(--light-theme-divider-color);
-                };
+                }
+                ;
             }
 
             paper-toggle-button {
@@ -95,7 +96,6 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
             .toggleLabel {
                 padding-top: 8px;
             }
-
         </style>
 
         <!-- local DOM goes here -->
@@ -114,7 +114,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                                             <iron-label for="{{item.id}}">
                                                 <div class="toggleLabel">{{item.label}}</div>
                                                 <paper-toggle-button name="{{item.id}}" label="{{item.label}}" checked="[[_getValue(item.id)]]"></paper-toggle-button>
-                                            </iron-label>                                                
+                                            </iron-label>
                                         </template>
                                         <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'string')]]">
                                             <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
@@ -227,6 +227,9 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                         }
                     }
                 }
+
+                this.$.formSettings.addEventListener('iron-form-submit', this._form_submit.bind(this));
+
             }
 
             disconnectedCallback() {
@@ -374,7 +377,6 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
              * handles form show modal action
              */
             showSettings(target, callback) {
-                this.$.formSettings.addEventListener('iron-form-submit', this._form_submit.bind(this));
                 this.callback = callback;
                 this.$.modal.open();
             }
