@@ -3,12 +3,14 @@
 
 <!-- External Polymer Styles/elements dependency -->
 <link rel="import" href="../paper-dialog/paper-dialog.html">
+<link rel="import" href="../paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-listbox/paper-listbox.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-item/paper-item.html">
 <link rel="import" href="../iron-icons/editor-icons.html">
+<link rel="import" href="../table-filter/data-filter.html">
 
 <!--Semantic-->
 <link rel="stylesheet" href="src/browser/semantic/dist/semantic.min.css">
@@ -44,6 +46,10 @@
             iron-image {
                 padding: 1em;
             }
+
+            data-filter {
+                max-height: inherit;
+            }
         </style>
         <!-- local DOM goes here -->
         <!-- <div id="addChart"> -->
@@ -58,6 +64,18 @@
                 </template>
             </paper-listbox>
         </paper-menu-button>
+        <paper-dialog id="modal" modal>
+            <div class="header">
+                <span>Measurement Browser</span>
+            </div>
+            <paper-dialog-scrollable>
+                <data-filter data="{{_jsonMeasurements}}">
+                </data-filter>       
+            </paper-dialog-scrollable>
+            <div class="buttons">
+                <paper-button dialog-confirm autofocus>Close</paper-button>
+            </div>
+        </paper-dialog>
         <!-- </div> -->
 
     </template>
@@ -138,6 +156,12 @@
                     _parentContainer: {
                         type: Object,
                         notify: true
+                    },
+
+                    _jsonMeasurements: {
+                        type: Array,
+                        notify: true,
+                        computed: "_getJSONMeasurements(measurements)"
                     }
                 }
             }
@@ -158,6 +182,11 @@
 
             disconnectedCallback() {
                 super.connectedCallback();
+            }
+
+            _getJSONMeasurements(data) {
+                console.log(data.raw());
+                return data.raw();
             }
 
             /**
@@ -198,7 +227,7 @@
 
                 self.selection = {};
                 self.selection.chartType = self._charts[self.selectedChart];
-
+                self.measurements = envElement.measurementSet;
                 if (self.selection.chartType == "EpivizNavigation") {
                     var elem = document.createElement("epiviz-navigation");
                     // TODO: Ask user for the location to start the element at.
@@ -232,36 +261,38 @@
                             datasourceGroups[m.datasourceGroup()] = ["Genes track", false];
                         });
 
-                        initialize(datasourceGroups);
-                        $('#sourcemodal').modal({
-                            closable: false,
-                            selector: {
-                                deny: '.ui.grey.button',
-                                approve: '.ui.blue.submit.button'
-                            },
-                            onDeny() {
-                                $('#sourcemodal').modal('hide');
-                                $('form').empty();
-                                $('#newmodal').remove();
-                            },
-                            onApprove() {
-                                var source = $('#form').form('get value', 'source');
-                                var measurements = data.subset(function (m) { return m.datasourceGroup() === source });
-                                chartElem.setAttribute("measurements", JSON.stringify(measurements.raw()));
-                                envElement.appendChild(chartElem);
-                                // self.$.modal.close();
-                            }
-                        });
-                        $('#sourcemodal').modal('show');
+                        // initialize(datasourceGroups);
+                        // $('#sourcemodal').modal({
+                        //     closable: false,
+                        //     selector: {
+                        //         deny: '.ui.grey.button',
+                        //         approve: '.ui.blue.submit.button'
+                        //     },
+                        //     onDeny() {
+                        //         $('#sourcemodal').modal('hide');
+                        //         $('form').empty();
+                        //         $('#newmodal').remove();
+                        //     },
+                        //     onApprove() {
+                        //         var source = $('#form').form('get value', 'source');
+                        //         var measurements = data.subset(function (m) { return m.datasourceGroup() === source });
+                        //         chartElem.setAttribute("measurements", JSON.stringify(measurements.raw()));
+                        //         envElement.appendChild(chartElem);
+                        //         // self.$.modal.close();
+                        //     }
+                        // });
+                        // $('#sourcemodal').modal('show');
+                        self.$.modal.open();
                     }
                     else {
                         var data = envElement.measurementSet;
                         var source = "epiviz";
-                        showModal(source, data.raw(), function (selected) {
-                            envElement.appendChild(chartElem);
-                            chartElem.setAttribute("measurements", JSON.stringify(selected));
-                        });
-                        $('#sourcemodal').modal('show');
+                        // showModal(source, data.raw(), function (selected) {
+                        //     envElement.appendChild(chartElem);
+                        //     chartElem.setAttribute("measurements", JSON.stringify(selected));
+                        // });
+                        // $('#sourcemodal').modal('show');
+                        self.$.modal.open();
                     }
                 }
             }
