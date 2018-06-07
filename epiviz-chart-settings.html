@@ -101,7 +101,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
         <!-- local DOM goes here -->
         <div id="settings">
             <!--no-overlap horizontal-align="left" vertical-align="top"-->
-            <paper-dialog id="modal">
+            <paper-dialog id="modal" modal>
                 <h2 class="header">Title and Margins</h2>
                 <iron-form id="formSettings">
                     <form>
@@ -154,6 +154,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                                         </template>
                                     </template>
                                 </div>
+                                <span hidden$="{{_hasStatSetting()}}">No Chart Settings</span>
                             </div>
                         </paper-collapse-item>
 
@@ -279,6 +280,18 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
              */
             _isStatSetting(item) {
                 return !this._isCommonSetting(item);
+            }
+
+            _hasStatSetting() {
+                var self = this;
+                var hasStatSetting = false;
+                this.defs.some(function(item) {
+                    if (self._isStatSetting(item)) {
+                        hasStatSetting = true;
+                        return true;
+                    }
+                });
+                return hasStatSetting;
             }
 
             /**

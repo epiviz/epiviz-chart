@@ -22,21 +22,6 @@ All charts implement the `epiviz.ChartColorsBehavior` that manages this element.
 <dom-module id="epiviz-chart-colors">
     <template>
         <style>
-            .flex {
-                @apply(--layout-horizontal);
-            }
-
-            .flexchild {
-                @apply(--layout-flex);
-                padding: 20px;
-                flex: 1 1 auto;
-            }
-
-            .flex-end-justified {
-                @apply(--layout-horizontal);
-                @apply(--layout-end-justified);
-            }
-
             #formSettings {
                 min-width: 500px;
             }
@@ -47,6 +32,12 @@ All charts implement the `epiviz.ChartColorsBehavior` that manages this element.
 
             .color-item {
                 display: block;
+                text-align: center;
+            }
+
+            .container {
+                display: grid;
+                grid-auto-flow: column dense;
             }
         </style>
 
@@ -57,41 +48,15 @@ All charts implement the `epiviz.ChartColorsBehavior` that manages this element.
                 <h2>Chart Color Settings</h2>
                 <iron-form id="formSettings">
                     <form>
-                        <!-- <paper-dialog-scrollable id="scrollContent"> -->
-                        <div class="container flex">
-                            <div class="flexchild">
-                                <template is="dom-repeat" items="{{labels}}">
-                                    <template restamp="true" is="dom-if" if="[[_isIndexGroup(index, 0)]]">
-                                        <div class="color-item">
-                                            <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
-                                            <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
-                                        </div>
-                                    </template>
-                                </template>
-                            </div>
-                            <div class="flexchild">
-                                <template is="dom-repeat" items="{{labels}}">
-                                    <template restamp="true" is="dom-if" if="[[_isIndexGroup(index, 1)]]">
-                                        <div class="color-item">
-                                            <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
-                                            <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
-                                        </div>
-                                    </template>
-                                </template>
-                            </div>
-                            <div class="flexchild">
-                                <template is="dom-repeat" items="{{labels}}">
-                                    <template restamp="true" is="dom-if" if="[[_isIndexGroup(index, 2)]]">
-                                        <div class="color-item">
-                                            <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
-                                            <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
-                                        </div>
-                                    </template>
-                                </template>
-                            </div>
+                        <div class="container">
+                            <template id="colorPickers" is="dom-repeat" items="{{labels}}">
+                                <div class="color-item">
+                                    <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
+                                    <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
+                                </div>
+                            </template>
                         </div>
 
-                        <!-- </paper-dialog-scrollable> -->
                         <div class="buttons container flex-end-justified">
                             <paper-button id="submit" on-tap="_submit" raised>Apply</paper-button>
                             <paper-button id="cancel" on-tap="_cancel" raised>Cancel</paper-button>
@@ -157,10 +122,22 @@ All charts implement the `epiviz.ChartColorsBehavior` that manages this element.
             }
 
             connectedCallback() {
+                var self = this;
                 super.connectedCallback();
 
                 this.$.formSettings.addEventListener('iron-form-submit', this._form_submit.bind(this));
-
+                var colorPickers = this.$.colorPickers;
+                colorPickers.addEventListener('dom-change', function(e) {
+                    // auto-binding template is ready.
+                    var labels = self.$.colorPickers.items;
+                    var colorSwatch = self.shadowRoot.querySelectorAll("paper-swatch-picker");
+                    colorSwatch.forEach(function(item, index) {
+                        var defaultColors = item.defaultColors();
+                        defaultColors[0] = self._getColor(labels[index]);
+                        item.set('colorList', defaultColors);
+                        item.set('color', self._getColor(labels[index]));
+                    });
+                });
             }
 
             disconnectedCallback() {
@@ -174,7 +151,7 @@ All charts implement the `epiviz.ChartColorsBehavior` that manages this element.
              *
              * @return {Object} color set for the given label
              */
-            _getColor(label) {
+            _getColor(label) { 
                 return this.selected.getByKey(label);
             }
 
