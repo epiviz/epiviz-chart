@@ -59,24 +59,23 @@
                     var chartWorkspaceObj = self.workspace.children[key];
 
                     var chart = document.createElement(chartWorkspaceObj.node);
-                    chart.className = "charts";
+                    chart.slot = "charts";
                     if (chartWorkspaceObj.node == "EPIVIZ-NAVIGATION") {
                         chart.chr = chartWorkspaceObj.chr;
                         chart.start = chartWorkspaceObj.start;
                         chart.end = chartWorkspaceObj.end;
-                        chart.node = chartWorkspaceObj.nodeName;
+                        // chart.node = chartWorkspaceObj.nodeName;
                         chart.collapsed = chartWorkspaceObj.collapsed ? chartWorkspaceObj.collapsed : false;
                         chart.range = chart.getGenomicRange(chart.chr, chart.start, chart.end);
                         chart._strRange = chart.getStrRange(chart.chr, chart.start, chart.end);
                         chart.noLogo = true;
-
-                        self.shadowRoot.appendChild(chart);
+                        self.appendChild(chart);
 
                         for (var navs in chartWorkspaceObj.children) {
                             var chartNavWorkspaceObj = chartWorkspaceObj.children[navs];
                             var navChart = document.createElement(chartNavWorkspaceObj.node);
 
-                            navChart.className = "charts";
+                            navChart.slot = "charts";
                             navChart.measurements = chartNavWorkspaceObj.measurements;
                             navChart.dimS = chartNavWorkspaceObj.dims;
                             navChart.chartSettings = chartNavWorkspaceObj.chartSettings;
@@ -90,7 +89,7 @@
                         chart.dimS = chartWorkspaceObj.dims;
                         chart.chartSettings = chartWorkspaceObj.chartSettings;
                         chart.chartColors = chartWorkspaceObj.chartColors;
-                        self.shadowRoot.appendChild(chart);
+                        self.appendChild(chart);
                     }
                 }
             }

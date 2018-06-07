@@ -370,6 +370,7 @@ To create an environment element on a HTML page, add
                             for (var nindex = 0; nindex < navChildren.length; nindex++) {
                                 var currentNavChild = navChildren[nindex];
                                 currentNavChild._parentContainer = self;
+                                currentNavChild.range = node.range;
                                 if (!currentNavChild.data) {
                                     self._getElementData(currentNavChild, self, self.measurements);
                                 }

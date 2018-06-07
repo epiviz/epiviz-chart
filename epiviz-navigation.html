@@ -483,6 +483,8 @@ To create an navigation element on a HTML page, add
                 this.addEventListener('select', e => this.onSelect(e));
                 this.addEventListener('deSelect', e => this.onDeSelect(e));
                 this.addEventListener('iron-resize', e => this._onResize(e));
+                this._getElementSeqInfo(this, this);
+
                 // this.addEventListener('transitionend', e => this._onResize(e));
             }
 
@@ -1049,12 +1051,6 @@ To create an navigation element on a HTML page, add
                     }
                 )
                 );
-            }
-
-            // Initialization that should happen or use FactoryImpl 
-            created() {
-                var self = this;
-                self._getElementSeqInfo(self, self);
             }
 
             _generatePlotId() {
