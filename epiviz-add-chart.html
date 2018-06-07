@@ -34,9 +34,19 @@
                 padding: 1em;
             }
 
+            iron-pages {
+                max-height: inherit;
+            }
+
             data-filter {
                 max-height: inherit;
             }
+
+            .dialog-content {
+                max-height: inherit;
+            }
+
+
         </style>
         <!-- local DOM goes here -->
         <paper-menu-button dynamic-align horizontal-align="right" vertical-offset=42>
@@ -54,11 +64,11 @@
             <div class="header">
                 <span>Measurement Browser</span>
             </div>
+            <paper-tabs selected="{{tabselected}}">
+                <paper-tab>Existing Charts</paper-tab>
+                <paper-tab>All Measurements </paper-tab>
+            </paper-tabs>
             <paper-dialog-scrollable>
-                <paper-tabs selected="{{tabselected}}">
-                    <paper-tab>Existing Charts</paper-tab>
-                    <paper-tab>All Measurements </paper-tab>
-                </paper-tabs>
                 <iron-pages selected="{{tabselected}}">
                     <div class="dialog-content">
                         <!-- <paper-dialog-scrollable> -->
@@ -180,7 +190,8 @@
                         notify: true,
                         value: function () {
                             return 0;
-                        }
+                        },
+                        observer: "_tabChanged"
                     }
                 }
             }
@@ -235,6 +246,10 @@
 
                 chartElem.setAttribute("measurements", JSON.stringify(measurements));
                 envElement.appendChild(chartElem);
+            }
+
+            _tabChanged() {
+                this.$.modal.refit();
             }
 
             /**
