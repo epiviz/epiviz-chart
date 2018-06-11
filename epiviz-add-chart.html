@@ -63,35 +63,27 @@
         <paper-dialog id="modal" modal>
             <div class="header">
                 <span>Measurement Browser</span>
+                <paper-tabs selected="{{tabselected}}">
+                    <paper-tab>Existing Charts</paper-tab>
+                    <paper-tab>All Measurements </paper-tab>
+                </paper-tabs>
             </div>
-            <paper-tabs selected="{{tabselected}}">
-                <paper-tab>Existing Charts</paper-tab>
-                <paper-tab>All Measurements </paper-tab>
-            </paper-tabs>
             <paper-dialog-scrollable>
                 <iron-pages selected="{{tabselected}}">
                     <div class="dialog-content">
-                        <!-- <paper-dialog-scrollable> -->
                         <data-filter data="{{_existingChartMeasurements}}" class="curr-charts">
                         </data-filter>
-                        <!-- </paper-dialog-scrollable> -->
-                        <div class="buttons">
-                            <paper-button on-tap="_chartSubmit" dialog-confirm autofocus>Add Chart</paper-button>
-                            <paper-button dialog-dismiss>Close</paper-button>
-                        </div>
                     </div>
                     <div class="dialog-content">
-                        <!-- <paper-dialog-scrollable> -->
                         <data-filter data="{{_jsonMeasurements}}" class="new-charts">
                         </data-filter>
-                        <!-- </paper-dialog-scrollable> -->
-                        <div class="buttons">
-                            <paper-button on-tap="_submit" dialog-confirm autofocus>Add Chart</paper-button>
-                            <paper-button dialog-dismiss>Close</paper-button>
-                        </div>
                     </div>
                 </iron-pages>
             </paper-dialog-scrollable>
+            <div class="buttons">
+                <paper-button on-tap="_submit" dialog-confirm autofocus>Add Chart</paper-button>
+                <paper-button dialog-dismiss>Close</paper-button>
+            </div>
         </paper-dialog>
         <!-- </div> -->
 
@@ -215,7 +207,6 @@
             }
 
             _getJSONMeasurements(data) {
-                // console.log(data.raw());
                 return data.raw();
             }
 
@@ -269,7 +260,6 @@
                     currentCharts.push({ "node": currentChild.nodeName, "id ": currentChild.plotId });
                     currentChartObj[currentChild.plotId] = currentChild.measurements;
                 }
-
                 self.currentChartObj = currentChartObj;
                 self.set("_existingChartMeasurements", currentCharts);
 
@@ -314,7 +304,29 @@
 
                         self.set("_jsonMeasurements", data.raw());
                     }
+                    var nData = [];
+                    var mData = data.raw();
+                    mData.forEach(function (d, i) {
 
+                        var temp = d.annotation;
+                        if (temp == undefined) {
+                            temp = {};
+                        }
+
+                        delete temp["tags"];
+                        delete d["type"];
+                        delete d["datasourceId"];
+                        delete d["datasourceGroup"];
+                        delete d["dataprovider"];
+                        delete d["formula"];
+                        delete d["defaultChartType"];
+
+                        d.annotation = temp;
+                        nData[i] = d;
+                    });
+                    if (!self._jsonMeasurements) {
+                        self.set("_jsonMeasurements", nData);
+                    }
                     self.$.modal.open();
                 }
             }
@@ -360,7 +372,6 @@
 
                 envElement.appendChild(chartElem);
                 chartElem.setAttribute("measurements", JSON.stringify(fmeasurements.raw()));
-
             }
 
             /**
