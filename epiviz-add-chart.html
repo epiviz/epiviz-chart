@@ -45,8 +45,6 @@
             .dialog-content {
                 max-height: inherit;
             }
-
-
         </style>
         <!-- local DOM goes here -->
         <paper-menu-button dynamic-align horizontal-align="right" vertical-offset=42>
@@ -82,7 +80,7 @@
             </paper-dialog-scrollable>
             <div class="buttons">
                 <paper-button on-tap="_submit" dialog-confirm autofocus>Add Chart</paper-button>
-                <paper-button dialog-dismiss>Close</paper-button>
+                <paper-button on-tap="_close" dialog-dismiss>Close</paper-button>
             </div>
         </paper-dialog>
         <!-- </div> -->
@@ -353,6 +351,10 @@
 
             }
 
+            _close() {
+                this.selectedChart = null;
+            }
+
             _submit() {
                 var self = this;
                 var envElement = self._parentContainer;
@@ -372,6 +374,8 @@
 
                 envElement.appendChild(chartElem);
                 chartElem.setAttribute("measurements", JSON.stringify(fmeasurements.raw()));
+
+                self.selectedChart = null;
             }
 
             /**
