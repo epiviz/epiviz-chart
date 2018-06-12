@@ -9,6 +9,7 @@
 <link rel="import" href="../paper-listbox/paper-listbox.html">
 <link rel="import" href="../paper-button/paper-button.html">
 <link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-styles/paper-styles.html">
 <link rel="import" href="../iron-icons/editor-icons.html">
 <link rel="import" href="../table-filter/data-filter.html">
 <link rel="import" href="../paper-tabs/paper-tabs.html">
@@ -42,9 +43,21 @@
                 max-height: inherit;
             }
 
+            paper-tabs {
+                --paper-tab-ink: var(--paper-blue-grey-200);
+                --paper-tabs-selection-bar-color: var(--paper-blue-500);
+                background-color: var(--google-grey-300);
+            }
+
             .dialog-content {
                 max-height: inherit;
             }
+
+            #title {
+                @apply --paper-font-title;
+                margin-bottom: 8px;
+            }
+
         </style>
         <!-- local DOM goes here -->
         <paper-menu-button dynamic-align horizontal-align="right" vertical-offset=42>
@@ -60,8 +73,8 @@
         </paper-menu-button>
         <paper-dialog id="modal" modal>
             <div class="header">
-                <span>Measurement Browser</span>
-                <paper-tabs selected="{{tabselected}}">
+                <span id="title">Measurement Browser</span>
+                <paper-tabs selected="{{tabselected}}" noink>
                     <paper-tab>Existing Charts</paper-tab>
                     <paper-tab>All Measurements </paper-tab>
                 </paper-tabs>
