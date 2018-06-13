@@ -82,9 +82,13 @@
             <paper-dialog-scrollable>
                 <iron-pages selected="{{tabselected}}">
                     <div class="dialog-content">
-                        <data-filter data="{{_existingChartMeasurements}}" class="curr-charts">
-                        </data-filter>
+                        <template is="dom-if" if="[[_tableDataExists(_existingChartMeasurements)]]">
+                            <data-filter data="{{_existingChartMeasurements}}" class="curr-charts">
+                            </data-filter>
+                        </template>
+                        <p hidden$="[[_tableDataExists(_existingChartMeasurements)]]">No Existing Charts</p>
                     </div>
+
                     <div class="dialog-content">
                         <data-filter data="{{_jsonMeasurements}}" class="new-charts">
                         </data-filter>
@@ -226,6 +230,10 @@
              */
             _getCharts(chartTypes) {
                 return Object.keys(chartTypes);
+            }
+
+            _tableDataExists(tableData) {
+                return tableData.length > 0;
             }
 
             /**
