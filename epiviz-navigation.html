@@ -210,7 +210,8 @@ To create an navigation element on a HTML page, add
         </div>
         <div class="content">
             <div hidden$="{{!collapsed}}">
-                <epiviz-ideogram-track gene-in-range="{{geneInRange}}" id="navTrack" chromosome="{{chr}}" start="{{start}}" end="{{end}}"></epiviz-ideogram-track>
+                <epiviz-ideogram-track hidden$="{{!collapsed}}" gene-in-range="{{geneInRange}}" id="navTrack" chromosome="{{chr}}" start="{{start}}"
+                    end="{{end}}"></epiviz-ideogram-track>
             </div>
 
             <iron-collapse id="navHeader" hidden$="{{collapsed}}" opened>
@@ -224,17 +225,6 @@ To create an navigation element on a HTML page, add
                     <div class="flexchild" on-mouseover="locationHovered" on-mouseout="locationUnhovered">
                         <paper-input id="textRange" value="{{_strRange]]" label="Chromosome Location" on-change="_updateStrRange"></paper-input>
                     </div>
-                    <!-- <div class="flexchild">
-                        <paper-autocomplete id="geneSearch" label="Search Gene/Probe" remote-source="true" min-length="2" on-autocomplete-selected="_selectGene"
-                            on-autocomplete-change="_searchGene" value-property="gene" text-property="gene">
-                            <template autocomplete-custom-template>
-                                <paper-item on-tap="_onSelect" id$="[[_getSuggestionId(index)]]" role="option" aria-selected="false">
-                                    <div>[[item.gene]] [[item.seqName]]: [[item.start]] - [[item.end]]</div>
-                                    <paper-ripple></paper-ripple>
-                                </paper-item>
-                            </template>
-                        </paper-autocomplete>
-                    </div> -->
                 </div>
                 <div class="content chartContainer">
                     <slot id="chartNav" name="charts"></slot>
@@ -555,13 +545,13 @@ To create an navigation element on a HTML page, add
                         });
                         self.saveWorkspace();
                     });
-
-                    if (origCollapsed != self.collapsed) {
-                        self.toggleHeader();
-                    }
-
-                    self.$.addChart._parentContainer = self;
                 }
+
+                if (origCollapsed != self.collapsed) {
+                    self.toggleHeader();
+                }
+
+                self.$.addChart._parentContainer = self;
             }
 
             disconnectedCallback() {
@@ -623,11 +613,11 @@ To create an navigation element on a HTML page, add
                     this.toggleSelected(event);
                 }
                 // unsafe to reference index 0, but works for now
-                var menuButton = $(this).find("paper-menu-button")[0];
+                var menuButton = self.shadowRoot.querySelector("paper-menu-button");
                 menuButton.close();
-                if (!this.collapsed) {
-                    self.unobserveNodes(self._observer);
-                    $(this).css("grid-column", "span " + 2);
+                if (this.collapsed) {
+                    // self._observer.disconnect();
+                    $(this).css("grid-column-start", "span " + 2);
                 } else {
                     self._observer = new Polymer.FlattenedNodesObserver(self.$.chartNav, (info) => {
                         // Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
@@ -646,7 +636,7 @@ To create an navigation element on a HTML page, add
                         self.saveWorkspace();
                     });
 
-                    $(this).css("grid-column", "span " + 6);
+                    $(this).css("grid-column-start", "span " + 6);
                 }
 
                 self._onResize();

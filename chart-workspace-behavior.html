@@ -66,8 +66,8 @@
                         chart.end = chartWorkspaceObj.end;
                         // chart.node = chartWorkspaceObj.nodeName;
                         chart.collapsed = chartWorkspaceObj.collapsed ? chartWorkspaceObj.collapsed : false;
-                        chart.range = chart.getGenomicRange(chart.chr, chart.start, chart.end);
-                        chart._strRange = chart.getStrRange(chart.chr, chart.start, chart.end);
+                        chart.range = new epiviz.datatypes.GenomicRange(chart.chr, chart.start, chart.end - chart.start);
+                        chart._strRange = chart.chr + ": " + chart.start + " - " + chart.end;
                         chart.noLogo = true;
                         self.appendChild(chart);
 
