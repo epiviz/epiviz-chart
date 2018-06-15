@@ -28,13 +28,11 @@
 
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-input/paper-input.html">
-<!-- <link rel="import" href="../paper-autocomplete/paper-autocomplete.html"> -->
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../paper-listbox/paper-listbox.html">
 <link rel="import" href="../paper-item/paper-item.html">
 <link rel="import" href="../iron-label/iron-label.html">
-<!-- <link rel="import" href="../paper-toast/paper-toast.html"> -->
 
 <!--
 <h2> App Component </h2>
@@ -125,7 +123,7 @@ To create an navigation element on a HTML page, add
             }
 
             .paper-header {
-                background-color: #e0e2e2;
+                background-color: var(--google-grey-300);
                 padding-left: 5px;
             }
 
@@ -578,7 +576,7 @@ To create an navigation element on a HTML page, add
             /**
              * Resizes the chart.
              */
-            _onResize() {
+            _onResize(e) {
                 var self = this;
                 let navChildren =
                     Polymer.FlattenedNodesObserver.getFlattenedNodes(self.$.chartNav).filter(n => n.nodeType === Node.ELEMENT_NODE);
@@ -586,7 +584,7 @@ To create an navigation element on a HTML page, add
                 if (numChildren > 0) { self.set('_isEmpty', true); }
                 for (var index = 0; index < numChildren; index++) {
                     var currentChild = navChildren[index];
-                    currentChild._onResize();
+                    //currentChild._onResize(e);
                 }
             }
 

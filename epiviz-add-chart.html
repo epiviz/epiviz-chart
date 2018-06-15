@@ -393,8 +393,8 @@
                 chartElem.range = envElement.range;
                 var chartElemType = chartElem._createChart();
 
-                envElement.appendChild(chartElem);
                 chartElem.setAttribute("measurements", JSON.stringify(fmeasurements.raw()));
+                envElement.appendChild(chartElem);
 
                 self.selectedChart = null;
             }

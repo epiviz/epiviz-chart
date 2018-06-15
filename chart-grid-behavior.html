@@ -10,6 +10,10 @@
         return class extends superClass {
             constructor() {
                 super();
+                var dragHandle = document.createElement("div");
+                dragHandle.className = "dragHandle";
+                dragHandle.slot = "dragHandle";
+                this.appendChild(dragHandle);
             }
 
             static get properties() {

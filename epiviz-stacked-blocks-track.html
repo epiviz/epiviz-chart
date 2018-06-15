@@ -60,6 +60,7 @@ To create a stacked-blocks plot on a HTML page, add
         <!-- local DOM goes here -->
         <paper-spinner-lite active class="green"></paper-spinner-lite>
         <div id="chart" on-mouseover="hostHovered" on-mouseout="hostUnhovered">
+            <slot name="dragHandle"></slot>
             <div id="{{plotId}}"></div>
         </div>
 

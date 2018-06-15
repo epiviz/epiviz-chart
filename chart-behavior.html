@@ -56,7 +56,7 @@
             constructor() {
                 super();
                 // this.addEventListener('iron-resize', e => this._onResize(e));
-                this.addEventListener('transitionend', e => this._onResize(e));
+                this.addEventListener('transitionend', e => {this._onResize(e)});
             }
 
             static get properties() {
@@ -210,7 +210,7 @@
              * Resizes the chart.
              * Automatically triggered when the browser window or the css for the element changes.
              */
-            _onResize() {
+            _onResize(e) {
                 if (this.chart != null) {
                     this.chart._properties.width = Math.max(this.chartType.defaultWidth() / 2, this.offsetWidth - epiviz.ui.charts.Visualization.SVG_MARGIN);
                     this.chart._properties.height = Math.max(this.chartType.defaultHeight(), this.offsetHeight - epiviz.ui.charts.Visualization.SVG_MARGIN);

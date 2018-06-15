@@ -64,6 +64,7 @@ To create a genes track on a HTML page, add
         <!-- local DOM goes here -->
         <paper-spinner-lite active class="green"></paper-spinner-lite>
         <div id="chart" on-drag="hostDragged" on-mouseover="hostHovered" on-mouseout="hostUnhovered">
+            <slot name="dragHandle"></slot>
             <div id="{{plotId}}"></div>
         </div>
 

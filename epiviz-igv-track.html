@@ -72,6 +72,7 @@
         </div>
         <button on-click="_addTrack">Add New IGV Track</button>
         <div id="chart">
+            <slot name="dragHandle"></slot>
             <div id="{{plotId}}"></div>
         </div>
         <paper-dialog id="loadTrack" modal>

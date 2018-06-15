@@ -365,6 +365,19 @@
                 font-size: 14px;
                 font-weight: bold;
             }
+
+            ::slotted(.dragHandle) {
+                opacity: 0;
+                width: calc(100% - 120px);
+                height: 15px;
+            }
+
+            ::slotted(.dragHandle:hover), ::slotted(.dragHandle:active) {
+                opacity: 1;
+                cursor: move;
+                background-color: var(--google-grey-300);
+            }
+
         </style>
     </template>
 </dom-module>

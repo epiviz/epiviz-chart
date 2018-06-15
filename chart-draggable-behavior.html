@@ -17,14 +17,11 @@
             }
 
             _initializeSortable() {
-                var self = this;
-                $(this.shadowRoot.querySelector(".chartContainer")).sortable({
-                    delay: 150,
-                    items: "> :not(epiviz-navigation)",
-                    containment: "parent",
-                    cursorAt: { left: 10, top: 10 },
-                    handle: "svg",
+                $(this).sortable({
                     tolerance: "pointer",
+                    cursorAt: { left: 10, top: 10 },
+                    items: "> :not(epiviz-navigation)",
+                    handle: ".dragHandle",
                 });
             }
         }
