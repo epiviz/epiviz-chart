@@ -10,6 +10,11 @@
         return class extends superClass {
             constructor() {
                 super();
+            }
+
+            ready() {
+                super.ready();
+                // Only useful if you have draggable as well
                 var dragHandle = document.createElement("div");
                 dragHandle.className = "dragHandle";
                 dragHandle.slot = "dragHandle";
