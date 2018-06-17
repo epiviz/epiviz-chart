@@ -2,5 +2,6 @@ bower_components/
 node_modules/
 .vscode/
 data__
-performance/node_modules
+performance/node_modules/
+performane/screenshots/
 .DS_Store
