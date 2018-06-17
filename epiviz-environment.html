@@ -321,7 +321,7 @@ To create an environment element on a HTML page, add
             static get observers() {
                 return [
                     /* observer array just like 1.x */
-                    '_rangeChanged(chr.*, start.*, end.*)',
+                    // '_rangeChanged(chr.*, start.*, end.*)',
                     '_navigationRegionsChanged(navigationRegions.*)'
                 ]
             }
@@ -389,6 +389,8 @@ To create an environment element on a HTML page, add
 
                 self._initializeSortable();
                 self.$.addChart._parentContainer = self;
+
+                self._createPropertyObserver('_rangeChanged(chr.*, start.*, end.*)', false);
             }
 
             disconnectedCallback() {
