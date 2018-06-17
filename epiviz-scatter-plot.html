@@ -2,7 +2,7 @@
 <link rel="import" href="../polymer/polymer-element.html">
 
 <!-- Epiviz imports dependency -->
-<link rel="import" href="../epiviz-imports/epiviz-common-js.html">
+<!-- <link rel="import" href="../epiviz-imports/epiviz-common-js.html"> -->
 
 <!-- Epiviz Polymer Behaviors dependency -->
 <link rel="import" href="chart-behavior.html">
@@ -12,7 +12,7 @@
 <link rel="import" href="chart-grid-behavior.html">
 
 <!-- Epiviz Shared css -->
-<link rel="import" href="chart-shared-css.html">
+<link rel="import" type="css" href="chart-shared-css.html">
 
 <!--
 <h2> Chart Component </h2>
@@ -270,7 +270,11 @@ To create a scatter plot on a HTML page, add
             * @param {Object<epiviz.datatypes.MapGenomicData>} data to plot
             */
             _draw() {
+                var time = Date.now();
                 this.chart.draw(this.range, this.data);
+                // console.error('{ "total_start_time" : ' + (Date.now() - time) + "}");
+                var event = new CustomEvent("total_draw_time", { detail: { "total_draw_time": Date.now() - time } });
+                document.dispatchEvent(event);
                 // if (this.colorByRegions) {
                 //     this._colorByRegionsChanged();
                 // }
