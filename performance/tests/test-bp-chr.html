@@ -1,49 +1,24 @@
 <!doctype html>
 <html>
-  <head>
-    <title> epiviz-environment demo</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script
-      src="https://code.jquery.com/jquery-1.12.4.js"
-      integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU="
-      crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="../../bower_components/jquery-collision/js/jquery-collision.js"></script>
-    <script src="../../bower_components/jquery-ui-drag-collide/js/jquery-ui-draggable-collision.js"></script>
-    <!-- <link rel="import" href="../epiviz-environment.html"> -->
-    <!-- <link rel="import" href="../../epiviz-data-source/epiviz-data-source.html"> -->
-    <link rel="import" href="../../dist/epiviz-charts-test.html">
-  </head>
-    <style>
-  .draggable { width: 90px; height: 80px; padding: 5px; float: left; margin: 0 10px 10px 0; font-size: .9em; border:1px solid black;}
-  </style>
-  <script>
-  //   function bodyOnLoad() {
-  //   // console.log("Body Loaded : " + Date.now());
-  // }
 
-  // window.addEventListener('WebComponentsReady', function(e) {
-  //   // imports are loaded and elements have been registered
-  //   console.log("Web Components loaded : " + Date.now());
-  // });
-  // onload="bodyOnLoad()"
-  </script>
-  <body >
-      <h3>epiviz-environment Demo</h3>
-      
-          <epiviz-data-source provider-type="epiviz.data.WebServerDataProvider" provider-id="umd" 
-            provider-url="http://epiviz-dev.cbcb.umd.edu/api/">
-          </epiviz-data-source>
+<head>
+  <title> epiviz-environment demo</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+  <script src="../../../webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js" integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU=" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="import" href="../../epiviz-charts.html">
+</head>
 
-          <epiviz-environment 
-            chr="chr11"
-            start=1             
-            end=135006516
-            no-logo
-            measurements='{"mcoef-cancer":{
+<body>
+  <h3>epiviz-environment Demo</h3>
+
+  <epiviz-data-source provider-type="epiviz.data.WebServerDataProvider" provider-id="umd" provider-url="http://epiviz-dev.cbcb.umd.edu/api/">
+  </epiviz-data-source>
+
+  <epiviz-environment chr="chr11" start=1 end=135006516 no-logo measurements='{"mcoef-cancer":{
                     "id":"cancer",
                     "name":"methylation coef Cancer",
                     "type":"feature",
@@ -86,8 +61,9 @@
                     "metadata": ["gene", "entrez", "exon_starts", "exon_ends"]
                 }
               }'>
-                <epiviz-scatter-plot class="charts" dim-s='["mcoef-cancer", "mcoef-normal"]'></epiviz-scatter-plot>
-          </epiviz-environment>
+    <epiviz-scatter-plot slot="charts" dim-s='["mcoef-cancer", "mcoef-normal"]'></epiviz-scatter-plot>
+  </epiviz-environment>
 
-          </body>
+</body>
+
 </html>
