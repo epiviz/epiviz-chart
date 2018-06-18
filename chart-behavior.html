@@ -55,8 +55,10 @@
         return class extends superClass {
             constructor() {
                 super();
-                // this.addEventListener('iron-resize', e => this._onResize(e));
-                this.addEventListener('transitionend', e => {this._onResize(e)});
+                //this.addEventListener('iron-resize', e => this._onResize(e));
+                this.addEventListener('transitionend', e => {
+                    this._debouncer = Polymer.Debouncer.debounce(this._debouncer, Polymer.Async.timeOut.after(50), () => this._onResize(e));
+                });
             }
 
             static get properties() {
@@ -215,6 +217,9 @@
                     this.chart._properties.width = Math.max(this.chartType.defaultWidth() / 2, this.offsetWidth - epiviz.ui.charts.Visualization.SVG_MARGIN);
                     this.chart._properties.height = Math.max(this.chartType.defaultHeight(), this.offsetHeight - epiviz.ui.charts.Visualization.SVG_MARGIN);
                     this._dataChanged();
+                    if (e) {
+                        e.stopPropagation();    
+                    }
                 }
             }
 
@@ -483,6 +488,8 @@
                             self.chartColorPalette = self.chart.colors();
                             self.chartColors = self.chartColorPalette._colors;
                         }
+
+                        $(self).css('height', self.chartType.defaultHeight() + epiviz.ui.charts.Visualization.SVG_MARGIN);
 
                         self._initializeSettingsContainer();
                         self._initializeSettingsDialog();

@@ -470,7 +470,9 @@ To create an navigation element on a HTML page, add
                 this.addEventListener('unHover', e => this.onUnhover(e));
                 this.addEventListener('select', e => this.onSelect(e));
                 this.addEventListener('deSelect', e => this.onDeSelect(e));
-                this.addEventListener('iron-resize', e => this._onResize(e));
+                this.addEventListener('iron-resize', e => {
+                    this._debouncer = Polymer.Debouncer.debounce(this._debouncer, Polymer.Async.timeOut.after(100), () => this._onResize(e));
+                });
                 this._getElementSeqInfo(this, this);
 
                 // this.addEventListener('transitionend', e => this._onResize(e));
@@ -578,13 +580,16 @@ To create an navigation element on a HTML page, add
              */
             _onResize(e) {
                 var self = this;
+                // if (e.path.indexOf(this.shadowRoot.querySelector(".content")) === -1) {
+                //     return;
+                // }
                 let navChildren =
                     Polymer.FlattenedNodesObserver.getFlattenedNodes(self.$.chartNav).filter(n => n.nodeType === Node.ELEMENT_NODE);
                 var numChildren = navChildren.length;
                 if (numChildren > 0) { self.set('_isEmpty', true); }
                 for (var index = 0; index < numChildren; index++) {
                     var currentChild = navChildren[index];
-                    //currentChild._onResize(e);
+                    currentChild._onResize(e);
                 }
             }
 
