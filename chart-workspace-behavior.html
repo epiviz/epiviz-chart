@@ -180,7 +180,7 @@
                          * @event workspaceChanged
                          * @type {object}
                          */
-                        self.dispatchEvent(new CustomEvent('workspaceChanged',
+                        document.dispatchEvent(new CustomEvent('workspaceChanged',
                             {
                                 detail: {
                                     id: self.plotId,
@@ -200,7 +200,7 @@
                      * @event workspaceChanged
                      * @type {object}
                      */
-                    self.dispatchEvent(new CustomEvent('workspaceChanged',
+                    document.dispatchEvent(new CustomEvent('workspaceChanged',
                         {
                             detail: {
                                 id: self.plotId,

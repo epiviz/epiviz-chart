@@ -193,15 +193,27 @@ To create a ideogram track on a HTML page, add
                 // TODO: use callback instead after the chart is rendered
                 setTimeout(function () {
                     self.chart.on("selectorhover", function (e) {
-                        self.fire('hover', {
-                            data: self.chartObject
-                        });
+                        self.dispatchEvent(new CustomEvent('hover',
+                            {
+                                detail: {
+                                    data: self.chartObject
+                                },
+                                bubbles: true
+                            }
+                        )
+                        );
                     }.bind(self));
 
                     self.chart.on("selectorunhover", function (e) {
-                        self.fire('unHover', {
-                            data: null
-                        });
+                        self.dispatchEvent(new CustomEvent('hover',
+                            {
+                                detail: {
+                                    data: null
+                                },
+                                bubbles: true
+                            }
+                        )
+                        );
                     }.bind(self));
 
                     self.chart.getSVGTarget().append('text')
