@@ -4,6 +4,7 @@
 <!-- External Polymer Styles/elements dependency -->
 <link rel="import" href="../paper-dialog/paper-dialog.html">
 <link rel="import" href="../paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../paper-listbox/paper-listbox.html">
@@ -25,10 +26,15 @@
 
         <style>
             paper-button {
-                display: block;
-                background: #4285f4;
-                color: #fff;
-                padding: 5px;
+                --paper-button: {
+                    display: inline-block;
+                    background: #4285f4;
+                    color: #fff;
+                    padding: 5px;
+                }
+                --paper-button-disabled: {
+                    color: white
+                };
             }
 
             iron-image {
@@ -53,27 +59,58 @@
                 max-height: inherit;
             }
 
+            .buttonContainer {
+                display: inline-block;
+                padding: 8px;
+            }
+
+            .infoMessage {
+                text-align: center;
+                @apply --paper-font-subhead;
+            }
+
             #title {
+                display: inline;
                 @apply --paper-font-title;
-                margin-bottom: 8px;
+                position: relative;
+                top: 8px;
             }
 
         </style>
         <!-- local DOM goes here -->
-        <paper-menu-button dynamic-align horizontal-align="right" vertical-offset=42>
-            <paper-button slot="dropdown-trigger" raised>
-                <iron-icon icon="editor:insert-chart"></iron-icon>
-                <span>Add Visualization</span>
-            </paper-button>
-            <paper-listbox slot="dropdown-content" selected="{{selectedChart}}">
-                <template is="dom-repeat" items="{{_charts}}">
-                    <paper-item on-click="_chartSelectionChanged">[[item]]</paper-item>
-                </template>
-            </paper-listbox>
-        </paper-menu-button>
+
+        <template is="dom-if" if="{{!_isEnvironment(_charts)}}">
+            <div class="buttonContainer">
+                <paper-button raised on-tap="_showModal">
+                    <iron-icon icon="editor:insert-chart"></iron-icon>
+                    <span>Add Visualization</span>
+                </paper-button>
+            </div>
+        </template>
+
+        <template is="dom-if" if="{{_isEnvironment(_charts)}}">
+            <paper-menu-button dynamic-align horizontal-align="right" vertical-offset=42>
+                <paper-button slot="dropdown-trigger" raised>
+                    <iron-icon icon="editor:insert-chart"></iron-icon>
+                    <span>Add Visualization</span>
+                </paper-button>
+                <paper-listbox slot="dropdown-content">
+                    <paper-item on-tap="_showModal">Add Genomic Range</paper-item>
+                    <paper-item on-tap="_addNavigation">Add Navigation</paper-item>
+                </paper-listbox>
+            </paper-menu-button>
+        </template>
+
         <paper-dialog id="modal" modal>
             <div class="header">
-                <span id="title">Measurement Browser</span>
+                <div id="title">Add a</div>
+                <paper-dropdown-menu label="Chart">
+                    <paper-listbox slot="dropdown-content" selected="{{selectedChart}}">
+                        <template is="dom-repeat" items="{{_charts}}">
+                            <paper-item on-click="_chartSelectionChanged">[[item]]</paper-item>
+                        </template>
+                    </paper-listbox>
+                </paper-dropdown-menu>
                 <paper-tabs selected="{{tabselected}}" noink>
                     <paper-tab>Existing Charts</paper-tab>
                     <paper-tab>All Measurements </paper-tab>
@@ -83,20 +120,23 @@
                 <iron-pages selected="{{tabselected}}">
                     <div class="dialog-content">
                         <template is="dom-if" if="[[_tableDataExists(_existingChartMeasurements)]]">
-                            <data-filter data="{{_existingChartMeasurements}}" class="curr-charts">
+                            <data-filter data="{{_existingChartMeasurements}}" class="curr-charts" selected-items="{{selectedItems}}">
                             </data-filter>
                         </template>
-                        <p hidden$="[[_tableDataExists(_existingChartMeasurements)]]">No Existing Charts</p>
+                        <p class="infoMessage" hidden$="[[_tableDataExists(_existingChartMeasurements)]]">No Existing Charts</p>
                     </div>
 
                     <div class="dialog-content">
-                        <data-filter data="{{_jsonMeasurements}}" class="new-charts">
-                        </data-filter>
+                        <template is="dom-if" if="[[_tableDataExists(_jsonMeasurements)]]">
+                            <data-filter data="{{_jsonMeasurements}}" class="new-charts" selected-items="{{selectedItems}}">
+                            </data-filter>
+                        </template>
+                        <p class="infoMessage" hidden$="[[_tableDataExists(_jsonMeasurements)]]">Choose a Chart Type</p>
                     </div>
                 </iron-pages>
             </paper-dialog-scrollable>
             <div class="buttons">
-                <paper-button on-tap="_submit" dialog-confirm autofocus>Add Chart</paper-button>
+                <paper-button on-tap="_submit" disabled="{{!_enableButton(selectedChart, selectedItems.*)}}" dialog-confirm autofocus>Add Chart</paper-button>
                 <paper-button on-tap="_close" dialog-dismiss>Close</paper-button>
             </div>
         </paper-dialog>
@@ -135,6 +175,11 @@
                         notify: true
                     },
 
+                    selectedItems: {
+                        type: Array,
+                        notify: true,
+                    },
+
                     /**
                     * selected chart from the browser.
                     *
@@ -142,7 +187,9 @@
                     */
                     selectedChart: {
                         type: String,
-                        notify: true
+                        notify: true,
+                        value: null,
+                        observer: "_refitModal",
                     },
 
                     /**
@@ -171,7 +218,7 @@
                     _charts: {
                         type: Array,
                         notify: true,
-                        computed: "_getCharts(_chartTypes)"
+                        computed: "_getCharts(_chartTypes, _parentContainer)"
                     },
 
                     /**
@@ -179,17 +226,14 @@
                     */
                     _parentContainer: {
                         type: Object,
-                        notify: true
                     },
 
                     _jsonMeasurements: {
                         type: Array,
-                        notify: true
                     },
 
                     _existingChartMeasurements: {
                         type: Array,
-                        notify: true
                     },
 
                     tabselected: {
@@ -198,7 +242,7 @@
                         value: function () {
                             return 0;
                         },
-                        observer: "_tabChanged"
+                        observer: "_refitModal",
                     }
                 }
             }
@@ -228,12 +272,27 @@
             /**
              * Get Available Chart Types
              */
-            _getCharts(chartTypes) {
+            _getCharts(chartTypes, parentContainer) {
+                if (parentContainer && parentContainer.nodeName === "EPIVIZ-NAVIGATION") {
+                    delete chartTypes["EpivizNavigation"];
+                }
                 return Object.keys(chartTypes);
+            }
+
+            _isEnvironment(chartTypes) {
+                return chartTypes.indexOf("EpivizNavigation") !== -1;
             }
 
             _tableDataExists(tableData) {
                 return tableData.length > 0;
+            }
+
+            _enableButton(selectedChart, selectedItems) {
+                console.log(selectedItems);
+                if (selectedChart !== null &&  selectedChart >= 0 && this.selectedItems && this.selectedItems.length > 0) {
+                    return true;
+                }
+                return false;
             }
 
             /**
@@ -258,17 +317,25 @@
                 envElement.appendChild(chartElem);
             }
 
-            _tabChanged() {
-                this.$.modal.refit();
+            _refitModal() {
+                setTimeout(() => this.$.modal.refit(), 0);
             }
 
-            /**
-             * Callback triggered when measurement selections are made on the measurement browser.
-             */
-            _chartSelectionChanged(event) {
-                var self = this;
-                var envElement = self._parentContainer;
+            _addNavigation() {
+                var envElement = this._parentContainer;
+                var elem = document.createElement("epiviz-navigation");
 
+                elem.setAttribute("chr", "chr19");
+                elem.setAttribute("start", 10084603);
+                elem.setAttribute("end", 10312571);
+                elem.setAttribute("no-logo", true);
+                elem.slot = "charts";
+
+                envElement.appendChild(elem);
+            }
+
+            _showModal(event) {
+                var envElement = this._parentContainer;
                 var currentCharts = [];
                 var currentChartObj = {};
                 let navChildren =
@@ -279,75 +346,73 @@
                     currentCharts.push({ "node": currentChild.nodeName, "id ": currentChild.plotId });
                     currentChartObj[currentChild.plotId] = currentChild.measurements;
                 }
-                self.currentChartObj = currentChartObj;
-                self.set("_existingChartMeasurements", currentCharts);
+                this.currentChartObj = currentChartObj;
+                this.set("_existingChartMeasurements", currentCharts);
+
+                this.$.modal.open();
+            }
+
+            /**
+             * show the measurement browser
+             */
+            _chartSelectionChanged(event) {
+                var self = this;
+                var envElement = self._parentContainer;
 
                 self.selection = {};
                 self.selection.chartType = self._charts[self.selectedChart];
                 self.measurements = envElement.measurementSet;
-                if (self.selection.chartType == "EpivizNavigation") {
-                    var elem = document.createElement("epiviz-navigation");
-                    // TODO: Ask user for the location to start the element at.
-                    // current location C3P1 gene
-                    elem.setAttribute("chr", "chr19");
-                    elem.setAttribute("start", 10084603);
-                    elem.setAttribute("end", 10312571);
-                    elem.setAttribute("no-logo", true);
-                    elem.slot = "charts";
 
-                    envElement.appendChild(elem);
+                if (event.target.nodeName === "PAPER-ITEM") {
+                    $(event.target).parent().parent()[0].selected = null;
+                }
+
+                if (self.selection.chartType == "GenesTrack") {
+                    var data = envElement.measurementSet.subset(function (m) { return m.defaultChartType() == "Genes Track" });
+                    var datasourceGroups = {};
+                    data.foreach(function (m) {
+                        if (data.dataprovider && data.dataprovider != m.dataprovider()) { return; }
+                        if (data.annotation) {
+                            for (var key in data.annotation) {
+                                if (!data.annotation.hasOwnProperty(key)) { continue; }
+                                if (!m.annotation() || m.annotation()[key] != data.annotation[key]) { return; }
+                            }
+                        }
+                        datasourceGroups[m.datasourceGroup()] = ["Genes track", false];
+                    });
+
+                    // self.set("_jsonMeasurements", data.raw());
                 }
                 else {
+                    var data = envElement.measurementSet;
+                    var source = "epiviz";
 
-                    $(event.target).parent().parent()[0].selected = null;
-
-                    if (self.selection.chartType == "GenesTrack") {
-                        var data = envElement.measurementSet.subset(function (m) { return m.defaultChartType() == "Genes Track" });
-                        var datasourceGroups = {};
-                        data.foreach(function (m) {
-                            if (data.dataprovider && data.dataprovider != m.dataprovider()) { return; }
-                            if (data.annotation) {
-                                for (var key in data.annotation) {
-                                    if (!data.annotation.hasOwnProperty(key)) { continue; }
-                                    if (!m.annotation() || m.annotation()[key] != data.annotation[key]) { return; }
-                                }
-                            }
-                            datasourceGroups[m.datasourceGroup()] = ["Genes track", false];
-                        });
-
-                        // self.set("_jsonMeasurements", data.raw());
-                    }
-                    else {
-                        var data = envElement.measurementSet;
-                        var source = "epiviz";
-
-                        // self.set("_jsonMeasurements", data.raw());
-                    }
-                    var nData = [];
-                    var mData = data.raw();
-                    mData.forEach(function (d, i) {
-
-                        var temp = d.annotation;
-                        if (temp == undefined) {
-                            temp = {};
-                        }
-
-                        delete temp["tags"];
-                        delete d["type"];
-                        delete d["datasourceId"];
-                        delete d["datasourceGroup"];
-                        delete d["dataprovider"];
-                        delete d["formula"];
-                        delete d["defaultChartType"];
-
-                        d.annotation = temp;
-                        nData[i] = d;
-                    });
-                    if (!self._jsonMeasurements) {
-                        self.set("_jsonMeasurements", nData);
-                    }
-                    self.$.modal.open();
+                    // self.set("_jsonMeasurements", data.raw());
                 }
+                var nData = [];
+                var mData = data.raw();
+                mData.forEach(function (d, i) {
+
+                    var temp = d.annotation;
+                    if (temp == undefined) {
+                        temp = {};
+                    }
+
+                    delete temp["tags"];
+                    delete d["type"];
+                    delete d["datasourceId"];
+                    delete d["datasourceGroup"];
+                    delete d["dataprovider"];
+                    delete d["formula"];
+                    delete d["defaultChartType"];
+
+                    d.annotation = temp;
+                    nData[i] = d;
+                });
+                
+                self.set("_jsonMeasurements", nData);
+                
+                this.$.modal.refit();
             }
 
             _chartSubmit() {
@@ -374,6 +439,7 @@
 
             _close() {
                 this.selectedChart = null;
+                this.set("_jsonMeasurements", []);
             }
 
             _submit() {
@@ -382,7 +448,6 @@
 
                 var filter = this.shadowRoot.querySelector("data-filter.new-charts");
                 var fids = filter.selectedItems.map(x => x.id);
-
                 var fmeasurements = envElement.measurementSet.subset(function (m) { return fids.includes(m.id()) });
 
                 self.selection = {};
