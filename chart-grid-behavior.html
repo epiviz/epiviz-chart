@@ -15,14 +15,23 @@
             ready() {
                 super.ready();
                 // Only useful if you have draggable as well
-                var dragHandle = document.createElement("div");
-                dragHandle.className = "dragHandle";
-                dragHandle.slot = "dragHandle";
-                this.appendChild(dragHandle);
+                this._initializeDragHandle();
             }
 
             static get properties() {
                 return {};
+            }
+
+            /**
+            * Add drag handle to charts only
+            */
+            _initializeDragHandle() {
+                if (this.nodeName.indexOf("NAVIGATION") === -1) {
+                    var dragHandle = document.createElement("div");
+                    dragHandle.className = "dragHandle";
+                    dragHandle.slot = "dragHandle";
+                    this.appendChild(dragHandle);
+                }
             }
 
             /**

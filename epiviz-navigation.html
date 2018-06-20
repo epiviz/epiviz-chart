@@ -751,11 +751,11 @@ To create an navigation element on a HTML page, add
             _rangeUpdate(newVal, oldVal) {
                 var self = this;
                 self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined, self.chr);
-
                 if (!self.collapsed && oldVal) {
                     self._getGenesInRange(self, self);
+                    // filter out non Epiviz nodes
                     let navChildren =
-                        Polymer.FlattenedNodesObserver.getFlattenedNodes(self).filter(n => n.nodeType === Node.ELEMENT_NODE);
+                        Polymer.FlattenedNodesObserver.getFlattenedNodes(self).filter(n => n.nodeType === Node.ELEMENT_NODE && n.nodeName.indexOf("EPIVIZ") !== -1);
                     var numChildren = navChildren.length;
                     if (numChildren > 0) { self.set('_isEmpty', true); }
                     for (var index = 0; index < numChildren; index++) {

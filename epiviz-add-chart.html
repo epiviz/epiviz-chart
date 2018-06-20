@@ -111,16 +111,16 @@
                         </template>
                     </paper-listbox>
                 </paper-dropdown-menu>
-                <paper-tabs selected="{{tabselected}}" noink>
+                <paper-tabs selected="{{tabSelected}}" noink>
                     <paper-tab>Existing Charts</paper-tab>
                     <paper-tab>All Measurements </paper-tab>
                 </paper-tabs>
             </div>
             <paper-dialog-scrollable>
-                <iron-pages selected="{{tabselected}}">
+                <iron-pages selected="{{tabSelected}}">
                     <div class="dialog-content">
                         <template is="dom-if" if="[[_tableDataExists(_existingChartMeasurements)]]">
-                            <data-filter data="{{_existingChartMeasurements}}" class="curr-charts" selected-items="{{selectedItems}}">
+                            <data-filter data="{{_existingChartMeasurements}}" class="curr-charts" selected-items="{{selectedExistingMeasurements}}">
                             </data-filter>
                         </template>
                         <p class="infoMessage" hidden$="[[_tableDataExists(_existingChartMeasurements)]]">No Existing Charts</p>
@@ -128,7 +128,7 @@
 
                     <div class="dialog-content">
                         <template is="dom-if" if="[[_tableDataExists(_jsonMeasurements)]]">
-                            <data-filter data="{{_jsonMeasurements}}" class="new-charts" selected-items="{{selectedItems}}">
+                            <data-filter data="{{_jsonMeasurements}}" class="new-charts" selected-items="{{selectedMeasurements}}">
                             </data-filter>
                         </template>
                         <p class="infoMessage" hidden$="[[_tableDataExists(_jsonMeasurements)]]">Choose a Chart Type</p>
@@ -136,7 +136,7 @@
                 </iron-pages>
             </paper-dialog-scrollable>
             <div class="buttons">
-                <paper-button on-tap="_submit" disabled="{{!_enableButton(selectedChart, selectedItems.*)}}" dialog-confirm autofocus>Add Chart</paper-button>
+                <paper-button on-tap="_submit" disabled="{{!_enableButton(selectedChart, selectedMeasurements.*, selectedExistingMeasurements.*, tabSelected.*)}}" dialog-confirm autofocus>Add Chart</paper-button>
                 <paper-button on-tap="_close" dialog-dismiss>Close</paper-button>
             </div>
         </paper-dialog>
@@ -175,7 +175,12 @@
                         notify: true
                     },
 
-                    selectedItems: {
+                    selectedMeasurements: {
+                        type: Array,
+                        notify: true,
+                    },
+
+                    selectedExistingMeasurements: {
                         type: Array,
                         notify: true,
                     },
@@ -236,7 +241,7 @@
                         type: Array,
                     },
 
-                    tabselected: {
+                    tabSelected: {
                         type: Number,
                         notify: true,
                         value: function () {
@@ -287,10 +292,15 @@
                 return tableData.length > 0;
             }
 
-            _enableButton(selectedChart, selectedItems) {
-                console.log(selectedItems);
-                if (selectedChart !== null &&  selectedChart >= 0 && this.selectedItems && this.selectedItems.length > 0) {
-                    return true;
+            _enableButton(selectedChart, selectedMeasurements, selectedExistingMeasurements, tabSelected) {
+                if (selectedChart !== null && selectedChart >= 0) {
+                    if (this.tabSelected === 0 && this.selectedExistingMeasurements && this.selectedExistingMeasurements.length > 0) {
+                        return true;
+                    }
+
+                    if (this.tabSelected === 1 && this.selectedMeasurements && this.selectedMeasurements.length > 0) {
+                        return true;
+                    }
                 }
                 return false;
             }
@@ -343,7 +353,7 @@
                 var numChildren = navChildren.length;
                 for (var index = 0; index < numChildren; index++) {
                     var currentChild = navChildren[index];
-                    currentCharts.push({ "node": currentChild.nodeName, "id ": currentChild.plotId });
+                    currentCharts.push({ "node": currentChild.nodeName, "id": currentChild.plotId });
                     currentChartObj[currentChild.plotId] = currentChild.measurements;
                 }
                 this.currentChartObj = currentChartObj;
@@ -415,53 +425,39 @@
                 this.$.modal.refit();
             }
 
-            _chartSubmit() {
-                var self = this;
-                var envElement = self._parentContainer;
-
-                var filter = this.shadowRoot.querySelector("data-filter.curr-charts");
-                var fids = filter.selectedItems.map(x => x.id);
-
-                var fmeasurements = self.currentChartObj[fids[0]];
-
-                self.selection = {};
-                self.selection.chartType = self._charts[self.selectedChart];
-
-                var chartElem = document.createElement(self._chartTypes[self.selection.chartType]);
-                chartElem.slot = "charts";
-                chartElem.range = envElement.range;
-                var chartElemType = chartElem._createChart();
-
-                envElement.appendChild(chartElem);
-                chartElem.setAttribute("measurements", JSON.stringify(fmeasurements.raw()));
-
-            }
-
             _close() {
                 this.selectedChart = null;
+                this.set("selectedMeasurements", []);
+                this.set("selectedExistingMeasurements", []);
                 this.set("_jsonMeasurements", []);
             }
 
             _submit() {
-                var self = this;
-                var envElement = self._parentContainer;
+                var envElement = this._parentContainer;
+                var fids;
+                var fmeasurements;
+                if (this.tabSelected === 0) {
+                    fids = this.selectedExistingMeasurements.map(x => x.id);
+                    fmeasurements = this.currentChartObj[fids[0]];
+                } else if (this.tabSelected === 1) {
+                    fids = this.selectedMeasurements.map(x => x.id);
+                    fmeasurements = envElement.measurementSet.subset(function (m) { return fids.includes(m.id()) });
+                    fmeasurements = fmeasurements.raw();
+                }
 
-                var filter = this.shadowRoot.querySelector("data-filter.new-charts");
-                var fids = filter.selectedItems.map(x => x.id);
-                var fmeasurements = envElement.measurementSet.subset(function (m) { return fids.includes(m.id()) });
 
-                self.selection = {};
-                self.selection.chartType = self._charts[self.selectedChart];
+                this.selection = {};
+                this.selection.chartType = this._charts[this.selectedChart];
 
-                var chartElem = document.createElement(self._chartTypes[self.selection.chartType]);
+                var chartElem = document.createElement(this._chartTypes[this.selection.chartType]);
                 chartElem.slot = "charts";
                 chartElem.range = envElement.range;
                 var chartElemType = chartElem._createChart();
 
-                chartElem.setAttribute("measurements", JSON.stringify(fmeasurements.raw()));
+                chartElem.setAttribute("measurements", JSON.stringify(fmeasurements));
                 envElement.appendChild(chartElem);
 
-                self.selectedChart = null;
+                this._close();
             }
 
             /**
