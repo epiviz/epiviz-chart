@@ -427,6 +427,14 @@
 
             _close() {
                 this.selectedChart = null;
+                var newCharts = this.shadowRoot.querySelector("data-filter.new-charts");
+                var currCharts = this.shadowRoot.querySelector("data-filter.curr-charts");
+                if (newCharts) {
+                    newCharts._deselectAll();
+                }
+                if (currCharts) {
+                    currCharts._deselectAll();
+                }
                 this.set("selectedMeasurements", []);
                 this.set("selectedExistingMeasurements", []);
                 this.set("_jsonMeasurements", []);
