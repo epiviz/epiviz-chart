@@ -218,7 +218,7 @@
                     this.chart._properties.height = Math.max(this.chartType.defaultHeight(), this.offsetHeight - epiviz.ui.charts.Visualization.SVG_MARGIN);
                     this._dataChanged();
                     if (e) {
-                        e.stopPropagation();    
+                        e.stopPropagation();
                     }
                 }
             }
@@ -607,6 +607,82 @@
                 if (this.data != null && this.chart != null) {
                     this._draw();
                 }
+            }
+
+            get_json_data() {
+                var self = this;
+                var jData = null;
+                if (self.jsonData) { return self.jsonData; }
+
+                if (self.nodeName == "EPIVIZ_GENES_TRACK") {
+
+                    jData = {
+                        rows: {
+                            start: [],
+                            end: [],
+                            chr: [],
+                            id: null,
+                            strand: [],
+                            metadata: {
+                                exon_ends: [],
+                                gene: [],
+                                exon_starts: []
+                            }
+                        }
+                    }
+
+                    var series = self.data.firstSeries();
+                    var indices = epiviz.utils.range(series.size());
+                    var dataItems = indices
+                        .map(function (i) {
+                            var cell = series.get(i);
+                            var item = cell.rowItem;
+
+                            jData.rows.start.push(item.start());
+                            jData.rows.end.push(item.end());
+                            jData.rows.chr.push(item.seqName());
+                            jData.rows.strand.push(item.strand());
+                            jData.rows.metadata.gene.push(item.metadata("gene"));
+                            jData.rows.exon_ends.gene.push(item.metadata("exon_ends"));
+                            jData.rows.exon_starts.gene.push(item.metadata("exon_starts"));
+                        });
+                }
+
+                if (self.data) {
+                    jData = {
+                        rows: {
+                            start: [],
+                            end: [],
+                            chr: [],
+                            id: null,
+                            strand: [],
+                            metadata: {
+                                exon_ends: [],
+                                gene: [],
+                                exon_starts: []
+                            }
+                        },
+                        cols: {}
+                    }
+
+                    var counter = 0;
+                    self.data.foreach(function (measurement, series, seriesIndex) {
+                        if (counter == 0) {
+                            var rowData = series._container.rowData(measurement);
+                            jData.rows.start = rowData._start;
+                            jData.rows.end = rowData._end;
+                            jData.rows.metadata = rowData._metadata;
+                            jData.rows.id = rowData._id;
+                            jData.rows.chr = rowData._seqName;
+                            counter++;
+                        }
+
+                        var featureValues = series._container.values(measurement);
+                        jData.cols[measurement.id()] = featureValues._values;
+                    });
+                }
+
+                return jData;
             }
 
             /**
