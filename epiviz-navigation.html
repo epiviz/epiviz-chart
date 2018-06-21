@@ -223,6 +223,20 @@ To create an navigation element on a HTML page, add
                     <div class="flexchild" on-mouseover="locationHovered" on-mouseout="locationUnhovered">
                         <paper-input id="textRange" value="{{_strRange]]" label="Chromosome Location" on-change="_updateStrRange"></paper-input>
                     </div>
+                    <div class="flexchild">
+                        <paper-dropdown-input id="geneSearch" label="Search Gene/Probe" on-search-value-changed="_searchGene">
+                            <template>
+                                <dom-repeat items="[[items]]" as="item">
+                                    <template>
+                                        <paper-item on-tap="_selectGene" role="option" aria-selected="false">
+                                            <div>[[item.gene]] [[item.chr]]: [[item.start]] - [[item.end]]</div>
+                                            <paper-ripple></paper-ripple>
+                                        </paper-item>
+                                    </template>
+                                </dom-repeat>
+                            </template>
+                        </paper-dropdown-input>
+                    </div>
                 </div>
                 <div class="content chartContainer">
                     <slot id="chartNav" name="charts"></slot>
@@ -807,21 +821,24 @@ To create an navigation element on a HTML page, add
              */
             _searchGene(e) {
                 var self = this;
-                var gene = e.detail.option.text;
-                var field = this.$$("#geneSearch");
+                var gene = e.detail.value;
+                var field = this.shadowRoot.querySelector("#geneSearch");
 
-                if (self.useDefaultDataProvider) {
+                if (gene != "") {
+                    if (self.useDefaultDataProvider) {
 
-                    self.range = self.range || new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000);
-                    var dataProviderFactory = new epiviz.data.DataProviderFactory(new epiviz.Config(self.configSrc));
-                    var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);
+                        self.range = self.range || new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000);
+                        var dataProviderFactory = new epiviz.data.DataProviderFactory(new epiviz.Config(self.configSrc));
+                        var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);
 
-                    dataManager.search(function (data) {
-                        field.suggestions(data);
-                    }, gene);
-                }
-                else {
-                    var result = self._getElementSearch(gene, self, self);
+                        dataManager.search(function (data) {
+                            // field.suggestions(data);
+                            field.items = data;
+                        }, gene);
+                    }
+                    else {
+                        var result = self._getElementSearch(gene, self, self);
+                    }
                 }
             }
 
@@ -830,9 +847,9 @@ To create an navigation element on a HTML page, add
              * selected gene value @ e.detail.option
              */
             _selectGene(e) {
-                var selected = e.detail.option;
+                var selected = e.model.item;
 
-                this.chr = selected.seqName;
+                this.chr = selected.chr;
                 this.start = selected.start - Math.round(selected.start * 0.01);
                 this.end = selected.end + Math.round(selected.end * 0.01);
 

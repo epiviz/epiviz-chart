@@ -158,7 +158,11 @@
                 if (this.dataManager) {
                     this.dataManager.search(function (data) {
                         if (pDom) {
-                            pDom.$$("#geneSearch").suggestions(data);
+                            // pDom.$$("#geneSearch").suggestions(data);
+                            data.forEach(function (item) {
+                                item.value = item.gene + " - " + item.chr + " : " + item.start + " - " + item.end;
+                            });
+                            pDom.shadowRoot.querySelector("#geneSearch").items = data;
                         }
                         else {
                             cb(data);
@@ -346,8 +350,8 @@
                                 var toast = document.createElement("paper-toast");
                                 toast.setAttribute("text", currentChild.nodeName.toLowerCase() + ": query return empty - choose a different genomic region");
                                 // toast.setAttribute("openned", true);
-                                this.shadowRoot.appendChild(toast);
-                                toast.show();
+                                // this.shadowRoot.appendChild(toast);
+                                // toast.show();
                             }
 
                             var dataChartElem = pDom.querySelector('[plot-id$="' + id + '"]') || Polymer.dom(pDom).querySelector('[plot-id$="' + id + '"]');
