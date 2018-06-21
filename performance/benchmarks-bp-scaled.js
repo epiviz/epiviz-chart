@@ -2,7 +2,7 @@ const puppeteer = require("puppeteer");
 
 async function multiple_run_benchmark(html, nruns, file_path) {
   test_runs = [];
-  datafields = ["responseEnd", "domInteractive", "domComplete"];
+  datafields = ["domInteractive", "domComplete"];
 
   for (var i = 0; i < nruns; i++) {
     const browser = await puppeteer.launch({
@@ -13,12 +13,6 @@ async function multiple_run_benchmark(html, nruns, file_path) {
     var total_http_req_time = 0;
     var requests_map = {};
     var chart_draw_time = null;
-
-    // page.on("console", msg => {
-    //   console.log(msg.text());
-    //   // chart_draw_time = JSON.parse(msg.text());
-    //   chart_draw_time = { total_draw_time: 10 };
-    // });
 
     await page.exposeFunction("onCustomEvent", e => {
       chart_draw_time = e.detail;
@@ -33,29 +27,58 @@ async function multiple_run_benchmark(html, nruns, file_path) {
     }
 
     await listenFor("total_draw_time");
+    var responseMap = {};
+    var responseTimingMap = {};
+    const client = await page.target().createCDPSession();
+    await client.send("Network.enable");
 
-    await page.setRequestInterception(true);
+    //  Track requests
+    client.on("Network.requestWillBeSent", event => {
+      var requestId = event.requestId;
+      var url = event.request.url;
 
-    page.on("request", interceptedRequest => {
-      var url = interceptedRequest.url();
-      if (url.indexOf("?requestId=") != -1 && url.indexOf("&action=") != -1) {
-        requests_map[url] = {
-          requestSent: Date.now()
+      if (
+        url.indexOf("?requestId=") != -1 &&
+        url.indexOf("&action=getValues") != -1
+      ) {
+        responseMap[requestId] = {
+          requestSent: [],
+          responseReceived: [],
+          dataReceived: [],
+          requestFinished: [],
+          requestSize: []
         };
+        responseMap[requestId].requestSent.push(Date.now());
       }
-
-      interceptedRequest.continue();
     });
 
-    page.on("requestfinished", interceptedResponse => {
-      var url = interceptedResponse.url();
+    //  data chunks received
+    client.on("Network.dataReceived", event => {
+      var requestId = event.requestId;
 
-      if (url.indexOf("?requestId=") != -1 && url.indexOf("&action=") != -1) {
-        requests_map[url]["requestReceived"] = Date.now();
-        requests_map[url]["requestTime"] =
-          requests_map[url]["requestReceived"] -
-          requests_map[url]["requestSent"];
-        total_http_req_time += requests_map[url]["requestTime"];
+      if (responseMap[requestId]) {
+        responseMap[requestId].dataReceived.push(Date.now());
+      }
+    });
+
+    // response received
+    client.on("Network.responseReceived", event => {
+      var response = event.response;
+      var requestId = event.requestId;
+
+      if (responseMap[requestId]) {
+        responseMap[requestId].responseReceived.push(Date.now());
+        responseTimingMap[requestId] = response;
+      }
+    });
+
+    //  request finished
+    client.on("Network.loadingFinished", event => {
+      var requestId = event.requestId;
+
+      if (responseMap[requestId]) {
+        responseMap[requestId].requestFinished.push(Date.now());
+        responseMap[requestId].requestSize.push(event.encodedDataLength);
       }
     });
 
@@ -64,16 +87,30 @@ async function multiple_run_benchmark(html, nruns, file_path) {
       await page.evaluate(() => JSON.stringify(window.performance.timing))
     );
 
-    await page.screenshot({ path: file_path + "-" + i + "-scaled.png" });
+    await client.detach();
+
+    // await page.screenshot({ path: file_path + "-" + i + "-scaled.png" });
     await browser.close();
 
     const navigationStart = performanceTiming.navigationStart;
 
+    var total_http_time = 0;
+    var total_latency_time = 0;
+    var total_request_size = 0;
+
+    Object.keys(responseMap).forEach(function(reqId) {
+      total_http_time +=
+        responseMap[reqId].requestFinished - responseMap[reqId].requestSent;
+      total_latency_time +=
+        responseMap[reqId].responseReceived - responseMap[reqId].requestSent;
+      total_request_size += responseMap[reqId].requestSize[0];
+    });
+
     const extractedData = {
-      total_http_time: total_http_req_time,
       total_draw_time: chart_draw_time.total_draw_time,
-      network_latency:
-        performanceTiming.responseStart - performanceTiming.requestStart
+      total_http_time: total_http_time / Object.keys(responseMap).length,
+      total_latency_time: total_latency_time / Object.keys(responseMap).length,
+      total_request_size: total_request_size / Object.keys(responseMap).length
     };
 
     datafields.forEach(name => {

@@ -1,107 +1,172 @@
 scaled <- jsonlite::fromJSON("~/Desktop/projects/epiviz/epiviz-chart/performance/results/scaled.log")
 
-fields <- c("domContentLoadedEventEnd", "loadEventEnd", "responseEnd")
 datapoints <- names(scaled)
 
-httpTime <- sapply(names(scaled), function(dp) {
+shttpTime <- sapply(names(scaled), function(dp) {
   mean(scaled[[dp]][['total_http_time']])
 })
 
-httpTime_sd <- sapply(names(scaled), function(dp) {
+shttpTime_sd <- sapply(names(scaled), function(dp) {
   sd(scaled[[dp]][['total_http_time']])
 })
 
-drawTime <- sapply(names(scaled), function(dp) {
+sdrawTime <- sapply(names(scaled), function(dp) {
   mean(scaled[[dp]][['total_draw_time']])
 })
 
-drawTime_sd <- sapply(names(scaled), function(dp) {
+sdrawTime_sd <- sapply(names(scaled), function(dp) {
   sd(scaled[[dp]][['total_draw_time']])
 })
 
-latencyTime <- sapply(names(scaled), function(dp) {
-  mean(scaled[[dp]][['network_latency']])
+slatencyTime <- sapply(names(scaled), function(dp) {
+  mean(scaled[[dp]][['total_latency_time']])
 })
 
-latencyTime_sd <- sapply(names(scaled), function(dp) {
-  sd(scaled[[dp]][['network_latency']])
+slatencyTime_sd <- sapply(names(scaled), function(dp) {
+  sd(scaled[[dp]][['total_latency_time']])
 })
 
+srequestSize <- sapply(names(scaled), function(dp) {
+  mean(scaled[[dp]][['total_request_size']])/1000
+})
 
-scaled_formatted <- data.frame(grange = datapoints,
-                               httpTime = httpTime,
-                               httpTime_sd = httpTime_sd,
-                               drawTime = drawTime,
-                               drawTime_sd = drawTime_sd,
-                               latencyTime = latencyTime,
-                               latencyTime_sd = latencyTime_sd,
-                               stringsAsFactors = FALSE)
+srequestSize_sd <- sapply(names(scaled), function(dp) {
+  sd(scaled[[dp]][['total_request_size']])
+})
 
 unscaled <- jsonlite::fromJSON("~/Desktop/projects/epiviz/epiviz-chart/performance/results/unscaled.log")
 datapoints <- names(unscaled)
 
-httpTime <- sapply(names(unscaled), function(dp) {
+uhttpTime <- sapply(names(unscaled), function(dp) {
   mean(unscaled[[dp]][['total_http_time']])
 })
 
-httpTime_sd <- sapply(names(unscaled), function(dp) {
+uhttpTime_sd <- sapply(names(unscaled), function(dp) {
   sd(unscaled[[dp]][['total_http_time']])
 })
 
-drawTime <- sapply(names(unscaled), function(dp) {
+udrawTime <- sapply(names(unscaled), function(dp) {
   mean(unscaled[[dp]][['total_draw_time']])
 })
 
-drawTime_sd <- sapply(names(unscaled), function(dp) {
+udrawTime_sd <- sapply(names(unscaled), function(dp) {
   sd(unscaled[[dp]][['total_draw_time']])
 })
 
-latencyTime <- sapply(names(unscaled), function(dp) {
-  mean(unscaled[[dp]][['network_latency']])
+ulatencyTime <- sapply(names(unscaled), function(dp) {
+  mean(unscaled[[dp]][['total_latency_time']])
 })
 
-latencyTime_sd <- sapply(names(unscaled), function(dp) {
-  sd(unscaled[[dp]][['network_latency']])
+ulatencyTime_sd <- sapply(names(unscaled), function(dp) {
+  sd(unscaled[[dp]][['total_latency_time']])
 })
 
-unscaled_formatted <- data.frame(grange = datapoints,
-                                 httpTime = httpTime,
-                                 httpTime_sd = httpTime_sd,
-                                 drawTime = drawTime,
-                                 drawTime_sd = drawTime_sd,
-                                 latencyTime = latencyTime,
-                                 latencyTime_sd = latencyTime_sd,
-                                 stringsAsFactors = FALSE)
+urequestSize <- sapply(names(unscaled), function(dp) {
+  mean(unscaled[[dp]][['total_request_size']]) /1000
+})
+
+urequestSize_sd <- sapply(names(unscaled), function(dp) {
+  sd(unscaled[[dp]][['total_request_size']])
+})
+
+formatted <- data.frame(grange = datapoints,
+                        shttpTime = shttpTime,
+                        shttpTime_sd = shttpTime_sd,
+                        sdrawTime = sdrawTime,
+                        sdrawTime_sd = sdrawTime_sd,
+                        slatencyTime = slatencyTime,
+                        slatencyTime_sd = slatencyTime_sd,
+                        srequestSize = srequestSize,
+                        uhttpTime = uhttpTime,
+                        uhttpTime_sd = uhttpTime_sd,
+                        udrawTime = udrawTime,
+                        udrawTime_sd = udrawTime_sd,
+                        ulatencyTime = ulatencyTime,
+                        ulatencyTime_sd = ulatencyTime_sd,
+                        urequestSize = urequestSize,
+                        stringsAsFactors = FALSE)
 
 library(ggplot2)
 library(gridExtra)
 
-drawTimePlot <- ggplot(data=NULL, aes(reorder(grange, drawTime), group = 2)) +
-  geom_line(data = unscaled_formatted, aes(y = drawTime, colour = "unscaled")) +
-  geom_line(data = scaled_formatted, aes(y = drawTime, colour = "summarized")) +
+drawTimePlot <- ggplot(data=formatted, aes(x = grange, group = 2)) +
+  geom_line(aes(y = udrawTime, colour = "unsummarized")) +
+  geom_line(aes(y = sdrawTime, colour = "summarized")) +
   ylab("draw time (ms)") +
   xlab("genomic range (bp)") +
-  geom_errorbar(data = unscaled_formatted, aes(ymin=drawTime-drawTime_sd, ymax=drawTime+drawTime_sd, colour = "unscaled"), width=.2) +
-  geom_errorbar(data = scaled_formatted, aes(ymin=drawTime-drawTime_sd, ymax=drawTime+drawTime_sd, colour = "summarized"), width=.2) +
-  theme(legend.position="top")
+  geom_errorbar(aes(ymin=udrawTime-udrawTime_sd, ymax=udrawTime+udrawTime_sd, colour = "unsummarized"), width=.2) +
+  geom_errorbar(aes(ymin=sdrawTime-sdrawTime_sd, ymax=sdrawTime+sdrawTime_sd, colour = "summarized"), width=.2) +
+  theme(legend.position="top") + 
+  ggtitle(" ") +
+  scale_x_discrete(limits= formatted$grange)
 
-httpTimePlot <- ggplot(data=NULL, aes(reorder(grange, drawTime), group =1)) +
-  geom_line(data = unscaled_formatted, aes(y = httpTime, colour = "unscaled")) +
-  geom_line(data = scaled_formatted, aes(y = httpTime, colour = "summarized")) +
-  ylab("http response time (ms)") +
-  xlab("genomic range (bp)") +
-  geom_errorbar(data = unscaled_formatted, aes(ymin=httpTime-httpTime_sd, ymax=httpTime+httpTime_sd, colour = "unscaled"), width=.2) +
-  geom_errorbar(data = scaled_formatted, aes(ymin=httpTime-httpTime_sd, ymax=httpTime+httpTime_sd, colour = "summarized"), width=.2) +
-  theme(legend.position="top")
+library(reshape2)
+library(data.table)
+barDatahttp <- melt(formatted[, c("grange", "shttpTime", "uhttpTime")], id.vars=1)
+barDatalatency <- melt(formatted[, c("grange", "slatencyTime", "ulatencyTime")], id.vars=1)
+ftable <- as.data.table(formatted)
 
-latencyTimePlot <- ggplot(data=NULL, aes(reorder(grange, drawTime), group = 2)) +
-  geom_line(data = unscaled_formatted, aes(y = latencyTime, colour = "unscaled")) +
-  geom_line(data = scaled_formatted, aes(y = latencyTime, colour = "summarized")) +
-  ylab("network latency (ms)") +
-  xlab("genomic range (bp)") +
-  geom_errorbar(data = unscaled_formatted, aes(ymin=latencyTime-latencyTime_sd, ymax=latencyTime+latencyTime_sd, colour = "unscaled"), width=.2) +
-  geom_errorbar(data = scaled_formatted, aes(ymin=latencyTime-latencyTime_sd, ymax=latencyTime+latencyTime_sd, colour = "summarized"), width=.2) +
-  theme(legend.position="top")
+ftable$sdataTime = ftable$shttpTime - ftable$slatencyTime
+ftable$udataTime = ftable$uhttpTime - ftable$ulatencyTime
 
-grid.arrange(drawTimePlot, httpTimePlot, latencyTimePlot, nrow = 1)
+barData <- melt(ftable[, c("grange", "urequestSize", "srequestSize", "shttpTime_sd",
+                           "uhttpTime_sd", "slatencyTime", "ulatencyTime", "sdataTime", 
+                           "udataTime", "shttpTime", "uhttpTime")],
+                measure = list(c("shttpTime", "uhttpTime"),
+                               c("sdataTime", "udataTime"),
+                               c("slatencyTime", "ulatencyTime"),
+                               c("shttpTime_sd", "uhttpTime_sd"),
+                               c("srequestSize", "urequestSize")),
+                value.name = c("httpTime", "dataTime", "latencyTime", "httpTime_sd", "requestSize"))
+
+barData[barData$variable == 1]$variable <- "summarized"
+barData[barData$variable == 2 ]$variable <- "unsummarized"
+bData <- melt(barData, id=c("grange", "variable"))
+names(bData) <- c("grange", "type", "benchmark", "time")
+bData[bData$grange == "10K" ]$grange <- 100
+bData[bData$grange == "100K" ]$grange <- 150
+bData[bData$grange == "1M" ]$grange <- 200
+bData[bData$grange == "100M" ]$grange <- 250
+bData[bData$grange == "chr" ]$grange <- 300
+bData$grange <- as.numeric(bData$grange)
+
+sumdataTime <- bData[bData$type == "summarized" & bData$benchmark %in% c("dataTime", "latencyTime")]
+usumdataTime <- bData[bData$type == "unsummarized" & bData$benchmark %in% c("dataTime", "latencyTime")]
+sumhttpTime <- bData[bData$type == "summarized" & bData$benchmark == "httpTime"]
+usumhttpTime <- bData[bData$type == "unsummarized" & bData$benchmark == "httpTime"]
+
+stackedBPlot <-  ggplot(group = 2) +
+  geom_col(data = sumdataTime,
+           aes(x = grange - 10.5, y = time/1000, fill=benchmark),
+           width = 20, colour="grey40", alpha = 0.9) + 
+  geom_col(data = usumdataTime,
+           aes(x = grange + 10.5, y = time/1000, fill=benchmark),
+           width = 20, colour="grey40", alpha = 0.9) + 
+  geom_text(data=bData[bData$type == "summarized" & bData$benchmark == "requestSize"],
+            aes(label=paste0(time, " KB"), x = grange - 10.5, y = c(2.5, 2.5, 2.5, 2.5, 2.5)),
+            size=3.5, angle = 90) +
+  geom_text(data=bData[bData$type == "unsummarized" & bData$benchmark == "requestSize"],
+            aes(label=paste0(time, " KB"), x = grange + 10.5, y = c(2.5, 2.5, 2.5, 2.5, 2.5)),
+            size=3.5, angle = 90) +
+  geom_text(data=bData[bData$type == "summarized" & bData$benchmark == "requestSize"],
+            aes(label="s", x = grange - 10.5, y = c(-0.2, -0.2, -0.2, -0.2, -0.2)),
+            size=3.5) +
+  geom_text(data=bData[bData$type == "unsummarized" & bData$benchmark == "requestSize"],
+            aes(label="u", x = grange + 10.5, y = c(-0.2, -0.2, -0.2, -0.2, -0.2)),
+            size=3.5) +
+  geom_errorbar(data=bData[bData$type == "summarized" & bData$benchmark == "httpTime_sd"],
+                aes(x = grange - 10.5, ymin = (sumhttpTime$time - time)/1000, 
+                    ymax = (sumhttpTime$time + time)/1000), width=10,
+                position=position_dodge(.9)) +
+  geom_errorbar(data=bData[bData$type == "unsummarized" & bData$benchmark == "httpTime_sd"],
+                aes(x = grange + 10.5, ymin = (usumhttpTime$time - time)/1000, 
+                    ymax = (usumhttpTime$time + time)/1000), width=10,
+                position=position_dodge(.9)) +
+  theme(legend.position="top", plot.title = element_text(hjust = 0.5, size=10)) + 
+  ggtitle("s = summarized, u = unsummarized") +
+  ylab("mean http time (s)") +
+  scale_x_continuous(breaks=c(100, 150, 200, 250, 300), name = "genomic range (bp)", labels = c("10K", "100K",
+                                               "1M", "100M", "chr"))
+
+grid.arrange(drawTimePlot, stackedBPlot, nrow = 1)
 
