@@ -214,8 +214,8 @@
              */
             _onResize(e) {
                 if (this.chart != null) {
-                    this.chart._properties.width = Math.max(this.chartType.defaultWidth() / 2, this.offsetWidth - epiviz.ui.charts.Visualization.SVG_MARGIN);
-                    this.chart._properties.height = Math.max(this.chartType.defaultHeight(), this.offsetHeight - epiviz.ui.charts.Visualization.SVG_MARGIN);
+                    this.chart._properties.width = Math.max(this.chartType.defaultWidth() / 2, this.offsetWidth - epiviz.ui.charts.Visualization.SVG_MARGIN) - 15;
+                    this.chart._properties.height = Math.max(this.chartType.defaultHeight(), this.offsetHeight - epiviz.ui.charts.Visualization.SVG_MARGIN) - 15;
                     this._dataChanged();
                     if (e) {
                         e.stopPropagation();
@@ -458,8 +458,8 @@
 
                     if (self.chartType) {
                         self.chartProperties = new epiviz.ui.charts.VisualizationProperties(
-                            width,
-                            self.chartType.defaultHeight(),
+                            width - 15,
+                            self.chartType.defaultHeight() - 15,
                             self.chartType.defaultMargins(),
                             self.visConfigSelection,
                             self.chartType.defaultColors(),
