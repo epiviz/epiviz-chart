@@ -153,6 +153,17 @@ async function multiple_run_benchmark(html, nruns, file_path) {
       ","
   );
   console.log(
+    ' "10M": ' +
+      JSON.stringify(
+        await multiple_run_benchmark(
+          "http://localhost:8081/components/epiviz-charts/performance/tests/test-bp-10M.html",
+          10,
+          "./screenshots/test10M"
+        )
+      ) +
+      ","
+  );
+  console.log(
     ' "100M": ' +
       JSON.stringify(
         await multiple_run_benchmark(

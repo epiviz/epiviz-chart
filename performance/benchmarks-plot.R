@@ -126,8 +126,9 @@ names(bData) <- c("grange", "type", "benchmark", "time")
 bData[bData$grange == "10K" ]$grange <- 100
 bData[bData$grange == "100K" ]$grange <- 150
 bData[bData$grange == "1M" ]$grange <- 200
-bData[bData$grange == "100M" ]$grange <- 250
-bData[bData$grange == "chr" ]$grange <- 300
+bData[bData$grange == "10M" ]$grange <- 250
+bData[bData$grange == "100M" ]$grange <- 300
+bData[bData$grange == "chr" ]$grange <- 350
 bData$grange <- as.numeric(bData$grange)
 
 sumdataTime <- bData[bData$type == "summarized" & bData$benchmark %in% c("dataTime", "latencyTime")]
@@ -143,16 +144,16 @@ stackedBPlot <-  ggplot(group = 2) +
            aes(x = grange + 10.5, y = time/1000, fill=benchmark),
            width = 20, colour="grey40", alpha = 0.9) + 
   geom_text(data=bData[bData$type == "summarized" & bData$benchmark == "requestSize"],
-            aes(label=paste0(time, " KB"), x = grange - 10.5, y = c(2.5, 2.5, 2.5, 2.5, 2.5)),
+            aes(label=paste0(time, " KB"), x = grange - 10.5, y = c(2.5, 2.5, 2.5, 2.5, 2.5, 2.5)),
             size=3.5, angle = 90) +
   geom_text(data=bData[bData$type == "unsummarized" & bData$benchmark == "requestSize"],
-            aes(label=paste0(time, " KB"), x = grange + 10.5, y = c(2.5, 2.5, 2.5, 2.5, 2.5)),
+            aes(label=paste0(time, " KB"), x = grange + 10.5, y = c(2.5, 2.5, 2.5, 2.5, 2.5, 2.5)),
             size=3.5, angle = 90) +
   geom_text(data=bData[bData$type == "summarized" & bData$benchmark == "requestSize"],
-            aes(label="s", x = grange - 10.5, y = c(-0.2, -0.2, -0.2, -0.2, -0.2)),
+            aes(label="s", x = grange - 10.5, y = c(-0.2, -0.2, -0.2, -0.2, -0.2, -0.2)),
             size=3.5) +
   geom_text(data=bData[bData$type == "unsummarized" & bData$benchmark == "requestSize"],
-            aes(label="u", x = grange + 10.5, y = c(-0.2, -0.2, -0.2, -0.2, -0.2)),
+            aes(label="u", x = grange + 10.5, y = c(-0.2, -0.2, -0.2, -0.2, -0.2, -0.2)),
             size=3.5) +
   geom_errorbar(data=bData[bData$type == "summarized" & bData$benchmark == "httpTime_sd"],
                 aes(x = grange - 10.5, ymin = (sumhttpTime$time - time)/1000, 
@@ -165,8 +166,8 @@ stackedBPlot <-  ggplot(group = 2) +
   theme(legend.position="top", plot.title = element_text(hjust = 0.5, size=10)) + 
   ggtitle("s = summarized, u = unsummarized") +
   ylab("mean http time (s)") +
-  scale_x_continuous(breaks=c(100, 150, 200, 250, 300), name = "genomic range (bp)", labels = c("10K", "100K",
-                                               "1M", "100M", "chr"))
+  scale_x_continuous(breaks=c(100, 150, 200, 250, 300, 350), name = "genomic range (bp)", labels = c("10K", "100K",
+                                               "1M", "10M", "100M", "chr"))
 
 grid.arrange(drawTimePlot, stackedBPlot, nrow = 1)
 

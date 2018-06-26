@@ -9,19 +9,8 @@
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <script src="https://code.jquery.com/jquery-1.12.4.js" integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU=" crossorigin="anonymous"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-  <link rel="import" href="../../dist/epiviz-charts-test.html">
+  <link rel="import" href="../../epiviz-charts.html">
 </head>
-<style>
-  .draggable {
-    width: 90px;
-    height: 80px;
-    padding: 5px;
-    float: left;
-    margin: 0 10px 10px 0;
-    font-size: .9em;
-    border: 1px solid black;
-  }
-</style>
 
 <body>
   <h3>epiviz-environment Demo</h3>
@@ -29,12 +18,12 @@
   <epiviz-data-source provider-type="epiviz.data.WebServerDataProvider" provider-id="umd" provider-url="http://epiviz-dev.cbcb.umd.edu/api/">
   </epiviz-data-source>
 
-  <epiviz-environment chr="chr11" start=99800000 end=106738318 no-logo measurements='{"affy1":{
+  <epiviz-environment chr="chr11" start=1 end=10000000 no-logo measurements='{"mcoef-cancer":{
                     "id":"cancer",
-                    "name":"Expression Colon Cancer",
+                    "name":"methylation coef Cancer",
                     "type":"feature",
-                    "datasourceId":"gene_expression",
-                    "datasourceGroup":"affymetrix_probeset",
+                    "datasourceId":"methylation_coef_small",
+                    "datasourceGroup":"methylation_coef_small",
                     "dataprovider":"umd",
                     "formula":null,
                     "defaultChartType":null,
@@ -43,12 +32,12 @@
                     "maxValue":20,
                     "metadata":["probe"]
                 },
-                "affy2":{
+                "mcoef-normal":{
                     "id":"normal",
-                    "name":"Expression Colon Normal",
+                    "name":"methylation coef Normal",
                     "type":"feature",
-                    "datasourceId":"gene_expression",
-                    "datasourceGroup":"affymetrix_probeset",
+                    "datasourceId":"methylation_coef_small",
+                    "datasourceGroup":"methylation_coef_small",
                     "dataprovider":"umd",
                     "formula":null,
                     "defaultChartType":null,
@@ -72,7 +61,7 @@
                     "metadata": ["gene", "entrez", "exon_starts", "exon_ends"]
                 }
               }'>
-    <epiviz-scatter-plot slot="charts" dim-s='["affy1", "affy2"]'></epiviz-scatter-plot>
+    <epiviz-scatter-plot slot="charts" dim-s='["mcoef-cancer", "mcoef-normal"]'></epiviz-scatter-plot>
   </epiviz-environment>
 </body>
 
