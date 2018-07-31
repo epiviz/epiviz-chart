@@ -91,6 +91,20 @@
                         notify: true
                     },
 
+                    /**
+                     * Dimensions for a chart. (x and y axis measurements).
+                     * if the parent container (navigation or environment) defines measurements, those can be
+                     * used as measurements for charts.
+                     *
+                     * Note: Either `measurements` or `dimS` have to be defined on the chart.
+                     * 
+                     * @type {Array<string>}
+                     */
+                    canvas: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
+                    },
 
                     /**
                     * Parent Container if chart is part of Nav or Env.

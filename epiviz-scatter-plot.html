@@ -271,7 +271,12 @@ To create a scatter plot on a HTML page, add
             */
             _draw() {
                 var time = Date.now();
-                this.chart.draw(this.range, this.data);
+                if (this.canvas) {
+                    this.chart.drawCanvas(this.range, this.data);
+                }
+                else {
+                    this.chart.draw(this.range, this.data);
+                }
                 // console.error('{ "total_start_time" : ' + (Date.now() - time) + "}");
                 var event = new CustomEvent("total_draw_time", { detail: { "total_draw_time": Date.now() - time } });
                 document.dispatchEvent(event);
