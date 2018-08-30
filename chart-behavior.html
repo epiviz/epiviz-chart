@@ -709,8 +709,264 @@
             * Listens to when chart json data is updated and redraws the chart.
             */
             _jsonDataChanged() {
-                var genomic_data = this._parseData(this.jsonData);
+                var genomic_data;
+                if (Array.isArray(this.jsonData)) {
+                    genomic_data = this._parseArrayData(this.jsonData);
+                }
+                else {
+                    genomic_data = this._parseData(this.jsonData);
+                }
                 this.data = genomic_data;
+            }
+
+            _parseArrayData(json) {
+                var self = this;
+
+                var m = [];
+                var mSet = new epiviz.measurements.MeasurementSet();
+                var datasource = "epiviz";
+                var rowLength = 0;
+                var hasfData = true;
+                var measurementType = 'feature';
+                var useOffset = false;
+
+                if (self.nodeName === "EPIVIZ-JSON-GENES-TRACK") {
+                    measurementType = 'range';
+                }
+
+                // if data format is a Array of JSON Objects (long format)
+                if (Array.isArray(json)) {
+                    if (self.key && self.key.length > 0) {
+                        json.forEach(function (d) {
+                            var keyFields = [];
+                            self.key.forEach(function (k) {
+                                keyFields.push(d[k]);
+                            });
+                            d.key = keyFields.join("-");
+                        });
+                    }
+
+                    var rowKeys = Object.keys(json[0]);
+                    var colAnnotation = null;
+                    var colsCollection = {}, cols = {};
+                    var rowLength = json.length;
+
+                    rowKeys.forEach(function (key) {
+                        colsCollection[key] = json.map(function (r) { return r[key]; });
+                    });
+
+                    var rowMetadata = rowKeys.slice(0);
+                    var rows = Object.assign({}, colsCollection);
+
+                    self.dimS.forEach(function (dim) {
+                        var index = rowMetadata.indexOf(dim);
+                        rowMetadata.splice(index, 1);
+                        delete rows[dim];
+                        cols[dim] = colsCollection[dim];
+                    });
+
+                    self.dimS.forEach(function (dim) {
+                        var colValues = cols[dim];
+                        m.push({
+                            'id': dim,
+                            'name': dim,
+                            'type': measurementType,
+                            'datasourceId': datasource,
+                            'datasourceGroup': dim,
+                            'dataprovider': datasource,
+                            'formula': null,
+                            'defaultChartType': self.chartName,
+                            'annotation': colAnnotation,
+                            'minValue': Math.min.apply(Math, colValues),
+                            'maxValue': Math.max.apply(Math, colValues),
+                            'metadata': rowMetadata
+                        });
+
+                        mSet.add(new epiviz.measurements.Measurement(
+                            dim, dim, measurementType, datasource, dim, datasource, null, self.chartName, colAnnotation, null, null, rowMetadata
+                        ));
+                    });
+
+                    self.measurements = m;
+
+                    /**
+                    *  Must have fields
+                    *  jsondata.cols
+                    *  jsondata.rows
+                    *  jsondata.rows.metadata (label)
+                    */
+                    var jsonData = {};
+                    jsonData.cols = cols;
+                    jsonData.globalStartIndex = 1;
+                    var rowObj = self._generateRowIndexes(rowLength);
+                    rowObj.metadata = rows;
+                    jsonData.rows = rowObj;
+                }
+                else {
+                    //if data format is more like a dataframe/data table representation
+                    var rowMetadata = Object.keys(json.rows);
+                    var rowLength = 0;
+                    useOffset = json.rows.useOffset;
+
+                    if (json.cols == null) { hasfData = false; json.cols = {}; }
+
+                    if (json.cols && Object.keys(json.cols) > 0) {
+                        if (Object.keys(json.cols[Object.keys(json.cols)[0]]).indexOf("values") != -1) {
+                            rowLength = json.cols[Object.keys(json.cols)[0]].values.length;
+                        }
+                        else {
+                            rowLength = json.cols[Object.keys(json.cols)[0]].length;
+                        }
+                    }
+                    else if (json.rows) {
+                        if (Object.keys(json.rows).indexOf("values") != -1) {
+                            rowLength = json.rows.values[Object.keys(json.rows.values)[0]].length;
+                        }
+                        else {
+                            rowLength = json.rows[Object.keys(json.rows)[0]].length;
+                        }
+                    };
+
+                    if (self.key && self.key.length > 0) {
+                        var keyArray = [];
+                        for (var ikey = 0; ikey < rowLength; ikey++) {
+                            var keyFields = [];
+                            self.key.forEach(function (k) {
+                                keyFields.push(json.rows[k][ikey]);
+                            });
+                            keyArray.push(keyFields.join("-"));
+                        }
+                        json.rows.key = keyArray;
+                    }
+
+                    if (self.measurements) {
+                        self.measurements.forEach(function (mea) {
+                            mSet.add(new epiviz.measurements.Measurement(
+                                mea.id, mea.name, mea.type, mea.datasourceId, mea.datasourceGroup, mea.dataprovider,
+                                mea.formula, mea.defaultChartType, mea.annotation, mea.minValue, mea.maxValue, mea.metadata
+                            ));
+                        });
+                        m = self.measurements;
+                    }
+                    else if (self.dimS) {
+                        self.dimS.forEach(function (dim) {
+
+                            var colValues = [0, 5];
+                            if (json.cols) {
+                                colValues = json.cols[dim] || json.cols[dim].values;
+                            }
+                            // var colValues = json.cols[dim];
+                            var rowLength = colValues.length;
+
+                            m.push({
+                                'id': dim,
+                                'name': dim,
+                                'type': measurementType,
+                                'datasourceId': datasource,
+                                'datasourceGroup': dim,
+                                'dataprovider': datasource,
+                                'formula': null,
+                                'defaultChartType': self.chartName,
+                                'annotation': undefined,
+                                'minValue': Math.min.apply(Math, colValues),
+                                'maxValue': Math.max.apply(Math, colValues),
+                                'metadata': rowMetadata
+                            });
+
+                            if (!hasfData) {
+                                json.cols[dim] = { "values": [] }
+                            }
+
+                            mSet.add(new epiviz.measurements.Measurement(
+                                dim, dim, measurementType, datasource, dim, datasource, null, self.chartName, undefined, null, null, rowMetadata
+                            ));
+                        });
+                    }
+
+                    self._chartMeasurements = m;
+                    var jsonData = {};
+                    jsonData.cols = {};
+                    if (json.cols) {
+                        var colKeys = Object.keys(json.cols);
+
+                        colKeys.forEach(function (ck) {
+                            if (Array.isArray(json.cols[ck])) {
+                                jsonData.cols[ck] = json.cols[ck];
+                            }
+                            else {
+                                jsonData.cols[ck] = json.cols[ck]["values"];
+                            }
+                        });
+                    }
+
+                    var rowObj = {};
+                    var rowKeys = Object.keys(json.rows);
+
+                    if (rowKeys.indexOf("values") != -1) {
+                        rowObj = json.rows.values;
+                    }
+                    else if ((rowKeys.indexOf("start") == -1) || (rowKeys.indexOf("index") == -1) || (rowKeys.rows.indexOf("end") == -1)) {
+                        rowObj = self._generateRowIndexes(rowLength);
+                        rowObj.metadata = json.rows;
+                    }
+                    else {
+                        rowObj = json.rows;
+                    }
+
+                    jsonData.globalStartIndex = rowObj.start[0];
+                    jsonData.rows = rowObj;
+                }
+
+                var chartData = new epiviz.measurements.MeasurementHashtable();
+                var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
+                var globalStartIndex = jsonData.globalStartIndex;
+
+                var chr = datasource;
+
+                if (jsonData.rows.chr) {
+                    chr = jsonData.rows.chr[0];
+                }
+                var range = new epiviz.datatypes.GenomicRange(chr, globalStartIndex, jsonData.rows.end[rowLength - 1] - globalStartIndex);
+                self.range = range;
+
+                var rowDataObj = new epiviz.datatypes.GenomicRangeArray(chr, range, globalStartIndex, jsonData.rows, useOffset);
+                sumExp.addRowData(rowDataObj);
+
+                if (hasfData) {
+                    mSet.foreach(function (m) {
+                        var valueData = new epiviz.datatypes.FeatureValueArray(m, range, globalStartIndex, jsonData.cols[m.id()]);
+                        sumExp.addValues(valueData);
+                    });
+                }
+
+                mSet.foreach(function (m) {
+                    var msData = new epiviz.datatypes.MeasurementGenomicDataWrapper(m, sumExp);
+                    chartData.put(m, msData);
+                });
+
+                var genomicData = new epiviz.datatypes.MapGenomicData(chartData);
+                return genomicData;
+            }
+
+            /**
+            * Helper function to create row-indexes for data items.
+            */
+            _generateRowIndexes(length) {
+                var rowObj = {};
+                rowObj.start = [];
+                rowObj.index = [];
+                rowObj.id = null;
+                rowObj.strand = null;
+                rowObj.chr = [];
+                rowObj.end = [];
+                for (var i = 0; i < length; i++) {
+                    rowObj.start.push(i + 1);
+                    rowObj.index.push(i + 1);
+                    // rowObj.id.push(i+1);
+                    rowObj.end.push(i + 2);
+                    rowObj.chr.push("epiviz");
+                }
+                return rowObj;
             }
 
             /**

@@ -18,7 +18,7 @@
                 }
 
                 var dataManagerElem = document.querySelectorAll('epiviz-data-source');
-                if (dataManagerElem) {
+                if (dataManagerElem.length > 0) {
                     this.dataManager = new epiviz.data.DataManager(dataManagerElem[0].config, dataManagerElem[0].dataProviderFactory);
 
                     // Object.keys(dataManagerElem).forEach(function (ds) {

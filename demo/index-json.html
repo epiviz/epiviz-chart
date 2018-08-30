@@ -5,211 +5,21 @@
     <title>epiviz-charts</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../jquery/dist/jquery.js"></script>
+    <script src="../../jquery-ui/jquery-ui.js"></script>
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/jquery-1.12.4.js" integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU=" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="../../epiviz-imports/bin/app.min.js"></script>
+    <script src="../../lodash/lodash.js"></script>
+    <!-- <link rel="import" href="../epiviz-environment.html"> -->
+    <link rel="import" href="../../epiviz-data-source/epiviz-data-source.html">
     <link rel="import" href="../epiviz-charts.html">
+    <!-- <link rel="import" href="../dist/epiviz-charts.html"> -->
 </head>
 
 <body>
     <h3>JSON data inside environment</h3>
 
     <h2>data table JSON Format</h2>
-
-    <code>{
-                "cols": {
-                    "col1" : [10, 20, 30, 22, 45, 14, 30, 22, 45, 14],
-                    "col2" : [4, 7, 89, 100, 12, 23, 7, 89, 100, 12],
-                    "col3" : [44, 57, 893, 210, 512, 623, 57, 893, 210, 512],
-                    "col4" : [150, 620, 370, 228, 456, 154, 620, 370, 228, 456]
-                }, 
-                "rows": {
-                    "label": ["customer1", "customer2", "customer3", "customer4", "customer5", "customer6", "customer7", "customer8", "customer9", "customer0"],
-                    "info": ["red", "blue", "blue", "red", "red", "red", "blue", "blue", "red", "red"],
-                    "state": ["nc", "va", "md", "tn", "ca", "sc", "va", "md", "tn", "ca"],
-                    "random": ["e", "e", "d", "e", "f", "f", "e", "d", "e", "f"],
-                    "randomId": [1, 5 ,7 ,9, 0, 2, 5 ,7 ,9, 0]
-                },
-                "colAnnotation" : {
-                    "col1": {
-                        "status": "yes",
-                        "ageRange": "10-15",
-                        "licensed": "no"
-                    },
-                    "col2" : {
-                        "status": "yes",
-                        "ageRange": "20-35",
-                        "licensed": "yes"
-                    },
-                    "col3": {
-                        "status": "no",
-                        "ageRange": "10-15",
-                        "licensed": "yes"
-                    },
-                    "col4" : {
-                        "status": "no",
-                        "ageRange": "20-35",
-                        "licensed": "no"
-                    }
-                }
-            }</code>
-    <epiviz-environment id="jsonL">
-        <epiviz-json-scatter-plot id="jsonChart1" class="charts" dim-s='["col1", "col2"]' key='["info", "random"]' data='{
-                "cols": {
-                    "col1" : [10, 20, 30, 22, 45, 14, 30, 22, 45, 14],
-                    "col2" : [4, 7, 89, 100, 12, 23, 7, 89, 100, 12],
-                    "col3" : [44, 57, 893, 210, 512, 623, 57, 893, 210, 512],
-                    "col4" : [150, 620, 370, 228, 456, 154, 620, 370, 228, 456]
-                }, 
-                "rows": {
-                    "label": ["customer1", "customer2", "customer3", "customer4", "customer5", "customer6", "customer7", "customer8", "customer9", "customer0"],
-                    "info": ["red", "blue", "blue", "red", "red", "red", "blue", "blue", "red", "red"],
-                    "state": ["nc", "va", "md", "tn", "ca", "sc", "va", "md", "tn", "ca"],
-                    "random": ["e", "e", "d", "e", "f", "f", "e", "d", "e", "f"],
-                    "randomId": [1, 5 ,7 ,9, 0, 2, 5 ,7 ,9, 0]
-                },
-                "colAnnotation" : {
-                    "col1": {
-                        "status": "yes",
-                        "ageRange": "10-15",
-                        "licensed": "no"
-                    },
-                    "col2" : {
-                        "status": "yes",
-                        "ageRange": "20-35",
-                        "licensed": "yes"
-                    },
-                    "col3": {
-                        "status": "no",
-                        "ageRange": "10-15",
-                        "licensed": "yes"
-                    },
-                    "col4" : {
-                        "status": "no",
-                        "ageRange": "20-35",
-                        "licensed": "no"
-                    }
-                }
-            }'></epiviz-json-scatter-plot>
-
-        <epiviz-json-heatmap-plot id="jsonChart2" class="charts" dim-s='["col1", "col2", "col3", "col4"]' key='["info", "random"]'
-            data='{
-                "cols": {
-                    "col1" : [10, 20, 30, 22, 45, 14, 30, 22, 45, 14],
-                    "col2" : [4, 7, 89, 100, 12, 23, 7, 89, 100, 12],
-                    "col3" : [44, 57, 893, 210, 512, 623, 57, 893, 210, 512],
-                    "col4" : [150, 620, 370, 228, 456, 154, 620, 370, 228, 456]
-                }, 
-                "rows": {
-                    "label": ["customer1", "customer2", "customer3", "customer4", "customer5", "customer6", "customer7", "customer8", "customer9", "customer0"],
-                    "info": ["red", "blue", "blue", "red", "red", "red", "blue", "blue", "red", "red"],
-                    "state": ["nc", "va", "md", "tn", "ca", "sc", "va", "md", "tn", "ca"],
-                    "random": ["e", "e", "d", "e", "f", "f", "e", "d", "e", "f"],
-                    "randomId": [1, 5 ,7 ,9, 0, 2, 5 ,7 ,9, 0]
-                },
-                "colAnnotation" : {
-                    "col1": {
-                        "status": "yes",
-                        "ageRange": "10-15",
-                        "licensed": "no"
-                    },
-                    "col2" : {
-                        "status": "yes",
-                        "ageRange": "20-35",
-                        "licensed": "yes"
-                    },
-                    "col3": {
-                        "status": "no",
-                        "ageRange": "10-15",
-                        "licensed": "yes"
-                    },
-                    "col4" : {
-                        "status": "no",
-                        "ageRange": "20-35",
-                        "licensed": "no"
-                    }
-                }
-            }'></epiviz-json-heatmap-plot>
-
-        <epiviz-json-line-track id="jsonChart3" class="charts" dim-s='["col1", "col2", "col3", "col4"]' key='["info", "random"]'
-            data='{
-                "cols": {
-                    "col1" : [10, 20, 30, 22, 45, 14, 30, 22, 45, 14],
-                    "col2" : [4, 7, 89, 100, 12, 23, 7, 89, 100, 12],
-                    "col3" : [44, 57, 893, 210, 512, 623, 57, 893, 210, 512],
-                    "col4" : [150, 620, 370, 228, 456, 154, 620, 370, 228, 456]
-                }, 
-                "rows": {
-                    "label": ["customer1", "customer2", "customer3", "customer4", "customer5", "customer6", "customer7", "customer8", "customer9", "customer0"],
-                    "info": ["red", "blue", "blue", "red", "red", "red", "blue", "blue", "red", "red"],
-                    "state": ["nc", "va", "md", "tn", "ca", "sc", "va", "md", "tn", "ca"],
-                    "random": ["e", "e", "d", "e", "f", "f", "e", "d", "e", "f"],
-                    "randomId": [1, 5 ,7 ,9, 0, 2, 5 ,7 ,9, 0]
-                },
-                "colAnnotation" : {
-                    "col1": {
-                        "status": "yes",
-                        "ageRange": "10-15",
-                        "licensed": "no"
-                    },
-                    "col2" : {
-                        "status": "yes",
-                        "ageRange": "20-35",
-                        "licensed": "yes"
-                    },
-                    "col3": {
-                        "status": "no",
-                        "ageRange": "10-15",
-                        "licensed": "yes"
-                    },
-                    "col4" : {
-                        "status": "no",
-                        "ageRange": "20-35",
-                        "licensed": "no"
-                    }
-                }
-            }'></epiviz-json-line-track>
-
-        <epiviz-json-stacked-line-plot id="jsonChart4" class="charts" dim-s='["col1", "col2", "col3", "col4"]' key='["info", "random"]'
-            data='{
-                "cols": {
-                    "col1" : [10, 20, 30, 22, 45, 14, 30, 22, 45, 14],
-                    "col2" : [4, 7, 89, 100, 12, 23, 7, 89, 100, 12],
-                    "col3" : [44, 57, 893, 210, 512, 623, 57, 893, 210, 512],
-                    "col4" : [150, 620, 370, 228, 456, 154, 620, 370, 228, 456]
-                }, 
-                "rows": {
-                    "label": ["customer1", "customer2", "customer3", "customer4", "customer5", "customer6", "customer7", "customer8", "customer9", "customer0"],
-                    "info": ["red", "blue", "blue", "red", "red", "red", "blue", "blue", "red", "red"],
-                    "state": ["nc", "va", "md", "tn", "ca", "sc", "va", "md", "tn", "ca"],
-                    "random": ["e", "e", "d", "e", "f", "f", "e", "d", "e", "f"],
-                    "randomId": [1, 5 ,7 ,9, 0, 2, 5 ,7 ,9, 0]
-                },
-                "colAnnotation" : {
-                    "col1": {
-                        "status": "yes",
-                        "ageRange": "10-15",
-                        "licensed": "no"
-                    },
-                    "col2" : {
-                        "status": "yes",
-                        "ageRange": "20-35",
-                        "licensed": "yes"
-                    },
-                    "col3": {
-                        "status": "no",
-                        "ageRange": "10-15",
-                        "licensed": "yes"
-                    },
-                    "col4" : {
-                        "status": "no",
-                        "ageRange": "20-35",
-                        "licensed": "no"
-                    }
-                }
-            }'></epiviz-json-stacked-line-plot>
-    </epiviz-environment>
 
     <h2>Standard JSON Format</h2>
     <code>[{"id":1,"name":"Rosemaria","label":"Yabox","col1":129,"col2":39,"salary":80655,"score":5,"some_other_score":22836},
@@ -223,7 +33,7 @@
             {"id":9,"name":"Griffie","label":"Pixope","col1":43,"col2":170,"salary":3937,"score":6,"some_other_score":407},
             {"id":10,"name":"Aurea","label":"Skyvu","col1":565,"col2":199,"salary":35696,"score":74,"some_other_score":17062}]</code>
     <epiviz-environment id="jsonS">
-        <epiviz-json-scatter-plot id="jsonSChart1" class="charts" dim-s='["col1", "col2"]' key='["name", "label"]' data='[{"id":1,"name":"Rosemaria","label":"Yabox","col1":129,"col2":39,"salary":80655,"score":5,"some_other_score":22836},
+        <epiviz-scatter-plot id="jsonSChart1" slot="charts" dim-s='["col1", "col2"]' key='["name", "label"]' json-data='[{"id":1,"name":"Rosemaria","label":"Yabox","col1":129,"col2":39,"salary":80655,"score":5,"some_other_score":22836},
             {"id":2,"name":"Lannie","label":"Youopia","col1":199,"col2":74,"salary":96973,"score":10,"some_other_score":8665},
             {"id":3,"name":"Edythe","label":"Yozio","col1":247,"col2":23,"salary":99214,"score":18,"some_other_score":15298},
             {"id":4,"name":"Lola","label":"Browsedrive","col1":211,"col2":79,"salary":2132,"score":29,"some_other_score":27360},
@@ -233,10 +43,9 @@
             {"id":8,"name":"Karlee","label":"Yodo","col1":783,"col2":29,"salary":82125,"score":49,"some_other_score":287},
             {"id":9,"name":"Griffie","label":"Pixope","col1":43,"col2":170,"salary":3937,"score":6,"some_other_score":407},
             {"id":10,"name":"Aurea","label":"Skyvu","col1":565,"col2":199,"salary":35696,"score":74,"some_other_score":17062}]'>
-        </epiviz-json-scatter-plot>
+        </epiviz-scatter-plot>
 
-        <epiviz-json-heatmap-plot id="jsonSChart2" class="charts" dim-s='["col1", "col2", "salary", "score"]' key='["name", "label"]'
-            data='[{"id":1,"name":"Rosemaria","label":"Yabox","col1":129,"col2":39,"salary":80655,"score":5,"some_other_score":22836},
+        <epiviz-heatmap-plot id="jsonSChart2" slot="charts" dim-s='["col1", "col2", "salary", "score"]' key='["name", "label"]' json-data='[{"id":1,"name":"Rosemaria","label":"Yabox","col1":129,"col2":39,"salary":80655,"score":5,"some_other_score":22836},
             {"id":2,"name":"Lannie","label":"Youopia","col1":199,"col2":74,"salary":96973,"score":10,"some_other_score":8665},
             {"id":3,"name":"Edythe","label":"Yozio","col1":247,"col2":23,"salary":99214,"score":18,"some_other_score":15298},
             {"id":4,"name":"Lola","label":"Browsedrive","col1":211,"col2":79,"salary":2132,"score":29,"some_other_score":27360},
@@ -246,9 +55,9 @@
             {"id":8,"name":"Karlee","label":"Yodo","col1":783,"col2":29,"salary":82125,"score":49,"some_other_score":287},
             {"id":9,"name":"Griffie","label":"Pixope","col1":43,"col2":170,"salary":3937,"score":6,"some_other_score":407},
             {"id":10,"name":"Aurea","label":"Skyvu","col1":565,"col2":199,"salary":35696,"score":74,"some_other_score":17062}]'>
-        </epiviz-json-heatmap-plot>
+        </epiviz-heatmap-plot>
 
-        <epiviz-json-blocks-track id="jsonSChart3" class="charts" dim-s='["some_other_score", "score"]' key='["name", "label"]' data='[{"id":1,"name":"Rosemaria","label":"Yabox","col1":129,"col2":39,"salary":80655,"score":5,"some_other_score":22836},
+        <epiviz-blocks-track id="jsonSChart3" slot="charts" dim-s='["some_other_score", "score"]' key='["name", "label"]' json-data='[{"id":1,"name":"Rosemaria","label":"Yabox","col1":129,"col2":39,"salary":80655,"score":5,"some_other_score":22836},
             {"id":2,"name":"Lannie","label":"Youopia","col1":199,"col2":74,"salary":96973,"score":10,"some_other_score":8665},
             {"id":3,"name":"Edythe","label":"Yozio","col1":247,"col2":23,"salary":99214,"score":18,"some_other_score":15298},
             {"id":4,"name":"Lola","label":"Browsedrive","col1":211,"col2":79,"salary":2132,"score":29,"some_other_score":27360},
@@ -258,9 +67,9 @@
             {"id":8,"name":"Karlee","label":"Yodo","col1":783,"col2":29,"salary":82125,"score":49,"some_other_score":287},
             {"id":9,"name":"Griffie","label":"Pixope","col1":43,"col2":170,"salary":3937,"score":6,"some_other_score":407},
             {"id":10,"name":"Aurea","label":"Skyvu","col1":565,"col2":199,"salary":35696,"score":74,"some_other_score":17062}]'>
-        </epiviz-json-blocks-track>
+        </epiviz-blocks-track>
 
-        <epiviz-json-line-track id="jsonSChart3" class="charts" dim-s='["some_other_score", "score"]' key='["name", "label"]' data='[{"id":1,"name":"Rosemaria","label":"Yabox","col1":129,"col2":39,"salary":80655,"score":5,"some_other_score":22836},
+        <epiviz-line-track id="jsonSChart3" slot="charts" dim-s='["some_other_score", "score"]' key='["name", "label"]' json-data='[{"id":1,"name":"Rosemaria","label":"Yabox","col1":129,"col2":39,"salary":80655,"score":5,"some_other_score":22836},
             {"id":2,"name":"Lannie","label":"Youopia","col1":199,"col2":74,"salary":96973,"score":10,"some_other_score":8665},
             {"id":3,"name":"Edythe","label":"Yozio","col1":247,"col2":23,"salary":99214,"score":18,"some_other_score":15298},
             {"id":4,"name":"Lola","label":"Browsedrive","col1":211,"col2":79,"salary":2132,"score":29,"some_other_score":27360},
@@ -270,9 +79,9 @@
             {"id":8,"name":"Karlee","label":"Yodo","col1":783,"col2":29,"salary":82125,"score":49,"some_other_score":287},
             {"id":9,"name":"Griffie","label":"Pixope","col1":43,"col2":170,"salary":3937,"score":6,"some_other_score":407},
             {"id":10,"name":"Aurea","label":"Skyvu","col1":565,"col2":199,"salary":35696,"score":74,"some_other_score":17062}]'>
-        </epiviz-json-line-track>
+        </epiviz-line-track>
 
-        <epiviz-json-stacked-line-plot id="jsonSChart4" class="charts" dim-s='["col1", "col2"]' key='["name", "label"]' data='[{"id":1,"name":"Rosemaria","label":"Yabox","col1":129,"col2":39,"salary":80655,"score":5,"some_other_score":22836},
+        <epiviz-stacked-line-plot id="jsonSChart4" slot="charts" dim-s='["col1", "col2"]' key='["name", "label"]' json-data='[{"id":1,"name":"Rosemaria","label":"Yabox","col1":129,"col2":39,"salary":80655,"score":5,"some_other_score":22836},
             {"id":2,"name":"Lannie","label":"Youopia","col1":199,"col2":74,"salary":96973,"score":10,"some_other_score":8665},
             {"id":3,"name":"Edythe","label":"Yozio","col1":247,"col2":23,"salary":99214,"score":18,"some_other_score":15298},
             {"id":4,"name":"Lola","label":"Browsedrive","col1":211,"col2":79,"salary":2132,"score":29,"some_other_score":27360},
@@ -282,9 +91,9 @@
             {"id":8,"name":"Karlee","label":"Yodo","col1":783,"col2":29,"salary":82125,"score":49,"some_other_score":287},
             {"id":9,"name":"Griffie","label":"Pixope","col1":43,"col2":170,"salary":3937,"score":6,"some_other_score":407},
             {"id":10,"name":"Aurea","label":"Skyvu","col1":565,"col2":199,"salary":35696,"score":74,"some_other_score":17062}]'>
-        </epiviz-json-stacked-line-plot>
+        </epiviz-stacked-line-plot>
 
-        <epiviz-json-stacked-line-track id="jsonSChart5" class="charts" dim-s='["col1", "col2"]' key='["name", "label"]' data='[{"id":1,"name":"Rosemaria","label":"Yabox","col1":129,"col2":39,"salary":80655,"score":5,"some_other_score":22836},
+        <epiviz-stacked-line-track id="jsonSChart5" slot="charts" dim-s='["col1", "col2"]' key='["name", "label"]' json-data='[{"id":1,"name":"Rosemaria","label":"Yabox","col1":129,"col2":39,"salary":80655,"score":5,"some_other_score":22836},
             {"id":2,"name":"Lannie","label":"Youopia","col1":199,"col2":74,"salary":96973,"score":10,"some_other_score":8665},
             {"id":3,"name":"Edythe","label":"Yozio","col1":247,"col2":23,"salary":99214,"score":18,"some_other_score":15298},
             {"id":4,"name":"Lola","label":"Browsedrive","col1":211,"col2":79,"salary":2132,"score":29,"some_other_score":27360},
@@ -294,12 +103,12 @@
             {"id":8,"name":"Karlee","label":"Yodo","col1":783,"col2":29,"salary":82125,"score":49,"some_other_score":287},
             {"id":9,"name":"Griffie","label":"Pixope","col1":43,"col2":170,"salary":3937,"score":6,"some_other_score":407},
             {"id":10,"name":"Aurea","label":"Skyvu","col1":565,"col2":199,"salary":35696,"score":74,"some_other_score":17062}]'>
-        </epiviz-json-stacked-line-track>
+        </epiviz-stacked-line-track>
 
-        <!--<epiviz-json-line-plot id="jsonSChart6" 
-        class="charts"  
+        <!--<epiviz-line-plot id="jsonSChart6" 
+        slot="charts"  
         dim-s='["col1", "col2"]'
-        data='[{"id":1,"name":"Rosemaria","label":"Yabox","col1":129,"col2":39,"salary":80655,"score":5,"some_other_score":22836},
+        json-data='[{"id":1,"name":"Rosemaria","label":"Yabox","col1":129,"col2":39,"salary":80655,"score":5,"some_other_score":22836},
             {"id":2,"name":"Lannie","label":"Youopia","col1":199,"col2":74,"salary":96973,"score":10,"some_other_score":8665},
             {"id":3,"name":"Edythe","label":"Yozio","col1":247,"col2":23,"salary":99214,"score":18,"some_other_score":15298},
             {"id":4,"name":"Lola","label":"Browsedrive","col1":211,"col2":79,"salary":2132,"score":29,"some_other_score":27360},
@@ -309,7 +118,7 @@
             {"id":8,"name":"Karlee","label":"Yodo","col1":783,"col2":29,"salary":82125,"score":49,"some_other_score":287},
             {"id":9,"name":"Griffie","label":"Pixope","col1":43,"col2":170,"salary":3937,"score":6,"some_other_score":407},
             {"id":10,"name":"Aurea","label":"Skyvu","col1":565,"col2":199,"salary":35696,"score":74,"some_other_score":17062}]'>
-        </epiviz-json-line-plot>-->
+        </epiviz-line-plot>-->
     </epiviz-environment>
 </body>
 
