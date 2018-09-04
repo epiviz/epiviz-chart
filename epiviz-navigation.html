@@ -214,16 +214,16 @@ To create an navigation element on a HTML page, add
 
             <iron-collapse id="navHeader" hidden$="{{collapsed}}" opened>
                 <div class="container flex" id="{{_headerName}}">
-                    <div class="flexchild">
+                    <div class="flexchild" hidden$="{{hideNav}}">
                         <paper-icon-button title="move left" icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
                         <paper-icon-button title="move right" icon="icons:chevron-right" on-click="moveRight"></paper-icon-button>
                         <paper-icon-button title="zoom out" icon="icons:zoom-out" on-click="zoomOut"></paper-icon-button>
                         <paper-icon-button title="zoom in" icon="icons:zoom-in" on-click="zoomIn"></paper-icon-button>
                     </div>
-                    <div class="flexchild" on-mouseover="locationHovered" on-mouseout="locationUnhovered">
+                    <div class="flexchild" hidden$="{{hideChrInput}}" on-mouseover="locationHovered" on-mouseout="locationUnhovered">
                         <paper-input id="textRange" value="{{_strRange]]" label="Chromosome Location" on-change="_updateStrRange"></paper-input>
                     </div>
-                    <div class="flexchild">
+                    <div class="flexchild" hidden$="{{hideSearch}}">
                         <paper-dropdown-input id="geneSearch" label="Search Gene/Probe" on-search-value-changed="_searchGene">
                             <template>
                                 <dom-repeat items="[[items]]" as="item">
@@ -468,6 +468,24 @@ To create an navigation element on a HTML page, add
                     geneMeasurements: {
                         type: Object,
                         notify: true
+                    },
+
+                    hideSearch: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
+                    },
+
+                    hideNav: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
+                    },
+
+                    hideChrInput: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
                     }
                 }
             }
