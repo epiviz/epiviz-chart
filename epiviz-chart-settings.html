@@ -26,19 +26,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
 
     <template>
         <style>
-
-            paper-collapse-item {
-                --paper-collapse-simple-paper-item-styles: {
-                    border: 1px solid var(--light-theme-divider-color);
-                }
-                ;
-            }
-
-            paper-toggle-button {
-                padding-top: 8px;
-            }
-
-            .grid {
+            .flex {
                 /*@apply(--layout-horizontal); */
                 display: grid;
                 grid-auto-rows: auto;
@@ -69,21 +57,9 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                 margin-top: 10px;
             }
 
-            .header {
-                grid-row: 1;
-            }
-
-            .footer {
-                grid-row: 3;
-            }
-
-            .toggleLabel {
-                padding-top: 8px;
-            }
-
             #formSettings {
                 min-width: 400px;
-                overflow: auto;
+                overflow: scroll;
                 grid-row: 2;
             }
 
@@ -97,6 +73,29 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                 max-height: 70%;
                 top: 10%;
             }
+
+            .header {
+                grid-row: 1;
+            }
+
+            .footer {
+                grid-row: 3;
+            }
+
+            paper-collapse-item {
+                --paper-collapse-simple-paper-item-styles: {
+                    border: 1px solid var(--light-theme-divider-color);
+                }
+                ;
+            }
+
+            paper-toggle-button {
+                padding-top: 8px;
+            }
+
+            .toggleLabel {
+                padding-top: 8px;
+            }
         </style>
 
         <!-- local DOM goes here -->
@@ -109,15 +108,14 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                         <!--  <button class="collapse-header" on-click="toggleCommon">Chart Title and Margins</button> -->
                         <paper-collapse-item id="commonSettings" header="Chart Title and Margins">
                             <div class="collapse-content">
-                                <div class="container grid">
+                                <div class="container flex">
                                     <template is="dom-repeat" items="{{defs}}" filter="_isCommonSetting">
                                         <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'boolean')]]">
-                                            <div>
-                                                <iron-label for="{{item.id}}">
-                                                    <div class="toggleLabel">{{item.label}}</div>
-                                                </iron-label>
-                                                <paper-checkbox name="{{item.id}}" label="{{item.label}}" checked="[[_getValue(item.id)]]"></paper-checkbox>
-                                            </div>
+                                            <iron-label for="{{item.id}}">
+                                                <div class="toggleLabel">{{item.label}}</div>
+                                                <paper-toggle-button name="{{item.id}}" label="{{item.label}}" checked="[[_getValue(item.id)]]"
+                                                    toggles></paper-toggle-button>
+                                            </iron-label>
                                         </template>
                                         <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'string')]]">
                                             <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
@@ -126,7 +124,8 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                                             <paper-input name="{{item.id}}" type="number" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
                                         </template>
                                         <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'array')]]">
-                                            <paper-dropdown-input name="{{item.id}}" value="[[_getValue(item.id)]]" label="{{item.label}}" items="{{item.possibleValues}}"></paper-dropdown-input>
+                                            <paper-dropdown-input name="{{item.id}}" value="[[_getValue(item.id)]]"
+                                                label="{{item.label}}" items="{{item.possibleValues}}"></paper-dropdown-input>
                                         </template>
                                     </template>
                                 </div>
@@ -138,15 +137,14 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                         <!-- <button class="collapse-header" on-click="toggleStats">Chart Settings</button> -->
                         <paper-collapse-item id="statsSettings" header="Chart Settings">
                             <div class="collapse-content">
-                                <div class="container grid">
+                                <div class="container flex">
                                     <template is="dom-repeat" items="{{defs}}" filter="_isStatSetting">
                                         <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'boolean')]]">
-                                            <div>
-                                                <iron-label for="{{item.id}}">
-                                                    <div class="toggleLabel">{{item.label}}</div>
-                                                </iron-label>
-                                                <paper-checkbox name="{{item.id}}" label="{{item.label}}" checked="[[_getValue(item.id)]]"></paper-checkbox>
-                                            </div>
+                                            <iron-label for="{{item.id}}">
+                                                <div class="toggleLabel">{{item.label}}</div>
+                                                <paper-toggle-button name="{{item.id}}" label="{{item.label}}" checked="[[_getValue(item.id)]]"
+                                                    toggles></paper-toggle-button>
+                                            </iron-label>
                                         </template>
                                         <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'string')]]">
                                             <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
@@ -155,7 +153,8 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                                             <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
                                         </template>
                                         <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'array')]]">
-                                            <paper-dropdown-input name="{{item.id}}" value="[[_getValue(item.id)]]" label="{{item.label}}" items="{{item.possibleValues}}"></paper-dropdown-input>
+                                            <paper-dropdown-input name="{{item.id}}" value="[[_getValue(item.id)]]"
+                                                label="{{item.label}}" items="{{item.possibleValues}}"></paper-dropdown-input>
                                         </template>
                                     </template>
                                 </div>
@@ -290,7 +289,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
             _hasStatSetting() {
                 var self = this;
                 var hasStatSetting = false;
-                this.defs.some(function(item) {
+                this.defs.some(function (item) {
                     if (self._isStatSetting(item)) {
                         hasStatSetting = true;
                         return true;
@@ -370,7 +369,15 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                     if (def.type == "number" && self.vals[def.id] != "default") {
                         self.vals[def.id] = parseFloat(self.vals[def.id]);
                     }
-                    // else boolean values are already true/false
+
+                    if (def.type == "boolean") {
+                        if (self.vals[def.id][0] == "on") {
+                            self.vals[def.id] = true;
+                        }
+                        else {
+                            self.vals[def.id] = false;
+                        }
+                    }
                 });
                 this.callback(this.vals);
                 this.closeSettings();
