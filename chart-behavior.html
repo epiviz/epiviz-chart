@@ -233,8 +233,18 @@
              */
             _onResize(e) {
                 if (this.chart != null) {
-                    this.chart._properties.width = Math.max(this.chartType.defaultWidth() / 2, this.offsetWidth - epiviz.ui.charts.Visualization.SVG_MARGIN) - 15;
-                    this.chart._properties.height = Math.max(this.chartType.defaultHeight(), this.offsetHeight - epiviz.ui.charts.Visualization.SVG_MARGIN) - 15;
+                    var parent = this._parentContainer;
+                    var width = Math.max(this.chartType.defaultWidth() / 2, this.offsetWidth - epiviz.ui.charts.Visualization.SVG_MARGIN) - 15;
+                    var height = Math.max(this.chartType.defaultHeight(), this.offsetHeight - epiviz.ui.charts.Visualization.SVG_MARGIN) - 15;
+                    if (parent) {
+                        var prop = this._getStyle(this, "grid-column-start");
+                        var columnSpan = this._getColumnSpan(prop);
+                        if (columnSpan == 1) {
+                            width = parent.offsetWidth / 6;
+                        }
+                    }
+                    this.chart._properties.width = width;
+                    this.chart._properties.height = height;
                     this._dataChanged();
                     if (e) {
                         e.stopPropagation();

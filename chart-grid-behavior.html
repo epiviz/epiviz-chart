@@ -104,7 +104,7 @@
             _contract() {
                 var prop = this._getStyle(this, "grid-column-start");
                 var columnSpan = this._getColumnSpan(prop);
-                if (columnSpan > 2) {
+                if (columnSpan > 1) {
                     $(this).css("grid-column-start", "span " + (columnSpan - 1));
                     this._onResize();
                 }
