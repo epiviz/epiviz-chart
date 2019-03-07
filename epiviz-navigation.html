@@ -829,6 +829,7 @@ To create an navigation element on a HTML page, add
                     self.chr = data[0].seqName;
                     self.start = data[0].start;
                     self.end = data[0].end;
+                    self.range = self.getGenomicRange(self.chr, self.start, self.end);
                 });
             }
 
