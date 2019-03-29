@@ -5,18 +5,20 @@
     <title>epiviz-charts</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/jquery-1.12.4.js" integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"
+        integrity="sha256-Qw82+bXyGq6MydymqBxNPYTaUXXq7c8v3CwiYwLLNXU=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <link rel="import" href="../epiviz-scatter-plot.html">
-    <link rel="import" href="../epiviz-genes-track.html">
-    <link rel="import" href="../epiviz-line-track.html">
-    <link rel="import" href="../epiviz-blocks-track.html">
-    <link rel="import" href="../epiviz-heatmap-plot.html">
-    <link rel="import" href="../epiviz-line-plot.html">
-    <link rel="import" href="../epiviz-stacked-line-plot.html">
-    <link rel="import" href="../epiviz-stacked-line-track.html">
+
+    <script type="module" src="../epiviz-scatter-plot.js"></script>
+    <script type="module" src="../epiviz-genes-track.js"></script>
+    <script type="module" src="../epiviz-line-track.js"></script>
+    <script type="module" src="../epiviz-blocks-track.js"></script>
+    <script type="module" src="../epiviz-heatmap-plot.js"></script>
+    <script type="module" src="../epiviz-line-plot.js"></script>
+    <script type="module" src="../epiviz-stacked-line-plot.js"></script>
+    <script type="module" src="../epiviz-stacked-line-track.js"></script>
 </head>
 
 <body>
@@ -36,17 +38,17 @@
 
     <div id="charts">
         <epiviz-genes-track use-default-data-provider="true"></epiviz-genes-track>
-        <br/>
+        <br />
         <epiviz-scatter-plot use-default-data-provider="true"></epiviz-scatter-plot>
-        <br/>
+        <br />
         <epiviz-blocks-track use-default-data-provider="true"></epiviz-blocks-track>
-        <br/>
+        <br />
         <epiviz-stacked-line-plot use-default-data-provider="true"></epiviz-stacked-line-plot>
-        <br/>
+        <br />
         <epiviz-stacked-line-track use-default-data-provider="true"></epiviz-stacked-line-track>
-        <br/>
+        <br />
         <epiviz-heatmap-plot use-default-data-provider="true"></epiviz-heatmap-plot>
-        <br/>
+        <br />
     </div>
 
     <!--<epiviz-environment id="testEnv">-->

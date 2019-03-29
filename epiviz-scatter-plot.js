@@ -1,20 +1,9 @@
-<!-- Polymer dependency -->
-<script type="module" src="../@polymer/polymer/polymer-element.js"></script>
-
-<!-- Epiviz imports dependency -->
-<!-- <link rel="import" href="../epiviz-imports/epiviz-common-js.html"> -->
-
-<!-- Epiviz Polymer Behaviors dependency -->
-<script type="module" src="./chart-behavior.js"></script>
-<script type="module" src="./chart-settings.js"></script>
-<script type="module" src="./chart-colors.js"></script>
-<script type="module" src="./chart-remove.js"></script>
-<script type="module" src="./chart-grid-behavior.js"></script>
-
-<!-- Epiviz Shared css -->
-<link rel="import" type="css" href="chart-shared-css.html">
-
-<!--
+/* Polymer dependency */
+/* Epiviz imports dependency */
+/* <link rel="import" href="../epiviz-imports/epiviz-common-js.html"> */
+/* Epiviz Polymer Behaviors dependency */
+/* Epiviz Shared css */
+/**
 <h2> Chart Component </h2>
 epiviz-chart components are a collection of reusable and extensible visualization components for
 genomic data. 
@@ -34,9 +23,23 @@ To create a scatter plot on a HTML page, add
       <epiviz-scatter-plot></epiviz-scatter-plot>
 
 @demo demo/index-scatter.html Example page showing a scatter plot
--->
+*/
+/*<link rel="import" href="../epiviz-imports/epiviz-common-css.html">*/
+/*
+  FIXME(polymer-modulizer): the above comments were extracted
+  from HTML and may be out of place here. Review them and
+  then delete this comment!
+*/
+import { PolymerElement } from '@polymer/polymer/polymer-element.js';
 
-<dom-module id="epiviz-json-box-plot">
+import './chart-behavior.js';
+import './chart-settings.js';
+import './chart-colors.js';
+import './chart-remove.js';
+import './chart-grid-behavior.js';
+const $_documentContainer = document.createElement('template');
+
+$_documentContainer.innerHTML = `<dom-module id="epiviz-scatter-plot">
     <!--<link rel="import" href="../epiviz-imports/epiviz-common-css.html">-->
     <template>
         <style include="shared-settings"></style>
@@ -56,7 +59,7 @@ To create a scatter plot on a HTML page, add
         </style>
 
         <!-- local DOM goes here -->
-        <paper-spinner-lite active class="green"></paper-spinner-lite>
+        <paper-spinner-lite active="" class="green"></paper-spinner-lite>
         <div id="chart" on-mouseover="hostHovered" on-mouseout="hostUnhovered">
             <slot name="dragHandle"></slot>
             <div id="{{plotId}}"></div>
@@ -64,17 +67,14 @@ To create a scatter plot on a HTML page, add
 
     </template>
 
-    <script type="module">
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import './chart-behavior.js';
-import './chart-settings.js';
-import './chart-colors.js';
-import './chart-remove.js';
-import './chart-grid-behavior.js';
-// Extend Polymer.Element base class
-class EpivizJsonBoxPlot extends EpivizChartGridBehavior(EpivizChartRemoveBehavior(EpivizChartColorsBehavior(EpivizChartSettingsBehavior(EpivizChartBehavior(PolymerElement))))) {
+    
+</dom-module>`;
 
-    static get is() { return 'epiviz-json-box-plot'; }
+document.head.appendChild($_documentContainer.content);
+// Extend Polymer.Element base class
+class EpivizScatterPlot extends EpivizChartGridBehavior(EpivizChartRemoveBehavior(EpivizChartColorsBehavior(EpivizChartSettingsBehavior(EpivizChartBehavior(PolymerElement))))) {
+
+    static get is() { return 'epiviz-scatter-plot'; }
 
     static get properties() {
         return {
@@ -111,8 +111,8 @@ class EpivizJsonBoxPlot extends EpivizChartGridBehavior(EpivizChartRemoveBehavio
                             },
 
                             plot: {
-                                width: 100,
-                                height: 100,
+                                width: 400,
+                                height: 400,
                                 margins: new epiviz.ui.charts.Margins(15, 30, 30, 15),
                                 decorations: [
                                     'epiviz.ui.charts.decoration.ToggleTooltipButton',
@@ -132,10 +132,20 @@ class EpivizJsonBoxPlot extends EpivizChartGridBehavior(EpivizChartRemoveBehavio
                                     'epiviz.ui.charts.decoration.ChartTooltip',
                                     'epiviz.ui.charts.decoration.ChartFilterCodeButton'
                                 ]
+                            },
+
+                            'epiviz.plugins.charts.ScatterPlot': {
+                                margins: new epiviz.ui.charts.Margins(15, 50, 50, 15),
+                                decorations: [
+                                    'epiviz.ui.charts.decoration.ChartColorByRowCodeButton'
+                                ]
                             }
                         },
 
                         chartCustomSettings: {
+                            'epiviz.plugins.charts.ScatterPlot': {
+                                circleRadiusRatio: 0.01
+                            }
                         },
 
                         colorPalettes: [
@@ -174,6 +184,12 @@ class EpivizJsonBoxPlot extends EpivizChartGridBehavior(EpivizChartRemoveBehavio
 
                     return epiviz.Config.SETTINGS;
                 }
+            },
+
+            colorByRegions: {
+                type: Array,
+                notify: true
+                // observer: "_colorByRegionsChanged"
             }
         }
     }
@@ -191,6 +207,52 @@ class EpivizJsonBoxPlot extends EpivizChartGridBehavior(EpivizChartRemoveBehavio
     connectedCallback() {
         super.connectedCallback();
         var self = this;
+
+        if (self.useDefaultDataProvider) {
+
+            self.measurements = self.measurements || [{
+                'id': 'e027',
+                'name': 'Expression Colon Cancer',
+                'type': 'feature',
+                'datasourceId': 'roadmap_rnaseq',
+                'datasourceGroup': 'roadmap_rnaseq',
+                'dataprovider': 'umd',
+                'formula': null,
+                'defaultChartType': null,
+                'annotation': null,
+                'minValue': -3,
+                'maxValue': 20,
+                'metadata': ['probe']
+            }, {
+                'id': 'e066',
+                'name': 'Expression Colon Normal',
+                'type': 'feature',
+                'datasourceId': 'roadmap_rnaseq',
+                'datasourceGroup': 'roadmap_rnaseq',
+                'dataprovider': 'umd',
+                'formula': null,
+                'defaultChartType': null,
+                'annotation': null,
+                'minValue': -3,
+                'maxValue': 20,
+                'metadata': ['probe']
+            }];
+
+            self.range = self.range || new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000);
+
+            self._measurementsChanged();
+
+            var chartMeasMap = {};
+            chartMeasMap[self.plotId] = self.visConfigSelection.measurements;
+
+            var dataProviderFactory = new epiviz.data.DataProviderFactory(self.config);
+            var dataManager = new epiviz.data.DataManager(self.config, dataProviderFactory);
+
+            dataManager.getData(self.range, chartMeasMap, function (id, data) {
+                self.data = data;
+                //self._draw();
+            });
+        }
 
         self._initializeGrid();
         self._measurementsChanged();
@@ -214,26 +276,79 @@ class EpivizJsonBoxPlot extends EpivizChartGridBehavior(EpivizChartRemoveBehavio
     * @param {Object<epiviz.datatypes.MapGenomicData>} data to plot
     */
     _draw() {
+        var time = Date.now();
         if (this.canvas) {
             this.chart.drawCanvas(this.range, this.data);
         }
         else {
             this.chart.draw(this.range, this.data);
         }
-
+        // console.error('{ "total_start_time" : ' + (Date.now() - time) + "}");
+        var event = new CustomEvent("total_draw_time", { detail: { "total_draw_time": Date.now() - time } });
+        document.dispatchEvent(event);
+        // if (this.colorByRegions) {
+        //     this._colorByRegionsChanged();
+        // }
         this.shadowRoot.querySelector("paper-spinner-lite").active = false;
     }
 
     /**
      * Creates an instance of the scatter plot chart.
      *
-     * @return {epiviz.plugins.charts.DiversityScatterPlotType} ScatterPlot chart object
+     * @return {epiviz.plugins.charts.ScatterPlotType} ScatterPlot chart object
      */
     _createChart() {
-        return new epiviz.plugins.charts.DiversityScatterPlotType(new epiviz.Config(this.configSrc));
+        return new epiviz.plugins.charts.ScatterPlotType(new epiviz.Config(this.configSrc));
+    }
+
+    /**
+    * Color data points on scatterplot by regions
+    *
+    * @return {epiviz.plugins.charts.GenesTrackType} BlocksTrack chart object
+    */
+    _colorByRegionsChanged() {
+        var self = this;
+        var itemsGroup = self.chart._chartContent.select('.items');
+        var selection = itemsGroup.selectAll('circle');
+
+        var chartRanges = self.colorByRegions;
+
+        // self.colorByRegions.forEach(function(region) {
+        //     chartRanges.push(
+        //         region.seqName(), 
+        //         region.start(), 
+        //         region.end() - region.start());
+        // });
+
+        selection
+            .each(
+                /**
+                 * @param {epiviz.ui.charts.ChartObject} d
+                 */
+                function (d) {
+                    var circle = d3.select(this);
+
+                    var dRange = new epiviz.datatypes.GenomicRange(
+                        d.valueItems[0][0].rowItem.seqName(),
+                        d.valueItems[0][0].rowItem.start(),
+                        d.valueItems[0][0].rowItem.end() - d.valueItems[0][0].rowItem.start());
+
+                    var inRegion = false;
+
+                    chartRanges.forEach(function (r, i) {
+                        if (dRange.overlapsWith(r)) {
+                            var fill = self.chart.colors().get(i + 1);
+                            circle.style('fill', fill);
+                            inRegion = true;
+                        }
+                        else if (!inRegion && i == chartRanges.length - 1) {
+                            var fill = self.chart.colors().get(0);
+                            circle.style('fill', fill);
+                            inRegion = true;
+                        }
+                    });
+                });
     }
 }
 
-customElements.define(EpivizJsonBoxPlot.is, EpivizJsonBoxPlot);
-</script>
-</dom-module>
+customElements.define(EpivizScatterPlot.is, EpivizScatterPlot);

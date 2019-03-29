@@ -1,15 +1,5 @@
 {
-  "name": "epiviz-charts",
-  "version": "1.0.0",
   "description": "epiviz charts as polymer components",
-  "main": "demo/",
-  "scripts": {
-    "postinstall": "bower cache clean && bower install"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/HCBravoLab/epiviz-chart-to-polymer.git"
-  },
   "keywords": [
     "epiviz",
     "charts",
@@ -18,14 +8,52 @@
     "visualization",
     "tracks"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HCBravoLab/epiviz-chart-to-polymer.git"
+  },
+  "homepage": "https://github.com/HCBravoLab/epiviz-chart-to-polymer#readme",
+  "name": "epiviz-charts",
+  "version": "1.0.0",
+  "main": "demo/",
+  "scripts": {
+    "postinstall": "bower cache clean && bower install"
+  },
   "author": "Jayaram Kancherla <jkanche@umiacs.umd.edu>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/HCBravoLab/epiviz-chart-to-polymer/issues"
   },
-  "homepage": "https://github.com/HCBravoLab/epiviz-chart-to-polymer#readme",
   "dependencies": {
+    "@polymer/iron-collapse": "^3.0.0",
+    "@polymer/iron-flex-layout": "^3.0.0",
+    "@polymer/iron-form": "^3.0.0",
+    "@polymer/iron-icons": "^3.0.0",
+    "@polymer/iron-label": "^3.0.0",
+    "@polymer/iron-pages": "^3.0.0",
+    "@polymer/paper-button": "^3.0.0",
+    "@polymer/paper-dialog": "^3.0.0",
+    "@polymer/paper-dialog-scrollable": "^3.0.0",
+    "@polymer/paper-header-panel": "^3.0.0",
+    "@polymer/paper-icon-button": "^3.0.0",
+    "@polymer/paper-input": "^3.0.1",
+    "@polymer/paper-listbox": "^3.0.0",
+    "@polymer/paper-spinner": "^3.0.0",
+    "@polymer/paper-styles": "^3.0.0",
+    "@polymer/paper-swatch-picker": "^3.0.0",
+    "@polymer/paper-tabs": "^3.0.0",
+    "@polymer/paper-toast": "^3.0.0",
+    "@polymer/paper-toggle-button": "^3.0.0",
+    "@polymer/polymer": "^3.0.0",
     "@shopify/draggable": "^1.0.0-beta",
+    "@webcomponents/webcomponentsjs": "^2.0.0",
     "bower": "latest"
-  }
+  },
+  "resolutions": {
+    "inherits": "2.0.3",
+    "samsam": "1.1.3",
+    "supports-color": "3.1.2",
+    "type-detect": "1.0.0"
+  },
+  "devDependencies": {}
 }

@@ -1,17 +1,17 @@
 <!-- Polymer dependency -->
-<link rel="import" href="../polymer/polymer-element.html">
+<script type="module" src="../@polymer/polymer/polymer-element.js"></script>
 
 <!-- Epiviz imports dependency -->
 <!-- <link rel="import" href="../epiviz-imports/epiviz-common-js.html"> -->
 
-<link rel="import" href="epiviz-genes-track.html">
+<script type="module" src="./epiviz-genes-track.js"></script>
 
 <!-- Epiviz Polymer Behaviors dependency -->
-<link rel="import" href="chart-behavior.html">
-<link rel="import" href="chart-settings.html">
-<link rel="import" href="chart-colors.html">
-<link rel="import" href="chart-remove.html">
-<link rel="import" href="chart-grid-behavior.html">
+<script type="module" src="./chart-behavior.js"></script>
+<script type="module" src="./chart-settings.js"></script>
+<script type="module" src="./chart-colors.js"></script>
+<script type="module" src="./chart-remove.js"></script>
+<script type="module" src="./chart-grid-behavior.js"></script>
 
 <!-- Epiviz Shared css -->
 <link rel="import" type="css" href="chart-shared-css.html">
@@ -117,58 +117,65 @@ To create a genes track on a HTML page, add
 
     </template>
 
-    <script>
+    <script type="module">
+import '@polymer/polymer/polymer-element.js';
+import './epiviz-genes-track.js';
+import './chart-behavior.js';
+import './chart-settings.js';
+import './chart-colors.js';
+import './chart-remove.js';
+import './chart-grid-behavior.js';
 
-        // Extend Polymer.Element base class
-        // EpivizChartRemoveBehavior(EpivizChartColorsBehavior(EpivizChartSettingsBehavior(EpivizChartBehavior(Polymer.Element))))
+// Extend Polymer.Element base class
+// EpivizChartRemoveBehavior(EpivizChartColorsBehavior(EpivizChartSettingsBehavior(EpivizChartBehavior(Polymer.Element))))
 
-        class EpivizGenesTable extends EpivizGenesTrack {
+class EpivizGenesTable extends EpivizGenesTrack {
 
-            static get is() { return 'epiviz-genes-table'; }
+    static get is() { return 'epiviz-genes-table'; }
 
-            static get properties() {
-                return {
-                    geneTable: {
-                        type: Array,
-                        notify: true
-                    }
-                }
+    static get properties() {
+        return {
+            geneTable: {
+                type: Array,
+                notify: true
             }
+        }
+    }
 
-            constructor() {
-                super();
-            }
+    constructor() {
+        super();
+    }
 
-            /**
-            * Draws the chart.
-            *
-            * @param {Object<epiviz.datatypes.GenomicRange>} range genomic range.
-            * @param {Object<epiviz.datatypes.MapGenomicData>} data to plot
-            */
-            _draw() {
-                var series = this.data.firstSeries();
-                var indices = epiviz.utils.range(series.size());
-                var geneTable = [];
-                var dataItems = indices
-                    .map(function (i) {
-                        var cell = series.get(i);
-                        var item = cell.rowItem;
+    /**
+    * Draws the chart.
+    *
+    * @param {Object<epiviz.datatypes.GenomicRange>} range genomic range.
+    * @param {Object<epiviz.datatypes.MapGenomicData>} data to plot
+    */
+    _draw() {
+        var series = this.data.firstSeries();
+        var indices = epiviz.utils.range(series.size());
+        var geneTable = [];
+        var dataItems = indices
+            .map(function (i) {
+                var cell = series.get(i);
+                var item = cell.rowItem;
 
-                        geneTable.push({
-                            "gene": item.metadata("gene"),
-                            "start": item.start(),
-                            "end": item.end(),
-                            "exonStarts": JSON.stringify(item.metadata('exon_starts').split(',').map(function (s) { return parseInt(s); })),
-                            "exonEnds": JSON.stringify(item.metadata('exon_ends').split(',').map(function (s) { return parseInt(s); }))
-                        });
-                    });
+                geneTable.push({
+                    "gene": item.metadata("gene"),
+                    "start": item.start(),
+                    "end": item.end(),
+                    "exonStarts": JSON.stringify(item.metadata('exon_starts').split(',').map(function (s) { return parseInt(s); })),
+                    "exonEnds": JSON.stringify(item.metadata('exon_ends').split(',').map(function (s) { return parseInt(s); }))
+                });
+            });
 
-                this.set("geneTable", geneTable);
+        this.set("geneTable", geneTable);
 
-                this.shadowRoot.querySelector("paper-spinner-lite").active = false;
-            }
-        };
+        this.shadowRoot.querySelector("paper-spinner-lite").active = false;
+    }
+}
 
-        customElements.define(EpivizGenesTable.is, EpivizGenesTable);
-    </script>
+customElements.define(EpivizGenesTable.is, EpivizGenesTable);
+</script>
 </dom-module>
