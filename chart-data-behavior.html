@@ -17,8 +17,9 @@
                     colorPalettes: []
                 }
 
-                var dataManagerElem = document.querySelectorAll('epiviz-data-source');
-                if (dataManagerElem.length > 0) {
+                var dataManagerElem = document.querySelector("epiviz-app").shadowRoot.querySelectorAll('epiviz-data-source');
+                // var dataManagerElem = document.querySelectorAll('epiviz-data-source');
+                if (dataManagerElem) {
                     this.dataManager = new epiviz.data.DataManager(dataManagerElem[0].config, dataManagerElem[0].dataProviderFactory);
 
                     // Object.keys(dataManagerElem).forEach(function (ds) {
@@ -158,7 +159,6 @@
                 if (this.dataManager) {
                     this.dataManager.search(function (data) {
                         if (pDom) {
-                            // pDom.$$("#geneSearch").suggestions(data);
                             data.forEach(function (item) {
                                 item.value = item.gene + " - " + item.chr + " : " + item.start + " - " + item.end;
                             });
@@ -246,6 +246,9 @@
 
                 if (this.dataManager) {
                     this.dataManager.getSeqInfos(function (data) {
+                        // data = [{seqName: "chrI" , min: 1, max: 230218}, {seqName: "chrII" , min: 1, max: 813184}, {seqName: "chrIII" , min: 1, max: 316620}, {seqName: "chrIV" , min: 1, max: 1531933}, {seqName: "chrIX" , min: 1, max: 439888}, {seqName: "chrM" , min: 1, max: 85779}, {seqName: "chrV" , min: 1, max: 576874}, {seqName: "chrVI" , min: 1, max: 270161}, {seqName: "chrVII" , min: 1, max: 1090940}, {seqName: "chrX" , min: 1, max: 745751}, {seqName: "chrXI" , min: 1, max: 666816}, {seqName: "chrXII" , min: 1, max: 1078177}, {seqName: "chrXIII" , min: 1, max: 924431}, {seqName: "chrXIV" , min: 1, max: 784333}, {seqName: "chrXV" , min: 1, max: 1091291}, {seqName: "chrXVI" , min: 1, max: 948066}]
+
+
                         var seqinfo = {};
                         data.forEach(function (s) {
                             seqinfo[s.seqName] = s;
@@ -313,7 +316,9 @@
                     }
                     else if (currentChild.measurements != null && currentChild.measurements.length > 0) {
                         for (var idim = 0; idim < currentChild.measurements.length; idim++) {
+
                             var mtdx = currentChild.measurements[idim];
+
                             mSet.add(new epiviz.measurements.Measurement(
                                 mtdx.id,
                                 mtdx.name,
@@ -350,8 +355,8 @@
                                 var toast = document.createElement("paper-toast");
                                 toast.setAttribute("text", currentChild.nodeName.toLowerCase() + ": query return empty - choose a different genomic region");
                                 // toast.setAttribute("openned", true);
-                                // this.shadowRoot.appendChild(toast);
-                                // toast.show();
+                                this.shadowRoot.appendChild(toast);
+                                toast.show();
                             }
 
                             var dataChartElem = pDom.querySelector('[plot-id$="' + id + '"]') || Polymer.dom(pDom).querySelector('[plot-id$="' + id + '"]');
@@ -365,8 +370,68 @@
                             this.shadowRoot.appendChild(toast);
                             toast.show();
                         });
+
+                        // if (self._zoomIn != 0 && self._zoomIn % 2 == 0) {
+                        //     self._reupdateDataSet(mSet);
+                        //     // delete self.dataManager._cache._data[mtdx.datasourceGroup];
+                        // }
                     }
                 }
+            }
+
+            // _reupdateDataSet(mlist) {
+            //     var self = this;
+            //     console.log("updating data in the background")
+            //     var mset = new epiviz.measurements.MeasurementSet();
+
+            //     mlist.foreach(function(m) {
+            //         // if(m.datasourceId == "computed") {
+            //         mset.add(m);
+            //         delete self.dataManager._cache._data[m.datasourceGroup()];
+            //         // }                    
+            //     });
+
+            //     var chartMeasMap = {};
+            //     chartMeasMap["update"] = mset;
+
+            //     self.dataManager.getData(self.range, chartMeasMap, function (id, data) {
+            //             console.log("got data, do not have to assign to chart")
+            //             console.log(data);
+            //         }, function (jqXHR, textStatus, errorThrown) {
+            //             console.log("error")
+            //     });
+            // }
+
+            _reupdateAllData() {
+                var self = this;
+                console.log("updating data in the background")
+
+                var mlist = new epiviz.measurements.MeasurementSet();
+                for (var key in self.dataManager._cache._data) {
+                    
+                    var tdata = self.dataManager._cache._data[key];
+
+                    if(tdata._values._size > 0) {
+                        mlist.add(tdata._values._order[0].key);
+                        delete self.dataManager._cache._data[tdata._values._order[0].key._datasourceGroup];
+                    }
+                    
+                    // if(tdata._rowData._measurement._id == "computed") {
+                    //     tdata._rowData._measurement._type = "feature";
+                    //     mlist.add(tdata._rowData._measurement);
+                    //     delete self.dataManager._cache._data[tdata._rowData._measurement._datasourceGroup];
+                    // }
+                }
+
+                var chartMeasMap = {};
+                chartMeasMap[self.plotId] = mlist;
+
+                self.dataManager.getData(self.range, chartMeasMap, function (id, data) {
+                        console.log("got data, do not have to assign to chart")
+                        console.log(data);
+                    }, function (jqXHR, textStatus, errorThrown) {
+                        console.log("error")
+                });
             }
 
             /**

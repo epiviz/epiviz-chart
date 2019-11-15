@@ -371,7 +371,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                     }
 
                     if (def.type == "boolean") {
-                        if (self.vals[def.id][0] == "on") {
+                        if (self.vals[def.id] && self.vals[def.id][0] == "on") {
                             self.vals[def.id] = true;
                         }
                         else {
