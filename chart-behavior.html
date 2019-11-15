@@ -43,7 +43,6 @@
                 transform: translateX(-50%) translateY(-50%);
                 height: 75px;
                 width: 75px;
-                z-index: -1;
             }
         </style>
     </template>
@@ -525,6 +524,11 @@
                         self._initializeSettingsDialog();
                         self._initializeColorsDialog();
                         self._initializeRemoveDialog();
+                        if (self.nodeName == "EPIVIZ-LINE-TRACK") {
+                            self._initializeLogRatioDialog();
+                            self._initializeNegationDialog();
+                            self._initializeAverageDialog();
+                        }
                         self._initializeResizeButtons();
                         self._initializeGrid();
 
@@ -644,7 +648,7 @@
                 var jData = null;
                 if (self.jsonData) { return self.jsonData; }
 
-                if (self.nodeName == "EPIVIZ_GENES_TRACK") {
+                if (self.nodeName == "EPIVIZ-GENES-TRACK") {
 
                     jData = {
                         rows: {

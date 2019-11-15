@@ -9,6 +9,9 @@
 <link rel="import" href="chart-settings.html">
 <link rel="import" href="chart-colors.html">
 <link rel="import" href="chart-remove.html">
+<link rel="import" href="chart-log-ratio.html">
+<link rel="import" href="chart-negation.html">
+<link rel="import" href="chart-average.html">
 <link rel="import" href="chart-grid-behavior.html">
 
 <!-- Epiviz Shared css -->
@@ -66,7 +69,15 @@ To create a line track on a HTML page, add
 
     <script>
         // Extend Polymer.Element base class
-        class EpivizLineTrack extends EpivizChartGridBehavior(EpivizChartRemoveBehavior(EpivizChartColorsBehavior(EpivizChartSettingsBehavior(EpivizChartBehavior(Polymer.Element))))) {
+        class EpivizLineTrack extends EpivizChartGridBehavior(
+            EpivizChartAverageBehavior(
+                EpivizChartNegationBehavior(
+                    EpivizChartLogRatioBehavior(
+                        EpivizChartRemoveBehavior(
+                            EpivizChartColorsBehavior(
+                                EpivizChartSettingsBehavior(
+                                    EpivizChartBehavior(
+                                        Polymer.Element)))))))) {
 
             static get is() { return 'epiviz-line-track'; }
 
@@ -273,7 +284,7 @@ To create a line track on a HTML page, add
                     this.chart.drawCanvas(this.range, this.data);
                 }
                 else {
-                    this.chart.draw(this.range, this.data);
+                    this.chart.draw(this.range, this.data, undefined, undefined, self.isNegation);
                 }
                 this.shadowRoot.querySelector("paper-spinner-lite").active = false;
             }
