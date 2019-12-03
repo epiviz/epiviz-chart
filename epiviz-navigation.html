@@ -514,8 +514,12 @@
           _zoomIn: {
             type: Number,
             value: 0
+          },
+          
+          measurementSet: {
+            type: Object,
+            notify: true
           }
-
         };
       }
 
@@ -614,33 +618,6 @@
           );
         }
 
-        if (!origCollapsed) {
-          self._observer = new Polymer.FlattenedNodesObserver(
-            self.$.chartNav,
-            info => {
-              // self._observer =
-              // Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
-              info.addedNodes.forEach(function (node) {
-                node._parentContainer = self;
-                if (
-                  node.nodeName.indexOf("EPIVIZ-") != -1 &&
-                  node.nodeName.indexOf("JSON") == -1
-                ) {
-                  // self._updateChart(node.plotId);
-                  var measurements = self.measurements;
-                  if (self._parentContainer) {
-                    measurements = self._parentContainer.measurements;
-                  }
-                  self._getElementData(node, self, measurements);
-
-                  self.set("_isEmpty", true);
-                }
-              });
-              self.saveWorkspace();
-            }
-          );
-        }
-
         if (origCollapsed != self.collapsed) {
           self.toggleHeader();
         }
@@ -668,6 +645,38 @@
         }
         self._initializeAddDialog();
         self._initializeGrid();
+      }
+      
+      _measurementSetChanged(newVal, oldVal) {
+        var self = this;
+        var origCollapsed = self.collapsed || false;
+
+        if (!origCollapsed) {
+        self._observer = new Polymer.FlattenedNodesObserver(
+          self.$.chartNav,
+          info => {
+              // self._observer =
+              // Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
+              info.addedNodes.forEach(function (node) {
+                node._parentContainer = self;
+                if (
+                  node.nodeName.indexOf("EPIVIZ-") != -1 &&
+                  node.nodeName.indexOf("JSON") == -1
+                ) {
+                  // self._updateChart(node.plotId);
+                  var measurements = self.measurementSet;
+                  if (self._parentContainer) {
+                    measurements = self._parentContainer.measurements;
+                  }
+                  self._getElementData(node, self, measurements);
+
+                  self.set("_isEmpty", true);
+                }
+              });
+              self.saveWorkspace();
+            }
+          );
+        }
       }
 
       /**
