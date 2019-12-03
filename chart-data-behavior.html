@@ -34,8 +34,18 @@
                     // this.dataManager = new epiviz.data.DataManager(config, dataProviderFactory);
                     // this.measurementSet = dataManagerElem.measurementSet;
                     this.dataManager.getMeasurements(function (result) {
-                        // self.measurements = result.raw();
-                        self.measurementSet = result;
+                        var measurements = result.raw();
+                        self.measurementsSet = result;
+
+                        if (measurements) {
+                            var mArray = document.querySelector("epiviz-data-source").measurements;
+                            measurements = {}
+                            mArray.forEach(function(m) {
+                                measurements[m.id] = m
+                            });
+                        
+                            self.measurementSet = measurements;
+                        }
                     }, function (jqXHR, textStatus, errorThrown) {
                         var toast = document.createElement("paper-toast");
                         toast.setAttribute("text", textStatus + " - " + errorThrown);
