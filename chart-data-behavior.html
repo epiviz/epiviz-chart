@@ -17,8 +17,8 @@
                     colorPalettes: []
                 }
 
-                var dataManagerElem = document.querySelector("epiviz-app").shadowRoot.querySelectorAll('epiviz-data-source');
-                // var dataManagerElem = document.querySelectorAll('epiviz-data-source');
+                // var dataManagerElem = document.querySelector("epiviz-app").shadowRoot.querySelectorAll('epiviz-data-source');
+                var dataManagerElem = document.querySelectorAll('epiviz-data-source');
                 if (dataManagerElem) {
                     this.dataManager = new epiviz.data.DataManager(dataManagerElem[0].config, dataManagerElem[0].dataProviderFactory);
 
@@ -46,6 +46,7 @@
                         
                             self.measurementSet = measurements;
                         }
+
                     }, function (jqXHR, textStatus, errorThrown) {
                         var toast = document.createElement("paper-toast");
                         toast.setAttribute("text", textStatus + " - " + errorThrown);
@@ -298,6 +299,16 @@
                     if (typeof (dims) == "string") {
                         dims = JSON.parse(dims);
                     }
+
+                    // if (!measurements) {
+                    //     var mArray = document.querySelector("epiviz-data-source").measurements;
+                    //     measurements = {}
+                    //     mArray.forEach(function(m) {
+                    //         measurements[m.id] = m
+                    //     });
+
+                    //     self.measurements = measurements;
+                    // }
 
                     // var id = self._generateChartId();
                     var mSet = new epiviz.measurements.MeasurementSet();

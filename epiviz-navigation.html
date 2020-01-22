@@ -256,8 +256,8 @@
     class EpivizNavigation extends EpivizChartDraggableBehavior(
       EpivizChartGridBehavior(
         EpivizChartWorkspaceBehavior(
-          EpivizChartDataBehavior(
-            EpivizChartAddBehavior(EpivizChartBehavior(Polymer.Element))
+          EpivizChartAddBehavior(
+            EpivizChartDataBehavior(EpivizChartBehavior(Polymer.Element))
           )
         )
       )
@@ -458,6 +458,11 @@
             reflectToAttribute: true
           },
 
+          measurementSet: {
+            type: Object,
+            notify: true
+          },
+
           /**
            * Default chart properties for navigation element.
            *
@@ -514,18 +519,14 @@
           _zoomIn: {
             type: Number,
             value: 0
-          },
-          
-          measurementSet: {
-            type: Object,
-            notify: true
           }
+
         };
       }
 
       static get observers() {
         return [
-          /* observer array just like 1.x */
+          '_measurementSetChanged(measurementSet.*)'
         ];
       }
 
@@ -618,6 +619,8 @@
           );
         }
 
+
+
         if (origCollapsed != self.collapsed) {
           self.toggleHeader();
         }
@@ -629,24 +632,6 @@
         super.connectedCallback();
       }
 
-      /* callback function after the element is initialized */
-      ready() {
-        super.ready();
-        var self = this;
-
-        self.plotId = self.plotId || self._generatePlotId();
-        self.config = new epiviz.Config(self.configSrc);
-        // self.range = self.getGenomicRange(self.chr, self.start, self.end);
-
-        if (self.transformDataFunc) {
-          self.transformFunc = new Function("return " + self.transformDataFunc);
-        } else {
-          self.transformFunc = self.epivizToJSON;
-        }
-        self._initializeAddDialog();
-        self._initializeGrid();
-      }
-      
       _measurementSetChanged(newVal, oldVal) {
         var self = this;
         var origCollapsed = self.collapsed || false;
@@ -677,6 +662,24 @@
             }
           );
         }
+      }
+
+      /* callback function after the element is initialized */
+      ready() {
+        super.ready();
+        var self = this;
+
+        self.plotId = self.plotId || self._generatePlotId();
+        self.config = new epiviz.Config(self.configSrc);
+        // self.range = self.getGenomicRange(self.chr, self.start, self.end);
+
+        if (self.transformDataFunc) {
+          self.transformFunc = new Function("return " + self.transformDataFunc);
+        } else {
+          self.transformFunc = self.epivizToJSON;
+        }
+        self._initializeAddDialog();
+        self._initializeGrid();
       }
 
       /**
