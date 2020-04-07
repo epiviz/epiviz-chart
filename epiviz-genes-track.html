@@ -255,12 +255,28 @@ To create a genes track on a HTML page, add
             * @param {Object<epiviz.datatypes.MapGenomicData>} data to plot
             */
             _draw() {
+                var self = this;
+                
                 if (this.canvas) {
                     this.chart.drawCanvas(this.range, this.data);
                 }
                 else {
                     this.chart.draw(this.range, this.data);
                 }
+
+                self.chart._propagateNavigationChanges.addListener(new epiviz.events.EventListener(function(e) {
+                    self.dispatchEvent(new CustomEvent('GenesTrackRangeUpdate',
+                            {
+                                detail: {
+                                    id: e.id,
+                                    range: e.range,
+                                },
+                                bubbles: true
+                            }
+                        )
+                    );                
+                }));
+
                 this.shadowRoot.querySelector("paper-spinner-lite").active = false;
             }
 
