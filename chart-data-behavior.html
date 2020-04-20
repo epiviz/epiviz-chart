@@ -39,12 +39,13 @@
 
                         if (measurements) {
                             var mArray = document.querySelector("epiviz-data-source").measurements;
-                            measurements = {}
+                            var measurementsObj = {}
                             mArray.forEach(function(m) {
-                                measurements[m.id] = m
+                                measurementsObj[m.id] = m
                             });
                         
-                            self.measurementSet = measurements;
+                            self.measurementSet = measurementsObj;
+                            self.measurementAll = result;
                         }
 
                     }, function (jqXHR, textStatus, errorThrown) {

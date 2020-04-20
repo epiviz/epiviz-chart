@@ -396,7 +396,7 @@
                     // self.set("_jsonMeasurements", data.raw());
                 }
                 else {
-                    var data = envElement.measurementSet;
+                    var data = envElement.measurementAll;
                     var source = "epiviz";
 
                     // self.set("_jsonMeasurements", data.raw());
@@ -451,7 +451,7 @@
                     fmeasurements = this.currentChartObj[fids[0]];
                 } else if (this.tabSelected === 1) {
                     fids = this.selectedMeasurements.map(x => x.id);
-                    fmeasurements = envElement.measurementSet.subset(function (m) { return fids.includes(m.id()) });
+                    fmeasurements = envElement.measurementAll.subset(function (m) { return fids.includes(m.id()) });
                     fmeasurements = fmeasurements.raw();
                 }
 
