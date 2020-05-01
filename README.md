@@ -1,4 +1,12 @@
-# Installation
+# Usage from cdn
+
+Add this to HTML head
+
+    <base href="https://ghcdn.rawgit.org/epiviz/epiviz-chart/master/cdn/">
+    <script src="webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="epiviz-components.html">
+
+# Installation from source
 
 `bower install epiviz/epiviz-chart`
 
