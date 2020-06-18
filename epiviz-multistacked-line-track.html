@@ -10,6 +10,7 @@
 <link rel="import" href="chart-colors.html">
 <link rel="import" href="chart-remove.html">
 <link rel="import" href="chart-grid-behavior.html">
+<link rel="import" href="chart-showtracks.html">
 
 <!-- Epiviz Shared css -->
 <link rel="import" href="chart-shared-css.html">
@@ -68,7 +69,7 @@ To create a stacked-blocks plot on a HTML page, add
     <script>
 
         // Extend Polymer.Element base class
-        class EpivizMultiStackedLineTrack extends EpivizChartGridBehavior(EpivizChartRemoveBehavior(EpivizChartColorsBehavior(EpivizChartSettingsBehavior(EpivizChartBehavior(Polymer.Element))))) {
+        class EpivizMultiStackedLineTrack extends EpivizChartShowTracksBehavior(EpivizChartGridBehavior(EpivizChartRemoveBehavior(EpivizChartColorsBehavior(EpivizChartSettingsBehavior(EpivizChartBehavior(Polymer.Element)))))) {
 
             static get is() { return 'epiviz-multistacked-line-track'; }
 
@@ -136,7 +137,14 @@ To create a stacked-blocks plot on a HTML page, add
                                 },
 
                                 chartCustomSettings: {
-
+                                    'epiviz.plugins.charts.MultiStackedLineTrackType': {
+                                        step: 1,
+                                        showPoints: false,
+                                        showLines: true,
+                                        pointRadius: 1,
+                                        lineThickness: 2,
+                                        interpolation: "basis-open"
+                                    }
                                 },
 
                                 colorPalettes: [

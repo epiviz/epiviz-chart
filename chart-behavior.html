@@ -36,6 +36,22 @@
                 padding: 1px;
             }
 
+            #chartSettingsLeftContainer {
+                position: absolute;
+                top: 0;
+                left: 0;
+                /* border: 1px solid #000;
+                border-radius: 2px; */
+                margin: 1px;
+                z-index: 3;
+            }
+
+            #chartShowTracksIcon {
+                float: left;
+                height: 24px;
+                padding: 1px;
+            }
+
             paper-spinner-lite {
                 position: absolute;
                 top: 50%;
@@ -389,7 +405,7 @@
                 for (var i = 0; i < size; ++i) {
                     result += chars[Math.round(Math.random() * (chars.length - 1))];
                 }
-                return 'epiviz-' + result;
+                return this.nodeName.toLowerCase() + "_" + result;
             }
 
             /**
@@ -494,8 +510,9 @@
                             self.chartType.defaultColors(),
                             null,
                             self.chartType.customSettingsValues(),
-                            self.chartType.customSettingsDefs(), [],
-                            null
+                            self.chartType.customSettingsDefs(), 
+                            []
+                            // null
                         );
 
                         self.chart = self.chartType.createNew(self.plotId,
@@ -528,6 +545,10 @@
                             self._initializeLogRatioDialog();
                             self._initializeNegationDialog();
                             self._initializeAverageDialog();
+                        }
+
+                        if (self.nodeName == "EPIVIZ-MULTISTACKED-LINE-TRACK") {
+                            self._initializeShowTracksDialog();
                         }
                         self._initializeResizeButtons();
                         self._initializeGrid();
@@ -1156,6 +1177,17 @@
                     // Polymer.dom(chartContainer).appendChild(iconElem);
                     chartContainer.appendChild(iconElem);
                 }
+
+                var settingsLeftContainer = this.shadowRoot.querySelector('#' + this.plotId + '-chartSettingsLeftContainer');
+
+                if (settingsLeftContainer == null) {
+                    var iconElem = document.createElement('div');
+                    iconElem.hidden = true;
+                    iconElem.id = "chartSettingsLeftContainer";
+                    // iconElem.addEventListener("click", this._showColorsDialog.bind(this));
+                    // Polymer.dom(chartContainer).appendChild(iconElem);
+                    chartContainer.appendChild(iconElem);
+                }
             }
 
             /**
@@ -1166,6 +1198,11 @@
                 if (currColorsIcon) {
                     currColorsIcon.hidden = false;
                 }
+
+                var currColorsLeftIcon = this.shadowRoot.querySelector('#chartSettingsLeftContainer');
+                if (currColorsLeftIcon) {
+                    currColorsLeftIcon.hidden = false;
+                }
             }
 
             /**
@@ -1175,6 +1212,11 @@
                 var currColorsIcon = this.shadowRoot.querySelector('#chartSettingsContainer');
                 if (currColorsIcon) {
                     currColorsIcon.setAttribute("hidden", true);
+                }
+
+                var currColorsLeftIcon = this.shadowRoot.querySelector('#chartSettingsLeftContainer');
+                if (currColorsLeftIcon) {
+                    currColorsLeftIcon.setAttribute("hidden", true);
                 }
             }
         }

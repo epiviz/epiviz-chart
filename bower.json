@@ -1,12 +1,25 @@
 {
   "name": "epiviz-charts",
-  "authors": ["Jayaram Kancherla <jayaram.kancherla@gmail.com>"],
+  "authors": [
+    "Jayaram Kancherla <jayaram.kancherla@gmail.com>"
+  ],
   "description": "using epiviz code",
   "main": "",
-  "keywords": ["epiviz", "charts", "genomics", "bioinformatics"],
+  "keywords": [
+    "epiviz",
+    "charts",
+    "genomics",
+    "bioinformatics"
+  ],
   "license": "MIT",
   "homepage": "",
-  "ignore": ["**/.*", "node_modules", "bower_components", "test", "tests"],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
     "epiviz-imports": "epiviz/epiviz-imports",
@@ -34,7 +47,8 @@
     "poly-filter": "jkanche/table-filter",
     "paper-tabs": "PolymerElements/paper-tabs#2.1.1",
     "iron-pages": "PolymerElements/iron-pages#2.0.0",
-    "jquery-ui": "^1.12.1"
+    "jquery-ui": "^1.12.1",
+    "paper-dropdown": "pushkar8723/paper-dropdown#2.5"
   },
   "devDependencies": {},
   "resolutions": {

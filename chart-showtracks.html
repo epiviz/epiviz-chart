@@ -1,0 +1,102 @@
+<!-- External Polymer Styles/elements dependency -->
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+
+<!-- Epiviz element dependency -->
+<link rel="import" href="epiviz-chart-showtracks.html">
+
+<script>
+    /**
+     * `ChartSettingsBehavior` object manages the `<epiviz-chart-settings>` element for each chart. 
+     * All charts inherit this behavior to update chart settings.
+     *
+     * @polymerBehavior
+    **/
+    EpivizChartShowTracksBehavior = function (superClass) {
+        return class extends superClass {
+            constructor() {
+                super();
+            }
+
+            static get properties() {
+                return {};
+            }
+
+            /**
+            * Shows the `<epiviz-chart-settings>` element
+            */
+            _showTracksDialog() {
+                var self = this;
+                var chartContainer = this.shadowRoot.querySelector('#' + this.plotId);
+                var currSetting = this.shadowRoot.querySelector('epiviz-chart-showtracks');
+
+                var options = [];
+                if(self.dimS && self.dimS.length > 0) {
+                    
+                    self.dimS.forEach(function(m) {
+                        options.push(m);
+                    });
+                } else if (self.measurements.length > 0) {
+                    self.measurements.forEach(function(m) {
+                        options.push(m.id);
+                    });
+                }
+
+                if (currSetting == null) {
+                    var currSetting = document.createElement('epiviz-chart-showtracks');
+                  
+                    currSetting.setAttribute('items', JSON.stringify(options));
+                    currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
+                    chartContainer.appendChild(currSetting);
+                }
+                else {
+                    currSetting.setAttribute('items', JSON.stringify(options));
+                    currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
+                }
+
+                currSetting.showSettings(this.shadowRoot, function (newSettings) {
+                    self.chartSettings = newSettings;
+                });
+            }
+
+            /**
+            * Initializes the `<epiviz-chart-settings>` element
+            */
+            _initializeShowTracksDialog() {
+                var self = this;
+
+                var chartSettingsContainer = this.shadowRoot.querySelector('#chartSettingsLeftContainer');
+                var currSettingIcon = this.shadowRoot.querySelector('#chartShowTracksIcon');
+
+                if (currSettingIcon == null) {
+                    var currSetting = document.createElement('epiviz-chart-showtracks');
+                    currSetting.id = "chartShowTracksIcon";
+
+                    var options = [];
+                    if(self.dimS && self.dimS.length > 0) {
+                        
+                        self.dimS.forEach(function(m) {
+                            options.push(m);
+                        });
+                    } else if (self.measurements.length > 0) {
+                        self.measurements.forEach(function(m) {
+                            options.push(m.id);
+                        });
+                    }
+
+                    currSetting.setAttribute('items', JSON.stringify(options));
+                    currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
+                    currSetting._parentNode = self;
+                    chartSettingsContainer.appendChild(currSetting);
+
+                    // var iconElem = document.createElement('paper-icon-button');
+                    // iconElem.id = "chartShowTracksIcon";
+                    // iconElem.icon = "editor:insert-chart";
+
+                    // iconElem.addEventListener("click", this._showTracksDialog.bind(this));
+                    // chartSettingsContainer.appendChild(iconElem);
+                }
+            }
+        }
+    }
+</script>

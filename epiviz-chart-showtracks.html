@@ -1,0 +1,220 @@
+<!-- Polymer dependency -->
+<link rel="import" href="../polymer/polymer-element.html">
+
+<!-- External Polymer Styles/elements dependency -->
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-dropdown-input/paper-dropdown-input.html">
+<link rel="import" href="../paper-styles/color.html">
+<link rel="import" href="../paper-styles/typography.html">
+<link rel="import" href="../paper-styles/default-theme.html">
+<link rel="import" href="../paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../iron-form/iron-form.html">
+<link rel="import" href="../paper-dialog/paper-dialog.html">
+<link rel="import" href="../paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-collapse/iron-collapse.html">
+<link rel="import" href="../iron-label/iron-label.html">
+<link rel="import" href="../paper-collapse-item/paper-collapse-item.html">
+<link rel="import" href="../paper-dropdown/paper-dropdown.html">
+
+
+<!--
+`<epiviz-chart-settings>` is a view element that manages chart settings. 
+
+All charts implement the `epiviz.ChartSettingsBehavior` that manages this element.
+-->
+<dom-module id="epiviz-chart-showtracks">
+
+    <template>
+        <style>
+            .flex {
+                /*@apply(--layout-horizontal); */
+                display: grid;
+                grid-auto-rows: auto;
+                grid-template-columns: 1fr 1fr;
+                grid-column-gap: 20px;
+            }
+
+            .flex-end-justified {
+                @apply(--layout-horizontal);
+                @apply(--layout-end-justified);
+            }
+
+            .collapse-content {
+                padding: 15px;
+                border-top: none;
+                display: block;
+                margin: 3px;
+            }
+
+            .collapse-header {
+                padding: 10px 15px;
+                background-color: #f3f3f3;
+                border: 1px solid #dedede;
+                border-radius: 5px;
+                cursor: pointer;
+                width: 100%;
+                text-align: left;
+                margin-top: 10px;
+            }
+
+            #formSettings {
+                min-width: 400px;
+                overflow: scroll;
+                grid-row: 2;
+            }
+
+            #scrollContent {
+                margin-bottom: 10px;
+            }
+
+            #modal {
+                display: grid;
+                grid-template-rows: 50px minmax(auto, 1fr) 100px;
+                max-height: 70%;
+                top: 10%;
+            }
+
+            .header {
+                grid-row: 1;
+            }
+
+            .footer {
+                grid-row: 3;
+            }
+
+            paper-collapse-item {
+                --paper-collapse-simple-paper-item-styles: {
+                    border: 1px solid var(--light-theme-divider-color);
+                }
+                ;
+            }
+
+            paper-toggle-button {
+                padding-top: 8px;
+            }
+
+            .toggleLabel {
+                padding-top: 8px;
+            }
+
+            multiselect-combo-box {
+                margin: 10px;
+            }
+        </style>
+
+        <!-- local DOM goes here -->
+        <paper-dropdown label="Hide/Show Tracks" value="{{selectedItems}}" on-value-changes="_valueChanged" multi no-animations no-label-float>
+            <template is="dom-repeat" items="[[items]]">
+                <paper-item value$="[[item]]">[[item]]</paper-item>
+            </template>
+        </paper-dropdown>
+
+    </template>
+
+    <script>
+        // Extend Polymer.Element base class
+        class EpivizChartShowTracks extends Polymer.Element {
+
+            static get is() { return 'epiviz-chart-showtracks'; }
+
+            static get properties() {
+                return {
+                    items: {
+                        type: Array,
+                        notify: true
+                    },
+                    
+                    settings: {
+                        type: Object,
+                        notify: true
+                    },
+
+                    selectedItems: {
+                        type: Array,
+                        notify: true,
+                        observer: "_onSelectedItemsChanged"
+                    }
+                }
+            }
+
+            static get observers() {
+                return [
+                    /* observer array just like 1.x */
+                ]
+            }
+
+            constructor() {
+                super();
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+               
+                if (this.settings["showTracks"] == "default") {
+                    this.shadowRoot.querySelector("paper-dropdown").selectedItems = this.items;
+                } else {
+                    this.shadowRoot.querySelector("paper-dropdown").selectedItems = this.settings["showTracks"].split(",");
+                }
+            }
+
+            disconnectedCallback() {
+                super.connectedCallback();
+            }
+
+            /**
+             * handles form submit action
+             */
+            _submit(event) {
+                this.$.formSettings.submit();
+            }
+
+            _onSelectedItemsChanged(oldVal, newVal) {
+                var self = this;
+                console.log("changed");
+                if (newVal) {
+                    this.settings["showTracks"] = newVal.join(",");
+                    self._parentNode.chartSettings = this.settings;
+                    // TODO: have to force change currently, not sure why!
+                    self._parentNode._draw();
+                }
+            }
+
+            /**
+             * handles form submit action
+             */
+            _form_submit(event) {
+                var self = this;
+                this.settings["showTracks"] = this.shadowRoot.querySelector("paper-dropdown").selectedItems.join(",");
+
+                this.callback(this.settings);
+                this.closeSettings();
+            }
+
+            /**
+             * handles form cancel action
+             */
+            _cancel(event) {
+                this.closeSettings();
+            }
+
+            /**
+             * handles form show modal action
+             */
+            showSettings(target, callback) {
+                this.callback = callback;
+                this.$.modal.open();
+            }
+
+            /**
+             * handles form close modal action
+             */
+            closeSettings() {
+                this.$.modal.close();
+            }
+        };
+
+        customElements.define(EpivizChartShowTracks.is, EpivizChartShowTracks);
+    </script>
+</dom-module>
