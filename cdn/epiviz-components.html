@@ -68740,8 +68740,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             }
         }
     }
-</script><link rel="import" href="bower_components/iron-icons/iron-icons.html">
-<script>
+</script><script>
     /**
      * `ChartRemoveBehavior` object manages the `<epiviz-chart-negation>` element for each chart. 
      * All charts inherit this behavior to remove itself from DOM.
@@ -73240,6 +73239,10 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
         grid-column: span 6;
         order: 2;
       }
+      
+      #header > a {
+        text-decoration: none;
+      }
     </style>
 
     <div id="header" class="paper-header">
@@ -74116,8 +74119,8 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
         var width = Math.round(this.end - this.start);
         // var mid = Math.round(this.start + width / 2);
         var newWidthFactor = Math.round(width * this.zoomRatio);
-        var newStart = start + newWidthFactor;
-        var newEnd = end - newWidthFactor;
+        var newStart = this.start + newWidthFactor;
+        var newEnd = this.end - newWidthFactor;
 
         this.start = Math.max(0, newStart);
         this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
@@ -74133,8 +74136,8 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
         var width = Math.round(this.end - this.start);
         // var mid = Math.round(this.start + width / 2);
         var newWidthFactor = Math.round(width * this.zoomRatio);
-        var newStart = start - newWidthFactor;
-        var newEnd = end + newWidthFactor;
+        var newStart = this.start - newWidthFactor;
+        var newEnd = this.end + newWidthFactor;
 
         this.start = Math.max(0, newStart);
         this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
