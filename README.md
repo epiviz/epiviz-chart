@@ -1,10 +1,13 @@
 # Usage from cdn
 
-Add this to HTML head
+Add this to HTML head (loads dependencies)
 
-    <base href="https://ghcdn.rawgit.org/epiviz/epiviz-chart/master/cdn/">
-    <script src="webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="import" href="epiviz-components.html">
+    <script src="https://cdn.jsdelivr.net/gh/epiviz/epiviz-chart/cdn/jquery/dist/jquery.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/epiviz/epiviz-chart/cdn/jquery-ui/jquery-ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/epiviz/epiviz-chart/cdn/renderingQueues/renderingQueue.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/epiviz/epiviz-chart/cdn/webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="https://cdn.jsdelivr.net/gh/epiviz/epiviz-chart/cdn/epiviz-components.html">
 
 # Installation from source
 
