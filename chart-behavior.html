@@ -29,7 +29,8 @@
             #chartColorsIcon,
             #chartRemoveIcon,
             #chartExpandIcon,
-            #chartContractIcon {
+            #chartContractIcon,
+            #chartFixedAxisIcon {
                 float: right;
                 width: 24px;
                 height: 24px;
@@ -59,6 +60,7 @@
                 transform: translateX(-50%) translateY(-50%);
                 height: 75px;
                 width: 75px;
+                z-index: -1;
             }
         </style>
     </template>
@@ -224,6 +226,12 @@
                         type: Array,
                         notify: true,
                         observer: '_chartColorsChanged'
+                    },
+
+                    chartWidth: {
+                        type: Number,
+                        notify: true,
+                        observer: '_chartWidthChanged'
                     },
 
                     /**
@@ -457,6 +465,13 @@
                 }
             }
 
+            _chartwidthChanged() {
+                var self = this;
+                if (self.chartWidth) {
+                    self._setColumnSpan(self.chartWidth);
+                }
+            }
+
             /**
             * ChartLocation/RangeChange event handler.
             */
@@ -549,6 +564,7 @@
 
                         if (self.nodeName == "EPIVIZ-MULTISTACKED-LINE-TRACK") {
                             self._initializeShowTracksDialog();
+                            self._initializeFixedAxisDialog();
                         }
                         self._initializeResizeButtons();
                         self._initializeGrid();

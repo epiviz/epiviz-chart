@@ -1,0 +1,66 @@
+<!-- External Polymer Styles/elements dependency -->
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+
+<!-- Epiviz element dependency -->
+<link rel="import" href="epiviz-chart-settings.html">
+
+<script>
+    /**
+     * `FixedAxisBehavior` object toggles the fixed axis on StackedLinePlots. 
+     * <epiviz-multistacked-line-plot> inherit this behavior to update chart settings.
+     *
+     * @polymerBehavior
+    **/
+    EpivizFixedAxisBehavior = function (superClass) {
+        return class extends superClass {
+            constructor() {
+                super();
+            }
+
+            static get properties() {
+                return {
+                    toggleFixed: {
+                        type: Boolean,
+                        value: true
+                    }
+                };
+            }
+
+            /**
+            * Shows the `<epiviz-chart-settings>` element
+            */
+            _showFixedAxisDialog() {
+                var self = this;
+                self.toggleFixed = !self.toggleFixed;
+                self.chartSettings["autoScale"] = self.toggleFixed;
+
+                var currSettingIcon = this.shadowRoot.querySelector('#chartFixedAxisIcon');
+
+                if (self.toggleFixed) {
+                    currSettingIcon.icon = "image:leak-add";
+                } else {
+                    currSettingIcon.icon = "image:leak-remove";
+                }
+            }
+
+            /**
+            * Initializes the `<epiviz-chart-settings>` element
+            */
+            _initializeFixedAxisDialog() {
+                var FixedAxisContainer = this.shadowRoot.querySelector('#chartSettingsContainer');
+                var chartContainer = this.shadowRoot.querySelector('#' + this.plotId);
+                var currSettingIcon = this.shadowRoot.querySelector('#chartFixedAxisIcon');
+
+                if (currSettingIcon == null) {
+                    var iconElem = document.createElement('paper-icon-button');
+                    iconElem.id = "chartFixedAxisIcon";
+                    iconElem.icon = "image:leak-add";
+
+                    iconElem.addEventListener("click", this._showFixedAxisDialog.bind(this));
+                    FixedAxisContainer.appendChild(iconElem);
+                }
+            }
+        }
+    }
+</script>

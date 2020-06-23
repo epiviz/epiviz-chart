@@ -11,6 +11,7 @@
 <link rel="import" href="chart-remove.html">
 <link rel="import" href="chart-grid-behavior.html">
 <link rel="import" href="chart-showtracks.html">
+<link rel="import" href="chart-fixed-axis-toggle.html">
 
 <!-- Epiviz Shared css -->
 <link rel="import" href="chart-shared-css.html">
@@ -69,7 +70,7 @@ To create a stacked-blocks plot on a HTML page, add
     <script>
 
         // Extend Polymer.Element base class
-        class EpivizMultiStackedLineTrack extends EpivizChartShowTracksBehavior(EpivizChartGridBehavior(EpivizChartRemoveBehavior(EpivizChartColorsBehavior(EpivizChartSettingsBehavior(EpivizChartBehavior(Polymer.Element)))))) {
+        class EpivizMultiStackedLineTrack extends EpivizFixedAxisBehavior(EpivizChartShowTracksBehavior(EpivizChartGridBehavior(EpivizChartRemoveBehavior(EpivizChartColorsBehavior(EpivizChartSettingsBehavior(EpivizChartBehavior(Polymer.Element))))))) {
 
             static get is() { return 'epiviz-multistacked-line-track'; }
 
@@ -249,6 +250,14 @@ To create a stacked-blocks plot on a HTML page, add
 
                 self._initializeGrid();
                 self._measurementsChanged();
+
+                if (self.dimS) {
+                    this.style = "min-height:" + (self.dimS.length * 100) + "px;"
+                } else if (self.measurements) {
+                    this.style = "min-height:" + (self.measurements.length * 100) + "px;"
+                } else {
+                    this.style = "min-height:" + (300) + "px;"
+                }
             }
 
             disconnectedCallback() {
