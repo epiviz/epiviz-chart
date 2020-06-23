@@ -19,6 +19,7 @@
 <link rel="import" href="bower_components/paper-dropdown/paper-dropdown.html">
 
 
+
 <!--
 `<epiviz-chart-settings>` is a view element that manages chart settings. 
 
@@ -28,79 +29,48 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
 
     <template>
         <style>
-            .flex {
-                /*@apply(--layout-horizontal); */
-                display: grid;
-                grid-auto-rows: auto;
-                grid-template-columns: 1fr 1fr;
-                grid-column-gap: 20px;
-            }
+            paper-dropdown {
+                --paper-input-container-label: {
+                    /* color: var(--paper-pink-500); */
+                    font-style: italic;
+                    /* text-align: center; */
+                    font-weight: bold;
+                    /* width: 150px; */
+                };
+                --paper-input-container-input: {
+                    color: var(--paper-indigo-500);
+                    font-style: normal;
+                    font-family: serif;
+                    text-transform: uppercase;
+                    width: 150px;
+                };
+                /* Only show the underline when focused. */
+                --paper-input-container-underline: {
+                    display: none;
+                    width: 150px;
+                };
+                --paper-input-container-underline-focus: {
+                    border-color: var(--paper-cyan-500);
+                    width: 150px;
+                };
 
-            .flex-end-justified {
-                @apply(--layout-horizontal);
-                @apply(--layout-end-justified);
-            }
-
-            .collapse-content {
-                padding: 15px;
-                border-top: none;
-                display: block;
-                margin: 3px;
-            }
-
-            .collapse-header {
-                padding: 10px 15px;
-                background-color: #f3f3f3;
-                border: 1px solid #dedede;
-                border-radius: 5px;
-                cursor: pointer;
-                width: 100%;
-                text-align: left;
-                margin-top: 10px;
-            }
-
-            #formSettings {
-                min-width: 400px;
-                overflow: scroll;
-                grid-row: 2;
-            }
-
-            #scrollContent {
-                margin-bottom: 10px;
-            }
-
-            #modal {
-                display: grid;
-                grid-template-rows: 50px minmax(auto, 1fr) 100px;
-                max-height: 70%;
-                top: 10%;
-            }
-
-            .header {
-                grid-row: 1;
-            }
-
-            .footer {
-                grid-row: 3;
-            }
-
-            paper-collapse-item {
-                --paper-collapse-simple-paper-item-styles: {
-                    border: 1px solid var(--light-theme-divider-color);
+                --paper-dropdown-menu: {
+                    min-width: 100px;
                 }
-                ;
+
+                --paper-listbox: {
+                    min-width: 150px;
+                }
             }
 
-            paper-toggle-button {
-                padding-top: 8px;
+            paper-item {
+                font-style: italic !important;
+                font-weight: normal !important;
             }
 
-            .toggleLabel {
-                padding-top: 8px;
-            }
-
-            multiselect-combo-box {
-                margin: 10px;
+            paper-item.iron-selected {
+                font-style: normal !important;
+                font-weight: bold !important;
             }
         </style>
 
@@ -154,9 +124,13 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                
                 if (this.settings["showTracks"] == "default") {
                     this.shadowRoot.querySelector("paper-dropdown").selectedItems = this.items;
+                    // this.selectedItems = this.items;
                 } else {
                     this.shadowRoot.querySelector("paper-dropdown").selectedItems = this.settings["showTracks"].split(",");
+                    // this.selectedItems = this.settings["showTracks"].split(",");
                 }
+
+                // this._parentNode._draw();
             }
 
             disconnectedCallback() {
