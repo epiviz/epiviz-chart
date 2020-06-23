@@ -46,6 +46,10 @@
                     // is plot
                     this.classList.add("grid-plot");
                 }
+
+                if (this.chartWidth) {
+                    this._setColumnSpan(this.chartWidth);
+                }
             }
 
             /**
@@ -120,6 +124,22 @@
                     console.log("grid column error, not a number");
                 }
                 return val;
+            }
+
+            /**
+             * helper function to set `grid-column` of current chart
+             */
+            _setColumnSpan(gridColumn) {
+
+                if (gridColumn > 6) {gridColumn = 6;}
+                if (gridColumn < 1) {gridColumn = 1;}
+
+                var prop = this._getStyle(this, "grid-column-start");
+                var columnSpan = this._getColumnSpan(prop);
+                if (columnSpan > 1) {
+                    $(this).css("grid-column-start", "span " + (gridColumn));
+                    this._onResize();
+                }
             }
         }
     }
