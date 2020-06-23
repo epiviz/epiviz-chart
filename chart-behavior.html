@@ -216,6 +216,16 @@
                     },
 
                     /**
+                     * Chart title.
+                     *
+                     */
+                    title: {
+                        type: String,
+                        notify: true,
+                        observer: '_chartTitleChanged'
+                    },
+
+                    /**
                      * Color palette to use.
                      *
                      * @type {Array<epiviz.ui.charts.ColorPalette>}
@@ -445,6 +455,17 @@
             }
 
             /**
+             * chartTitle change event handler.
+             * Listens to changes to title attribute to chart component
+             */
+            _chartTitleChanged() {
+                var self = this;
+                if (self.title && self.chartSettings) {
+                    console.log("There is a title!" + self.title);
+                    self.chartSettings.title = self.title;
+                }
+            }
+            /**
              * chartColors change event handler.
              * Listens to when a chart colors are changed and redraws the chart.
              */
@@ -535,6 +556,10 @@
                             self.chartColors = self.chartColorPalette._colors;
                         }
 
+                        if (self.title) {
+                            self._chartTitleChanged();
+                        }
+                        
                         $(self).css('height', self.chartType.defaultHeight() + epiviz.ui.charts.Visualization.SVG_MARGIN);
 
                         self._initializeSettingsContainer();
