@@ -68732,6 +68732,9 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
                 self.chartSettings =  JSON.parse(JSON.stringify(self._originalSettings));
 
+
+                if (self.measurements.length == 2) {
+
                     var groupByMarker = new epiviz.ui.charts.markers.VisualizationMarker(
                         "logratio", "logratio", "logratio", 
                         "function(data) {  return null; }", 
@@ -68894,6 +68897,8 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 }
 
                 self.chartSettings =  JSON.parse(JSON.stringify(self._originalSettings));
+
+                if (self.measurements.length == 2) {
 
                     // self._negateData = jQuery.extend({}, self._originalData)
                     // self._negateData._map._order[1].value._container._values._order[0].value._values.forEach(function(k, i) {
@@ -69544,10 +69549,8 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             _draw() {
                 var self = this;
 
-                console.log(self.invertcell);
 
                 if (self.invertcell) {
-                    console.log("in if");
                     var data = this.get_invert_data_mirror1(this.data, this.invertcell);
                 }
                 else {
@@ -70635,7 +70638,6 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
             _onSelectedItemsChanged(oldVal, newVal) {
                 var self = this;
-                console.log("changed");
                 if (newVal) {
                     this.settings["showTracks"] = newVal.join(",");
                     self._parentNode.chartSettings = this.settings;

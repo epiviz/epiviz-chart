@@ -51,6 +51,9 @@
 
                 self.chartSettings =  JSON.parse(JSON.stringify(self._originalSettings));
 
+
+                if (self.measurements.length == 2) {
+
                     var groupByMarker = new epiviz.ui.charts.markers.VisualizationMarker(
                         "logratio", "logratio", "logratio", 
                         "function(data) {  return null; }", 

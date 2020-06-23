@@ -146,7 +146,6 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
 
             _onSelectedItemsChanged(oldVal, newVal) {
                 var self = this;
-                console.log("changed");
                 if (newVal) {
                     this.settings["showTracks"] = newVal.join(",");
                     self._parentNode.chartSettings = this.settings;
