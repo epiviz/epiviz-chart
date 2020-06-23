@@ -50,8 +50,5 @@
     "jquery-ui": "^1.12.1",
     "paper-dropdown": "pushkar8723/paper-dropdown#2.5"
   },
-  "devDependencies": {},
-  "resolutions": {
-    "epiviz-imports": "50adc4ede6"
-  }
+  "devDependencies": {}
 }
