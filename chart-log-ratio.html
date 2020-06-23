@@ -51,14 +51,6 @@
 
                 self.chartSettings =  JSON.parse(JSON.stringify(self._originalSettings));
 
-                console.log(self);
-                console.log(self.measurements)
-
-                if (self.measurements.length == 2) {
-                    console.log("measurements is == 2")
-                    console.log(self.data)
-                    // first create a measurement for log ratio
-
                     var groupByMarker = new epiviz.ui.charts.markers.VisualizationMarker(
                         "logratio", "logratio", "logratio", 
                         "function(data) {  return null; }", 
