@@ -72,15 +72,17 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                 font-style: normal !important;
                 font-weight: bold !important;
             }
+
         </style>
 
         <!-- local DOM goes here -->
-        <paper-dropdown label="Hide/Show Tracks" value="{{selectedItems}}" on-value-changes="_valueChanged" multi no-animations no-label-float>
-            <template is="dom-repeat" items="[[items]]">
+        <paper-dropdown label="Hide/Show Tracks" value="{{selectedItems}}" multi no-animations no-label-float>
+            <template id="itemRepeater" is="dom-repeat" items="[[items]]">
                 <paper-item value$="[[item]]">[[item]]</paper-item>
             </template>
         </paper-dropdown>
 
+        <!-- on-tap="_itemClicked" -->
     </template>
 
     <script>
@@ -120,17 +122,14 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
             }
 
             connectedCallback() {
+                var self = this;
                 super.connectedCallback();
-               
-                if (this.settings["showTracks"] == "default") {
-                    this.shadowRoot.querySelector("paper-dropdown").selectedItems = this.items;
-                    // this.selectedItems = this.items;
-                } else {
-                    this.shadowRoot.querySelector("paper-dropdown").selectedItems = this.settings["showTracks"].split(",");
-                    // this.selectedItems = this.settings["showTracks"].split(",");
-                }
 
-                // this._parentNode._draw();
+                if (this.settings["showTracks"] == "default") {
+                    self.selectedItems = this.items;
+                } else {
+                    self.selectedItems = this.settings["showTracks"].split(",");
+                }
             }
 
             disconnectedCallback() {
@@ -144,9 +143,9 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                 this.$.formSettings.submit();
             }
 
-            _onSelectedItemsChanged(oldVal, newVal) {
+            _onSelectedItemsChanged(newVal, oldVal) {
                 var self = this;
-                if (newVal) {
+                if (newVal && newVal.length > 0) {
                     this.settings["showTracks"] = newVal.join(",");
                     self._parentNode.chartSettings = this.settings;
                     // TODO: have to force change currently, not sure why!
