@@ -26197,6 +26197,14 @@ window.ShadyCSS&&void 0!==window.ShadyCSS.nativeCss?r=window.ShadyCSS.nativeCss:
                 z-index: 3;
             }
 
+            #chartFixedAxisIcon {
+                float: right;
+                width: 24px;
+                height: 24px;
+                padding: 1px;
+                padding-top: 5px;
+            }
+
             .dragHandle {
                 z-index: 2;
             }
@@ -26205,8 +26213,7 @@ window.ShadyCSS&&void 0!==window.ShadyCSS.nativeCss?r=window.ShadyCSS.nativeCss:
             #chartColorsIcon,
             #chartRemoveIcon,
             #chartExpandIcon,
-            #chartContractIcon,
-            #chartFixedAxisIcon {
+            #chartContractIcon {
                 float: right;
                 width: 24px;
                 height: 24px;
@@ -26414,10 +26421,25 @@ window.ShadyCSS&&void 0!==window.ShadyCSS.nativeCss?r=window.ShadyCSS.nativeCss:
                         observer: '_chartColorsChanged'
                     },
 
+                    /**
+                     * Set chart width.
+                     *
+                     */
                     chartWidth: {
                         type: Number,
                         notify: true,
                         observer: '_chartWidthChanged'
+                    },
+
+
+                    /**
+                     * Set chart width.
+                     *
+                     */
+                    fixedAxis: {
+                        type: Boolean,
+                        notify: true,
+                        observer: '_chartFixedAxisChanged'
                     },
 
                     /**
@@ -26648,6 +26670,19 @@ window.ShadyCSS&&void 0!==window.ShadyCSS.nativeCss?r=window.ShadyCSS.nativeCss:
                     self.chartSettings.title = self.title;
                 }
             }
+
+            /**
+             * fixedAxis change event handler.
+             * Listens to changes to title attribute to chart component
+             * only for stacked-line-tracks
+             */
+            _chartFixedAxisChanged() {
+                var self = this;
+                if (self.chartSettings) {
+                    self.chartSettings["autoScale"] = self.fixedAxis;
+                }
+            }
+
             /**
              * chartColors change event handler.
              * Listens to when a chart colors are changed and redraws the chart.
@@ -26764,6 +26799,7 @@ window.ShadyCSS&&void 0!==window.ShadyCSS.nativeCss?r=window.ShadyCSS.nativeCss:
 
                         if (self.nodeName == "EPIVIZ-MULTISTACKED-LINE-TRACK") {
                             self._initializeShowTracksDialog();
+                            self._chartFixedAxisChanged();
                             self._initializeFixedAxisDialog();
                         }
                         self._initializeResizeButtons();
@@ -63742,9 +63778,16 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 this.set('flattenedData', data);
                 self.tableData = self.flattenedData;
 
+                var allColumns = []
+                self.tableData.forEach(function(td) {
+                    allColumns = allColumns.concat(Object.keys(td));
+                });
+
+                allColumns = _.uniq(allColumns)
+
                 if (self.showColumns.length == 0) {
-                    self.set("showColumns", Object.keys(self.tableData[0]).filter(function(e) { return e !== 'id' }));
-                    self.set("defaultColumns", Object.keys(self.tableData[0]));
+                    self.set("showColumns", allColumns.filter(function(e) { return e !== 'id' }));
+                    self.set("defaultColumns", allColumns);
                 }
 
                 var attributes = self._buildAttributes(self.tableData, self.showColumns);
@@ -64777,13 +64820,13 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 background-position: 7px 12px;
             }
 
-            paper-dropdown-menu {
+            /* paper-dropdown-menu {
                 min-width: 330px;
             }
 
             paper-dropdown-menu, paper-listbox {
                 min-width: 330px;
-            }
+            } */
         </style>
         <paper-dropdown-menu id="dropdownMenu" label="{{label}}" opened="{{opened}}" error-message="{{errorMessage}}" allow-outside-scroll="{{allowOutsideScroll}}" no-label-float="{{noLabelFloat}}" always-float-label="{{alwaysFloatLabel}}" no-animations="{{noAnimations}}" horizontal-align="{{horizontalAlign}}" vertical-align="{{verticalAlign}}" dynamic-align="{{dynamicAlign}}" restore-focus-on-close="{{restoreFocusOnClose}}" disabled="{{disabled}}" selected-item="{{_selectedItem}}" selected-item-label="{{_selectedItemLabel}}" invalid="[[invalid]]">
             <paper-listbox id="list" items="{{_items}}" slot="dropdown-content" attr-for-selected="{{_attrForSelected}}" selected="{{_selected}}" selected-items="{{_selectedItems}}" multi="{{multi}}">
@@ -67676,6 +67719,10 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 overflow: auto;
                 transition: width 0.01s, height 0.01s;
             }
+/* 
+            .chart-title {
+                text-shadow: 2px 2px 4px #000000;
+            } */
         </style>
 
         <paper-spinner-lite active="" class="green"></paper-spinner-lite>
@@ -70565,15 +70612,16 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 font-style: normal !important;
                 font-weight: bold !important;
             }
+
         </style>
 
-        <paper-dropdown label="Hide/Show Tracks" value="{{selectedItems}}" on-value-changes="_valueChanged" multi="" no-animations="" no-label-float="">
-            <template is="dom-repeat" items="[[items]]">
+        <paper-dropdown label="Hide/Show Tracks" value="{{selectedItems}}" multi="" no-animations="" no-label-float="">
+            <template id="itemRepeater" is="dom-repeat" items="[[items]]">
                 <paper-item value$="[[item]]">[[item]]</paper-item>
             </template>
         </paper-dropdown>
 
-    </template>
+        </template>
 
     <script>
         // Extend Polymer.Element base class
@@ -70612,17 +70660,14 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             }
 
             connectedCallback() {
+                var self = this;
                 super.connectedCallback();
-               
-                if (this.settings["showTracks"] == "default") {
-                    this.shadowRoot.querySelector("paper-dropdown").selectedItems = this.items;
-                    // this.selectedItems = this.items;
-                } else {
-                    this.shadowRoot.querySelector("paper-dropdown").selectedItems = this.settings["showTracks"].split(",");
-                    // this.selectedItems = this.settings["showTracks"].split(",");
-                }
 
-                // this._parentNode._draw();
+                if (this.settings["showTracks"] == "default") {
+                    self.selectedItems = this.items;
+                } else {
+                    self.selectedItems = this.settings["showTracks"].split(",");
+                }
             }
 
             disconnectedCallback() {
@@ -70636,9 +70681,9 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 this.$.formSettings.submit();
             }
 
-            _onSelectedItemsChanged(oldVal, newVal) {
+            _onSelectedItemsChanged(newVal, oldVal) {
                 var self = this;
-                if (newVal) {
+                if (newVal && newVal.length > 0) {
                     this.settings["showTracks"] = newVal.join(",");
                     self._parentNode.chartSettings = this.settings;
                     // TODO: have to force change currently, not sure why!
@@ -70763,6 +70808,14 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
                     currSetting.setAttribute('items', JSON.stringify(options));
                     currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
+                    // 
+
+                    // if (self.chartSettings["showTracks"] == "default") {
+                    //     currSetting.setAttribute('selected-items', JSON.stringify(options));
+                    // } else {
+                    //     currSetting.setAttribute('selected-items', JSON.stringify(self.chartSettings["showTracks"].split(",")));
+                    // }
+
                     currSetting._parentNode = self;
                     chartSettingsContainer.appendChild(currSetting);
 
@@ -70792,8 +70845,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             static get properties() {
                 return {
                     toggleFixed: {
-                        type: Boolean,
-                        value: true
+                        type: Boolean
                     }
                 };
             }
@@ -70804,15 +70856,16 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             _showFixedAxisDialog() {
                 var self = this;
                 self.toggleFixed = !self.toggleFixed;
-                self.chartSettings["autoScale"] = self.toggleFixed;
 
                 var currSettingIcon = this.shadowRoot.querySelector('#chartFixedAxisIcon');
 
                 if (self.toggleFixed) {
-                    currSettingIcon.icon = "image:leak-add";
+                    currSettingIcon.className = "fa fa-link";
                 } else {
-                    currSettingIcon.icon = "image:leak-remove";
+                    currSettingIcon.className = "fa fa-chain-broken";
                 }
+
+                self.chartSettings["autoScale"] = self.toggleFixed;
             }
 
             /**
@@ -70823,10 +70876,18 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 var chartContainer = this.shadowRoot.querySelector('#' + this.plotId);
                 var currSettingIcon = this.shadowRoot.querySelector('#chartFixedAxisIcon');
 
+                this.toggleFixed = this.chartSettings["autoScale"];
+
                 if (currSettingIcon == null) {
+
                     var iconElem = document.createElement('paper-icon-button');
                     iconElem.id = "chartFixedAxisIcon";
-                    iconElem.icon = "image:leak-add";
+
+                    if (this.toggleFixed) {
+                        iconElem.className = "fa fa-link";
+                    } else {
+                        iconElem.className = "fa fa-chain-broken";
+                    }
 
                     iconElem.addEventListener("click", this._showFixedAxisDialog.bind(this));
                     FixedAxisContainer.appendChild(iconElem);
@@ -71231,6 +71292,8 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
     <template>
         <style include="shared-settings"></style>
         <style include="chart-shared-css"></style>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
         <style>
             :host {
                 width: 100%;
