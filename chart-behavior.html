@@ -21,6 +21,14 @@
                 z-index: 3;
             }
 
+            #chartFixedAxisIcon {
+                float: right;
+                width: 24px;
+                height: 24px;
+                padding: 1px;
+                padding-top: 5px;
+            }
+
             .dragHandle {
                 z-index: 2;
             }
@@ -29,8 +37,7 @@
             #chartColorsIcon,
             #chartRemoveIcon,
             #chartExpandIcon,
-            #chartContractIcon,
-            #chartFixedAxisIcon {
+            #chartContractIcon {
                 float: right;
                 width: 24px;
                 height: 24px;
@@ -238,10 +245,25 @@
                         observer: '_chartColorsChanged'
                     },
 
+                    /**
+                     * Set chart width.
+                     *
+                     */
                     chartWidth: {
                         type: Number,
                         notify: true,
                         observer: '_chartWidthChanged'
+                    },
+
+
+                    /**
+                     * Set chart width.
+                     *
+                     */
+                    fixedAxis: {
+                        type: Boolean,
+                        notify: true,
+                        observer: '_chartFixedAxisChanged'
                     },
 
                     /**
@@ -472,6 +494,19 @@
                     self.chartSettings.title = self.title;
                 }
             }
+
+            /**
+             * fixedAxis change event handler.
+             * Listens to changes to title attribute to chart component
+             * only for stacked-line-tracks
+             */
+            _chartFixedAxisChanged() {
+                var self = this;
+                if (self.chartSettings) {
+                    self.chartSettings["autoScale"] = self.fixedAxis;
+                }
+            }
+
             /**
              * chartColors change event handler.
              * Listens to when a chart colors are changed and redraws the chart.
@@ -588,6 +623,7 @@
 
                         if (self.nodeName == "EPIVIZ-MULTISTACKED-LINE-TRACK") {
                             self._initializeShowTracksDialog();
+                            self._chartFixedAxisChanged();
                             self._initializeFixedAxisDialog();
                         }
                         self._initializeResizeButtons();

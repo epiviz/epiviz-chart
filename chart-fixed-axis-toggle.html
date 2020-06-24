@@ -21,8 +21,7 @@
             static get properties() {
                 return {
                     toggleFixed: {
-                        type: Boolean,
-                        value: true
+                        type: Boolean
                     }
                 };
             }
@@ -33,15 +32,16 @@
             _showFixedAxisDialog() {
                 var self = this;
                 self.toggleFixed = !self.toggleFixed;
-                self.chartSettings["autoScale"] = self.toggleFixed;
 
                 var currSettingIcon = this.shadowRoot.querySelector('#chartFixedAxisIcon');
 
                 if (self.toggleFixed) {
-                    currSettingIcon.icon = "image:leak-add";
+                    currSettingIcon.className = "fa fa-link";
                 } else {
-                    currSettingIcon.icon = "image:leak-remove";
+                    currSettingIcon.className = "fa fa-chain-broken";
                 }
+
+                self.chartSettings["autoScale"] = self.toggleFixed;
             }
 
             /**
@@ -52,10 +52,18 @@
                 var chartContainer = this.shadowRoot.querySelector('#' + this.plotId);
                 var currSettingIcon = this.shadowRoot.querySelector('#chartFixedAxisIcon');
 
+                this.toggleFixed = this.chartSettings["autoScale"];
+
                 if (currSettingIcon == null) {
+
                     var iconElem = document.createElement('paper-icon-button');
                     iconElem.id = "chartFixedAxisIcon";
-                    iconElem.icon = "image:leak-add";
+
+                    if (this.toggleFixed) {
+                        iconElem.className = "fa fa-link";
+                    } else {
+                        iconElem.className = "fa fa-chain-broken";
+                    }
 
                     iconElem.addEventListener("click", this._showFixedAxisDialog.bind(this));
                     FixedAxisContainer.appendChild(iconElem);
