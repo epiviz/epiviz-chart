@@ -13,32 +13,36 @@
 
                 var settingsMap = {
                     configType: 'default',
-                    dataProviders: [],
-                    colorPalettes: []
+                    dataProviders: [],  
+                    workspacesDataProvider: sprintf(
+                        "epiviz.data.EmptyResponseDataProvider",
+                        "empty",
+                        ""
+                    ),
+                    useCache: true,
+                    colorPalettes: [],
+                    maxSearchResults: 12
                 }
 
                 // var dataManagerElem = document.querySelector("epiviz-app").shadowRoot.querySelectorAll('epiviz-data-source');
                 var dataManagerElem = document.querySelectorAll('epiviz-data-source');
-                if (dataManagerElem) {
-                    this.dataManager = new epiviz.data.DataManager(dataManagerElem[0].config, dataManagerElem[0].dataProviderFactory);
 
-                    // Object.keys(dataManagerElem).forEach(function (ds) {
-                    //     settingsMap.dataProviders.push([ds.providerType, ds.providerId, ds.providerUrl]);
-                    // });
+                if (dataManagerElem && dataManagerElem.length > 0) {
 
-                    // var config = new epiviz.Config(settingsMap);
+                    dataManagerElem.forEach(function(ds) {
+                        settingsMap.dataProviders.push([ds.providerType, ds.providerId, ds.providerUrl]);
+                    });
 
-                    // /** @type {epiviz.data.DataProviderFactory} */
-                    // var dataProviderFactory = new epiviz.data.DataProviderFactory(config);
+                    var config = new epiviz.Config(settingsMap);
+                    var dataProviderFactory = new epiviz.data.DataProviderFactory(config);
+                    this.dataManager = new epiviz.data.DataManager(config, dataProviderFactory);
 
-                    // this.dataManager = new epiviz.data.DataManager(config, dataProviderFactory);
-                    // this.measurementSet = dataManagerElem.measurementSet;
                     this.dataManager.getMeasurements(function (result) {
                         var measurements = result.raw();
                         self.measurementsSet = result;
 
                         if (measurements) {
-                            var mArray = document.querySelector("epiviz-data-source").measurements;
+                            var mArray = measurements;
                             var measurementsObj = {}
                             mArray.forEach(function(m) {
                                 measurementsObj[m.id] = m
