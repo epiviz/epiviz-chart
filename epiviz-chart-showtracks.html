@@ -76,7 +76,8 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
         </style>
 
         <!-- local DOM goes here -->
-        <paper-dropdown label="Hide/Show Tracks" value="{{selectedItems}}" multi no-animations no-label-float>
+        <paper-dropdown label="Hide/Show Tracks" value="{{selectedItems}}" multi no-animations no-label-float
+            horizontal-align="left">
             <template id="itemRepeater" is="dom-repeat" items="[[items]]">
                 <paper-item value$="[[item]]">[[item]]</paper-item>
             </template>
