@@ -267,13 +267,16 @@ To use, add `<epiviz-line-plot>` in the page
             * @param {Object<epiviz.datatypes.MapGenomicData>} data to plot
             */
             _draw() {
-                if (this.canvas) {
-                    this.chart.drawCanvas(this.range, this.data);
-                }
-                else {
-                    this.chart.draw(this.range, this.data);
-                }
-                this.shadowRoot.querySelector("paper-spinner-lite").active = false;
+                if(this.data) {
+
+                    if (this.canvas) {
+                        this.chart.drawCanvas(this.range, this.data);
+                    }
+                    else {
+                        this.chart.draw(this.range, this.data);
+                    }
+                    this.shadowRoot.querySelector("paper-spinner-lite").active = false;
+               }
             }
 
             /**

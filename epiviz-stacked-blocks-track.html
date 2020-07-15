@@ -55,6 +55,10 @@ To create a stacked-blocks plot on a HTML page, add
                 overflow: auto;
                 transition: width 0.01s, height 0.01s;
             }
+/* 
+            .chart-title {
+                text-shadow: 2px 2px 4px #000000;
+            } */
         </style>
 
         <!-- local DOM goes here -->
@@ -261,13 +265,16 @@ To create a stacked-blocks plot on a HTML page, add
             * @param {Object<epiviz.datatypes.MapGenomicData>} data to plot
             */
             _draw() {
-                if (this.canvas) {
-                    this.chart.drawCanvas(this.range, this.data);
+                if(this.data) {
+
+                    if (this.canvas) {
+                        this.chart.drawCanvas(this.range, this.data);
+                    }
+                    else {
+                        this.chart.draw(this.range, this.data);
+                    }
+                    this.shadowRoot.querySelector("paper-spinner-lite").active = false;
                 }
-                else {
-                    this.chart.draw(this.range, this.data);
-                }
-                this.shadowRoot.querySelector("paper-spinner-lite").active = false;
             }
 
             /**

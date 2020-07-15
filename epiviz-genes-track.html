@@ -256,28 +256,32 @@ To create a genes track on a HTML page, add
             */
             _draw() {
                 var self = this;
+
+                if(this.data) {
                 
-                if (this.canvas) {
-                    this.chart.drawCanvas(this.range, this.data);
-                }
-                else {
-                    this.chart.draw(this.range, this.data);
+                    if (this.canvas) {
+                        this.chart.drawCanvas(this.range, this.data);
+                    }
+                    else {
+                        this.chart.draw(this.range, this.data);
+                    }
+
+                    self.chart._propagateNavigationChanges.addListener(new epiviz.events.EventListener(function(e) {
+                        self.dispatchEvent(new CustomEvent('GenesTrackRangeUpdate',
+                                {
+                                    detail: {
+                                        id: e.id,
+                                        range: e.range,
+                                    },
+                                    bubbles: true
+                                }
+                            )
+                        );                
+                    }));
+
+                    this.shadowRoot.querySelector("paper-spinner-lite").active = false;
                 }
 
-                self.chart._propagateNavigationChanges.addListener(new epiviz.events.EventListener(function(e) {
-                    self.dispatchEvent(new CustomEvent('GenesTrackRangeUpdate',
-                            {
-                                detail: {
-                                    id: e.id,
-                                    range: e.range,
-                                },
-                                bubbles: true
-                            }
-                        )
-                    );                
-                }));
-
-                this.shadowRoot.querySelector("paper-spinner-lite").active = false;
             }
 
             /**

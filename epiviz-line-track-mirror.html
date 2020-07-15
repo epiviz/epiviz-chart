@@ -236,24 +236,27 @@ To create a line track on a HTML page, add
             _draw() {
                 var self = this;
 
+                if(this.data) {
 
-                if (self.invertcell) {
-                    var data = this.get_invert_data_mirror1(this.data, this.invertcell);
-                }
-                else {
-                    var data = this.get_invert_data(this.data);
-                }
+                    if (self.invertcell) {
+                        var data = this.get_invert_data_mirror1(this.data, this.invertcell);
+                    }
+                    else {
+                        var data = this.get_invert_data(this.data);
+                    }
 
-                this.isNegation = true;
+                    this.isNegation = true;
 
-                if (this.canvas) {
-                    this.chart.drawCanvas(this.range, this.data);
-                }
-                else {
-                    this.chart.draw(this.range, data, undefined, undefined, self.isNegation);
-                }
+                    if (this.canvas) {
+                        this.chart.drawCanvas(this.range, this.data);
+                    }
+                    else {
+                        this.chart.draw(this.range, data, undefined, undefined, self.isNegation);
+                    }
 
-                this.shadowRoot.querySelector("paper-spinner-lite").active = false;
+                    this.shadowRoot.querySelector("paper-spinner-lite").active = false;
+
+                }
             }
 
             get_invert_data_mirror1(lData, celltype) {
