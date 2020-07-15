@@ -590,7 +590,12 @@
                             self.chartProperties);
 
                         if (self.chartSettings != null || self.chartSettings != undefined) {
+                            var defaultSettings = self.chart._customSettingsValues;
+                            Object.keys(self.chartSettings).forEach(function(k) {
+                                defaultSettings[k] = self.chartSettings[k];
+                            })
                             self.chart.setCustomSettingsValues(self.chartSettings);
+                            self.chartSettings = defaultSettings;
                         }
                         else {
                             self.chartSettings = self.chart._customSettingsValues;
