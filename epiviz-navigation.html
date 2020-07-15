@@ -28,6 +28,7 @@
 
 <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html" />
 <link rel="import" href="bower_components/paper-input/paper-input.html" />
+<link rel="import" href="bower_components/paper-dropdown/paper-dropdown.html">
 <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html" />
 <link rel="import" href="bower_components/paper-menu-button/paper-menu-button.html" />
 <link rel="import" href="bower_components/paper-listbox/paper-listbox.html" />
@@ -225,17 +226,29 @@
 
       <iron-collapse id="navHeader" hidden$="{{collapsed}}" opened>
         <div class="container flex" id="{{_headerName}}">
+          <div class="flexchild" hidden$="{{hideGenomeInput}}">
+            <!-- <paper-input id="textGenome" value="{{genome}}"
+              label="Genome"
+              on-change="_updateGenome"
+            ></paper-input> -->
+            <paper-dropdown label="Genome" value="{{genome}}" no-animations no-label-float
+              horizontal-align="left">
+              <template id="itemRepeater" is="dom-repeat" items="[[_genomeList]]">
+                  <paper-item value$="[[item]]">[[item]]</paper-item>
+              </template>
+            </paper-dropdown>
+          </div>
+          <div class="flexchild" hidden$="{{hideChrInput}}" on-mouseover="locationHovered" on-mouseout="locationUnhovered">
+            <paper-input id="textRange" value="{{_strRange}}"
+              label="Chromosome Location"
+              on-change="_updateStrRange"
+            ></paper-input>
+          </div>
           <div class="flexchild" hidden$="{{hideNav}}">
             <paper-icon-button title="move left" icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
             <paper-icon-button title="move right" icon="icons:chevron-right" on-click="moveRight"></paper-icon-button>
             <paper-icon-button title="zoom out" icon="icons:zoom-out" on-click="zoomOut"></paper-icon-button>
             <paper-icon-button title="zoom in" icon="icons:zoom-in" on-click="zoomIn"></paper-icon-button>
-          </div>
-          <div class="flexchild" hidden$="{{hideChrInput}}" on-mouseover="locationHovered" on-mouseout="locationUnhovered">
-            <paper-input id="textRange" value="{{_strRange]]"
-              label="Chromosome Location"
-              on-change="_updateStrRange"
-            ></paper-input>
           </div>
           <div class="flexchild" hidden$="{{hideSearch}}">
             <paper-dropdown-input id="geneSearch" label="Search Gene/Probe" on-search-value-changed="_searchGene">
@@ -267,8 +280,8 @@
     class EpivizNavigation extends EpivizChartDraggableBehavior(
       EpivizChartGridBehavior(
         EpivizChartWorkspaceBehavior(
-          EpivizChartDataBehavior(
-            EpivizChartAddBehavior(EpivizChartBehavior(Polymer.Element))
+          EpivizChartAddBehavior(
+            EpivizChartDataBehavior(EpivizChartBehavior(Polymer.Element))
           )
         )
       )
@@ -279,6 +292,20 @@
 
       static get properties() {
         return {
+          /**
+           * genome.
+           * Default genome to set to all the children chart elements.
+           *
+           * @example: hg38
+           *
+           * @type {string}
+           */
+           genome: {
+            type: String,
+            notify: true,
+            observer: "_genomeChanged"
+          },
+
           /**
            * Chromosome location.
            * Default Location Attribute to set to all the children chart elements.
@@ -537,6 +564,12 @@
             value: false 
           },
 
+          hideGenomeInput: {
+            type: Boolean,
+            notify: true,
+            value: false
+          },
+
           showViewer: {
             type: Boolean,
             notify: true,
@@ -546,6 +579,17 @@
           _zoomIn: {
             type: Number,
             value: 0
+          },
+
+          _genomeList: {
+            type: String,
+            notify: true,
+            computed: "_getGenomes(genomes)"
+          },
+
+          genomes: {
+            type: Object,
+            notify: true
           }
 
         };
@@ -614,7 +658,7 @@
             self.chr = data[0].chr;
             self.start = data[0].start;
             self.end = data[0].end;
-            self.range = self.getGenomicRange(self.chr, self.start, self.end);
+            self.range = self.getGenomicRange(self.chr, self.start, self.end, self.genome);
             self._strRange = self.getStrRange(self.chr, self.start, self.end);
 
             self.chartObject = new epiviz.ui.charts.ChartObject(
@@ -630,7 +674,7 @@
             );
           });
         } else if (self.chr && self.start && self.end) {
-          self.range = self.getGenomicRange(self.chr, self.start, self.end);
+          self.range = self.getGenomicRange(self.chr, self.start, self.end, self.genome);
           self._strRange = self.getStrRange(self.chr, self.start, self.end);
 
           self.chartObject = new epiviz.ui.charts.ChartObject(
@@ -645,8 +689,6 @@
             self.chr
           );
         }
-
-
 
         if (origCollapsed != self.collapsed) {
           self.toggleHeader();
@@ -664,30 +706,35 @@
         var origCollapsed = self.collapsed || false;
 
         if (!origCollapsed) {
-        self._observer = new Polymer.FlattenedNodesObserver(
-          self.$.chartNav,
-          info => {
-              // self._observer =
-              // Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
-              info.addedNodes.forEach(function (node) {
-                node._parentContainer = self;
-                if (
-                  node.nodeName.indexOf("EPIVIZ-") != -1 &&
-                  node.nodeName.indexOf("JSON") == -1
-                ) {
-                  // self._updateChart(node.plotId);
-                  var measurements = self.measurementSet;
-                  if (self._parentContainer) {
-                    measurements = self._parentContainer.measurementSet;
-                  }
-                  self._getElementData(node, self, measurements);
 
-                  self.set("_isEmpty", true);
-                }
-              });
-              self.saveWorkspace();
-            }
-          );
+          if (self.genome) {
+            self._updateGenomeTrack();
+          }
+
+          self._observer = new Polymer.FlattenedNodesObserver(
+            self.$.chartNav,
+            info => {
+                // self._observer =
+                // Polymer.dom(self.$$("#chartNav")).observeNodes(function(info) {
+                info.addedNodes.forEach(function (node) {
+                  node._parentContainer = self;
+                  if (
+                    node.nodeName.indexOf("EPIVIZ-") != -1 &&
+                    node.nodeName.indexOf("JSON") == -1
+                  ) {
+                    // self._updateChart(node.plotId);
+                    var measurements = self.measurementSet;
+                    if (self._parentContainer) {
+                      measurements = self._parentContainer.measurementSet;
+                    }
+                    self._getElementData(node, self, measurements);
+
+                    self.set("_isEmpty", true);
+                  }
+                });
+                self.saveWorkspace();
+              }
+            );
         }
       }
 
@@ -707,6 +754,52 @@
         }
         self._initializeAddDialog();
         self._initializeGrid();
+      }
+
+      _getCurrentGenome() {
+        return this.genome;
+      }
+
+      _getGenomes(genomes) {
+        if (genomes) {
+          return Object.keys(this.genomes);
+        }
+        
+        return [this.genome];
+      }
+
+      _updateGenomeTrack() {
+        var self = this;
+
+        // change genome track
+        let genesTrack = Polymer.FlattenedNodesObserver.getFlattenedNodes(
+            self
+          ).filter(
+            n =>
+              n.nodeType === Node.ELEMENT_NODE &&
+              n.nodeName.indexOf("EPIVIZ-GENES-TRACK") !== -1
+          );
+
+        if(genesTrack.length > 0) {
+          genesTrack[0].setAttribute("dim-s", JSON.stringify([self.genome]));
+        }
+        else {
+          var elem = document.createElement("epiviz-genes-track");
+            elem.slot = "charts";
+            elem.setAttribute("dim-s", JSON.stringify([self.genome]));
+            self.appendChild(elem);
+        }
+
+      }
+
+      _genomeChanged(newVal, oldVal) {
+        var self = this;
+
+        if(newVal && newVal != oldVal) {
+          self._updateGenomeTrack();
+          self.range = self.getGenomicRange(self.chr, self.start, self.end, self.genome);
+
+        }
       }
 
       /**
@@ -825,6 +918,7 @@
         self.chr = range.seqName();
         self.start = range.start();
         self.end = range.end();
+        self.genome = range.genome();
         self.range = range;
         self._strRange = self.getStrRange(self.chr, self.start, self.end);
       }
@@ -940,7 +1034,10 @@
             if (self._parentContainer) {
               measurements = self._parentContainer.measurementSet;
             }
-            self._getElementData(currentChild, self, measurements);
+
+            if(measurements) {
+              self._getElementData(currentChild, self, measurements);
+            }
           }
         }
         self.dispatchEvent(
@@ -992,7 +1089,7 @@
           if (self.useDefaultDataProvider) {
             self.range =
               self.range ||
-              new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000);
+              new epiviz.datatypes.GenomicRange("chr11", 80000000, 3000000, self.genome);
             var dataProviderFactory = new epiviz.data.DataProviderFactory(
               new epiviz.Config(self.configSrc)
             );
@@ -1022,7 +1119,7 @@
         this.start = selected.start - Math.round(selected.start * 0.01);
         this.end = selected.end + Math.round(selected.end * 0.01);
 
-        this.range = this.getGenomicRange(this.chr, this.start, this.end);
+        this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
       }
 
       /**
@@ -1045,7 +1142,7 @@
           }
           this.start = Math.max(0, start);
 
-          this.range = this.getGenomicRange(this.chr, this.start, this.end);
+          this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
         } else {
           var toast = document.createElement("paper-toast");
           toast.setAttribute("text", "Chromosome does not exist");
@@ -1070,7 +1167,7 @@
         this.start = Math.max(0, newStart);
         this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
 
-        this.range = this.getGenomicRange(this.chr, this.start, this.end);
+        this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
         this._strRange = this.getStrRange(this.chr, this.start, this.end);
       }
 
@@ -1085,7 +1182,7 @@
         this.start = Math.max(0, newStart);
         this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
 
-        this.range = this.getGenomicRange(this.chr, this.start, this.end);
+        this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
         this._strRange = this.getStrRange(this.chr, this.start, this.end);
       }
 
@@ -1104,7 +1201,7 @@
         this.start = Math.max(0, newStart);
         this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
 
-        this.range = this.getGenomicRange(this.chr, this.start, this.end);
+        this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
         this._strRange = this.getStrRange(this.chr, this.start, this.end);
       }
 
@@ -1121,7 +1218,7 @@
         this.start = Math.max(0, newStart);
         this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
 
-        this.range = this.getGenomicRange(this.chr, this.start, this.end);
+        this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
         this._strRange = this.getStrRange(this.chr, this.start, this.end);
       }
 
@@ -1147,8 +1244,8 @@
        *
        * @return {epiviz.datatypes.GenomicRange} Genomic Range object
        */
-      getGenomicRange(chr, start, end) {
-        return new epiviz.datatypes.GenomicRange(chr, start, end - start);
+      getGenomicRange(chr, start, end, genome) {
+        return new epiviz.datatypes.GenomicRange(chr, start, end - start, genome);
       }
 
       /**

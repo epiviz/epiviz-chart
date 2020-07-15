@@ -183,7 +183,7 @@
                         else {
                             cb(data);
                         }
-                    }, gene);
+                    }, gene, currentChild.range);
                 }
             }
 
@@ -266,10 +266,14 @@
 
 
                         var seqinfo = {};
+                        var genomes = {};
                         data.forEach(function (s) {
                             seqinfo[s.seqName] = s;
+                            genomes[s.genome] = s;
                         });
                         currentChild.seqInfo = seqinfo;
+                        currentChild.genomes = genomes;
+                        currentChild.set("genomes", genomes)
 
                         if (!(currentChild.start && currentChild.end)) {
                             if (currentChild.chr && currentChild.seqInfo) {
