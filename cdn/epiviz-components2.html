@@ -73445,7 +73445,18 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
       #header > a {
         text-decoration: none;
       }
-    </style>
+
+      #genomeInput {
+        --paper-dropdown-menu: {
+          width: 75px;
+        }
+      }
+
+      #geneSearch {
+        --paper-dropdown-menu: {
+          width: 125px;
+        }
+      }    </style>
 
     <div id="header" class="paper-header">
       <a href="http://epiviz.github.io" target="_blank" hidden$="{{noLogo}}">
@@ -73471,16 +73482,6 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
       <iron-collapse id="navHeader" hidden$="{{collapsed}}" opened="">
         <div class="container flex" id="{{_headerName}}">
-          <div class="flexchild" hidden$="{{hideGenomeInput}}">
-            <paper-dropdown label="Genome" value="{{genome}}" no-animations="" no-label-float="" horizontal-align="left">
-              <template id="itemRepeater" is="dom-repeat" items="[[_genomeList]]">
-                  <paper-item value$="[[item]]">[[item]]</paper-item>
-              </template>
-            </paper-dropdown>
-          </div>
-          <div class="flexchild" hidden$="{{hideChrInput}}" on-mouseover="locationHovered" on-mouseout="locationUnhovered">
-            <paper-input id="textRange" value="{{_strRange}}" label="Chromosome Location" on-change="_updateStrRange"></paper-input>
-          </div>
           <div class="flexchild" hidden$="{{hideNav}}">
             <paper-icon-button title="move left" icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
             <paper-icon-button title="move right" icon="icons:chevron-right" on-click="moveRight"></paper-icon-button>
@@ -73488,7 +73489,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             <paper-icon-button title="zoom in" icon="icons:zoom-in" on-click="zoomIn"></paper-icon-button>
           </div>
           <div class="flexchild" hidden$="{{hideSearch}}">
-            <paper-dropdown-input id="geneSearch" label="Search Gene/Probe" on-search-value-changed="_searchGene">
+            <paper-dropdown-input id="geneSearch" label="Search" on-search-value-changed="_searchGene">
                 <template>
                   <dom-repeat items="[[items]]" as="item">
                     <template>
@@ -73503,6 +73504,16 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                   </dom-repeat>
                 </template>
               </paper-dropdown-input>
+          </div>
+          <div class="flexchild" hidden$="{{hideGenomeInput}}">
+            <paper-dropdown id="genomeInput" name="Genome" label="Genome" value="{{genome}}" no-animations="" horizontal-align="left">
+              <template id="itemRepeater" is="dom-repeat" items="[[_genomeList]]">
+                  <paper-item value$="[[item]]">[[item]]</paper-item>
+              </template>
+            </paper-dropdown>
+          </div>
+          <div class="flexchild" hidden$="{{hideChrInput}}" on-mouseover="locationHovered" on-mouseout="locationUnhovered">
+            <paper-input id="textRange" value="{{_strRange}}" label="Chromosome Location" on-change="_updateStrRange"></paper-input>
           </div>
         </div>
         <div class="content chartContainer">
