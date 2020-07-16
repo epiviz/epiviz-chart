@@ -415,24 +415,26 @@
                 var mData = data.raw();
                 mData.forEach(function (d, i) {
 
-                    var temp = d.annotation;
-                    if (temp == undefined) {
-                        temp = {};
+                    if (d.annotation["genome"] == self._parentContainer.genome) {
+                        var temp = d.annotation;
+                        if (temp == undefined) {
+                            temp = {};
+                        }
+
+                        delete temp["tags"];
+                        delete d["type"];
+                        delete d["datasourceId"];
+                        delete d["datasourceGroup"];
+                        delete d["dataprovider"];
+                        delete d["formula"];
+                        delete d["defaultChartType"];
+                        delete d["metadata"];
+                        delete d["minValue"];
+                        delete d["maxValue"];
+
+                        d.annotation = temp;
+                        nData.push(d);
                     }
-
-                    delete temp["tags"];
-                    delete d["type"];
-                    delete d["datasourceId"];
-                    delete d["datasourceGroup"];
-                    delete d["dataprovider"];
-                    delete d["formula"];
-                    delete d["defaultChartType"];
-                    delete d["metadata"];
-                    delete d["minValue"];
-                    delete d["maxValue"];
-
-                    d.annotation = temp;
-                    nData[i] = d;
                 });
                 
                 self.set("_jsonMeasurements", nData);
