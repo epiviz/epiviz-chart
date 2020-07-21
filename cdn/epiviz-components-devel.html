@@ -27337,8 +27337,55 @@ window.ShadyCSS&&void 0!==window.ShadyCSS.nativeCss?r=window.ShadyCSS.nativeCss:
                             ));
                         });
                     }
-                }
 
+                    self._chartMeasurements = m;
+                    var chartData = new epiviz.measurements.MeasurementHashtable();
+
+                    mSet.foreach(function (m) {
+
+                        var mData = json[m.datasourceId()];
+                        var rowLength = mData.rows.values.chr.length;
+
+                        if (!self.chr) {
+                            self.chr = mData.rows.values.chr[0];
+                        }
+
+                        if (!self.start) {
+                            self.start = mData.rows.values.start[0];
+                        }
+
+                        if (!self.end) {
+                            self.end = mData.rows.values.end[rowLength - 1];
+                        }
+
+                        range = self.range;
+
+                        if (!self.range) {
+                            self.range = range = new epiviz.datatypes.GenomicRange(mData.rows.values.chr[0], mData.rows.values.start[0], mData.rows.values.end[rowLength - 1] - mData.rows.values.start[0]);
+                        }
+
+                        var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
+
+                        var rowDataObj = new epiviz.datatypes.GenomicRangeArray(m, self.range, mData.rows.globalStartIndex, mData.rows.values, mData.rows.useOffset);
+                        sumExp.addRowData(rowDataObj);
+
+                        if (mData.cols) {
+                            var valueData = new epiviz.datatypes.FeatureValueArray(m, self.range, mData.cols[m.id()].globalStartIndex, mData.cols[m.id()].values);
+                            sumExp.addValues(valueData);
+                        }
+
+                        var msData = new epiviz.datatypes.MeasurementGenomicDataWrapper(m, sumExp);
+                        chartData.put(m, msData);
+
+                        self._chartRange = self.range;
+                    });
+
+                    var genomicData = new epiviz.datatypes.MapGenomicData(chartData);
+
+                    // self.range = range;
+                    return genomicData;
+                    // self._chartData = genomicData;
+                }
 
                 var chr = json.rows.chr[0];
                 var start = json.rows.start[0];
