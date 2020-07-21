@@ -1093,6 +1093,69 @@
              */
             _parseData(json) {
                 var self = this;
+
+                if (Object.keys(json).indexOf("format") != -1 && json.format == "epiviz") {
+
+                    var m = [];
+                    var range;
+                    var mSet = new epiviz.measurements.MeasurementSet();
+                    var datasource = "epiviz";
+                    var rowLength = 0;
+                    var hasfData = true;
+                    var measurementType = 'feature';
+                    var useOffset = false;
+
+                    if (self.nodeName === "EPIVIZ-GENES-TRACK") {
+                        measurementType = 'range';
+                    }
+
+
+                    if (self.measurements) {
+                        self.measurements.forEach(function (mea) {
+                            mSet.add(new epiviz.measurements.Measurement(
+                                mea.id, mea.name, mea.type, mea.datasourceId, mea.datasourceGroup, mea.dataprovider,
+                                mea.formula, mea.defaultChartType, mea.annotation, mea.minValue, mea.maxValue, mea.metadata
+                            ));
+                        });
+                        m = self.measurements;
+                    }
+                    else if (self.dimS) {
+                        self.dimS.forEach(function (dim) {
+
+                            var colValues = [0, 5];
+                            if (json.cols) {
+                                colValues = json.cols[dim] || json.cols[dim].values;
+                            }
+                            // var colValues = self.data.cols[dim];
+                            var rowLength = colValues.length;
+
+                            m.push({
+                                'id': dim,
+                                'name': dim,
+                                'type': measurementType,
+                                'datasourceId': datasource,
+                                'datasourceGroup': dim,
+                                'dataprovider': datasource,
+                                'formula': null,
+                                'defaultChartType': self.chartName,
+                                'annotation': undefined,
+                                'minValue': Math.min.apply(Math, colValues),
+                                'maxValue': Math.max.apply(Math, colValues),
+                                'metadata': rowMetadata
+                            });
+
+                            if (!hasfData) {
+                                json.cols[dim] = { "values": [] }
+                            }
+
+                            mSet.add(new epiviz.measurements.Measurement(
+                                dim, dim, measurementType, datasource, dim, datasource, null, self.chartName, undefined, null, null, rowMetadata
+                            ));
+                        });
+                    }
+                }
+
+
                 var chr = json.rows.chr[0];
                 var start = json.rows.start[0];
                 var end = 0
