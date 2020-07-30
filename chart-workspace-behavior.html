@@ -51,6 +51,7 @@
                 self.chr = self.workspace.chr;
                 self.start = self.workspace.start;
                 self.end = self.workspace.end;
+                self.genome = self.workspace.genome
                 self.plotId = self.workspace.plotId;
                 self.collapsed = self.workspace.collapsed ? self.workspace.collapsed : false;
                 self.noLogo = true;
@@ -64,6 +65,7 @@
                         chart.chr = chartWorkspaceObj.chr;
                         chart.start = chartWorkspaceObj.start;
                         chart.end = chartWorkspaceObj.end;
+                        chart.genome = chartWorkspaceObj.genome;
                         // chart.node = chartWorkspaceObj.nodeName;
                         chart.collapsed = chartWorkspaceObj.collapsed ? chartWorkspaceObj.collapsed : false;
                         chart.range = new epiviz.datatypes.GenomicRange(chart.chr, chart.start, chart.end - chart.start);
@@ -85,11 +87,14 @@
                         }
                     }
                     else {
-                        chart.measurements = chartWorkspaceObj.measurements;
-                        chart.dimS = chartWorkspaceObj.dims;
-                        chart.chartSettings = chartWorkspaceObj.chartSettings;
-                        chart.chartColors = chartWorkspaceObj.chartColors;
-                        self.appendChild(chart);
+
+                        if (chartWorkspaceObj.node != "EPIVIZ-GENES-TRACK") {
+                            chart.measurements = chartWorkspaceObj.measurements;
+                            chart.dimS = chartWorkspaceObj.dims;
+                            chart.chartSettings = chartWorkspaceObj.chartSettings;
+                            chart.chartColors = chartWorkspaceObj.chartColors;
+                            self.appendChild(chart);
+                        }
                     }
                 }
             }
@@ -108,6 +113,7 @@
                 workspaceObj.chr = self.chr;
                 workspaceObj.start = self.start;
                 workspaceObj.end = self.end;
+                workspaceObj.genome = self.genome;
                 workspaceObj.node = self.nodeName;
                 workspaceObj.children = {};
                 workspaceObj.collapsed = self.collapsed ? self.collapsed : null;
@@ -128,7 +134,9 @@
                         childObj[currentChild.plotId].chr = currentChild.chr;
                         childObj[currentChild.plotId].start = currentChild.start;
                         childObj[currentChild.plotId].end = currentChild.end;
+                        childObj[currentChild.plotId].genome = currentChild.genome;
                         childObj[currentChild.plotId].node = currentChild.nodeName;
+
                         childObj[currentChild.plotId].children = {};
 
                         let navChildren2 =

@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>epiviz-charts</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../jquery/dist/jquery.js"></script>
+    <script src="../../jquery-ui/jquery-ui.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../src/renderingQueues/renderingQueue.js"></script>
+
+    <!-- <link rel="import" href="../bower_components/epiviz-workspace/epiviz-workspace-db.html">
+    <link rel="import" href="../epiviz-charts.html"> -->
+    <link rel="import" href="../cdn/epiviz-components-devel.html">
+    
+    <!-- <link rel="import" href="https://cdn.jsdelivr.net/gh/epiviz/epiviz-chart/cdn/epiviz-components.html"> -->
+</head>
+
+<body>
+    <h3>epiviz-navigation Demo</h3>
+
+    <epiviz-data-source provider-type="epiviz.data.WebServerDataProvider" 
+        provider-id="umd" 
+        provider-url="http://localhost:8000">
+    </epiviz-data-source>
+
+    <epiviz-workspace api="http://localhost:8001/api/v1/" target-selector="#epivizcontainer"></epiviz-workspace>
+
+    <div id="epivizcontainer">
+        <epiviz-navigation 
+            genome="hg38"
+            chr="chr6" 
+            start=84076201 
+            end=95088740
+        ></epiviz-navigation>
+
+    </div>
+</body>
+
+</html>
