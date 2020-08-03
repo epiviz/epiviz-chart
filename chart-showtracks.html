@@ -86,6 +86,14 @@
 
                     currSetting.setAttribute('items', JSON.stringify(options));
                     currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
+                    // 
+
+                    // if (self.chartSettings["showTracks"] == "default") {
+                    //     currSetting.setAttribute('selected-items', JSON.stringify(options));
+                    // } else {
+                    //     currSetting.setAttribute('selected-items', JSON.stringify(self.chartSettings["showTracks"].split(",")));
+                    // }
+
                     currSetting._parentNode = self;
                     chartSettingsContainer.appendChild(currSetting);
 

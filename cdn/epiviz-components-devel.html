@@ -44393,7 +44393,9 @@ class WeakCache {
 
                 document.addEventListener('workspaceChanged', function (e) {
                     //replace with value received from environments
-                    self.currentWorkspace["workspace"][e.detail.id] = e.detail.data;
+                    if (self.currentWorkspace) {
+                        self.currentWorkspace["workspace"][e.detail.id] = e.detail.data;
+                    }
                 });
             }
 
@@ -44537,8 +44539,7 @@ class WeakCache {
                 this.set("title", this.tmp_title);
 
                 this.currentWorkspace = {
-                    workspace_id:new_workspace_id,
-                    user_id: "root",
+                    user_id: "admin",
                     title:  this.tmp_title,
                     description: "",
                     genomes: [],
@@ -44586,9 +44587,29 @@ class WeakCache {
                 this._updateFlag = true;
             }
 
+            loadWorkspace(id) {
+                var self = this;
+
+                this.currentWorkspace = this._workspacesObj[id];
+                // this.set("title", this.tmp_title.title);
+
+                $(self.targetSelector).empty();
+
+                for (var env in self.currentWorkspace.workspace) {
+                    var elem = document.createElement(self.currentWorkspace.workspace[env].node);
+                    elem.setAttribute("plot-id", env);
+                    elem.setAttribute("workspace", JSON.stringify(self.currentWorkspace.workspace[env]));
+                    $(self.targetSelector).append(elem);
+                    elem.loadWorkspace(elem.workspace);
+                }
+
+                this.set("tmp_title", "");
+                this._updateFlag = true;
+            }
+
             _getUpdateURL(cw) {
                 if (cw) {
-                    return this.api + cw.workspace_id;
+                    return this.api + cw.id;
                 }
 
                 return this.api;
@@ -44596,7 +44617,7 @@ class WeakCache {
 
             _getDeleteURL(cw) {
                 if (cw) {
-                    return this.api + cw.workspace_id;
+                    return this.api + cw.id;
                 }
 
                 return this.api;
@@ -44651,7 +44672,30 @@ class WeakCache {
         customElements.define(EpivizWorkspace.is, EpivizWorkspace);
 
     </script>
-</dom-module><script>
+</dom-module>
+
+<script>
+    window.addEventListener('WebComponentsReady', function() {
+        var workspace = getUrlParameter("ws");
+        console.log(workspace);
+        if(workspace) {
+            document.querySelector("epiviz-workspace").loadWorkspace(workspace);
+        }
+    });
+
+    function getUrlParameter(sParam) {
+        var currPage = decodeURIComponent(window.location.search.substring(1));
+        var pageVars = currPage.split('&');
+
+        for (var i = 0; i < pageVars.length; i++) {
+            var pageParamName = pageVars[i].split('=');
+
+            if (pageParamName[0] === sParam) {
+                return pageParamName[1] === undefined ? true : pageParamName[1];
+            }
+        }
+    };
+</script><script>
 
   /** @polymerBehavior */
   Polymer.PaperSpinnerBehavior = {
