@@ -79217,7 +79217,10 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
         }
 
         if (self.gene) {
-          self._getElementSearch(self.gene, null, null, function (data) {
+          var range = {
+            range: self.getGenomicRange(null, null, null, self.genome)
+          }
+          self._getElementSearch(self.gene, range, null, function (data) {
             self.chr = data[0].chr;
             self.start = data[0].start;
             self.end = data[0].end;
@@ -79290,7 +79293,10 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                     if (self._parentContainer) {
                       measurements = self._parentContainer.measurementSet;
                     }
-                    self._getElementData(node, self, measurements);
+
+                    if(self.chr && self.start && self.end) {
+                      self._getElementData(node, self, measurements);
+                    }
 
                     self.set("_isEmpty", true);
                   }
@@ -79303,8 +79309,34 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
       /* callback function after the element is initialized */
       ready() {
-        super.ready();
         var self = this;
+
+        if (self.gene) {
+
+          var range = {
+            range: self.getGenomicRange(null, null, null, self.genome)
+          }
+          self._getElementSearch(self.gene, range, null, function (data) {
+            self.chr = data[0].chr;
+            self.start = data[0].start;
+            self.end = data[0].end;
+            self.range = self.getGenomicRange(self.chr, self.start, self.end, self.genome);
+            self._strRange = self.getStrRange(self.chr, self.start, self.end);
+
+            self.chartObject = new epiviz.ui.charts.ChartObject(
+              self.plotId,
+              self.start,
+              self.end,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              undefined,
+              self.chr
+            );
+          });
+        }
+        super.ready();
 
         self.plotId = self.plotId || self._generatePlotId();
         self.config = new epiviz.Config(self.configSrc);
@@ -79631,7 +79663,10 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
        */
       _geneUpdate() {
         var self = this;
-        self._getElementSearch(self.gene, null, null, function (data) {
+        var range = {
+            range: self.getGenomicRange(null, null, null, self.genome)
+          }
+        self._getElementSearch(self.gene, range, null, function (data) {
           self.chr = data[0].seqName;
           self.start = data[0].start;
           self.end = data[0].end;
