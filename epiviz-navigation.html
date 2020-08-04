@@ -797,6 +797,10 @@
         }
         self._initializeAddDialog();
         self._initializeGrid();
+
+        if(self.workspace) {
+          self.loadWorkspace(self.workspace);
+        }
       }
 
       _getCurrentGenome() {
@@ -856,14 +860,19 @@
         let navChildren = Polymer.FlattenedNodesObserver.getFlattenedNodes(
           self.$.chartNav
         ).filter(n => n.nodeType === Node.ELEMENT_NODE);
+
         var numChildren = navChildren.length;
+        
         if (numChildren > 0) {
           self.set("_isEmpty", true);
         }
+        
         for (var index = 0; index < numChildren; index++) {
           var currentChild = navChildren[index];
           currentChild._onResize(e);
         }
+
+        self.saveWorkspace();
       }
 
       _computeToggleText(collapsed) {

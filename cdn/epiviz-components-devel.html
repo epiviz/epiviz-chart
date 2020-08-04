@@ -44379,6 +44379,7 @@ class WeakCache {
 
             constructor() {
                 super();
+                this.tmpWorkspace = {};
             }
 
             /* callback function after the element is attached to the DOM */
@@ -44395,6 +44396,8 @@ class WeakCache {
                     //replace with value received from environments
                     if (self.currentWorkspace) {
                         self.currentWorkspace["workspace"][e.detail.id] = e.detail.data;
+                    } else {
+                        self.tmpWorkspace[e.detail.id] = e.detail.data;
                     }
                 });
             }
@@ -44553,6 +44556,10 @@ class WeakCache {
                     workspace: {}
                 }
 
+                if(this.tmpWorkspace) {
+                    this.currentWorkspace.workspace = this.tmpWorkspace;
+                }
+
                 console.log(this);
 
                 this.set("currentWorkspace", this.currentWorkspace);
@@ -44606,9 +44613,13 @@ class WeakCache {
                     elem.setAttribute("plot-id", env);
                     elem.setAttribute("workspace", JSON.stringify(self.currentWorkspace.workspace[env]));
                     $(self.targetSelector).append(elem);
-                    setTimeout(function() {
-                        elem.loadWorkspace(elem.workspace);
-                    }, 500)
+
+                    // Polymer.Async.animationFrame.run(function() {
+                    //     elem.loadWorkspace(elem.workspace);
+                    // });
+                    // setTimeout(function() {
+                    //     elem.loadWorkspace(elem.workspace);
+                    // }, 500)
                 }
 
                 this.set("tmp_title", "");
@@ -79413,6 +79424,10 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
         }
         self._initializeAddDialog();
         self._initializeGrid();
+
+        if(self.workspace) {
+          self.loadWorkspace(self.workspace);
+        }
       }
 
       _getCurrentGenome() {
@@ -79472,14 +79487,19 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
         let navChildren = Polymer.FlattenedNodesObserver.getFlattenedNodes(
           self.$.chartNav
         ).filter(n => n.nodeType === Node.ELEMENT_NODE);
+
         var numChildren = navChildren.length;
+        
         if (numChildren > 0) {
           self.set("_isEmpty", true);
         }
+        
         for (var index = 0; index < numChildren; index++) {
           var currentChild = navChildren[index];
           currentChild._onResize(e);
         }
+
+        self.saveWorkspace();
       }
 
       _computeToggleText(collapsed) {
