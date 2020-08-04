@@ -82,8 +82,9 @@
                             navChart.dimS = chartNavWorkspaceObj.dims;
                             navChart.chartSettings = chartNavWorkspaceObj.chartSettings;
                             navChart.chartColors = chartNavWorkspaceObj.chartColors;
-
+                            navChart.style.height = chartNavWorkspaceObj.chartHeight;
                             chart.appendChild(navChart);
+                            navChart.chartWidth = chartNavWorkspaceObj.chartWidth;
                         }
                     }
                     else {
@@ -93,7 +94,10 @@
                             chart.dimS = chartWorkspaceObj.dims;
                             chart.chartSettings = chartWorkspaceObj.chartSettings;
                             chart.chartColors = chartWorkspaceObj.chartColors;
+                            chart.style.height = chartWorkspaceObj.chartHeight;
                             self.appendChild(chart);
+                            chart.chartWidth = chartWorkspaceObj.chartWidth;
+                            chart._chartwidthChanged();
                         }
                     }
                 }
@@ -150,7 +154,9 @@
                                 "measurements": currentNavChild.measurements ? currentNavChild.measurements : null,
                                 "dims": currentNavChild.dimS ? currentNavChild.dimS : null,
                                 "chartSettings": currentNavChild.chartSettings,
-                                "chartColors": currentNavChild.chartColors
+                                "chartColors": currentNavChild.chartColors,
+                                "chartHeight": currentNavChild.style.height,
+                                "chartWidth": currentNavChild.chartWidth
                             }
                         }
                     }
@@ -160,7 +166,9 @@
                             "measurements": currentChild.measurements ? currentChild.measurements : null,
                             "dims": currentChild.dimS ? currentChild.dimS : null,
                             "chartSettings": currentChild.chartSettings,
-                            "chartColors": currentChild.chartColors
+                            "chartColors": currentChild.chartColors,
+                            "chartHeight": currentChild.style.height,
+                            "chartWidth": currentChild.chartWidth
                         };
                     }
                     workspaceObj.children[currentChild.plotId] = childObj[currentChild.plotId];

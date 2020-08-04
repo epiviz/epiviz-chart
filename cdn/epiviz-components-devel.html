@@ -44437,6 +44437,12 @@ class WeakCache {
                 self.values = names;
                 self.set("values", names)
                 // this.gene = resp.data[0].gene;
+
+                document.dispatchEvent(new CustomEvent('WorkspacesLoaded',
+                    {
+                        bubbles: true
+                    }
+                ));
             }
 
             _cellTapped(e) {
@@ -44600,7 +44606,9 @@ class WeakCache {
                     elem.setAttribute("plot-id", env);
                     elem.setAttribute("workspace", JSON.stringify(self.currentWorkspace.workspace[env]));
                     $(self.targetSelector).append(elem);
-                    elem.loadWorkspace(elem.workspace);
+                    setTimeout(function() {
+                        elem.loadWorkspace(elem.workspace);
+                    }, 500)
                 }
 
                 this.set("tmp_title", "");
@@ -44675,13 +44683,15 @@ class WeakCache {
 </dom-module>
 
 <script>
-    window.addEventListener('WebComponentsReady', function() {
-        var workspace = getUrlParameter("ws");
-        console.log(workspace);
-        if(workspace) {
-            document.querySelector("epiviz-workspace").loadWorkspace(workspace);
-        }
-    });
+    // window.addEventListener('WebComponentsReady', function() {
+        document.addEventListener('WorkspacesLoaded', function() {
+            var workspace = getUrlParameter("ws");
+            console.log(workspace);
+            if(workspace) {
+                document.querySelector("epiviz-workspace").loadWorkspace(parseInt(workspace));
+            }
+        });
+    // });
 
     function getUrlParameter(sParam) {
         var currPage = decodeURIComponent(window.location.search.substring(1));
@@ -71332,8 +71342,9 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                             navChart.dimS = chartNavWorkspaceObj.dims;
                             navChart.chartSettings = chartNavWorkspaceObj.chartSettings;
                             navChart.chartColors = chartNavWorkspaceObj.chartColors;
-
+                            navChart.style.height = chartNavWorkspaceObj.chartHeight;
                             chart.appendChild(navChart);
+                            navChart.chartWidth = chartNavWorkspaceObj.chartWidth;
                         }
                     }
                     else {
@@ -71343,7 +71354,10 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                             chart.dimS = chartWorkspaceObj.dims;
                             chart.chartSettings = chartWorkspaceObj.chartSettings;
                             chart.chartColors = chartWorkspaceObj.chartColors;
+                            chart.style.height = chartWorkspaceObj.chartHeight;
                             self.appendChild(chart);
+                            chart.chartWidth = chartWorkspaceObj.chartWidth;
+                            chart._chartwidthChanged();
                         }
                     }
                 }
@@ -71400,7 +71414,9 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                                 "measurements": currentNavChild.measurements ? currentNavChild.measurements : null,
                                 "dims": currentNavChild.dimS ? currentNavChild.dimS : null,
                                 "chartSettings": currentNavChild.chartSettings,
-                                "chartColors": currentNavChild.chartColors
+                                "chartColors": currentNavChild.chartColors,
+                                "chartHeight": currentNavChild.style.height,
+                                "chartWidth": currentNavChild.chartWidth
                             }
                         }
                     }
@@ -71410,7 +71426,9 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                             "measurements": currentChild.measurements ? currentChild.measurements : null,
                             "dims": currentChild.dimS ? currentChild.dimS : null,
                             "chartSettings": currentChild.chartSettings,
-                            "chartColors": currentChild.chartColors
+                            "chartColors": currentChild.chartColors,
+                            "chartHeight": currentChild.style.height,
+                            "chartWidth": currentChild.chartWidth
                         };
                     }
                     workspaceObj.children[currentChild.plotId] = childObj[currentChild.plotId];
@@ -71572,6 +71590,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 var columnSpan = this._getColumnSpan(prop);
                 if (columnSpan < 6) {
                     $(this).css("grid-column-start", "span " + (columnSpan + 1));
+                    this.chartWidth = columnSpan + 1;
                     this._onResize();
                 }
             }
@@ -71584,6 +71603,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 var columnSpan = this._getColumnSpan(prop);
                 if (columnSpan > 1) {
                     $(this).css("grid-column-start", "span " + (columnSpan - 1));
+                    this.chartWidth = columnSpan - 1;
                     this._onResize();
                 }
             }
