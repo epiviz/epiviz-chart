@@ -27665,6 +27665,95 @@ window.ShadyCSS&&void 0!==window.ShadyCSS.nativeCss?r=window.ShadyCSS.nativeCss:
 <g id="zoom-out"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14zM7 9h5v1H7z"></path></g>
 </defs></svg>
 </iron-iconset-svg>
+<dom-module id="iron-label" assetpath="bower_components/iron-label/">
+  <script>
+    Polymer.IronLabel = Polymer({
+      is: 'iron-label',
+
+      listeners: {
+        'tap': '_tapHandler'
+      },
+
+      properties: {
+        /**
+          * An ID reference to another element that needs to be
+          * labelled by this `iron-label` element.
+          */
+        for: {
+          type: String,
+          value: '',
+          reflectToAttribute: true,
+          observer: '_forChanged'
+        },
+        /**
+         * @type {Element}
+         */
+        _forElement: Object
+      },
+
+      attached: function() {
+        this._forChanged();
+      },
+
+      ready: function() {
+        this._generateLabelId();
+      },
+
+      // generate a unique id for this element
+      _generateLabelId: function() {
+        if (!this.id) {
+          var id = 'iron-label-' + Polymer.IronLabel._labelNumber++;
+          Polymer.dom(this).setAttribute('id', id);
+        }
+      },
+
+      _findTarget: function() {
+        if (this.for) {
+          // external target
+          var scope = Polymer.dom(this).getOwnerRoot();
+          return Polymer.dom(scope).querySelector('#' + this.for);
+        } else {
+          // explicit internal target
+          var el = Polymer.dom(this).querySelector('[iron-label-target]');
+          if (!el) {
+            // implicit internal target
+            el = Polymer.dom(this).firstElementChild;
+          }
+          return el;
+        }
+      },
+
+      _tapHandler: function(ev) {
+        if (!this._forElement) {
+          return;
+        }
+        var target = Polymer.dom(ev).localTarget;
+        if (target === this._forElement) {
+          return;
+        }
+        this._forElement.focus();
+        this._forElement.click();
+      },
+
+      _applyLabelledBy: function() {
+        if (this._forElement) {
+          Polymer.dom(this._forElement).setAttribute('aria-labelledby', this.id);
+        }
+      },
+
+      _forChanged: function() {
+        if (this._forElement) {
+          Polymer.dom(this._forElement).removeAttribute('aria-labelledby');
+        }
+        this._forElement = this._findTarget();
+        this._applyLabelledBy();
+      }
+    });
+
+    // global counter for unique label ids
+    Polymer.IronLabel._labelNumber = 0;
+  </script>
+</dom-module>
 <script>
   (function() {
   'use strict';
@@ -38520,6 +38609,1142 @@ Polymer({
 
   });
 </script>
+<dom-module id="iron-autogrow-textarea" assetpath="bower_components/iron-autogrow-textarea/">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+        position: relative;
+        width: 400px;
+        border: 1px solid;
+        padding: 2px;
+        -moz-appearance: textarea;
+        -webkit-appearance: textarea;
+        overflow: hidden;
+      }
+
+      .mirror-text {
+        visibility: hidden;
+        word-wrap: break-word;
+        @apply --iron-autogrow-textarea;
+      }
+
+      .fit {
+        @apply --layout-fit;
+      }
+
+      textarea {
+        position: relative;
+        outline: none;
+        border: none;
+        resize: none;
+        background: inherit;
+        color: inherit;
+        /* see comments in template */
+        width: 100%;
+        height: 100%;
+        font-size: inherit;
+        font-family: inherit;
+        line-height: inherit;
+        text-align: inherit;
+        @apply --iron-autogrow-textarea;
+      }
+
+      textarea::-webkit-input-placeholder {
+        @apply --iron-autogrow-textarea-placeholder;
+      }
+
+      textarea:-moz-placeholder {
+        @apply --iron-autogrow-textarea-placeholder;
+      }
+
+      textarea::-moz-placeholder {
+        @apply --iron-autogrow-textarea-placeholder;
+      }
+
+      textarea:-ms-input-placeholder {
+        @apply --iron-autogrow-textarea-placeholder;
+      }
+    </style>
+
+    <div id="mirror" class="mirror-text" aria-hidden="true">&nbsp;</div>
+
+    <div class="textarea-container fit">
+      <textarea id="textarea" name$="[[name]]" aria-label$="[[label]]" autocomplete$="[[autocomplete]]" autofocus$="[[autofocus]]" inputmode$="[[inputmode]]" placeholder$="[[placeholder]]" readonly$="[[readonly]]" required$="[[required]]" disabled$="[[disabled]]" rows$="[[rows]]" minlength$="[[minlength]]" maxlength$="[[maxlength]]"></textarea>
+    </div>
+  </template>
+</dom-module>
+
+<script>
+
+  Polymer({
+
+    is: 'iron-autogrow-textarea',
+
+    behaviors: [
+      Polymer.IronValidatableBehavior,
+      Polymer.IronControlState
+    ],
+
+    properties: {
+      /**
+       * Use this property instead of `bind-value` for two-way data binding.
+       * @type {string|number}
+       */
+      value: {
+        observer: '_valueChanged',
+        type: String,
+        notify: true
+      },
+
+      /**
+       * This property is deprecated, and just mirrors `value`. Use `value` instead.
+       * @type {string|number}
+       */
+      bindValue: {
+        observer: '_bindValueChanged',
+        type: String,
+        notify: true
+      },
+
+      /**
+       * The initial number of rows.
+       *
+       * @attribute rows
+       * @type number
+       * @default 1
+       */
+      rows: {
+        type: Number,
+        value: 1,
+        observer: '_updateCached'
+      },
+
+      /**
+       * The maximum number of rows this element can grow to until it
+       * scrolls. 0 means no maximum.
+       *
+       * @attribute maxRows
+       * @type number
+       * @default 0
+       */
+      maxRows: {
+       type: Number,
+       value: 0,
+       observer: '_updateCached'
+      },
+
+      /**
+       * Bound to the textarea's `autocomplete` attribute.
+       */
+      autocomplete: {
+        type: String,
+        value: 'off'
+      },
+
+      /**
+       * Bound to the textarea's `autofocus` attribute.
+       */
+      autofocus: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * Bound to the textarea's `inputmode` attribute.
+       */
+      inputmode: {
+        type: String
+      },
+
+      /**
+       * Bound to the textarea's `placeholder` attribute.
+       */
+      placeholder: {
+        type: String
+      },
+
+      /**
+       * Bound to the textarea's `readonly` attribute.
+       */
+      readonly: {
+        type: String
+      },
+
+      /**
+       * Set to true to mark the textarea as required.
+       */
+      required: {
+        type: Boolean
+      },
+
+      /**
+       * The minimum length of the input value.
+       */
+      minlength: {
+        type: Number
+      },
+
+      /**
+       * The maximum length of the input value.
+       */
+      maxlength: {
+        type: Number
+      },
+
+      /**
+       * Bound to the textarea's `aria-label` attribute.
+       */
+      label: {
+        type: String
+      }
+
+    },
+
+    listeners: {
+      'input': '_onInput'
+    },
+
+    /**
+     * Returns the underlying textarea.
+     * @return {!HTMLTextAreaElement}
+     */
+    get textarea() {
+      return this.$.textarea;
+    },
+
+    /**
+     * Returns textarea's selection start.
+     * @return {number}
+     */
+    get selectionStart() {
+      return this.$.textarea.selectionStart;
+    },
+
+    /**
+     * Returns textarea's selection end.
+     * @return {number}
+     */
+    get selectionEnd() {
+      return this.$.textarea.selectionEnd;
+    },
+
+    /**
+     * Sets the textarea's selection start.
+     */
+    set selectionStart(value) {
+      this.$.textarea.selectionStart = value;
+    },
+
+    /**
+     * Sets the textarea's selection end.
+     */
+    set selectionEnd(value) {
+      this.$.textarea.selectionEnd = value;
+    },
+
+    attached: function() {
+      /* iOS has an arbitrary left margin of 3px that isn't present
+       * in any other browser, and means that the paper-textarea's cursor
+       * overlaps the label.
+       * See https://github.com/PolymerElements/paper-input/issues/468.
+       */
+      var IS_IOS = navigator.userAgent.match(/iP(?:[oa]d|hone)/);
+      if (IS_IOS) {
+        this.$.textarea.style.marginLeft = '-3px';
+      }
+    },
+
+    /**
+     * Returns true if `value` is valid. The validator provided in `validator`
+     * will be used first, if it exists; otherwise, the `textarea`'s validity
+     * is used.
+     * @return {boolean} True if the value is valid.
+     */
+    validate: function() {
+      // Use the nested input's native validity.
+      var valid =  this.$.textarea.validity.valid;
+
+      // Only do extra checking if the browser thought this was valid.
+      if (valid) {
+        // Empty, required input is invalid
+        if (this.required && this.value === '') {
+          valid = false;
+        } else if (this.hasValidator()) {
+          valid = Polymer.IronValidatableBehavior.validate.call(this, this.value);
+        }
+      }
+
+      this.invalid = !valid;
+      this.fire('iron-input-validate');
+      return valid;
+    },
+
+    _bindValueChanged: function(bindValue) {
+      this.value = bindValue;
+    },
+
+    _valueChanged: function(value) {
+      var textarea = this.textarea;
+      if (!textarea) {
+        return;
+      }
+
+      // If the bindValue changed manually, then we need to also update
+      // the underlying textarea's value. Otherwise this change was probably
+      // generated from the _onInput handler, and the two values are already
+      // the same.
+      if (textarea.value !== value) {
+        textarea.value = !(value || value === 0) ? '' : value;
+      }
+
+      this.bindValue = value;
+      this.$.mirror.innerHTML = this._valueForMirror();
+
+      // Manually notify because we don't want to notify until after setting value.
+      this.fire('bind-value-changed', {value: this.bindValue});
+    },
+
+    _onInput: function(event) {
+      var eventPath = Polymer.dom(event).path;
+      this.value = eventPath ? eventPath[0].value : event.target.value;
+    },
+
+    _constrain: function(tokens) {
+      var _tokens;
+      tokens = tokens || [''];
+      // Enforce the min and max heights for a multiline input to avoid measurement
+      if (this.maxRows > 0 && tokens.length > this.maxRows) {
+        _tokens = tokens.slice(0, this.maxRows);
+      } else {
+        _tokens = tokens.slice(0);
+      }
+      while (this.rows > 0 && _tokens.length < this.rows) {
+        _tokens.push('');
+      }
+      // Use &#160; instead &nbsp; of to allow this element to be used in XHTML.
+      return _tokens.join('<br/>') + '&#160;';
+    },
+
+    _valueForMirror: function() {
+      var input = this.textarea;
+      if (!input) {
+        return;
+      }
+      this.tokens = (input && input.value) ? input.value.replace(/&/gm, '&amp;').replace(/"/gm, '&quot;').replace(/'/gm, '&#39;').replace(/</gm, '&lt;').replace(/>/gm, '&gt;').split('\n') : [''];
+      return this._constrain(this.tokens);
+    },
+
+    _updateCached: function() {
+      this.$.mirror.innerHTML = this._constrain(this.tokens);
+    },
+  });
+</script>
+<dom-module id="paper-textarea" assetpath="bower_components/paper-input/">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      :host([hidden]) {
+        display: none !important;
+      }
+
+      label {
+        pointer-events: none;
+      }
+    </style>
+
+    <paper-input-container no-label-float$="[[noLabelFloat]]" always-float-label="[[_computeAlwaysFloatLabel(alwaysFloatLabel,placeholder)]]" auto-validate$="[[autoValidate]]" disabled$="[[disabled]]" invalid="[[invalid]]">
+
+      <label hidden$="[[!label]]" aria-hidden="true" for$="[[_inputId]]" slot="label">[[label]]</label>
+
+      <iron-autogrow-textarea class="paper-input-input" slot="input" id$="[[_inputId]]" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]" bind-value="{{value}}" invalid="{{invalid}}" validator$="[[validator]]" disabled$="[[disabled]]" autocomplete$="[[autocomplete]]" autofocus$="[[autofocus]]" inputmode$="[[inputmode]]" name$="[[name]]" placeholder$="[[placeholder]]" readonly$="[[readonly]]" required$="[[required]]" minlength$="[[minlength]]" maxlength$="[[maxlength]]" autocapitalize$="[[autocapitalize]]" rows$="[[rows]]" max-rows$="[[maxRows]]" on-change="_onChange"></iron-autogrow-textarea>
+
+      <template is="dom-if" if="[[errorMessage]]">
+        <paper-input-error aria-live="assertive" slot="add-on">[[errorMessage]]</paper-input-error>
+      </template>
+
+      <template is="dom-if" if="[[charCounter]]">
+        <paper-input-char-counter slot="add-on"></paper-input-char-counter>
+      </template>
+
+    </paper-input-container>
+  </template>
+</dom-module>
+
+<script>
+  Polymer({
+    is: 'paper-textarea',
+
+    behaviors: [
+      Polymer.PaperInputBehavior,
+      Polymer.IronFormElementBehavior,
+    ],
+
+    properties: {
+      _ariaLabelledBy: {
+        observer: '_ariaLabelledByChanged',
+        type: String,
+      },
+
+      _ariaDescribedBy: {
+        observer: '_ariaDescribedByChanged',
+        type: String,
+      },
+
+      /**
+       * The initial number of rows.
+       *
+       * @attribute rows
+       * @type number
+       * @default 1
+       */
+      rows: {
+        type: Number,
+        value: 1,
+      },
+
+      /**
+       * The maximum number of rows this element can grow to until it
+       * scrolls. 0 means no maximum.
+       *
+       * @attribute maxRows
+       * @type number
+       * @default 0
+       */
+      maxRows: {
+        type: Number,
+        value: 0,
+      },
+    },
+
+    /**
+     * @return {number}
+     */
+    get selectionStart() {
+      return this.$.input.textarea.selectionStart;
+    },
+    set selectionStart(start) {
+      this.$.input.textarea.selectionStart = start;
+    },
+
+    /**
+     * @return {number}
+     */
+    get selectionEnd() {
+      return this.$.input.textarea.selectionEnd;
+    },
+    set selectionEnd(end) {
+      this.$.input.textarea.selectionEnd = end;
+    },
+
+    _ariaLabelledByChanged: function(ariaLabelledBy) {
+      this._focusableElement.setAttribute('aria-labelledby', ariaLabelledBy);
+    },
+
+    _ariaDescribedByChanged: function(ariaDescribedBy) {
+      this._focusableElement.setAttribute('aria-describedby', ariaDescribedBy);
+    },
+
+    get _focusableElement() {
+      return this.inputElement.textarea;
+    },
+  });
+</script>
+<dom-module id="paper-badge" assetpath="bower_components/paper-badge/">
+  <template>
+    <style>
+      :host {
+        display: block;
+        position: absolute;
+        outline: none;
+      }
+
+      :host([hidden]), [hidden] {
+        display: none !important;
+      }
+
+      iron-icon {
+        --iron-icon-width: 12px;
+        --iron-icon-height: 12px;
+      }
+
+      .badge {
+        @apply --layout;
+        @apply --layout-center-center;
+        @apply --paper-font-common-base;
+
+        font-weight: normal;
+        font-size: 11px;
+        border-radius: 50%;
+        margin-left: var(--paper-badge-margin-left, 0px);
+        margin-bottom: var(--paper-badge-margin-bottom, 0px);
+        width: var(--paper-badge-width, 20px);
+        height: var(--paper-badge-height, 20px);
+        background-color: var(--paper-badge-background, var(--accent-color));
+        opacity: var(--paper-badge-opacity, 1.0);
+        color: var(--paper-badge-text-color, white);
+
+        @apply --paper-badge;
+      }
+    </style>
+
+    <div class="badge">
+      <iron-icon hidden$="{{!_computeIsIconBadge(icon)}}" icon="{{icon}}"></iron-icon>
+      <span id="badge-text" hidden$="{{_computeIsIconBadge(icon)}}">{{label}}</span>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'paper-badge',
+
+      /** @private */
+      hostAttributes: {
+        role: 'status',
+        tabindex: 0
+      },
+
+      behaviors: [
+        Polymer.IronResizableBehavior
+      ],
+
+      listeners: {
+        'iron-resize': 'updatePosition'
+      },
+
+      properties: {
+        /**
+         * The id of the element that the badge is anchored to. This element
+         * must be a sibling of the badge.
+         */
+        for: {
+          type: String,
+          observer: '_forChanged'
+        },
+
+        /**
+         * The label displayed in the badge. The label is centered, and ideally
+         * should have very few characters.
+         */
+        label: {
+          type: String,
+          observer: '_labelChanged'
+        },
+
+        /**
+         * An iron-icon ID. When given, the badge content will use an
+         * `<iron-icon>` element displaying the given icon ID rather than the
+         * label text. However, the label text will still be used for
+         * accessibility purposes.
+         */
+        icon: {
+          type: String,
+          value: ''
+        },
+
+        _boundNotifyResize: {
+          type: Function,
+          value: function() {
+            return this.notifyResize.bind(this);
+          }
+        },
+
+        _boundUpdateTarget: {
+          type: Function,
+          value: function() {
+            return this._updateTarget.bind(this);
+          }
+        }
+      },
+
+      attached: function() {
+        // Polymer 2.x does not have this.offsetParent defined by attached
+        requestAnimationFrame(this._boundUpdateTarget);
+      },
+
+      attributeChanged: function (name) {
+        if (name === 'hidden') {
+          this.updatePosition();
+        }
+      },
+
+      _forChanged: function() {
+        // The first time the property is set is before the badge is attached,
+        // which means we're not ready to position it yet.
+        if (!this.isAttached) {
+          return;
+        }
+        this._updateTarget();
+      },
+
+      _labelChanged: function() {
+        this.setAttribute('aria-label', this.label);
+      },
+
+      _updateTarget: function() {
+        this._target = this.target;
+        requestAnimationFrame(this._boundNotifyResize);
+      },
+
+      _computeIsIconBadge: function(icon) {
+        return icon.length > 0;
+      },
+
+      /**
+       * Returns the target element that this badge is anchored to. It is
+       * either the element given by the `for` attribute, or the immediate parent
+       * of the badge.
+       */
+      get target () {
+        var parentNode = Polymer.dom(this).parentNode;
+        // If the parentNode is a document fragment, then we need to use the host.
+        var ownerRoot = Polymer.dom(this).getOwnerRoot();
+        var target;
+
+        if (this.for) {
+          target = Polymer.dom(ownerRoot).querySelector('#' + this.for);
+        } else {
+          target = parentNode.nodeType == Node.DOCUMENT_FRAGMENT_NODE ?
+              ownerRoot.host : parentNode;
+        }
+
+        return target;
+      },
+
+      /**
+       * Repositions the badge relative to its anchor element. This is called
+       * automatically when the badge is attached or an `iron-resize` event is
+       * fired (for exmaple if the window has resized, or your target is a
+       * custom element that implements IronResizableBehavior).
+       *
+       * You should call this in all other cases when the achor's position
+       * might have changed (for example, if it's visibility has changed, or
+       * you've manually done a page re-layout).
+       */
+      updatePosition: function() {
+        if (!this._target || !this.offsetParent) {
+          return;
+        }
+
+        var parentRect = this.offsetParent.getBoundingClientRect();
+        var targetRect = this._target.getBoundingClientRect();
+        var thisRect = this.getBoundingClientRect();
+
+        this.style.left = targetRect.left - parentRect.left +
+            (targetRect.width - thisRect.width / 2) + 'px';
+        this.style.top = targetRect.top - parentRect.top -
+            (thisRect.height / 2) + 'px';
+      }
+    })
+  </script>
+</dom-module>
+<script>
+/**
+ * `Polymer.ValueArrayFirebaseMixin` ensures the binding between array values and firebase objects.
+ *
+ * @demo demo/index.html
+ */
+
+ValueArrayFirebaseMixin = function(superClass) {
+	return class extends superClass {
+	    static get properties() {
+			return  {
+			    /**
+			     * `valueObject` store value as object keys `{"value1": true, "value2": true}`
+			     */
+			    valueObject: {
+			      type: Object,
+			      notify: true
+			    },
+			
+			    /**
+			     * `valueArray` store value as array `["value1", "value2"]`
+			     */
+			    valueArray: {
+			      type: Array,
+			      notify: true
+			    },
+			
+			    /**
+			     * `valueJoin` joins values in a string
+			     */
+			    valueJoin: {
+			      type: String,
+			      notify: true,
+			      readOnly: true,
+			    }
+			  }
+	    }
+	    static get observers() {
+		     return [
+			  '_observeValueObject(valueObject.*)',
+			  '_observeValueArrayInit(valueArray)',
+			  '_observeValueArray(valueArray.splices)',
+			]
+		}
+		//called when we set/reset valueArray 
+		_observeValueArrayInit(valueArray) {
+		  this._isInitiatingValueArray = true;
+		  if (valueArray && !this._isUpdatingValueObject) {
+		    var o = {};
+		    this.valueArray.forEach(function(item) {
+		      o[item] = true;
+		    });
+		    this.set('valueObject', o);
+		    this._setValueJoin(this.valueArray.join(', '));
+		  }
+		  delete this._isInitiatingValueArray;
+		}
+
+		/**
+		 * `_observeValueArray` ensures valueArray and valueObject are in sync
+		 */
+		_observeValueArray(splices) {
+		  if (!splices) {
+		    return;
+		  }
+		  this._isUpdatingValueArray = true;
+		  // console.log('ARRAY SPLICE', splices);
+		  if (!this._isUpdatingValueObject) {
+		    splices.indexSplices.forEach(function(splice) {
+		      splice.removed.forEach(function(removed) {
+		        this.set('valueObject.' + removed, null); // so that it is deleted at firebase level
+		        this.dispatchEvent(new CustomEvent("tag-removed",{bubbles: true, composed: true,detail: removed}));
+		      }, this);
+		      if (splice.addedCount) {
+		        for (var i = 0; i < splice.addedCount; i++) {
+		          var index = splice.index + i;
+		          var newValue = splice.object[index];
+		          this.set('valueObject.' + newValue, true);
+		          this.dispatchEvent(new CustomEvent("tag-added",{bubbles: true, composed: true,detail: newValue}));
+		        }
+		      }
+		    }, this);
+		
+		    this._setValueJoin((this.valueArray || []).join(', '));
+		  }
+		  delete this._isUpdatingValueArray;
+		}
+		
+		/**
+		 * `_observeValueObject` ensures valueArray and valueObject are in sync
+		 */
+		_observeValueObject(obj) {
+		  this._isUpdatingValueObject = true;
+		  if (!this._isUpdatingValueArray && !this._isInitiatingValueArray) {
+		    var keys = Object.keys(this.valueObject).filter(function(item) {
+		      return !!item;
+		    });
+		    this.syncValueArrayWithKeys(keys);
+		
+		    this._setValueJoin(this.valueArray.join(', '));
+		  }
+		  delete this._isUpdatingValueObject;
+		}
+		
+		syncValueArrayWithKeys(keys) {
+		  if (!this.valueArray) {
+		    this.valueArray = [];
+		  }
+		  // removed values not present in keys
+		  var tmpArray = [].concat(this.valueArray);
+		  tmpArray.forEach(function(v) {
+		    if (keys.indexOf(v) < 0) {
+		      this.splice('valueArray', this.valueArray.indexOf(v), 1);
+		    }
+		  }, this);
+		  // add all missing keys
+		  keys.forEach(function(k) {
+		    if (this.valueArray.indexOf(k) < 0) {
+		      this.push('valueArray', k);
+		    }
+		  }, this);
+		}
+	}
+};
+</script>
+<script>
+/**
+ * `Polymer.PaperTagsMixin` defines recurent properties in paper-tags family (paper-tags, paper-tags-input, paper-tags-dropdown)
+ *
+ * @demo demo/index.html
+ */
+PaperTagsMixin = function(superClass) {
+	return class extends ValueArrayFirebaseMixin(superClass) {
+	    static get properties() {
+			return  {
+			    /**
+			     * `itemClass` the class applied to tag items.  If `classAccessor` is defined, `classAccessor` will have precedence
+			     */
+			    itemClass: String,
+			
+			    /**
+			     * `icon` icon to be applied to the tag item when it is not removable. If `iconAccessor` is defined, `iconAccessor` will have precedence
+			     */
+			    icon: String,
+			
+			    /**
+			     * `keyPath` key for retrieving the `id` from item data object
+			     */
+			    keyPath: {
+			      type: String,
+			      value: 'id'
+			    },
+			    
+			    /**
+			     * `labelPath` key for retrieving the `label` from item data object
+			     */
+			    labelPath: {
+			      type: String,
+			      value: 'label'
+			    },
+			    
+			    /**
+			     * `classAccessor` key for retrieving the `class` from item data object
+			     */
+			    classAccessor: String,
+			    
+			    /**
+			     * `iconAccessor` key for retrieving the `icon` from item data object
+			     */
+			    iconAccessor: String,
+			
+			    /**
+			     * `preventRemoveTag` hide the `close` icon and prevent removing a tag when true. 
+			     */
+			    preventRemoveTag: {
+			      type: Boolean,
+			      value: false
+			    }
+			  }
+		}
+	}
+}
+</script>
+<dom-module id="paper-tags" assetpath="bower_components/paper-tags/">
+
+  <template>
+  <style>
+  [hidden] {
+    display: none !important;
+  }
+
+  :host {
+    display: block;
+    @apply --paper-font-common-base;
+    @apply --paper-tags;
+  }
+  
+  div.paper-tag-item {
+    margin-bottom: var(--paper-tag-margin, 3px);
+    border: 1px solid var(--paper-tag-focus-color, var(--default-primary-color));
+    font-size: 13px;
+    color: var(--paper-tag-text-color, var(--secondary-text-color));
+    border-radius: 4px;
+    @apply --paper-tag-item;
+  }
+  
+  .paper-tag-item:last-of-type {
+    margin-right: var(--paper-tag-margin, 3px);
+  }
+  
+  paper-icon-button {
+    color: var(--paper-tag-focus-color,var(--default-primary-color));
+    width: 20px;
+    height: 20px;
+    padding: 0;
+  }
+  
+  .paper-tag-item-label {
+    padding: var(--paper-tag-margin, 3px);
+  }
+  
+  .paper-tag-item {
+    display: inline-block;
+  }
+  </style>
+    <template is="dom-repeat" id="tagRepeat" items="[[items]]" mutable-data="">
+      <div class$="paper-tag-item [[_computeClass(item, classAccessor)]]">
+        <span class="paper-tag-item-label">[[_computeLabel(item, labelPath)]]</span>
+        <paper-icon-button icon="icons:close" hidden$="[[preventRemoveTag]]" on-tap="_removeTag"></paper-icon-button>
+        <paper-icon-button icon="[[_computeIcon(item, iconAccessor)]]" hidden$="[[_isHidden(preventRemoveTag, iconAccessor)]]"></paper-icon-button>
+      </div>
+    </template>
+  </template>
+</dom-module>
+<script>
+class PaperTags extends Polymer.MutableData(PaperTagsMixin(Polymer.Element)) {
+	static get is() {
+	    return 'paper-tags'
+	}
+	static get properties() {
+	    return {
+		    /**
+		     * `items` the Array of tags
+		     */
+		    items: {
+		      type: Array,
+		      notify: true,
+		      value: function() {
+		        return [];
+		      }
+		    }
+  		}
+	}
+	
+	_computeIcon(item, iconAccessor) {
+	  return item[iconAccessor] || this.icon;
+	}
+	
+	_computeClass(item, classAccessor) {
+	  return item[classAccessor] || this.itemClass;
+	}
+	
+	_computeLabel(item, labelPath) {
+	  return item[labelPath] || item;
+	}
+	
+	_isHidden(preventRemoveTag, iconAccessor) {
+		if (!preventRemoveTag) {
+			return true;
+		} else if (preventRemoveTag && iconAccessor) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	_removeTag(event) {
+	  var self = this;
+	  if (this.readonly) {
+	    return;
+	  }
+	  event.detail.isRemoved = true;
+	  var model = event.model,
+	    index = this.items.indexOf(model.item);
+	
+	  if (index > -1) {
+	    event.stopPropagation();
+	    var remove_func = function() {
+		      self.splice('items', index, 1);
+	    };
+	    this._paper_tag_remove_item = Polymer.Debouncer.debounce(
+	       this._paper_tag_remove_item, // initially undefined
+	       Polymer.Async.timeOut.after(10),remove_func);
+	    // this.items = this.items.slice();
+	    // this.fire('tag-removed', model.item);
+	  }
+	}
+};
+customElements.define(PaperTags.is, PaperTags);
+
+</script>
+<dom-module id="paper-tags-input" assetpath="bower_components/paper-tags/">
+  <template>
+    <style>
+    :host {
+      display: block;
+      --paper-tag-margin: 3px;
+    }
+
+    paper-input {
+      --paper-input-container-input: {
+        margin-bottom: var(--paper-tag-margin);
+      }
+    }
+
+    paper-tags {
+    }
+
+    paper-tags[readonly] {
+      opacity: 0.6;
+    }
+
+    paper-badge {
+      display: inline-block;
+      position: inherit;
+    }
+
+    .paper-tags-counter {
+      display: inline-block;
+    }
+    </style>
+    <paper-input id="tagInput" always-float-label="" on-keydown="_keyDown" readonly$="[[readonly]]" placeholder$="[[placeholder]]" disabled$="[[disabled]]" invalid="[[invalid]]" label="[[label]]" value="{{value}}" maxlength$="[[maxlength]]" error-message="[[errorMessage]]" minlength$="[[minlength]]">
+      <slot name="[prefix]" slot="prefix"></slot>
+      <paper-tags id="paperTags" readonly$="[[readonly]]" items="{{items}}" icon="[[icon]]" item-class="[[itemClass]]" class-accessor="[[classAccessor]]" label-path="[[labelPath]]" icon-accessor="[[iconAccessor]]" prevent-remove-tag="[[preventRemoveTag]]" slot="prefix"></paper-tags>
+      <slot name="[suffix]" slot="suffix"></slot>
+    </paper-input>
+    <template is="dom-if" if="{{showCounter}}">
+      <div class="paper-tags-counter">
+        <paper-badge class="paper-tags-badge" label="[[items.length]]"></paper-badge> [[showCounter]]
+      </div>
+    </template>
+  </template>
+</dom-module>
+<script>
+class PaperTagsInput extends PaperTagsMixin(Polymer.Element) {
+	static get is() {
+	    return 'paper-tags-input'
+	}
+	static get properties() {
+	    return {
+		    /**
+		     * `preventRemoveTag` hide the `close` icon and prevent removing a tag when true.
+		     */
+		    preventRemoveTag: {
+		      type: Boolean,
+		      value: false
+		    },
+
+		    /**
+		     * `items` the Array of tags
+		     */
+		    items: {
+		      type: Array,
+		      notify: true
+		    },
+		    /**
+		     * `delimiter` defaults to comma (,)
+		     */
+		    delimiter: {
+		      type: String,
+		      value: ','
+		    },
+		    /**
+		     * `showCounter` display a paper-badge with `showCounter` as textContent
+		     */
+		    showCounter: String,
+
+		    /**
+		     * `maxTags` The maximum allowed number of tags (yet to be implemented)
+		     */
+		    maxTags: Number,
+
+		    /**
+		     * `minTags` The minimum allowed number of tags (yet to be implemented)
+		     */
+		    minTags: Number,
+
+		    /**
+		     * `tagTpl` a template Object used when creating new tags. If not defuned, new tags will jus be Strings
+		     */
+		    tagTpl: Object,
+
+		    /**
+		     * `value` the underlying paper-input value
+		     */
+		    value: {
+		      type: String,
+		      notify: true
+		    },
+
+		    /**
+		     * `allowAdd` determines if new tags are allowed on pressing `Enter` or not.
+		     */
+		    allowAdd: {
+		      type: Boolean,
+		      value: true
+		    }
+	  }
+	}
+	static get observers() {
+    	return [
+		  '_observeTagItemsInit(items)',
+		  '_observeTagItems(items.splices)'
+		]
+	}
+
+	_observeTagItemsInit(items) {
+	  if(items && !this.valueArray) {
+	    this._observeTagItems(items)
+
+	  }
+
+	}
+	_observeTagItems(splices) {
+	  if(!splices) {
+	    return
+	  }
+	  var keys = [];
+	  this._isUpdatingingItems = true;
+	  this.items.forEach(function(item) {
+	    var id = item[this.keyPath] || item;
+	    keys.push(id + '');
+	  }, this);
+
+	  this.syncValueArrayWithKeys(keys)
+
+	  delete this._isUpdatingingItems;
+	}
+
+	_removeLast() {
+    	this.splice('items', this.items.length - 1);
+	}
+
+  	removeAll () {
+    	this.splice("items", 0);
+  	}
+
+
+    removeAll() {
+        this.splice("items", 0);
+    }
+
+    removeTag (tag) {
+    	var position = this.items.indexOf(tag);
+    	if(position > -1) {
+      		this.splice('items', position, 1 );
+    	}
+  	}
+
+	findTag(tag) {
+	  return this.items.includes(tag);
+	}
+
+	_addTag(tag) {
+	  if (this.tagTpl) {
+	    var id = tag;
+	    tag = JSON.parse(JSON.stringify(this.tagTpl));
+	    tag[this.keyPath] = id + '';
+	    if (this.labelPath) {
+	      tag[this.labelPath] = id;
+	    }
+	  }
+	  this.push('items', tag);
+	  this.items = this.items.slice();
+	  // this.fire('tag-added', tag);
+	}
+
+	_keyDown(event) {
+	  var keyVal = event.which;
+	  if (keyVal === 13 && this.allowAdd) {
+	    var tags = event.target.value.split(this.delimiter);
+	    var me = this;
+
+	    tags.forEach(function(tag) {
+	     if (!me.findTag(tag)) {
+	        me._addTag(tag);
+	        event.target.value = '';
+	      }
+	    });
+
+	  } else if (keyVal === 8 && event.target.value === '') {
+	    this._removeLast();
+	  }
+	}
+	/**
+	 * Returns a reference to the focusable element.
+	 */
+	get_focusableElement() {
+	  return this.$.tagInput.inputElement;
+	}
+
+};
+customElements.define(PaperTagsInput.is, PaperTagsInput);
+</script>
 <script>var Whenever = function(){
 	var callbacks = [];
 	var ready = false;
@@ -44213,6 +45438,30 @@ class WeakCache {
 	</script>
 
 </dom-module>
+<script>
+    // window.addEventListener('WebComponentsReady', function() {
+        document.addEventListener('WorkspacesReady', function() {
+            var workspace = getUrlParameter("ws");
+            console.log(workspace);
+            if(workspace) {
+                document.querySelector("epiviz-workspace").loadWorkspace(parseInt(workspace));
+            }
+        });
+    // });
+
+    function getUrlParameter(sParam) {
+        var currPage = decodeURIComponent(window.location.search.substring(1));
+        var pageVars = currPage.split('&');
+
+        for (var i = 0; i < pageVars.length; i++) {
+            var pageParamName = pageVars[i].split('=');
+
+            if (pageParamName[0] === sParam) {
+                return pageParamName[1] === undefined ? true : pageParamName[1];
+            }
+        }
+    };
+</script>
 <dom-module id="epiviz-workspace" assetpath="bower_components/epiviz-workspace/">
 
     <template>
@@ -44236,19 +45485,18 @@ class WeakCache {
                 float: right;
             }
 
-            .buttons {
+            /* .buttons {
                 padding: 0px;
-            }
-
-            .sign-out iron-icon {
-                color: blue;
-            }
+            } */
         </style>
 
-        <iron-ajax id="getws" auto="" method="GET" url="[[api]]" handle-as="json" on-response="handleResponse" debounce-duration="300">
+        <iron-ajax id="getallws" method="GET" url="[[api]]" handle-as="json" on-response="handleResponse" debounce-duration="300">
         </iron-ajax>
 
         <iron-ajax id="createws" method="POST" url="[[api]]" content-type="application/json" handle-as="json" on-response="handleCreateResponse" debounce-duration="300">
+        </iron-ajax>
+
+        <iron-ajax id="getws" method="GET" content-type="application/json" handle-as="json" on-response="handleGetResponse" debounce-duration="300">
         </iron-ajax>
 
         <iron-ajax id="updatews" method="PUT" content-type="application/json" url="[[_getUpdateURL(currentWorkspace)]]" handle-as="json" on-response="handleUpdateResponse" debounce-duration="300">
@@ -44270,28 +45518,51 @@ class WeakCache {
                     <paper-item on-tap="_loadWorkspace">Manage Workspaces</paper-item>
                     </paper-listbox>
             </paper-menu-button>
-            <paper-dialog id="createWorkspace">
-                <paper-input value="{{tmp_title}}" label="Workspace Name"></paper-input>
+            <paper-dialog id="createWorkspace" modal="">
+                <h2>Create new workspace</h2>
+                <paper-dialog-scrollable>
+                    <paper-input value="{{tmp_title}}" label="Workspace Name"></paper-input>
+                    <paper-textarea value="{{tmp_description}}" label="Description"></paper-textarea>
+                    <iron-label>Genome</iron-label>
+                    <paper-tags-input label="Genome" items="{{tmp_genome}}"></paper-tags-input>
+                    <iron-label>Tags</iron-label>
+                    <paper-tags-input label="Tags" items="{{tmp_tags}}"></paper-tags-input>                
+                </paper-dialog-scrollable>
                 <div class="buttons">
-                    <paper-button on-tap="onCreateWorkspace" dialog-dismiss="">Create</paper-button>
+                    <paper-button dialog-dismiss="">Close</paper-button>
+                    <paper-button on-tap="onCreateWorkspace" dialog-confirm="" autofocus="">Create</paper-button>
                 </div>
             </paper-dialog>
 
-            <paper-dialog id="loadWorkspace">
+            <paper-dialog id="loadWorkspace" modal="">
+                <h2>Manage workspaces</h2>
                 <paper-dialog-scrollable>
-                    <paper-datatable id="loadTable" on-selection-changed="_selectionChanged" on-row-tapped="_rowTapped" on-cell-tap="_cellTapped" data="{{values}}" selected-item="{{tmp_title}}" selectable="">
-                        <paper-datatable-column header="Workspaces" property="title" sortable="">
+                    <paper-datatable id="loadTable" on-selection-changed="_selectionChanged" on-cell-tap="_cellTapped" data="{{values}}" selected-item="{{tmp_title}}">
+                        <paper-datatable-column header="Workspaces" property="title">
+                        </paper-datatable-column>
+                        <paper-datatable-column header="description" property="description">
+                        </paper-datatable-column>
+                        <paper-datatable-column header="genomes" property="genomes">
+                            <template>
+                                <paper-tags prevent-remove-tag="" readonly="" items="{{value}}"></paper-tags>
+                            </template>
+                        </paper-datatable-column>
+                        <paper-datatable-column header="tags" property="tags">
+                            <template>
+                                <paper-tags prevent-remove-tag="" readonly="" items="{{value}}"></paper-tags>
+                            </template>
                         </paper-datatable-column>
                         <paper-datatable-column header="Actions">
                             <template>
-                                <span>Delete</span>
+                                <paper-icon-button icon="delete"></paper-icon-button>
+                                <paper-icon-button icon="icons:file-download"></paper-icon-button>
                                 </template>
                             
                             
                 </paper-datatable-column></paper-datatable></paper-dialog-scrollable>
                 <div class="buttons">
-                    <paper-button on-tap="onLoadWorkspace" disabled="{{itemNotSelected}}" dialog-dismiss="">Load</paper-button>
-                </div>
+                    <paper-button dialog-dismiss="">Close</paper-button>
+                    </div>
             </paper-dialog>
         </div>
 
@@ -44366,7 +45637,8 @@ class WeakCache {
 
                     values: {
                         type: Array,
-                        notify: true
+                        notify: true,
+                        value: []
                     }
                 }
             }
@@ -44380,6 +45652,7 @@ class WeakCache {
             constructor() {
                 super();
                 this.tmpWorkspace = {};
+                this._workspacesObj = {};
             }
 
             /* callback function after the element is attached to the DOM */
@@ -44410,6 +45683,12 @@ class WeakCache {
             ready() {
                 super.ready();
                 self.triggerReload = false;
+
+                document.dispatchEvent(new CustomEvent('WorkspacesReady',
+                    {
+                        bubbles: true
+                    }
+                ));
             }
 
             handleResponse(e) {
@@ -44432,7 +45711,7 @@ class WeakCache {
                 self._workspacesObj = {}
                 var names = [];
                 resp.forEach(function(res) {
-                    names.push({ "title": res.title, "key": res.id });
+                    names.push({ "title": res.title, "key": res.id, "description": res.description, "genomes": res.genomes, "tags": res.tags });
                     // names[res.id] = res.title;
                     self._workspacesObj[res.id] = res;
                 });
@@ -44441,11 +45720,7 @@ class WeakCache {
                 self.set("values", names)
                 // this.gene = resp.data[0].gene;
 
-                document.dispatchEvent(new CustomEvent('WorkspacesLoaded',
-                    {
-                        bubbles: true
-                    }
-                ));
+                this.$.loadWorkspace.open();
             }
 
             _cellTapped(e) {
@@ -44454,13 +45729,19 @@ class WeakCache {
                 e.stopPropagation();
                 console.log(e);
                 if (e.detail.column.header == "Actions") {
-                    // delete this workspace
 
-                    var ajaxElem = this.$.deletews;
-                    ajaxElem.url = this._getDeleteURL(this._workspacesObj[e.detail.item.key]);
-                    ajaxElem.generateRequest();
+                    if (e.detail.target.icon == "delete") {
+                        // delete this workspace
 
-                    delete self._workspacesObj[e.detail.item.key];
+                        var ajaxElem = this.$.deletews;
+                        ajaxElem.url = this._getDeleteURL(this._workspacesObj[e.detail.item.key]);
+                        ajaxElem.generateRequest();
+
+                        delete self._workspacesObj[e.detail.item.key];
+                    }
+                    else if (e.detail.target.icon == "icons:file-download") {
+                        self.onLoadWorkspace(e);
+                    }
                 }
             }
 
@@ -44474,7 +45755,10 @@ class WeakCache {
 
                 var names = JSON.parse(JSON.stringify(self.values));
 
-                names.push({ "title": e.detail.response.title, "key": e.detail.response.id })
+                names.push({ "title": e.detail.response.title, "key": e.detail.response.id,
+                                "description": e.detail.response.description, "genomes": e.detail.response.genomes, 
+                                "tags": e.detail.response.tags 
+                            });
 
                 self.values = names;
                 self.set("values", names);
@@ -44484,6 +45768,26 @@ class WeakCache {
                 var elem = document.querySelector(this.targetSelector).querySelector("epiviz-navigation");
                 elem.saveWorkspace();
 
+                window.history.replaceState("workspace", '', "?ws=" + e.detail.response.id);
+
+                this._updateFlag = true;
+            }
+
+            handleGetResponse(e) {
+                var self = this;
+                console.log("update");
+                this.currentWorkspace = e.detail.response;
+
+                $(self.targetSelector).empty();
+
+                for (var env in self.currentWorkspace.workspace) {
+                    var elem = document.createElement(self.currentWorkspace.workspace[env].node);
+                    elem.setAttribute("plot-id", env);
+                    elem.setAttribute("workspace", JSON.stringify(self.currentWorkspace.workspace[env]));
+                    $(self.targetSelector).append(elem);
+                }
+
+                this.set("tmp_title", "");
                 this._updateFlag = true;
             }
 
@@ -44500,7 +45804,9 @@ class WeakCache {
                 var names = [];
                 Object.keys(self._workspacesObj).forEach(function(m) {
                     var elem = self._workspacesObj[m];
-                    names.push({ "title": elem.title, "key": elem.id });
+                    names.push({ "title": elem.title, "key": elem.id,
+                    "description": elem.description, "genomes": elem.genomes, 
+                                "tags": elem.tags });
                 });
 
                 self.values = names;
@@ -44527,7 +45833,6 @@ class WeakCache {
 
             _saveWorkspace(e) {
                 console.log("save workspace");
-
                 this._currentWorkspaceChanged(this.currentWorkspace);
             }
 
@@ -44550,9 +45855,9 @@ class WeakCache {
                 this.currentWorkspace = {
                     user_id: "admin",
                     title:  this.tmp_title,
-                    description: "",
-                    genomes: [],
-                    tags: [],
+                    description: this.tmp_description,
+                    genomes: this.tmp_genome,
+                    tags: this.tmp_tags,
                     workspace: {}
                 }
 
@@ -44575,13 +45880,14 @@ class WeakCache {
              */
              _loadWorkspace(e) {
                 console.log(e);
-                this.$.loadWorkspace.open();
+                var ajaxElem = this.$.getallws;
+                ajaxElem.generateRequest();
             }
 
             onLoadWorkspace(e) {
                 var self = this;
                 console.log(e);
-                this.currentWorkspace = this._workspacesObj[this.tmp_title.key];
+                this.currentWorkspace = this._workspacesObj[e.detail.item.key];
                 // this.set("title", this.tmp_title.title);
 
                 $(self.targetSelector).empty();
@@ -44591,11 +45897,15 @@ class WeakCache {
                     elem.setAttribute("plot-id", env);
                     elem.setAttribute("workspace", JSON.stringify(self.currentWorkspace.workspace[env]));
                     $(self.targetSelector).append(elem);
-                    elem.loadWorkspace(elem.workspace);
+                    // elem.loadWorkspace(elem.workspace);
                 }
 
-                this.set("tmp_title", "");
-                this.$.loadTable.deselectAll();
+                window.history.replaceState("workspace", '', "?ws=" + e.detail.item.key);
+
+                this.$.loadWorkspace.close();
+
+                // this.set("tmp_title", "");
+                // this.$.loadTable.deselectAll();
 
                 this._updateFlag = true;
             }
@@ -44603,27 +45913,9 @@ class WeakCache {
             loadWorkspace(id) {
                 var self = this;
 
-                this.currentWorkspace = this._workspacesObj[id];
-                // this.set("title", this.tmp_title.title);
-
-                $(self.targetSelector).empty();
-
-                for (var env in self.currentWorkspace.workspace) {
-                    var elem = document.createElement(self.currentWorkspace.workspace[env].node);
-                    elem.setAttribute("plot-id", env);
-                    elem.setAttribute("workspace", JSON.stringify(self.currentWorkspace.workspace[env]));
-                    $(self.targetSelector).append(elem);
-
-                    // Polymer.Async.animationFrame.run(function() {
-                    //     elem.loadWorkspace(elem.workspace);
-                    // });
-                    // setTimeout(function() {
-                    //     elem.loadWorkspace(elem.workspace);
-                    // }, 500)
-                }
-
-                this.set("tmp_title", "");
-                this._updateFlag = true;
+                var ajaxElem = this.$.getws;
+                ajaxElem.url = this.api + id;
+                ajaxElem.generateRequest();
             }
 
             _getUpdateURL(cw) {
@@ -44691,32 +45983,7 @@ class WeakCache {
         customElements.define(EpivizWorkspace.is, EpivizWorkspace);
 
     </script>
-</dom-module>
-
-<script>
-    // window.addEventListener('WebComponentsReady', function() {
-        document.addEventListener('WorkspacesLoaded', function() {
-            var workspace = getUrlParameter("ws");
-            console.log(workspace);
-            if(workspace) {
-                document.querySelector("epiviz-workspace").loadWorkspace(parseInt(workspace));
-            }
-        });
-    // });
-
-    function getUrlParameter(sParam) {
-        var currPage = decodeURIComponent(window.location.search.substring(1));
-        var pageVars = currPage.split('&');
-
-        for (var i = 0; i < pageVars.length; i++) {
-            var pageParamName = pageVars[i].split('=');
-
-            if (pageParamName[0] === sParam) {
-                return pageParamName[1] === undefined ? true : pageParamName[1];
-            }
-        }
-    };
-</script><script>
+</dom-module><script>
 
   /** @polymerBehavior */
   Polymer.PaperSpinnerBehavior = {
@@ -47437,95 +48704,6 @@ class WeakCache {
 
   });
 </script>
-<dom-module id="iron-label" assetpath="bower_components/iron-label/">
-  <script>
-    Polymer.IronLabel = Polymer({
-      is: 'iron-label',
-
-      listeners: {
-        'tap': '_tapHandler'
-      },
-
-      properties: {
-        /**
-          * An ID reference to another element that needs to be
-          * labelled by this `iron-label` element.
-          */
-        for: {
-          type: String,
-          value: '',
-          reflectToAttribute: true,
-          observer: '_forChanged'
-        },
-        /**
-         * @type {Element}
-         */
-        _forElement: Object
-      },
-
-      attached: function() {
-        this._forChanged();
-      },
-
-      ready: function() {
-        this._generateLabelId();
-      },
-
-      // generate a unique id for this element
-      _generateLabelId: function() {
-        if (!this.id) {
-          var id = 'iron-label-' + Polymer.IronLabel._labelNumber++;
-          Polymer.dom(this).setAttribute('id', id);
-        }
-      },
-
-      _findTarget: function() {
-        if (this.for) {
-          // external target
-          var scope = Polymer.dom(this).getOwnerRoot();
-          return Polymer.dom(scope).querySelector('#' + this.for);
-        } else {
-          // explicit internal target
-          var el = Polymer.dom(this).querySelector('[iron-label-target]');
-          if (!el) {
-            // implicit internal target
-            el = Polymer.dom(this).firstElementChild;
-          }
-          return el;
-        }
-      },
-
-      _tapHandler: function(ev) {
-        if (!this._forElement) {
-          return;
-        }
-        var target = Polymer.dom(ev).localTarget;
-        if (target === this._forElement) {
-          return;
-        }
-        this._forElement.focus();
-        this._forElement.click();
-      },
-
-      _applyLabelledBy: function() {
-        if (this._forElement) {
-          Polymer.dom(this._forElement).setAttribute('aria-labelledby', this.id);
-        }
-      },
-
-      _forChanged: function() {
-        if (this._forElement) {
-          Polymer.dom(this._forElement).removeAttribute('aria-labelledby');
-        }
-        this._forElement = this._findTarget();
-        this._applyLabelledBy();
-      }
-    });
-
-    // global counter for unique label ids
-    Polymer.IronLabel._labelNumber = 0;
-  </script>
-</dom-module>
 <dom-module id="paper-item-body" assetpath="bower_components/paper-item/">
   <template>
     <style>
@@ -49862,698 +51040,6 @@ class WeakCache {
       this.fire('keys-pressed', event.detail, {});
     }
   });
-</script>
-<dom-module id="paper-badge" assetpath="bower_components/paper-badge/">
-  <template>
-    <style>
-      :host {
-        display: block;
-        position: absolute;
-        outline: none;
-      }
-
-      :host([hidden]), [hidden] {
-        display: none !important;
-      }
-
-      iron-icon {
-        --iron-icon-width: 12px;
-        --iron-icon-height: 12px;
-      }
-
-      .badge {
-        @apply --layout;
-        @apply --layout-center-center;
-        @apply --paper-font-common-base;
-
-        font-weight: normal;
-        font-size: 11px;
-        border-radius: 50%;
-        margin-left: var(--paper-badge-margin-left, 0px);
-        margin-bottom: var(--paper-badge-margin-bottom, 0px);
-        width: var(--paper-badge-width, 20px);
-        height: var(--paper-badge-height, 20px);
-        background-color: var(--paper-badge-background, var(--accent-color));
-        opacity: var(--paper-badge-opacity, 1.0);
-        color: var(--paper-badge-text-color, white);
-
-        @apply --paper-badge;
-      }
-    </style>
-
-    <div class="badge">
-      <iron-icon hidden$="{{!_computeIsIconBadge(icon)}}" icon="{{icon}}"></iron-icon>
-      <span id="badge-text" hidden$="{{_computeIsIconBadge(icon)}}">{{label}}</span>
-    </div>
-  </template>
-
-  <script>
-    Polymer({
-      is: 'paper-badge',
-
-      /** @private */
-      hostAttributes: {
-        role: 'status',
-        tabindex: 0
-      },
-
-      behaviors: [
-        Polymer.IronResizableBehavior
-      ],
-
-      listeners: {
-        'iron-resize': 'updatePosition'
-      },
-
-      properties: {
-        /**
-         * The id of the element that the badge is anchored to. This element
-         * must be a sibling of the badge.
-         */
-        for: {
-          type: String,
-          observer: '_forChanged'
-        },
-
-        /**
-         * The label displayed in the badge. The label is centered, and ideally
-         * should have very few characters.
-         */
-        label: {
-          type: String,
-          observer: '_labelChanged'
-        },
-
-        /**
-         * An iron-icon ID. When given, the badge content will use an
-         * `<iron-icon>` element displaying the given icon ID rather than the
-         * label text. However, the label text will still be used for
-         * accessibility purposes.
-         */
-        icon: {
-          type: String,
-          value: ''
-        },
-
-        _boundNotifyResize: {
-          type: Function,
-          value: function() {
-            return this.notifyResize.bind(this);
-          }
-        },
-
-        _boundUpdateTarget: {
-          type: Function,
-          value: function() {
-            return this._updateTarget.bind(this);
-          }
-        }
-      },
-
-      attached: function() {
-        // Polymer 2.x does not have this.offsetParent defined by attached
-        requestAnimationFrame(this._boundUpdateTarget);
-      },
-
-      attributeChanged: function (name) {
-        if (name === 'hidden') {
-          this.updatePosition();
-        }
-      },
-
-      _forChanged: function() {
-        // The first time the property is set is before the badge is attached,
-        // which means we're not ready to position it yet.
-        if (!this.isAttached) {
-          return;
-        }
-        this._updateTarget();
-      },
-
-      _labelChanged: function() {
-        this.setAttribute('aria-label', this.label);
-      },
-
-      _updateTarget: function() {
-        this._target = this.target;
-        requestAnimationFrame(this._boundNotifyResize);
-      },
-
-      _computeIsIconBadge: function(icon) {
-        return icon.length > 0;
-      },
-
-      /**
-       * Returns the target element that this badge is anchored to. It is
-       * either the element given by the `for` attribute, or the immediate parent
-       * of the badge.
-       */
-      get target () {
-        var parentNode = Polymer.dom(this).parentNode;
-        // If the parentNode is a document fragment, then we need to use the host.
-        var ownerRoot = Polymer.dom(this).getOwnerRoot();
-        var target;
-
-        if (this.for) {
-          target = Polymer.dom(ownerRoot).querySelector('#' + this.for);
-        } else {
-          target = parentNode.nodeType == Node.DOCUMENT_FRAGMENT_NODE ?
-              ownerRoot.host : parentNode;
-        }
-
-        return target;
-      },
-
-      /**
-       * Repositions the badge relative to its anchor element. This is called
-       * automatically when the badge is attached or an `iron-resize` event is
-       * fired (for exmaple if the window has resized, or your target is a
-       * custom element that implements IronResizableBehavior).
-       *
-       * You should call this in all other cases when the achor's position
-       * might have changed (for example, if it's visibility has changed, or
-       * you've manually done a page re-layout).
-       */
-      updatePosition: function() {
-        if (!this._target || !this.offsetParent) {
-          return;
-        }
-
-        var parentRect = this.offsetParent.getBoundingClientRect();
-        var targetRect = this._target.getBoundingClientRect();
-        var thisRect = this.getBoundingClientRect();
-
-        this.style.left = targetRect.left - parentRect.left +
-            (targetRect.width - thisRect.width / 2) + 'px';
-        this.style.top = targetRect.top - parentRect.top -
-            (thisRect.height / 2) + 'px';
-      }
-    })
-  </script>
-</dom-module>
-<script>
-/**
- * `Polymer.ValueArrayFirebaseMixin` ensures the binding between array values and firebase objects.
- *
- * @demo demo/index.html
- */
-
-ValueArrayFirebaseMixin = function(superClass) {
-	return class extends superClass {
-	    static get properties() {
-			return  {
-			    /**
-			     * `valueObject` store value as object keys `{"value1": true, "value2": true}`
-			     */
-			    valueObject: {
-			      type: Object,
-			      notify: true
-			    },
-			
-			    /**
-			     * `valueArray` store value as array `["value1", "value2"]`
-			     */
-			    valueArray: {
-			      type: Array,
-			      notify: true
-			    },
-			
-			    /**
-			     * `valueJoin` joins values in a string
-			     */
-			    valueJoin: {
-			      type: String,
-			      notify: true,
-			      readOnly: true,
-			    }
-			  }
-	    }
-	    static get observers() {
-		     return [
-			  '_observeValueObject(valueObject.*)',
-			  '_observeValueArrayInit(valueArray)',
-			  '_observeValueArray(valueArray.splices)',
-			]
-		}
-		//called when we set/reset valueArray 
-		_observeValueArrayInit(valueArray) {
-		  this._isInitiatingValueArray = true;
-		  if (valueArray && !this._isUpdatingValueObject) {
-		    var o = {};
-		    this.valueArray.forEach(function(item) {
-		      o[item] = true;
-		    });
-		    this.set('valueObject', o);
-		    this._setValueJoin(this.valueArray.join(', '));
-		  }
-		  delete this._isInitiatingValueArray;
-		}
-
-		/**
-		 * `_observeValueArray` ensures valueArray and valueObject are in sync
-		 */
-		_observeValueArray(splices) {
-		  if (!splices) {
-		    return;
-		  }
-		  this._isUpdatingValueArray = true;
-		  // console.log('ARRAY SPLICE', splices);
-		  if (!this._isUpdatingValueObject) {
-		    splices.indexSplices.forEach(function(splice) {
-		      splice.removed.forEach(function(removed) {
-		        this.set('valueObject.' + removed, null); // so that it is deleted at firebase level
-		        this.dispatchEvent(new CustomEvent("tag-removed",{bubbles: true, composed: true,detail: removed}));
-		      }, this);
-		      if (splice.addedCount) {
-		        for (var i = 0; i < splice.addedCount; i++) {
-		          var index = splice.index + i;
-		          var newValue = splice.object[index];
-		          this.set('valueObject.' + newValue, true);
-		          this.dispatchEvent(new CustomEvent("tag-added",{bubbles: true, composed: true,detail: newValue}));
-		        }
-		      }
-		    }, this);
-		
-		    this._setValueJoin((this.valueArray || []).join(', '));
-		  }
-		  delete this._isUpdatingValueArray;
-		}
-		
-		/**
-		 * `_observeValueObject` ensures valueArray and valueObject are in sync
-		 */
-		_observeValueObject(obj) {
-		  this._isUpdatingValueObject = true;
-		  if (!this._isUpdatingValueArray && !this._isInitiatingValueArray) {
-		    var keys = Object.keys(this.valueObject).filter(function(item) {
-		      return !!item;
-		    });
-		    this.syncValueArrayWithKeys(keys);
-		
-		    this._setValueJoin(this.valueArray.join(', '));
-		  }
-		  delete this._isUpdatingValueObject;
-		}
-		
-		syncValueArrayWithKeys(keys) {
-		  if (!this.valueArray) {
-		    this.valueArray = [];
-		  }
-		  // removed values not present in keys
-		  var tmpArray = [].concat(this.valueArray);
-		  tmpArray.forEach(function(v) {
-		    if (keys.indexOf(v) < 0) {
-		      this.splice('valueArray', this.valueArray.indexOf(v), 1);
-		    }
-		  }, this);
-		  // add all missing keys
-		  keys.forEach(function(k) {
-		    if (this.valueArray.indexOf(k) < 0) {
-		      this.push('valueArray', k);
-		    }
-		  }, this);
-		}
-	}
-};
-</script>
-<script>
-/**
- * `Polymer.PaperTagsMixin` defines recurent properties in paper-tags family (paper-tags, paper-tags-input, paper-tags-dropdown)
- *
- * @demo demo/index.html
- */
-PaperTagsMixin = function(superClass) {
-	return class extends ValueArrayFirebaseMixin(superClass) {
-	    static get properties() {
-			return  {
-			    /**
-			     * `itemClass` the class applied to tag items.  If `classAccessor` is defined, `classAccessor` will have precedence
-			     */
-			    itemClass: String,
-			
-			    /**
-			     * `icon` icon to be applied to the tag item when it is not removable. If `iconAccessor` is defined, `iconAccessor` will have precedence
-			     */
-			    icon: String,
-			
-			    /**
-			     * `keyPath` key for retrieving the `id` from item data object
-			     */
-			    keyPath: {
-			      type: String,
-			      value: 'id'
-			    },
-			    
-			    /**
-			     * `labelPath` key for retrieving the `label` from item data object
-			     */
-			    labelPath: {
-			      type: String,
-			      value: 'label'
-			    },
-			    
-			    /**
-			     * `classAccessor` key for retrieving the `class` from item data object
-			     */
-			    classAccessor: String,
-			    
-			    /**
-			     * `iconAccessor` key for retrieving the `icon` from item data object
-			     */
-			    iconAccessor: String,
-			
-			    /**
-			     * `preventRemoveTag` hide the `close` icon and prevent removing a tag when true. 
-			     */
-			    preventRemoveTag: {
-			      type: Boolean,
-			      value: false
-			    }
-			  }
-		}
-	}
-}
-</script>
-<dom-module id="paper-tags" assetpath="bower_components/paper-tags/">
-
-  <template>
-  <style>
-  [hidden] {
-    display: none !important;
-  }
-
-  :host {
-    display: block;
-    @apply --paper-font-common-base;
-    @apply --paper-tags;
-  }
-  
-  div.paper-tag-item {
-    margin-bottom: var(--paper-tag-margin, 3px);
-    border: 1px solid var(--paper-tag-focus-color, var(--default-primary-color));
-    font-size: 13px;
-    color: var(--paper-tag-text-color, var(--secondary-text-color));
-    border-radius: 4px;
-    @apply --paper-tag-item;
-  }
-  
-  .paper-tag-item:last-of-type {
-    margin-right: var(--paper-tag-margin, 3px);
-  }
-  
-  paper-icon-button {
-    color: var(--paper-tag-focus-color,var(--default-primary-color));
-    width: 20px;
-    height: 20px;
-    padding: 0;
-  }
-  
-  .paper-tag-item-label {
-    padding: var(--paper-tag-margin, 3px);
-  }
-  
-  .paper-tag-item {
-    display: inline-block;
-  }
-  </style>
-    <template is="dom-repeat" id="tagRepeat" items="[[items]]" mutable-data="">
-      <div class$="paper-tag-item [[_computeClass(item, classAccessor)]]">
-        <span class="paper-tag-item-label">[[_computeLabel(item, labelPath)]]</span>
-        <paper-icon-button icon="icons:close" hidden$="[[preventRemoveTag]]" on-tap="_removeTag"></paper-icon-button>
-        <paper-icon-button icon="[[_computeIcon(item, iconAccessor)]]" hidden$="[[_isHidden(preventRemoveTag, iconAccessor)]]"></paper-icon-button>
-      </div>
-    </template>
-  </template>
-</dom-module>
-<script>
-class PaperTags extends Polymer.MutableData(PaperTagsMixin(Polymer.Element)) {
-	static get is() {
-	    return 'paper-tags'
-	}
-	static get properties() {
-	    return {
-		    /**
-		     * `items` the Array of tags
-		     */
-		    items: {
-		      type: Array,
-		      notify: true,
-		      value: function() {
-		        return [];
-		      }
-		    }
-  		}
-	}
-	
-	_computeIcon(item, iconAccessor) {
-	  return item[iconAccessor] || this.icon;
-	}
-	
-	_computeClass(item, classAccessor) {
-	  return item[classAccessor] || this.itemClass;
-	}
-	
-	_computeLabel(item, labelPath) {
-	  return item[labelPath] || item;
-	}
-	
-	_isHidden(preventRemoveTag, iconAccessor) {
-		if (!preventRemoveTag) {
-			return true;
-		} else if (preventRemoveTag && iconAccessor) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	_removeTag(event) {
-	  var self = this;
-	  if (this.readonly) {
-	    return;
-	  }
-	  event.detail.isRemoved = true;
-	  var model = event.model,
-	    index = this.items.indexOf(model.item);
-	
-	  if (index > -1) {
-	    event.stopPropagation();
-	    var remove_func = function() {
-		      self.splice('items', index, 1);
-	    };
-	    this._paper_tag_remove_item = Polymer.Debouncer.debounce(
-	       this._paper_tag_remove_item, // initially undefined
-	       Polymer.Async.timeOut.after(10),remove_func);
-	    // this.items = this.items.slice();
-	    // this.fire('tag-removed', model.item);
-	  }
-	}
-};
-customElements.define(PaperTags.is, PaperTags);
-
-</script>
-<dom-module id="paper-tags-input" assetpath="bower_components/paper-tags/">
-  <template>
-    <style>
-    :host {
-      display: block;
-      --paper-tag-margin: 3px;
-    }
-
-    paper-input {
-      --paper-input-container-input: {
-        margin-bottom: var(--paper-tag-margin);
-      }
-    }
-
-    paper-tags {
-    }
-
-    paper-tags[readonly] {
-      opacity: 0.6;
-    }
-
-    paper-badge {
-      display: inline-block;
-      position: inherit;
-    }
-
-    .paper-tags-counter {
-      display: inline-block;
-    }
-    </style>
-    <paper-input id="tagInput" always-float-label="" on-keydown="_keyDown" readonly$="[[readonly]]" placeholder$="[[placeholder]]" disabled$="[[disabled]]" invalid="[[invalid]]" label="[[label]]" value="{{value}}" maxlength$="[[maxlength]]" error-message="[[errorMessage]]" minlength$="[[minlength]]">
-      <slot name="[prefix]" slot="prefix"></slot>
-      <paper-tags id="paperTags" readonly$="[[readonly]]" items="{{items}}" icon="[[icon]]" item-class="[[itemClass]]" class-accessor="[[classAccessor]]" label-path="[[labelPath]]" icon-accessor="[[iconAccessor]]" prevent-remove-tag="[[preventRemoveTag]]" slot="prefix"></paper-tags>
-      <slot name="[suffix]" slot="suffix"></slot>
-    </paper-input>
-    <template is="dom-if" if="{{showCounter}}">
-      <div class="paper-tags-counter">
-        <paper-badge class="paper-tags-badge" label="[[items.length]]"></paper-badge> [[showCounter]]
-      </div>
-    </template>
-  </template>
-</dom-module>
-<script>
-class PaperTagsInput extends PaperTagsMixin(Polymer.Element) {
-	static get is() {
-	    return 'paper-tags-input'
-	}
-	static get properties() {
-	    return {
-		    /**
-		     * `preventRemoveTag` hide the `close` icon and prevent removing a tag when true.
-		     */
-		    preventRemoveTag: {
-		      type: Boolean,
-		      value: false
-		    },
-
-		    /**
-		     * `items` the Array of tags
-		     */
-		    items: {
-		      type: Array,
-		      notify: true
-		    },
-		    /**
-		     * `delimiter` defaults to comma (,)
-		     */
-		    delimiter: {
-		      type: String,
-		      value: ','
-		    },
-		    /**
-		     * `showCounter` display a paper-badge with `showCounter` as textContent
-		     */
-		    showCounter: String,
-
-		    /**
-		     * `maxTags` The maximum allowed number of tags (yet to be implemented)
-		     */
-		    maxTags: Number,
-
-		    /**
-		     * `minTags` The minimum allowed number of tags (yet to be implemented)
-		     */
-		    minTags: Number,
-
-		    /**
-		     * `tagTpl` a template Object used when creating new tags. If not defuned, new tags will jus be Strings
-		     */
-		    tagTpl: Object,
-
-		    /**
-		     * `value` the underlying paper-input value
-		     */
-		    value: {
-		      type: String,
-		      notify: true
-		    },
-
-		    /**
-		     * `allowAdd` determines if new tags are allowed on pressing `Enter` or not.
-		     */
-		    allowAdd: {
-		      type: Boolean,
-		      value: true
-		    }
-	  }
-	}
-	static get observers() {
-    	return [
-		  '_observeTagItemsInit(items)',
-		  '_observeTagItems(items.splices)'
-		]
-	}
-
-	_observeTagItemsInit(items) {
-	  if(items && !this.valueArray) {
-	    this._observeTagItems(items)
-
-	  }
-
-	}
-	_observeTagItems(splices) {
-	  if(!splices) {
-	    return
-	  }
-	  var keys = [];
-	  this._isUpdatingingItems = true;
-	  this.items.forEach(function(item) {
-	    var id = item[this.keyPath] || item;
-	    keys.push(id + '');
-	  }, this);
-
-	  this.syncValueArrayWithKeys(keys)
-
-	  delete this._isUpdatingingItems;
-	}
-
-	_removeLast() {
-    	this.splice('items', this.items.length - 1);
-	}
-
-  	removeAll () {
-    	this.splice("items", 0);
-  	}
-
-
-    removeAll() {
-        this.splice("items", 0);
-    }
-
-    removeTag (tag) {
-    	var position = this.items.indexOf(tag);
-    	if(position > -1) {
-      		this.splice('items', position, 1 );
-    	}
-  	}
-
-	findTag(tag) {
-	  return this.items.includes(tag);
-	}
-
-	_addTag(tag) {
-	  if (this.tagTpl) {
-	    var id = tag;
-	    tag = JSON.parse(JSON.stringify(this.tagTpl));
-	    tag[this.keyPath] = id + '';
-	    if (this.labelPath) {
-	      tag[this.labelPath] = id;
-	    }
-	  }
-	  this.push('items', tag);
-	  this.items = this.items.slice();
-	  // this.fire('tag-added', tag);
-	}
-
-	_keyDown(event) {
-	  var keyVal = event.which;
-	  if (keyVal === 13 && this.allowAdd) {
-	    var tags = event.target.value.split(this.delimiter);
-	    var me = this;
-
-	    tags.forEach(function(tag) {
-	     if (!me.findTag(tag)) {
-	        me._addTag(tag);
-	        event.target.value = '';
-	      }
-	    });
-
-	  } else if (keyVal === 8 && event.target.value === '') {
-	    this._removeLast();
-	  }
-	}
-	/**
-	 * Returns a reference to the focusable element.
-	 */
-	get_focusableElement() {
-	  return this.$.tagInput.inputElement;
-	}
-
-};
-customElements.define(PaperTagsInput.is, PaperTagsInput);
 </script>
 <dom-module id="paper-tags-dropdown" assetpath="bower_components/paper-tags/">
   <template>
@@ -71325,7 +71811,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 self.genome = self.workspace.genome
                 self.plotId = self.workspace.plotId;
                 self.collapsed = self.workspace.collapsed ? self.workspace.collapsed : false;
-                self.noLogo = true;
+                // self.noLogo = true;
 
                 for (var key in self.workspace.children) {
                     var chartWorkspaceObj = self.workspace.children[key];
