@@ -250,8 +250,7 @@
                     <template>
                       <paper-item on-tap="_selectGene" role="option" aria-selected="false">
                         <div>
-                          [[item.gene]] [[item.chr]]: [[item.start]] -
-                          [[item.end]]
+                          [[item.gene]]
                         </div>
                         <paper-ripple></paper-ripple>
                       </paper-item>
@@ -443,6 +442,18 @@
           },
 
           /**
+           * padding around gene (wrt gene length)
+           *
+           * @type {number}
+           */ 
+          geneRatio: {
+            type: Number,
+            notify: true,
+            value: 0.2
+          },
+
+
+          /**
            * Whether the element is collapsed
            *
            * @type {boolean}
@@ -628,6 +639,8 @@
         });
         this._getElementSeqInfo(this, this);
 
+        this.geneUpdateFlag = true;
+
         // this.addEventListener('transitionend', e => this._onResize(e));
       }
 
@@ -664,30 +677,37 @@
           });
         }
 
-        if (self.gene) {
-          var range = {
-            range: self.getGenomicRange(null, null, null, self.genome)
-          }
-          self._getElementSearch(self.gene, range, null, function (data) {
-            self.chr = data[0].chr;
-            self.start = data[0].start;
-            self.end = data[0].end;
-            self.range = self.getGenomicRange(self.chr, self.start, self.end, self.genome);
-            self._strRange = self.getStrRange(self.chr, self.start, self.end);
+        // if (self.gene) {
+        //   var range = {
+        //     range: self.getGenomicRange(null, null, null, self.genome)
+        //   }
+        //   self._getElementSearch(self.gene, range, null, function (data) {
+        //     self.chr = data[0].chr;
 
-            self.chartObject = new epiviz.ui.charts.ChartObject(
-              self.plotId,
-              self.start,
-              self.end,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              self.chr
-            );
-          });
-        } else if (self.chr && self.start && self.end) {
+        //     var width = data[0].end - data[0].start;
+        //     var newWidthFactor = Math.round(width * self.geneRatio);
+        //     var newStart = data[0].start - newWidthFactor;
+        //     var newEnd = data[0].end + newWidthFactor;
+        //     self.start = Math.max(0, newStart);
+        //     self.end = Math.min(newEnd, self.seqInfo[self.chr].max);
+
+        //     self.range = self.getGenomicRange(self.chr, self.start, self.end, self.genome);
+        //     self._strRange = self.getStrRange(self.chr, self.start, self.end);
+
+        //     self.chartObject = new epiviz.ui.charts.ChartObject(
+        //       self.plotId,
+        //       self.start,
+        //       self.end,
+        //       undefined,
+        //       undefined,
+        //       undefined,
+        //       undefined,
+        //       undefined,
+        //       self.chr
+        //     );
+        //   });
+        // } else 
+        if (self.chr && self.start && self.end) {
           self.range = self.getGenomicRange(self.chr, self.start, self.end, self.genome);
           self._strRange = self.getStrRange(self.chr, self.start, self.end);
 
@@ -759,31 +779,37 @@
       ready() {
         var self = this;
 
-        if (self.gene) {
+        // if (self.gene) {
 
-          var range = {
-            range: self.getGenomicRange(null, null, null, self.genome)
-          }
-          self._getElementSearch(self.gene, range, null, function (data) {
-            self.chr = data[0].chr;
-            self.start = data[0].start;
-            self.end = data[0].end;
-            self.range = self.getGenomicRange(self.chr, self.start, self.end, self.genome);
-            self._strRange = self.getStrRange(self.chr, self.start, self.end);
+        //   var range = {
+        //     range: self.getGenomicRange(null, null, null, self.genome)
+        //   }
+        //   self._getElementSearch(self.gene, range, null, function (data) {
+        //     self.chr = data[0].chr;
 
-            self.chartObject = new epiviz.ui.charts.ChartObject(
-              self.plotId,
-              self.start,
-              self.end,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              undefined,
-              self.chr
-            );
-          });
-        }
+        //     var width = data[0].end - data[0].start;
+        //     var newWidthFactor = Math.round(width * this.geneRatio);
+        //     var newStart = data[0].start - newWidthFactor;
+        //     var newEnd = data[0].end + newWidthFactor;
+        //     self.start = Math.max(0, newStart);
+        //     self.end = Math.min(newEnd, self.seqInfo[this.chr].max);
+
+        //     self.range = self.getGenomicRange(self.chr, self.start, self.end, self.genome);
+        //     self._strRange = self.getStrRange(self.chr, self.start, self.end);
+
+        //     self.chartObject = new epiviz.ui.charts.ChartObject(
+        //       self.plotId,
+        //       self.start,
+        //       self.end,
+        //       undefined,
+        //       undefined,
+        //       undefined,
+        //       undefined,
+        //       undefined,
+        //       self.chr
+        //     );
+        //   });
+        // }
         super.ready();
 
         self.plotId = self.plotId || self._generatePlotId();
@@ -1120,14 +1146,33 @@
        */
       _geneUpdate() {
         var self = this;
+
         var range = {
             range: self.getGenomicRange(null, null, null, self.genome)
           }
         self._getElementSearch(self.gene, range, null, function (data) {
-          self.chr = data[0].seqName;
-          self.start = data[0].start;
-          self.end = data[0].end;
+          self.chr = data[0].chr;
+
+          var width = data[0].end - data[0].start;
+          var newWidthFactor = Math.round(width * self.geneRatio);
+          var newStart = data[0].start - newWidthFactor;
+          var newEnd = data[0].end + newWidthFactor;
+          self.start = Math.max(0, newStart);
+          self.end = Math.min(newEnd, self.seqInfo[self.chr].max);
+
+          self.range = self.getGenomicRange(self.chr, self.start, self.end, self.genome);
+          self._strRange = self.getStrRange(self.chr, self.start, self.end);
+
+          // self.geneUpdateFlag = true;
+          self.$.geneSearch.items = [{"gene": self.gene, "chr": self.chr, "start": self.start, "end": self.end, "value": self.gene}];
+          // self.$.geneSearch.selectedItem = {"gene": self.gene, "chr": self.chr, "start": self.start, "end": self.end, "value": self.gene};
+          // self.$.geneSearch.selectedItemLabel = self.gene;
+          self.$.geneSearch.value = self.gene;
         });
+
+        // self.geneUpdateFlag = false;
+        // self.$.geneSearch.searchValue = self.gene;
+
       }
 
       /**
@@ -1169,12 +1214,17 @@
        */
       _selectGene(e) {
         var selected = e.model.item;
-
+        var self = this;
         this.chr = selected.chr;
-        this.start = selected.start - Math.round(selected.start * 0.01);
-        this.end = selected.end + Math.round(selected.end * 0.01);
+        var width = selected.end - selected.start;
+        var newWidthFactor = Math.round(width * this.geneRatio);
+        var newStart = selected.start - newWidthFactor;
+        var newEnd = selected.end + newWidthFactor;
+        this.start = Math.max(0, newStart);
+        this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
 
-        this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
+        self.range = self.getGenomicRange(self.chr, self.start, self.end, self.genome);
+        self._strRange = self.getStrRange(self.chr, self.start, self.end);
       }
 
       /**
