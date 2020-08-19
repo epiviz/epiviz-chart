@@ -70874,6 +70874,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 }
 
                 self.chartSettings["autoScale"] = self.toggleFixed;
+                self.chart.setCustomSettingsValues(self.chartSettings);
             }
 
             /**
@@ -71513,9 +71514,9 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 self._measurementsChanged();
 
                 if (self.dimS) {
-                    this.style = "min-height:" + (self.dimS.length * 100) + "px;"
+                    this.style = "min-height:" + (self.dimS.length * 150) + "px;"
                 } else if (self.measurements) {
-                    this.style = "min-height:" + (self.measurements.length * 100) + "px;"
+                    this.style = "min-height:" + (self.measurements.length * 150) + "px;"
                 } else {
                     this.style = "min-height:" + (300) + "px;"
                 }
