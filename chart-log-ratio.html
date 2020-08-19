@@ -66,8 +66,8 @@
                         if (self._logData.isReady()) {
                             // self.chart._lastData = newData;
                             self.data = self._logData
-                            self.chartSettings.yMax = Math.log2(self.chartSettings.yMax);
-                            self.chartSettings.yMin = -1 * self.chartSettings.yMax;
+                            // self.chartSettings.yMax = Math.log2(self.chartSettings.yMax) | 3;
+                            // self.chartSettings.yMin = -1 * self.chartSettings.yMax | -3;
                             self.chart.setCustomSettingsValues(self.chartSettings);
                             self._draw();
                         }

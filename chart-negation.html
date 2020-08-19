@@ -24,16 +24,16 @@
             get_invert_data(lData) {
                 var self = this;
 
-                var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
                 var counter = 0;
                 var invert = 0;
 
+                var chartData = new epiviz.measurements.MeasurementHashtable();
+                var msDataMap = new epiviz.measurements.MeasurementHashtable();
+
                 lData.foreach(function(measurement, series, seriesIndex) {
-                    if(counter == 0) {
-                        var rowData = series._container.rowData(measurement);
-                        sumExp._rowData = rowData;
-                        counter++;
-                    }
+                    var sumExp = new epiviz.datatypes.PartialSummarizedExperiment();
+                    var rowData = series._container.rowData(measurement);
+                    sumExp.addRowData(rowData);
 
                     var featureValues = series._container.values(measurement);
                     var valData = [];
@@ -59,16 +59,19 @@
 
                     sumExp.addValues(newValueData);
                     invert++;
+
+                    var msData = new epiviz.datatypes.MeasurementGenomicDataWrapper(measurement, sumExp);
+                    msDataMap.put(measurement, msData);
+
                 });
 
-                var msDataMap = new epiviz.measurements.MeasurementHashtable();
 
-                lData.foreach(function(m) {
-                    m._maxValue = m._maxValue;
-                    m._minValue = -1 * m._maxValue;
-                    var msData = new epiviz.datatypes.MeasurementGenomicDataWrapper(m, sumExp);
-                    msDataMap.put(m, msData);
-                });
+                // lData.foreach(function(m) {
+                //     // m._maxValue = m._maxValue;
+                //     // m._minValue = -1 * m._maxValue;
+                //     // var msData = new epiviz.datatypes.MeasurementGenomicDataWrapper(m, sumExp);
+                //     msDataMap.put(m, sumExp);
+                // });
 
                 var genomicData = new epiviz.datatypes.MapGenomicData(msDataMap);
 
@@ -113,7 +116,7 @@
 
                     self._negateData = self.get_invert_data(self._originalData);
 
-                    self.chartSettings.yMin = -1 * self.chartSettings.yMax;
+                    // self.chartSettings.yMin = -1 * self.chartSettings.yMax;
                     self.chart.setCustomSettingsValues(self.chartSettings);
 
                     self.data = self._negateData;
@@ -123,7 +126,7 @@
                     // var groupByMarker = new epiviz.ui.charts.markers.VisualizationMarker(
                     //     "negation", "negation", "negation", 
                     //     "function(data) {  return null; }", 
-                    //     "function(m, data, preMarkResult) {  return 'data'; }"
+                    //     "function(m, data, preMarkResult) {  return 'mirror'; }"
                     // );
 
                     // var aggregator = epiviz.ui.charts.markers.MeasurementAggregators["negate"];
