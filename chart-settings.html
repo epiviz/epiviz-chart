@@ -59,6 +59,8 @@
                     var iconElem = document.createElement('paper-icon-button');
                     iconElem.id = "chartSettingsIcon";
                     iconElem.icon = "settings";
+                    iconElem.title = "modify chart settings";
+
 
                     iconElem.addEventListener("click", this._showSettingsDialog.bind(this));
                     chartSettingsContainer.appendChild(iconElem);

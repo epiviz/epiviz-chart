@@ -63,6 +63,8 @@
                     var iconElem = document.createElement('paper-icon-button');
                     iconElem.id = "chartColorsIcon";
                     iconElem.icon = "image:color-lens";
+                    iconElem.title = "modify chart colors";
+
 
                     iconElem.addEventListener("click", this._showColorsDialog.bind(this));
                     chartSettingsContainer.appendChild(iconElem);

@@ -65,6 +65,7 @@
                     var iconElem = document.createElement('paper-icon-button');
                     iconElem.id = "chartExpandIcon";
                     iconElem.icon = "chevron-right";
+                    iconElem.title = "increase chart width";
 
                     iconElem.addEventListener("click", this._expand.bind(this));
                     chartSettingsContainer.appendChild(iconElem);
@@ -74,6 +75,7 @@
                     var iconElem = document.createElement('paper-icon-button');
                     iconElem.id = "chartContractIcon";
                     iconElem.icon = "chevron-left";
+                    iconElem.title = "descrease chart width";
 
                     iconElem.addEventListener("click", this._contract.bind(this));
                     chartSettingsContainer.appendChild(iconElem);
