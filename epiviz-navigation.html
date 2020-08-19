@@ -869,6 +869,7 @@
         var self = this;
 
         if(newVal && newVal != oldVal) {
+          self.$.geneSearch.value = null;
           self._updateGenomeTrack();
           self.range = self.getGenomicRange(self.chr, self.start, self.end, self.genome);
 
@@ -1127,11 +1128,11 @@
           })
         );
 
-        if (self._zoomIn != 0 && self._zoomIn % 2 == 0) {
-          setTimeout(function () {
-            self._reupdateAllData();
-          }, 2000);
-        }
+        // if (self._zoomIn != 0 && self._zoomIn % 2 == 0) {
+        //   setTimeout(function () {
+        //     self._reupdateAllData();
+        //   }, 2000);
+        // }
 
         // self.chartObject = new epiviz.ui.charts.ChartObject(self.plotId, self.start, self.end, undefined, undefined, undefined, undefined, undefined, self.chr);
 
@@ -1238,6 +1239,8 @@
         var start = parseInt(rsplit[0]);
         var end = parseInt(rsplit[1]);
         var width = end - start;
+
+        this.$.geneSearch.value = null;
 
         if (chr in this.seqInfo) {
           this.chr = chr;
