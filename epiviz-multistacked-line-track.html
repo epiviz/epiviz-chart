@@ -254,11 +254,11 @@ To create a stacked-blocks plot on a HTML page, add
                 self._measurementsChanged();
 
                 if (self.dimS) {
-                    this.style = "min-height:" + (self.dimS.length * 100) + "px;"
+                    this.style = "min-height:" + Math.max(200, self.dimS.length * 125) + "px;"
                 } else if (self.measurements) {
-                    this.style = "min-height:" + (self.measurements.length * 100) + "px;"
+                    this.style = "min-height:" + Math.max(200, self.measurements.length * 125) + "px;"
                 } else {
-                    this.style = "min-height:" + (300) + "px;"
+                    this.style = "min-height:" + (250) + "px;"
                 }
             }
 
@@ -287,7 +287,10 @@ To create a stacked-blocks plot on a HTML page, add
                     else {
                         this.chart.draw(this.range, this.data);
                     }
-                    this.shadowRoot.querySelector("paper-spinner-lite").active = false;
+
+                    if (this.data.measurements().length == this.measurements.length) {
+                        this.shadowRoot.querySelector("paper-spinner-lite").active = false;
+                    }
                 }
             }
 

@@ -254,7 +254,9 @@ To create a line track on a HTML page, add
                         this.chart.draw(this.range, data, undefined, undefined, self.isNegation);
                     }
 
-                    this.shadowRoot.querySelector("paper-spinner-lite").active = false;
+                    if (this.data.measurements().length == this.measurements.length) {
+                        this.shadowRoot.querySelector("paper-spinner-lite").active = false;
+                    }
 
                 }
             }

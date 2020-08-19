@@ -275,7 +275,9 @@ To use, add `<epiviz-line-plot>` in the page
                     else {
                         this.chart.draw(this.range, this.data);
                     }
-                    this.shadowRoot.querySelector("paper-spinner-lite").active = false;
+                    if (this.data.measurements().length == this.measurements.length) {
+                        this.shadowRoot.querySelector("paper-spinner-lite").active = false;
+                    }
                }
             }
 
