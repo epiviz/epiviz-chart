@@ -53,11 +53,11 @@
                         }
 
                     }, function (jqXHR, textStatus, errorThrown) {
-                        var toast = document.createElement("paper-toast");
-                        toast.setAttribute("text", textStatus + " - " + errorThrown);
+                        // var toast = document.createElement("paper-toast");
+                        // toast.setAttribute("text", textStatus + " - " + errorThrown);
                         // toast.setAttribute("openned", true);
-                        this.shadowRoot.appendChild(toast);
-                        toast.show();
+                        // self.shadowRoot.appendChild(toast);
+                        // toast.show();
                     });
                 }
             }
@@ -228,8 +228,8 @@
                             var toast = document.createElement("paper-toast");
                             toast.setAttribute("text", currentChild.nodeName.toLowerCase() + ": query return empty - choose a different genomic region");
                             // toast.setAttribute("openned", true);
-                            this.shadowRoot.appendChild(toast);
-                            toast.show();
+                            // self.shadowRoot.appendChild(toast);
+                            // toast.show();
                         }
 
                         // Get gene (based on position)
@@ -242,11 +242,11 @@
                         }
                     },
                         function (jqXHR, textStatus, errorThrown) {
-                            var toast = document.createElement("paper-toast");
-                            toast.setAttribute("text", textStatus + " - " + errorThrown);
+                            // var toast = document.createElement("paper-toast");
+                            // toast.setAttribute("text", textStatus + " - " + errorThrown);
                             // toast.setAttribute("openned", true);
-                            this.shadowRoot.appendChild(toast);
-                            toast.show();
+                            // self.shadowRoot.appendChild(toast);
+                            // toast.show();
                         });
                 }
             }
@@ -283,11 +283,11 @@
                         }
                     },
                         function (jqXHR, textStatus, errorThrown) {
-                            var toast = document.createElement("paper-toast");
-                            toast.setAttribute("text", textStatus + " - " + errorThrown);
+                            // var toast = document.createElement("paper-toast");
+                            // toast.setAttribute("text", textStatus + " - " + errorThrown);
                             // toast.setAttribute("openned", true);
-                            this.shadowRoot.appendChild(toast);
-                            toast.show();
+                            // self.shadowRoot.appendChild(toast);
+                            // toast.show();
                         });
                 }
             }
@@ -372,33 +372,38 @@
                     if (tMeasurements.length != 0) {
                         currentChild.range = currentChild.range || self.range || pDom.range;
                         if (!currentChild.measurements) {
-                            currentChild.measurements = tMeasurements;
+                            // currentChild.measurements = tMeasurements;
+                            currentChild.set("measurements", tMeasurements);
                         }
                         var chartMeasMap = {};
                         chartMeasMap[id] = mSet;
 
                         self.dataManager.getData(currentChild.range, chartMeasMap, function (id, data) {
+                            
+                            if(data.measurements().length > 0) {
+                                var nItems = data.firstSeries().globalEndIndex() - data.firstSeries().globalStartIndex();
 
-                            var nItems = data.firstSeries().globalEndIndex() - data.firstSeries().globalStartIndex();
+                                // if (nItems == 0) {
+                                //     // var toast = document.createElement("paper-toast");
+                                //     // toast.setAttribute("text", currentChild.nodeName.toLowerCase() + ": query return empty - choose a different genomic region");
+                                //     // toast.setAttribute("openned", true);
+                                //     // self.shadowRoot.appendChild(toast);
+                                //     // toast.show();
+                                // }
 
-                            if (nItems == 0) {
-                                var toast = document.createElement("paper-toast");
-                                toast.setAttribute("text", currentChild.nodeName.toLowerCase() + ": query return empty - choose a different genomic region");
-                                // toast.setAttribute("openned", true);
-                                this.shadowRoot.appendChild(toast);
-                                toast.show();
-                            }
+                                var dataChartElem = pDom.querySelector('[plot-id$="' + id + '"]') || Polymer.dom(pDom).querySelector('[plot-id$="' + id + '"]');
+                                if (dataChartElem) {
+                                    // dataChartElem.data = pDom.transformFunc(data);
+                                    dataChartElem.set("data", pDom.transformFunc(data));
+                                }
+                                dataChartElem._onResize();
+                            } 
 
-                            var dataChartElem = pDom.querySelector('[plot-id$="' + id + '"]') || Polymer.dom(pDom).querySelector('[plot-id$="' + id + '"]');
-                            if (dataChartElem) {
-                                dataChartElem.data = pDom.transformFunc(data);
-                            }
-                            dataChartElem._onResize();
                         }, function (jqXHR, textStatus, errorThrown) {
-                            var toast = document.createElement("paper-toast");
-                            toast.setAttribute("text", textStatus + " - " + errorThrown);
-                            this.shadowRoot.appendChild(toast);
-                            toast.show();
+                            // var toast = document.createElement("paper-toast");
+                            // toast.setAttribute("text", textStatus + " - " + errorThrown);
+                            // self.shadowRoot.appendChild(toast);
+                            // toast.show();
                         });
 
                         // if (self._zoomIn != 0 && self._zoomIn % 2 == 0) {
@@ -537,22 +542,22 @@
                         self.dataManager.getData(currentChild.range, chartMeasMap, function (id, data) {
                             var nItems = data.firstSeries().globalEndIndex() - data.firstSeries().globalStartIndex();
 
-                            if (nItems == 0) {
-                                var toast = document.createElement("paper-toast");
-                                toast.setAttribute("text", currentChild.nodeName.toLowerCase() + ": Query return empty - choose a different genomic region");
-                                this.shadowRoot.appendChild(toast);
-                                toast.show();
-                            }
+                            // if (nItems == 0) {
+                            //     // var toast = document.createElement("paper-toast");
+                            //     // toast.setAttribute("text", currentChild.nodeName.toLowerCase() + ": Query return empty - choose a different genomic region");
+                            //     // self.shadowRoot.appendChild(toast);
+                            //     // toast.show();
+                            // }
 
                             var dataChartElem = Polymer.dom(self).querySelector('[plot-id$="' + id + '"]');
                             if (dataChartElem) {
                                 dataChartElem.data = self.transformFunc(data);
                             }
                         }, function (jqXHR, textStatus, errorThrown) {
-                            var toast = document.createElement("paper-toast");
-                            toast.setAttribute("text", textStatus + " - " + errorThrown);
-                            this.shadowRoot.appendChild(toast);
-                            toast.show();
+                            // var toast = document.createElement("paper-toast");
+                            // toast.setAttribute("text", textStatus + " - " + errorThrown);
+                            // self.shadowRoot.appendChild(toast);
+                            // toast.show();
                         });
                     }
                 }
