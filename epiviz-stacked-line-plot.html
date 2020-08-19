@@ -275,7 +275,9 @@ To create a stacked-line plot on a HTML page, add
                     else {
                         this.chart.draw(this.range, this.data);
                     }
-                    this.shadowRoot.querySelector("paper-spinner-lite").active = false;
+                    if (this.data.measurements().length == this.measurements.length) {
+                        this.shadowRoot.querySelector("paper-spinner-lite").active = false;
+                    }
                 }
             }
 
