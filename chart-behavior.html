@@ -85,9 +85,16 @@
         return class extends superClass {
             constructor() {
                 super();
+                var self = this;
                 //this.addEventListener('iron-resize', e => this._onResize(e));
                 this.addEventListener('transitionend', e => {
-                    this._debouncer = Polymer.Debouncer.debounce(this._debouncer, Polymer.Async.timeOut.after(50), () => this._onResize(e));
+                    this._debouncer = Polymer.Debouncer.debounce(this._debouncer, 
+                                Polymer.Async.timeOut.after(250), 
+                                () => {
+                                    if (e && (e instanceof TransitionEvent)) {
+                                        self._onResize(e);
+                                    }
+                                });
                 });
             }
 
@@ -221,7 +228,7 @@
                     chartSettings: {
                         type: Object,
                         notify: true,
-                        observer: '_chartSettingsChanged'
+                        // observer: '_chartSettingsChanged'
                     },
 
                     /**
@@ -242,7 +249,7 @@
                     chartColors: {
                         type: Array,
                         notify: true,
-                        observer: '_chartColorsChanged'
+                        // observer: '_chartColorsChanged'
                     },
 
                     /**
@@ -280,7 +287,10 @@
             }
 
             static get observers() {
-                return ['_dimChanged(dimX.*, dimY.*, dimS.*)'];
+                return ['_dimChanged(dimX.*, dimY.*, dimS.*)',
+                        '_chartSettingsChanged(chartSettings.*)',
+                        '_chartColorsChanged(chartColors.*)'
+                    ];
             }
 
             /**
@@ -288,6 +298,10 @@
              * Automatically triggered when the browser window or the css for the element changes.
              */
             _onResize(e) {
+                console.log(e);
+                // if(! (e instanceof TransitionEvent)) {
+                //     e.stopPropagation();
+                // }
                 if (this.chart != null) {
                     var parent = this._parentContainer;
                     var width = Math.max(this.chartType.defaultWidth() / 2, this.offsetWidth - epiviz.ui.charts.Visualization.SVG_MARGIN) - 15;
@@ -481,6 +495,7 @@
                 var self = this;
                 if (self.chartSettings && self.chart) {
                     self.chart.setCustomSettingsValues(self.chartSettings);
+                    self._dataChanged();                
                 }
             }
 
@@ -491,7 +506,8 @@
             _chartTitleChanged() {
                 var self = this;
                 if (self.title && self.chartSettings) {
-                    self.chartSettings.title = self.title;
+                    // self.chartSettings.title = self.title;
+                    self.set("chartSettings.title", self.title);
                 }
             }
 
@@ -503,7 +519,8 @@
             _chartFixedAxisChanged() {
                 var self = this;
                 if (self.chartSettings) {
-                    self.chartSettings["autoScale"] = self.fixedAxis;
+                    // self.chartSettings["autoScale"] = self.fixedAxis;
+                    self.set("chartSettings.autoScale", self.fixedAxis);
                 }
             }
 
@@ -740,9 +757,14 @@
              * Listens to when chart data is updated and redraws the chart.
              */
             _dataChanged() {
-                if (this.data != null && this.chart != null) {
-                    this._draw();
-                }
+                var self = this;
+                this._dataChangeddebouncer = Polymer.Debouncer.debounce(this._dataChangeddebouncer, 
+                    Polymer.Async.timeOut.after(250), 
+                    () => {
+                        if (self.data != null && self.chart != null) {
+                            self._draw();
+                        }
+                    });
             }
 
             get_json_data() {

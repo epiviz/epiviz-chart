@@ -150,7 +150,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                     this.settings["showTracks"] = newVal.join(",");
                     self._parentNode.chartSettings = this.settings;
                     // TODO: have to force change currently, not sure why!
-                    self._parentNode._draw();
+                    self._parentNode._dataChanged();
                 }
             }
 

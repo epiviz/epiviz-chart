@@ -85,6 +85,7 @@
         width: 99%;
         margin: 10px;
         border-radius: 5px;
+        /* overflow: auto; */
         transition: width 0.01s, height 0.01s;
         @apply (--shadow-elevation-2dp);
       }
@@ -633,7 +634,7 @@
         this.addEventListener("iron-resize", e => {
           this._debouncer = Polymer.Debouncer.debounce(
             this._debouncer,
-            Polymer.Async.timeOut.after(100),
+            Polymer.Async.timeOut.after(250),
             () => this._onResize(e)
           );
         });

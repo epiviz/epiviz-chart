@@ -41,7 +41,8 @@
                     currSettingIcon.className = "fa fa-chain-broken";
                 }
 
-                self.chartSettings["autoScale"] = self.toggleFixed;
+                // self.chartSettings["autoScale"] = self.toggleFixed;
+                self.set("chartSettings.autoScale", self.toggleFixed);
             }
 
             /**

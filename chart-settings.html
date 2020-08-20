@@ -43,7 +43,8 @@
                 }
 
                 currSetting.showSettings(this.shadowRoot, function (newSettings) {
-                    self.chartSettings = newSettings;
+                    // self.chartSettings = newSettings;
+                    self.set("chartSettings", newSettings);
                 });
             }
 
