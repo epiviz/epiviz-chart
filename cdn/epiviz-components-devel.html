@@ -45491,8 +45491,16 @@ class WeakCache {
 
     <template>
         <style>
+
+            :host {
+                --hide-delete-workspaces: "none" !important;
+            }
             paper-dropdown-input {
                 vertical-align: middle;
+            }
+
+            :host > paper-icon-button.deleteWorkspace {
+                display: var(--hide-delete-workspaces);
             }
 
             /* paper-button {
@@ -45532,7 +45540,6 @@ class WeakCache {
 
         <div class="workspaceActions">
             <paper-button raised="" on-tap="_saveWorkspace" hidden$="{{_showSaveWorkspace(currentWorkspace.*)}}">Save ({{_getWorkspaceTitle(currentWorkspace.*)}})</paper-button>
-
             <paper-menu-button vertical-offset="50">
                 <paper-button raised="" slot="dropdown-trigger">
                     <span>Workspace</span>
@@ -45575,9 +45582,9 @@ class WeakCache {
                                 <paper-tags prevent-remove-tag="" readonly="" items="{{value}}"></paper-tags>
                             </template>
                         </paper-datatable-column>
-                        <paper-datatable-column header="Actions">
+                        <paper-datatable-column header="Actions" property="title">
                             <template>
-                                <paper-icon-button alt="delete workspace" title="delete workspace" icon="delete"></paper-icon-button>
+                                <paper-icon-button disabled$="{{_getClassDelete(value.*)}}" alt="delete workspace" title="delete workspace" icon="delete"></paper-icon-button>
                                 <paper-icon-button alt="load workspace" title="load workspace" icon="icons:exit-to-app"></paper-icon-button>
                                 </template>
                             
@@ -45662,6 +45669,12 @@ class WeakCache {
                         type: Array,
                         notify: true,
                         value: []
+                    },
+
+                    readonly: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
                     }
                 }
             }
@@ -45699,6 +45712,16 @@ class WeakCache {
                 });
             }
 
+            _isReadOnly() {
+                if (this.readonly) { return true;}
+                return false;
+            }
+
+            _getClassDelete(currentWorkspace) {
+                if (this.readonly) {return true;}
+                return false;
+            }
+
             disconnectedCallback() {
                 super.disconnectedCallback();
             }
@@ -45713,6 +45736,14 @@ class WeakCache {
                         bubbles: true
                     }
                 ));
+
+                if (self.readonly) {
+                    Polymer.updateStyles({
+                        '--hide-delete-workspaces' : 'none'
+                    });
+
+                    self.style.setProperty('--hide-delete-workspaces', 'none')
+                }
             }
 
             handleResponse(e) {
@@ -45745,6 +45776,12 @@ class WeakCache {
                 // this.gene = resp.data[0].gene;
 
                 this.$.loadWorkspace.open();
+
+                if (self.readonly) {
+                    Polymer.updateStyles({
+                        '--hide-delete-workspaces' : 'none;'
+                    });
+                }
             }
 
             _cellTapped(e) {
@@ -45756,11 +45793,13 @@ class WeakCache {
                     if (e.detail.target.icon == "delete") {
                         // delete this workspace
 
-                        var ajaxElem = this.$.deletews;
-                        ajaxElem.url = this._getDeleteURL(this._workspacesObj[e.detail.item.key]);
-                        ajaxElem.generateRequest();
+                        if(!self.readonly) {
+                            var ajaxElem = this.$.deletews;
+                            ajaxElem.url = this._getDeleteURL(this._workspacesObj[e.detail.item.key]);
+                            ajaxElem.generateRequest();
 
-                        delete self._workspacesObj[e.detail.item.key];
+                            delete self._workspacesObj[e.detail.item.key];
+                        }
                     }
                     else if (e.detail.target.icon == "icons:exit-to-app") {
                         self.onLoadWorkspace(e);
@@ -45829,6 +45868,7 @@ class WeakCache {
             }
 
             _showSaveWorkspace(currentWorkspace) {
+                if (this.readonly) { return true;}
                 var currentWorkspace = this.currentWorkspace;
                 if(currentWorkspace == null || currentWorkspace == {} || currentWorkspace == undefined) {
                     return true
@@ -45839,7 +45879,7 @@ class WeakCache {
 
             _getWorkspaceTitle(currentWorkspace) {
                 var currentWorkspace = this.currentWorkspace;
-                if(!this._showSaveWorkspace(currentWorkspace)) {
+                if(currentWorkspace && !this._showSaveWorkspace(currentWorkspace)) {
                     return currentWorkspace.title.slice(0, 5) + "...";
                 }
 
