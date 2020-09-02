@@ -45492,17 +45492,6 @@ class WeakCache {
     <template>
         <style>
 
-            :host {
-                --hide-delete-workspaces: "none" !important;
-            }
-            paper-dropdown-input {
-                vertical-align: middle;
-            }
-
-            :host > paper-icon-button.deleteWorkspace {
-                display: var(--hide-delete-workspaces);
-            }
-
             /* paper-button {
                 font-family: 'Roboto', 'Noto', sans-serif;
                 font-weight: normal;
@@ -45513,6 +45502,11 @@ class WeakCache {
                 height: 50px;
                 vertical-align: middle;
             } */
+
+
+            .saveWorkspaceBold {
+                font-weight: bold;
+            }
 
             .workspaceActions {
                 float: right;
@@ -45539,7 +45533,9 @@ class WeakCache {
         </iron-ajax>
 
         <div class="workspaceActions">
-            <paper-button raised="" on-tap="_saveWorkspace" hidden$="{{_showSaveWorkspace(currentWorkspace.*)}}">Save ({{_getWorkspaceTitle(currentWorkspace.*)}})</paper-button>
+            <paper-button id="saveButton" raised="" on-tap="_saveWorkspace" hidden$="{{_showSaveWorkspace(currentWorkspace.*)}}">
+                    Save ({{_getWorkspaceTitle(currentWorkspace.*)}})
+                    </paper-button>
             <paper-menu-button vertical-offset="50">
                 <paper-button raised="" slot="dropdown-trigger">
                     <span>Workspace</span>
@@ -45654,7 +45650,7 @@ class WeakCache {
                         value : false
                     },
 
-                                        /**
+                    /**
                      * Array of workspace names to populate dropdown
                      *
                      * @type {Array}
@@ -45675,6 +45671,13 @@ class WeakCache {
                         type: Boolean,
                         notify: true,
                         value: false
+                    },
+
+                    workspaceSaved: {
+                        type: Boolean,
+                        value: true,
+                        notify: true,
+                        observer: "_workspaceSavedChanged"
                     }
                 }
             }
@@ -45689,6 +45692,14 @@ class WeakCache {
                 super();
                 this.tmpWorkspace = {};
                 this._workspacesObj = {};
+            }
+
+            _workspaceSavedChanged(newVal, oldVal) {
+                if (!newVal) {
+                    this.$.saveButton.className = "saveWorkspaceBold";
+                    return;
+                }
+                this.$.saveButton.className = "";
             }
 
             /* callback function after the element is attached to the DOM */
@@ -45708,6 +45719,12 @@ class WeakCache {
                         self.currentWorkspace.genomes = [e.detail.data.genome];
                     } else {
                         self.tmpWorkspace[e.detail.id] = e.detail.data;
+                    }
+
+                    self.workspaceSaved = false;
+
+                    if (self.workspaceLoadedFlag > 0) {
+                        self.workspaceLoadedFlag++;
                     }
                 });
             }
@@ -45736,14 +45753,6 @@ class WeakCache {
                         bubbles: true
                     }
                 ));
-
-                if (self.readonly) {
-                    Polymer.updateStyles({
-                        '--hide-delete-workspaces' : 'none'
-                    });
-
-                    self.style.setProperty('--hide-delete-workspaces', 'none')
-                }
             }
 
             handleResponse(e) {
@@ -45776,12 +45785,6 @@ class WeakCache {
                 // this.gene = resp.data[0].gene;
 
                 this.$.loadWorkspace.open();
-
-                if (self.readonly) {
-                    Polymer.updateStyles({
-                        '--hide-delete-workspaces' : 'none;'
-                    });
-                }
             }
 
             _cellTapped(e) {
@@ -45848,9 +45851,12 @@ class WeakCache {
 
                 this.set("tmp_title", "");
                 this._updateFlag = true;
+                this.workspaceSaved = true;
             }
 
-            handleUpdateResponse(e) {}
+            handleUpdateResponse(e) {
+                this.workspaceSaved = true;
+            }
 
             handleDeleteResponse(e) {
                 var self = this;
@@ -45887,7 +45893,13 @@ class WeakCache {
             }
 
             _saveWorkspace(e) {
-                this._currentWorkspaceChanged(this.currentWorkspace);
+                // this._currentWorkspaceChanged(this.currentWorkspace);
+                if (this.currentWorkspace && this._updateFlag) {
+                    var ajaxElem = this.$.updatews;
+                    ajaxElem.body = this.currentWorkspace;
+
+                    ajaxElem.generateRequest();
+                }
             }
 
             /**
@@ -45963,6 +45975,8 @@ class WeakCache {
                 var ajaxElem = this.$.getws;
                 ajaxElem.url = this.api + id;
                 ajaxElem.generateRequest();
+                self.saveWorkspace = true;
+                self.workspaceLoadedFlag++;
             }
 
             _getUpdateURL(cw) {
@@ -45982,12 +45996,7 @@ class WeakCache {
             }
 
             _currentWorkspaceChanged(newVal, oldVal) {
-                if (newVal && this._updateFlag) {
-                    var ajaxElem = this.$.updatews;
-                    ajaxElem.body = this.currentWorkspace;
-
-                    ajaxElem.generateRequest();
-                }
+                this.workspaceSaved = false;
             }
 
             _selectionChanged(e) {
@@ -69369,6 +69378,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                     selectedItems: {
                         type: Array,
                         notify: true
+                        // observer: "_selectedItemsChanged"
                     }
                 }
             }
@@ -69397,6 +69407,12 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                     }
                 })
                 return categories;
+            }
+
+            _selectedItemsChanged() {
+                var self = this;
+                // for now
+                self._deselectAll();
             }
 
             /**
@@ -69560,6 +69576,8 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             applyFilters() {
                 var self = this;
                 var filterString = [];
+                self.selectedItems = [];
+                self._deselectAll();
 
                 for (var key in this.filters) {
                     var categoryFilters = []
@@ -69585,6 +69603,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 }
 
                 if (filterString.length === 0) {
+                    self.tableData = self.flattenedData;
                     return;
                 }
 
@@ -69726,7 +69745,8 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 data = data.map(self._flattenObject);
 
                 this.set('flattenedData', data);
-                self.tableData = self.flattenedData;
+                // self.tableData = self.flattenedData;
+                self.applyFilters();
 
                 var allColumns = []
                 self.tableData.forEach(function(td) {
@@ -69740,7 +69760,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                     self.set("defaultColumns", allColumns);
                 }
 
-                var attributes = self._buildAttributes(self.tableData, self.showColumns);
+                var attributes = self._buildAttributes(self.flattenedData, self.showColumns);
                 self._attributes = attributes;
 
                 // TODO: Replace with polymer's this.async
@@ -71454,7 +71474,8 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                     */
                     selection: {
                         type: Object,
-                        notify: true
+                        notify: true,
+                        value: {}
                     },
 
                     selectedMeasurements: {
@@ -71488,7 +71509,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                         reflectToAttribute: true,
                         value: function () {
                             return {
-                                "GenesTrack": "epiviz-genes-track",
+                                // "GenesTrack": "epiviz-genes-track",
                                 "BlocksTrack": 'epiviz-blocks-track',
                                 "StackedBlocksTrack": 'epiviz-stacked-blocks-track',
                                 "HeatmapPlot": "epiviz-heatmap-plot",
@@ -71658,65 +71679,97 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 var self = this;
                 var envElement = self._parentContainer;
 
-                self.selection = {};
-                self.selection.chartType = self._charts[self.selectedChart];
-                self.measurements = envElement.measurementSet;
+                // if (!self.selection || self.selection == {}) {
+                    self.selection = {};
+                    // self.selectedMeasurements = [];
+                    // self.selectedExistingMeasurements = [];
+                    self.selection.chartType = self.selectedChart;
+                    self.measurements = envElement.measurementSet;
 
-                if (event && event.target.nodeName === "PAPER-ITEM") {
-                    $(event.target).parent().parent()[0].selected = null;
-                }
+                    if (event && event.target.nodeName === "PAPER-ITEM") {
+                        $(event.target).parent().parent()[0].selected = null;
+                    }
 
-                if (self.selection.chartType == "GenesTrack") {
-                    var data = envElement.measurementSet.subset(function (m) { return m.defaultChartType() == "Genes Track" });
-                    var datasourceGroups = {};
-                    data.foreach(function (m) {
-                        if (data.dataprovider && data.dataprovider != m.dataprovider()) { return; }
-                        if (data.annotation) {
-                            for (var key in data.annotation) {
-                                if (!data.annotation.hasOwnProperty(key)) { continue; }
-                                if (!m.annotation() || m.annotation()[key] != data.annotation[key]) { return; }
+                    if (self.selection.chartType == "GenesTrack") {
+                        var data = envElement.measurementSet.subset(function (m) { return m.defaultChartType() == "Genes Track" });
+                        var datasourceGroups = {};
+                        data.foreach(function (m) {
+                            if (data.dataprovider && data.dataprovider != m.dataprovider()) { return; }
+                            if (data.annotation) {
+                                for (var key in data.annotation) {
+                                    if (!data.annotation.hasOwnProperty(key)) { continue; }
+                                    if (!m.annotation() || m.annotation()[key] != data.annotation[key]) { return; }
+                                }
                             }
+                            datasourceGroups[m.datasourceGroup()] = ["Genes track", false];
+                        });
+
+                        // self.set("_jsonMeasurements", data.raw());
+                    }
+                    else {
+                        var data = envElement.measurementAll;
+                        var source = "epiviz";
+
+                        // self.set("_jsonMeasurements", data.raw());
+                    }
+                    var nData = [];
+                    var mData = data.raw();
+                    mData.forEach(function (d, i) {
+
+                        if (d.annotation["genome"] == self._parentContainer.genome) {
+                            var temp = d.annotation;
+                            if (temp == undefined) {
+                                temp = {};
+                            }
+
+                            delete temp["tags"];
+                            delete d["type"];
+                            delete d["datasourceId"];
+                            delete d["datasourceGroup"];
+                            delete d["dataprovider"];
+                            delete d["formula"];
+                            delete d["defaultChartType"];
+                            delete d["metadata"];
+                            delete d["minValue"];
+                            delete d["maxValue"];
+
+                            d.annotation = temp;
+                            nData.push(d);
                         }
-                        datasourceGroups[m.datasourceGroup()] = ["Genes track", false];
                     });
 
-                    // self.set("_jsonMeasurements", data.raw());
-                }
-                else {
-                    var data = envElement.measurementAll;
-                    var source = "epiviz";
-
-                    // self.set("_jsonMeasurements", data.raw());
-                }
-                var nData = [];
-                var mData = data.raw();
-                mData.forEach(function (d, i) {
-
-                    if (d.annotation["genome"] == self._parentContainer.genome) {
-                        var temp = d.annotation;
-                        if (temp == undefined) {
-                            temp = {};
-                        }
-
-                        delete temp["tags"];
-                        delete d["type"];
-                        delete d["datasourceId"];
-                        delete d["datasourceGroup"];
-                        delete d["dataprovider"];
-                        delete d["formula"];
-                        delete d["defaultChartType"];
-                        delete d["metadata"];
-                        delete d["minValue"];
-                        delete d["maxValue"];
-
-                        d.annotation = temp;
-                        nData.push(d);
+                    if(!self._jsonMeasurements) {
+                        self.set("_jsonMeasurements", nData);
+                    } else if (self._jsonMeasurements.length != nData.length) {
+                        self.set("_jsonMeasurements", nData);
                     }
-                });
+                    
+                // }
+                // else {
+                //     self.selection.chartType = self._charts[self.selectedChart];
+
+                //     self.selectedMeasurements = [];
+                //     self.selectedExistingMeasurements = [];
+
+                //     if (self.selection.chartType == "GenesTrack") {
+                //         var data = envElement.measurementSet.subset(function (m) { return m.defaultChartType() == "Genes Track" });
+                //         var datasourceGroups = {};
+                //         data.foreach(function (m) {
+                //             if (data.dataprovider && data.dataprovider != m.dataprovider()) { return; }
+                //             if (data.annotation) {
+                //                 for (var key in data.annotation) {
+                //                     if (!data.annotation.hasOwnProperty(key)) { continue; }
+                //                     if (!m.annotation() || m.annotation()[key] != data.annotation[key]) { return; }
+                //                 }
+                //             }
+                //             datasourceGroups[m.datasourceGroup()] = ["Genes track", false];
+                //         });
+
+                //         // self.set("_jsonMeasurements", data.raw());
+                //     }
+                // }
                 
-                self.set("_jsonMeasurements", nData);
-                
-                this.$.modal.refit();
+                // this.$.modal.refit();
             }
 
             _close() {
@@ -71731,7 +71784,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 }
                 this.set("selectedMeasurements", []);
                 this.set("selectedExistingMeasurements", []);
-                this.set("_jsonMeasurements", []);
+                // this.set("_jsonMeasurements", []);
             }
 
             _submit() {
@@ -73059,8 +73112,14 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                                             <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
                                         </template>
                                         <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'array')]]">
-                                            <paper-dropdown-input name="{{item.id}}" value="[[_getValue(item.id)]]" label="{{item.label}}" items="{{item.possibleValues}}"></paper-dropdown-input>
-                                        </template>
+                                            <paper-dropdown-menu name="{{item.id}}" label="{{item.label}}" no-animations="" horizontal-align="left">
+                                                <paper-listbox slot="dropdown-content" selected="[[_getSelectedValue(item)]]">
+                                                    <template id="itemRepeater" is="dom-repeat" items="[[item.possibleValues]]">
+                                                        <paper-item value$="[[item]]">[[item]]</paper-item>
+                                                    </template>
+                                                </paper-listbox>
+                                            </paper-dropdown-menu>
+                                            </template>
                                     </template>
                                 </div>
                                 <span hidden$="{{_hasStatSetting()}}">No Chart Settings</span>
@@ -73142,6 +73201,11 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
             disconnectedCallback() {
                 super.connectedCallback();
+            }
+
+            _getSelectedValue(item) {
+                var val = this._getValue(item.id);
+                return item.possibleValues.indexOf(val) != -1 ? item.possibleValues.indexOf(val) : null;
             }
 
             /**
@@ -73345,6 +73409,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                     chartContainer.appendChild(currSetting);
                 }
                 else {
+                    currSetting.setAttribute('defs', JSON.stringify(self.chart.properties().customSettingsDefs));
                     currSetting.setAttribute('vals', JSON.stringify(self.chartSettings));
                 }
 
