@@ -5,6 +5,8 @@
 <link rel="import" href="bower_components/paper-button/paper-button.html">
 <link rel="import" href="bower_components/paper-input/paper-input.html">
 <link rel="import" href="bower_components/paper-dropdown-input/paper-dropdown-input.html">
+<link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="bower_components/paper-styles/color.html">
 <link rel="import" href="bower_components/paper-styles/typography.html">
 <link rel="import" href="bower_components/paper-styles/default-theme.html">
@@ -153,8 +155,16 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                                             <paper-input name="{{item.id}}" label="{{item.label}}" value="[[_getValue(item.id)]]"></paper-input>
                                         </template>
                                         <template restamp="true" is="dom-if" if="[[_settingType(item.type, 'array')]]">
-                                            <paper-dropdown-input name="{{item.id}}" value="[[_getValue(item.id)]]"
-                                                label="{{item.label}}" items="{{item.possibleValues}}"></paper-dropdown-input>
+                                            <paper-dropdown-menu  name="{{item.id}}"
+                                                label="{{item.label}}" no-animations horizontal-align="left">
+                                                <paper-listbox slot="dropdown-content" selected="[[_getSelectedValue(item)]]">
+                                                    <template id="itemRepeater" is="dom-repeat" items="[[item.possibleValues]]">
+                                                        <paper-item value$="[[item]]">[[item]]</paper-item>
+                                                    </template>
+                                                </paper-listbox>
+                                            </paper-dropdown-menu>
+                                            <!-- <paper-dropdown-input name="{{item.id}}" value="[[_getValue(item.id)]]"
+                                                label="{{item.label}}" search-value="[[_getValue(item.id)]]" items="{{item.possibleValues}}"></paper-dropdown-input> -->
                                         </template>
                                     </template>
                                 </div>
@@ -239,6 +249,11 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
 
             disconnectedCallback() {
                 super.connectedCallback();
+            }
+
+            _getSelectedValue(item) {
+                var val = this._getValue(item.id);
+                return item.possibleValues.indexOf(val) != -1 ? item.possibleValues.indexOf(val) : null;
             }
 
             /**

@@ -39,6 +39,7 @@
                     chartContainer.appendChild(currSetting);
                 }
                 else {
+                    currSetting.setAttribute('defs', JSON.stringify(self.chart.properties().customSettingsDefs));
                     currSetting.setAttribute('vals', JSON.stringify(self.chartSettings));
                 }
 
