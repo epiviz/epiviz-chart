@@ -178,7 +178,8 @@
                     */
                     selection: {
                         type: Object,
-                        notify: true
+                        notify: true,
+                        value: {}
                     },
 
                     selectedMeasurements: {
@@ -212,7 +213,7 @@
                         reflectToAttribute: true,
                         value: function () {
                             return {
-                                "GenesTrack": "epiviz-genes-track",
+                                // "GenesTrack": "epiviz-genes-track",
                                 "BlocksTrack": 'epiviz-blocks-track',
                                 "StackedBlocksTrack": 'epiviz-stacked-blocks-track',
                                 "HeatmapPlot": "epiviz-heatmap-plot",
@@ -382,65 +383,97 @@
                 var self = this;
                 var envElement = self._parentContainer;
 
-                self.selection = {};
-                self.selection.chartType = self._charts[self.selectedChart];
-                self.measurements = envElement.measurementSet;
+                // if (!self.selection || self.selection == {}) {
+                    self.selection = {};
+                    // self.selectedMeasurements = [];
+                    // self.selectedExistingMeasurements = [];
+                    self.selection.chartType = self.selectedChart;
+                    self.measurements = envElement.measurementSet;
 
-                if (event && event.target.nodeName === "PAPER-ITEM") {
-                    $(event.target).parent().parent()[0].selected = null;
-                }
+                    if (event && event.target.nodeName === "PAPER-ITEM") {
+                        $(event.target).parent().parent()[0].selected = null;
+                    }
 
-                if (self.selection.chartType == "GenesTrack") {
-                    var data = envElement.measurementSet.subset(function (m) { return m.defaultChartType() == "Genes Track" });
-                    var datasourceGroups = {};
-                    data.foreach(function (m) {
-                        if (data.dataprovider && data.dataprovider != m.dataprovider()) { return; }
-                        if (data.annotation) {
-                            for (var key in data.annotation) {
-                                if (!data.annotation.hasOwnProperty(key)) { continue; }
-                                if (!m.annotation() || m.annotation()[key] != data.annotation[key]) { return; }
+                    if (self.selection.chartType == "GenesTrack") {
+                        var data = envElement.measurementSet.subset(function (m) { return m.defaultChartType() == "Genes Track" });
+                        var datasourceGroups = {};
+                        data.foreach(function (m) {
+                            if (data.dataprovider && data.dataprovider != m.dataprovider()) { return; }
+                            if (data.annotation) {
+                                for (var key in data.annotation) {
+                                    if (!data.annotation.hasOwnProperty(key)) { continue; }
+                                    if (!m.annotation() || m.annotation()[key] != data.annotation[key]) { return; }
+                                }
                             }
+                            datasourceGroups[m.datasourceGroup()] = ["Genes track", false];
+                        });
+
+                        // self.set("_jsonMeasurements", data.raw());
+                    }
+                    else {
+                        var data = envElement.measurementAll;
+                        var source = "epiviz";
+
+                        // self.set("_jsonMeasurements", data.raw());
+                    }
+                    var nData = [];
+                    var mData = data.raw();
+                    mData.forEach(function (d, i) {
+
+                        if (d.annotation["genome"] == self._parentContainer.genome) {
+                            var temp = d.annotation;
+                            if (temp == undefined) {
+                                temp = {};
+                            }
+
+                            delete temp["tags"];
+                            delete d["type"];
+                            delete d["datasourceId"];
+                            delete d["datasourceGroup"];
+                            delete d["dataprovider"];
+                            delete d["formula"];
+                            delete d["defaultChartType"];
+                            delete d["metadata"];
+                            delete d["minValue"];
+                            delete d["maxValue"];
+
+                            d.annotation = temp;
+                            nData.push(d);
                         }
-                        datasourceGroups[m.datasourceGroup()] = ["Genes track", false];
                     });
 
-                    // self.set("_jsonMeasurements", data.raw());
-                }
-                else {
-                    var data = envElement.measurementAll;
-                    var source = "epiviz";
-
-                    // self.set("_jsonMeasurements", data.raw());
-                }
-                var nData = [];
-                var mData = data.raw();
-                mData.forEach(function (d, i) {
-
-                    if (d.annotation["genome"] == self._parentContainer.genome) {
-                        var temp = d.annotation;
-                        if (temp == undefined) {
-                            temp = {};
-                        }
-
-                        delete temp["tags"];
-                        delete d["type"];
-                        delete d["datasourceId"];
-                        delete d["datasourceGroup"];
-                        delete d["dataprovider"];
-                        delete d["formula"];
-                        delete d["defaultChartType"];
-                        delete d["metadata"];
-                        delete d["minValue"];
-                        delete d["maxValue"];
-
-                        d.annotation = temp;
-                        nData.push(d);
+                    if(!self._jsonMeasurements) {
+                        self.set("_jsonMeasurements", nData);
+                    } else if (self._jsonMeasurements.length != nData.length) {
+                        self.set("_jsonMeasurements", nData);
                     }
-                });
+                    
+                // }
+                // else {
+                //     self.selection.chartType = self._charts[self.selectedChart];
+
+                //     self.selectedMeasurements = [];
+                //     self.selectedExistingMeasurements = [];
+
+                //     if (self.selection.chartType == "GenesTrack") {
+                //         var data = envElement.measurementSet.subset(function (m) { return m.defaultChartType() == "Genes Track" });
+                //         var datasourceGroups = {};
+                //         data.foreach(function (m) {
+                //             if (data.dataprovider && data.dataprovider != m.dataprovider()) { return; }
+                //             if (data.annotation) {
+                //                 for (var key in data.annotation) {
+                //                     if (!data.annotation.hasOwnProperty(key)) { continue; }
+                //                     if (!m.annotation() || m.annotation()[key] != data.annotation[key]) { return; }
+                //                 }
+                //             }
+                //             datasourceGroups[m.datasourceGroup()] = ["Genes track", false];
+                //         });
+
+                //         // self.set("_jsonMeasurements", data.raw());
+                //     }
+                // }
                 
-                self.set("_jsonMeasurements", nData);
-                
-                this.$.modal.refit();
+                // this.$.modal.refit();
             }
 
             _close() {
@@ -455,7 +488,7 @@
                 }
                 this.set("selectedMeasurements", []);
                 this.set("selectedExistingMeasurements", []);
-                this.set("_jsonMeasurements", []);
+                // this.set("_jsonMeasurements", []);
             }
 
             _submit() {
