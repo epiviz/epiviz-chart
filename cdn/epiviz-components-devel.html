@@ -72153,8 +72153,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 <div class="title">and select datasets below</div>
                 <paper-tabs selected="{{tabSelected}}" noink="">
                     <paper-tab>All datasets </paper-tab>
-                    <paper-tab>Use from existing charts</paper-tab>
-                </paper-tabs>
+                    </paper-tabs>
             </div>
             <paper-dialog-scrollable>
                 <iron-pages selected="{{tabSelected}}">
@@ -72171,14 +72170,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                         </template>
                         <p class="infoMessage" hidden$="[[_tableDataExistsCollection(_jsonMeasurements)]]">Choose a Chart Type or Collection</p>
                     </div>
-                    <div class="dialog-content">
-                        <template is="dom-if" if="[[_tableDataExists(_existingChartMeasurements)]]">
-                            <data-filter data="{{_existingChartMeasurements}}" class="curr-charts" selected-items="{{selectedExistingMeasurements}}">
-                            </data-filter>
-                        </template>
-                        <p class="infoMessage" hidden$="[[_tableDataExists(_existingChartMeasurements)]]">No Existing Charts</p>
-                    </div>
-                </iron-pages>
+                    </iron-pages>
                 <div id="chartPreview">
 
                 </div>
@@ -72427,9 +72419,11 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             }
 
             _showModal(event) {
+                var self = this;
                 var envElement = this._parentContainer;
                 var currentCharts = [];
                 var currentChartObj = {};
+                this.currChartCollections = [];
                 let navChildren =
                     Polymer.FlattenedNodesObserver.getFlattenedNodes(envElement).filter(n => n.nodeType === Node.ELEMENT_NODE);
                 var numChildren = navChildren.length;
@@ -72437,12 +72431,24 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                     var currentChild = navChildren[index];
                     currentCharts.push({ "node": currentChild.nodeName, "id": currentChild.plotId });
                     currentChartObj[currentChild.plotId] = currentChild.measurements;
+                    if (currentChild.nodeName != "EPIVIZ-GENES-TRACK") {
+                        currentChild.measurements.forEach(function(m) {
+                            var tempM = JSON.parse(JSON.stringify(m));
+                            if (!tempM["annotation"]) {
+                                tempM["annotation"] = {};
+                            }
+                            tempM["annotation"]["collection"] = currentChild.plotId;
+                            self.currChartCollections.push(tempM);
+                        });
+                    }
                 }
                 this.currentChartObj = currentChartObj;
                 this.set("_existingChartMeasurements", currentCharts);
 
                 var collections = [];
                 var mData = envElement.measurementAll.raw();
+                
+                mData = mData.concat(self.currChartCollections);
                 mData.forEach(function(m) {
                     if (!collections.includes(m.annotation["collection"])) {
                         collections.push(m.annotation["collection"]);
@@ -72493,21 +72499,24 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                             datasourceGroups[m.datasourceGroup()] = ["Genes track", false];
                         });
 
+                        data = data.raw();
+
                         // self.set("_jsonMeasurements", data.raw());
                     }
                     else {
 
-                        var data = envElement.measurementAll;
+                        var data = envElement.measurementAll.raw();
+                        data = data.concat(self.currChartCollections);
                         var source = "epiviz";
                         if (this.selectedCollection && this.selectedCollection != "") {
                             var envElement = self._parentContainer;
-                            var data = envElement.measurementAll.subset(function (m) { return m.annotation()["collection"] == self.selectedCollection});
+                            data = data.filter(function (m) { return m["annotation"]["collection"] == self.selectedCollection});
                         }
 
                         // self.set("_jsonMeasurements", data.raw());
                     }
                     var nData = [];
-                    var mData = data.raw();
+                    var mData = data; //.raw();
                     mData.forEach(function (d, i) {
 
                         if (d.annotation["genome"] == self._parentContainer.genome) {
