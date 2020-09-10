@@ -265,7 +265,7 @@
               label="Genome"
               on-change="_updateGenome"
             ></paper-input> -->
-            <paper-dropdown id="genomeInput" name="Genome" label="Genome" value="{{genome}}" no-animations
+            <paper-dropdown disabled id="genomeInput" name="Genome" label="Genome" value="{{genome}}" no-animations
               horizontal-align="left">
               <template id="itemRepeater" is="dom-repeat" items="[[_genomeList]]">
                   <paper-item value$="[[item]]">[[item]]</paper-item>
