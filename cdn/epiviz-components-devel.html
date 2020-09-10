@@ -45512,6 +45512,10 @@ class WeakCache {
                 float: right;
             }
 
+            .hidden {
+                display: none !important;
+            }
+
             /* .buttons {
                 padding: 0px;
             } */
@@ -45536,7 +45540,7 @@ class WeakCache {
             <paper-button id="saveButton" raised="" on-tap="_saveWorkspace" hidden$="{{_showSaveWorkspace(currentWorkspace.*)}}">
                     Save ({{_getWorkspaceTitle(currentWorkspace.*)}})
                     </paper-button>
-            <paper-menu-button vertical-offset="50">
+            <paper-menu-button class$="{{_getWorkspaceClass()}}" vertical-offset="50">
                 <paper-button raised="" slot="dropdown-trigger">
                     <span>Workspace</span>
                     <iron-icon icon="icons:arrow-drop-down"></iron-icon>
@@ -45697,6 +45701,10 @@ class WeakCache {
                 super();
                 this.tmpWorkspace = {};
                 this._workspacesObj = {};
+            }
+
+            _getWorkspaceClass () {
+                return this._showSaveWorkspace() ? "hidden" : "";
             }
 
             _workspaceSavedChanged(newVal, oldVal) {
