@@ -45678,6 +45678,11 @@ class WeakCache {
                         value: true,
                         notify: true,
                         observer: "_workspaceSavedChanged"
+                    },
+
+                    workspaceLoadCounter: {
+                        type: Number,
+                        value: 0
                     }
                 }
             }
@@ -45695,7 +45700,7 @@ class WeakCache {
             }
 
             _workspaceSavedChanged(newVal, oldVal) {
-                if (!newVal) {
+                if (!newVal && this.workspaceLoadCounter > 0) {
                     this.$.saveButton.className = "saveWorkspaceBold";
                     return;
                 }
@@ -45723,9 +45728,7 @@ class WeakCache {
 
                     self.workspaceSaved = false;
 
-                    if (self.workspaceLoadedFlag > 0) {
-                        self.workspaceLoadedFlag++;
-                    }
+                    self.workspaceLoadCounter++;
                 });
             }
 
@@ -45976,7 +45979,6 @@ class WeakCache {
                 ajaxElem.url = this.api + id;
                 ajaxElem.generateRequest();
                 self.saveWorkspace = true;
-                self.workspaceLoadedFlag++;
             }
 
             _getUpdateURL(cw) {
@@ -51822,6 +51824,515 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
         return ripple;
       }
 
+    });
+  </script>
+</dom-module>
+<dom-module id="iron-image" assetpath="bower_components/iron-image/">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+        overflow: hidden;
+        position: relative;
+      }
+
+      #baseURIAnchor {
+        display: none;
+      }
+
+      #sizedImgDiv {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
+
+        display: none;
+      }
+
+      #img {
+        display: block;
+        width: var(--iron-image-width, auto);
+        height: var(--iron-image-height, auto);
+      }
+
+      :host([sizing]) #sizedImgDiv {
+        display: block;
+      }
+
+      :host([sizing]) #img {
+        display: none;
+      }
+
+      #placeholder {
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
+
+        background-color: inherit;
+        opacity: 1;
+
+        @apply --iron-image-placeholder;
+      }
+
+      #placeholder.faded-out {
+        transition: opacity 0.5s linear;
+        opacity: 0;
+      }
+    </style>
+
+    <a id="baseURIAnchor" href="bower_components/iron-image/iron-image.html#"></a>
+    <div id="sizedImgDiv" role="img" hidden$="[[_computeImgDivHidden(sizing)]]" aria-hidden$="[[_computeImgDivARIAHidden(alt)]]" aria-label$="[[_computeImgDivARIALabel(alt, src)]]"></div>
+    <img id="img" alt$="[[alt]]" hidden$="[[_computeImgHidden(sizing)]]" crossorigin$="[[crossorigin]]" on-load="_imgOnLoad" on-error="_imgOnError">
+    <div id="placeholder" hidden$="[[_computePlaceholderHidden(preload, fade, loading, loaded)]]" class$="[[_computePlaceholderClassName(preload, fade, loading, loaded)]]"></div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'iron-image',
+
+      properties: {
+        /**
+         * The URL of an image.
+         */
+        src: {type: String, value: ''},
+
+        /**
+         * A short text alternative for the image.
+         */
+        alt: {type: String, value: null},
+
+        /**
+         * CORS enabled images support:
+         * https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image
+         */
+        crossorigin: {type: String, value: null},
+
+        /**
+         * When true, the image is prevented from loading and any placeholder is
+         * shown.  This may be useful when a binding to the src property is known to
+         * be invalid, to prevent 404 requests.
+         */
+        preventLoad: {type: Boolean, value: false},
+
+        /**
+         * Sets a sizing option for the image.  Valid values are `contain` (full
+         * aspect ratio of the image is contained within the element and
+         * letterboxed) or `cover` (image is cropped in order to fully cover the
+         * bounds of the element), or `null` (default: image takes natural size).
+         */
+        sizing: {type: String, value: null, reflectToAttribute: true},
+
+        /**
+         * When a sizing option is used (`cover` or `contain`), this determines
+         * how the image is aligned within the element bounds.
+         */
+        position: {type: String, value: 'center'},
+
+        /**
+         * When `true`, any change to the `src` property will cause the
+         * `placeholder` image to be shown until the new image has loaded.
+         */
+        preload: {type: Boolean, value: false},
+
+        /**
+         * This image will be used as a background/placeholder until the src image
+         * has loaded.  Use of a data-URI for placeholder is encouraged for instant
+         * rendering.
+         */
+        placeholder: {type: String, value: null, observer: '_placeholderChanged'},
+
+        /**
+         * When `preload` is true, setting `fade` to true will cause the image to
+         * fade into place.
+         */
+        fade: {type: Boolean, value: false},
+
+        /**
+         * Read-only value that is true when the image is loaded.
+         */
+        loaded: {notify: true, readOnly: true, type: Boolean, value: false},
+
+        /**
+         * Read-only value that tracks the loading state of the image when the
+         * `preload` option is used.
+         */
+        loading: {notify: true, readOnly: true, type: Boolean, value: false},
+
+        /**
+         * Read-only value that indicates that the last set `src` failed to load.
+         */
+        error: {notify: true, readOnly: true, type: Boolean, value: false},
+
+        /**
+         * Can be used to set the width of image (e.g. via binding); size may also
+         * be set via CSS.
+         */
+        width: {observer: '_widthChanged', type: Number, value: null},
+
+        /**
+         * Can be used to set the height of image (e.g. via binding); size may also
+         * be set via CSS.
+         *
+         * @attribute height
+         * @type number
+         * @default null
+         */
+        height: {observer: '_heightChanged', type: Number, value: null},
+      },
+
+      observers: [
+        '_transformChanged(sizing, position)',
+        '_loadStateObserver(src, preventLoad)'
+      ],
+
+      created: function() {
+        this._resolvedSrc = '';
+      },
+
+      _imgOnLoad: function() {
+        if (this.$.img.src !== this._resolveSrc(this.src)) {
+          return;
+        }
+
+        this._setLoading(false);
+        this._setLoaded(true);
+        this._setError(false);
+      },
+
+      _imgOnError: function() {
+        if (this.$.img.src !== this._resolveSrc(this.src)) {
+          return;
+        }
+
+        this.$.img.removeAttribute('src');
+        this.$.sizedImgDiv.style.backgroundImage = '';
+
+        this._setLoading(false);
+        this._setLoaded(false);
+        this._setError(true);
+      },
+
+      _computePlaceholderHidden: function() {
+        return !this.preload || (!this.fade && !this.loading && this.loaded);
+      },
+
+      _computePlaceholderClassName: function() {
+        return (this.preload && this.fade && !this.loading && this.loaded) ?
+            'faded-out' :
+            '';
+      },
+
+      _computeImgDivHidden: function() {
+        return !this.sizing;
+      },
+
+      _computeImgDivARIAHidden: function() {
+        return this.alt === '' ? 'true' : undefined;
+      },
+
+      _computeImgDivARIALabel: function() {
+        if (this.alt !== null) {
+          return this.alt;
+        }
+
+        // Polymer.ResolveUrl.resolveUrl will resolve '' relative to a URL x to
+        // that URL x, but '' is the default for src.
+        if (this.src === '') {
+          return '';
+        }
+
+        // NOTE: Use of `URL` was removed here because IE11 doesn't support
+        // constructing it. If this ends up being problematic, we should
+        // consider reverting and adding the URL polyfill as a dev dependency.
+        var resolved = this._resolveSrc(this.src);
+        // Remove query parts, get file name.
+        return resolved.replace(/[?|#].*/g, '').split('/').pop();
+      },
+
+      _computeImgHidden: function() {
+        return !!this.sizing;
+      },
+
+      _widthChanged: function() {
+        this.style.width = isNaN(this.width) ? this.width : this.width + 'px';
+      },
+
+      _heightChanged: function() {
+        this.style.height = isNaN(this.height) ? this.height : this.height + 'px';
+      },
+
+      _loadStateObserver: function(src, preventLoad) {
+        var newResolvedSrc = this._resolveSrc(src);
+        if (newResolvedSrc === this._resolvedSrc) {
+          return;
+        }
+
+        this._resolvedSrc = '';
+        this.$.img.removeAttribute('src');
+        this.$.sizedImgDiv.style.backgroundImage = '';
+
+        if (src === '' || preventLoad) {
+          this._setLoading(false);
+          this._setLoaded(false);
+          this._setError(false);
+        } else {
+          this._resolvedSrc = newResolvedSrc;
+          this.$.img.src = this._resolvedSrc;
+          this.$.sizedImgDiv.style.backgroundImage =
+              'url("' + this._resolvedSrc + '")';
+
+          this._setLoading(true);
+          this._setLoaded(false);
+          this._setError(false);
+        }
+      },
+
+      _placeholderChanged: function() {
+        this.$.placeholder.style.backgroundImage =
+            this.placeholder ? 'url("' + this.placeholder + '")' : '';
+      },
+
+      _transformChanged: function() {
+        var sizedImgDivStyle = this.$.sizedImgDiv.style;
+        var placeholderStyle = this.$.placeholder.style;
+
+        sizedImgDivStyle.backgroundSize = placeholderStyle.backgroundSize =
+            this.sizing;
+
+        sizedImgDivStyle.backgroundPosition = placeholderStyle.backgroundPosition =
+            this.sizing ? this.position : '';
+
+        sizedImgDivStyle.backgroundRepeat = placeholderStyle.backgroundRepeat =
+            this.sizing ? 'no-repeat' : '';
+      },
+
+      _resolveSrc: function(testSrc) {
+        var resolved =
+            Polymer.ResolveUrl.resolveUrl(testSrc, this.$.baseURIAnchor.href);
+        // NOTE: Use of `URL` was removed here because IE11 doesn't support
+        // constructing it. If this ends up being problematic, we should
+        // consider reverting and adding the URL polyfill as a dev dependency.
+        if (resolved[0] === '/') {
+          // In IE location.origin might not work
+          // https://connect.microsoft.com/IE/feedback/details/1763802/location-origin-is-undefined-in-ie-11-on-windows-10-but-works-on-windows-7
+          resolved = (location.origin || location.protocol + '//' + location.host) +
+              resolved;
+        }
+        return resolved;
+      }
+    });
+  </script>
+</dom-module>
+<dom-module id="paper-card" assetpath="bower_components/paper-card/">
+  <template>
+    <style include="paper-material-styles">
+      :host {
+        display: inline-block;
+        position: relative;
+        box-sizing: border-box;
+        background-color: var(--paper-card-background-color, var(--primary-background-color));
+        border-radius: 2px;
+
+        @apply --paper-font-common-base;
+        @apply --paper-card;
+      }
+
+      /* IE 10 support for HTML5 hidden attr */
+      :host([hidden]), [hidden] {
+        display: none !important;
+      }
+
+      .header {
+        position: relative;
+        border-top-left-radius: inherit;
+        border-top-right-radius: inherit;
+        overflow: hidden;
+
+        @apply --paper-card-header;
+      }
+
+      .header iron-image {
+        display: block;
+        width: 100%;
+        --iron-image-width: 100%;
+        pointer-events: none;
+
+        @apply --paper-card-header-image;
+      }
+
+      .header .title-text {
+        padding: 16px;
+        font-size: 24px;
+        font-weight: 400;
+        color: var(--paper-card-header-color, #000);
+
+        @apply --paper-card-header-text;
+      }
+
+      .header .title-text.over-image {
+        position: absolute;
+        bottom: 0px;
+
+        @apply --paper-card-header-image-text;
+      }
+
+      :host ::slotted(.card-content) {
+        padding: 16px;
+        position:relative;
+
+        @apply --paper-card-content;
+      }
+
+      :host ::slotted(.card-actions) {
+        border-top: 1px solid #e8e8e8;
+        padding: 5px 16px;
+        position:relative;
+
+        @apply --paper-card-actions;
+      }
+
+      :host([elevation="1"]) {
+        @apply --paper-material-elevation-1;
+      }
+
+      :host([elevation="2"]) {
+        @apply --paper-material-elevation-2;
+      }
+
+      :host([elevation="3"]) {
+        @apply --paper-material-elevation-3;
+      }
+
+      :host([elevation="4"]) {
+        @apply --paper-material-elevation-4;
+      }
+
+      :host([elevation="5"]) {
+        @apply --paper-material-elevation-5;
+      }
+    </style>
+
+    <div class="header">
+      <iron-image hidden$="[[!image]]" aria-hidden$="[[_isHidden(image)]]" src="[[image]]" alt="[[alt]]" placeholder="[[placeholderImage]]" preload="[[preloadImage]]" fade="[[fadeImage]]"></iron-image>
+      <div hidden$="[[!heading]]" class$="title-text [[_computeHeadingClass(image)]]">[[heading]]</div>
+    </div>
+
+    <slot></slot>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'paper-card',
+
+      properties: {
+        /**
+         * The title of the card.
+         */
+        heading: {
+          type: String,
+          value: '',
+          observer: '_headingChanged'
+        },
+
+        /**
+         * The url of the title image of the card.
+         */
+        image: {
+          type: String,
+          value: ''
+        },
+
+        /**
+         * The text alternative of the card's title image.
+         */
+        alt: {
+          type: String
+        },
+
+        /**
+         * When `true`, any change to the image url property will cause the
+         * `placeholder` image to be shown until the image is fully rendered.
+         */
+        preloadImage: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * When `preloadImage` is true, setting `fadeImage` to true will cause the
+         * image to fade into place.
+         */
+        fadeImage: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * This image will be used as a background/placeholder until the src image has
+         * loaded. Use of a data-URI for placeholder is encouraged for instant rendering.
+         */
+        placeholderImage: {
+          type: String,
+          value: null
+        },
+
+        /**
+         * The z-depth of the card, from 0-5.
+         */
+        elevation: {
+          type: Number,
+          value: 1,
+          reflectToAttribute: true
+        },
+
+        /**
+         * Set this to true to animate the card shadow when setting a new
+         * `z` value.
+         */
+        animatedShadow: {
+          type: Boolean,
+          value: false
+        },
+
+        /**
+         * Read-only property used to pass down the `animatedShadow` value to
+         * the underlying paper-material style (since they have different names).
+         */
+        animated: {
+          type: Boolean,
+          reflectToAttribute: true,
+          readOnly: true,
+          computed: '_computeAnimated(animatedShadow)'
+        }
+      },
+
+      /**
+       * Format function for aria-hidden. Use the ! operator results in the
+       * empty string when given a falsy value.
+       */
+      _isHidden: function(image) {
+        return image ? 'false' : 'true';
+      },
+
+      _headingChanged: function(heading) {
+        var currentHeading = this.getAttribute('heading'),
+            currentLabel = this.getAttribute('aria-label');
+
+        if (typeof currentLabel !== 'string' || currentLabel === currentHeading) {
+          this.setAttribute('aria-label', heading);
+        }
+      },
+
+      _computeHeadingClass: function(image) {
+        return image ? ' over-image' : '';
+      },
+
+      _computeAnimated: function(animatedShadow) {
+        return animatedShadow;
+      }
     });
   </script>
 </dom-module>
@@ -68945,6 +69456,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             :host {
                 display: inline-block;
                 width: 100%;
+                height: 100%;
                 --selection-visibility: hidden;
             }
 
@@ -69053,7 +69565,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
             .container {
                 display: grid;
-                grid-template-columns: minmax(200px, 1fr) 4fr;
+                grid-template-columns: minmax(200px, 1fr) 3fr minmax(200px, 1fr);
                 max-height: inherit;
                 overflow-x: auto;
                 overflow-y: hidden;
@@ -69080,23 +69592,23 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 padding: 0 10px;
                 display: grid;
                 grid-template-rows: auto 75px 100%;
-                grid-template-columns: auto repeat(4, minmax(100px, 1fr));
+                grid-template-columns: repeat(5, minmax(100px, 1fr));
                 grid-column-gap: 15px;
                 grid-column: 2;
                 max-height: inherit;
-                height: 100%;
             }
 
             #filterContainer {
                 grid-column: 1;
                 max-height: inherit;
-                height: 100%;
             }
 
             #filterOptions {
                 overflow: auto;
                 max-height: inherit;
-                height: calc(100% - 100px);
+                /* height: calc(100% - 100px); */
+                margin-bottom: 5px;
+                height:auto;
             }
 
             #selector {
@@ -69124,14 +69636,47 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 grid-column: span 5;
                 overflow: auto;
                 height: 50px;
+                
+            }
+
+            #cardContainer {
+                width: 100%;
+                @apply --layout-wrap;
+                grid-column: span 5;
+                max-height: inherit;
+                height: calc(100% - 125px);
+                overflow: auto;
+            }
+
+            .name { color: var(--paper-grey-600); margin: 10px 0; }
+
+            #cardContainer > paper-card {
+                box-sizing: border-box;
+                /* max-width: 184px; */
+                margin: 3px;
+                flex: 0 0 auto;
+            }
+
+            paper-icon-button.rate-icon {
+            --iron-icon-fill-color: white;
+            --iron-icon-stroke-color: var(--paper-grey-600);
+            }
+
+            #selectedContainer {
+                padding: 3px;
+                /* display: grid;
+                grid-column-gap: 15px;
+                grid-column: 3; */
+                max-height: inherit;
+                height: 100%;
+                /* margin: 3px; */
+                border-left: 1px solid gray;
             }
         </style>
         <div class="container">
             <div id="filterContainer">
-                <paper-button id="reset-button" on-click="resetFilters" raised="">Reset</paper-button>
-                <paper-button id="apply-button" on-click="applyFilters" raised="">Apply</paper-button>
                 <div id="searchbox">
-                    <paper-input value="{{filterSearch}}" no-label-float="">
+                    <paper-input value="{{filterSearch}}" label="annotation" no-label-float="">
                         <paper-icon-button icon="search" role="button" slot="prefix"></paper-icon-button>
                         <paper-icon-button icon="clear" slot="suffix" on-click="_resetFilterSearch"></paper-icon-button>
                     </paper-input>
@@ -69139,7 +69684,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 <div id="filterOptions">
                     <template is="dom-repeat" items="{{_attributes}}">
                         <template is="dom-if" if="[[_settingType(item.type, 'boolean')]]">
-                            <paper-collapse-item header="{{item.name}}" hidden$="{{item.hidden}}">
+                            <paper-collapse-item header="{{_getSanitizeItemName(item.name)}}" hidden$="{{item.hidden}}">
                                 <div class="flexchild-vertical collapse-content">
                                     <paper-toggle-button name="{{item.name}}" on-checked-changed="addFilter"></paper-toggle-button>
                                     <iron-label for="{{item.id}}">{{input.label}}</iron-label>
@@ -69147,25 +69692,27 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                             </paper-collapse-item>
                         </template>
                         <template is="dom-if" if="[[_settingType(item.type, 'category')]]">
-                            <paper-collapse-item header="{{item.name}}" hidden$="{{item.hidden}}">
+                            <paper-collapse-item header="{{_getSanitizeItemName(item.name)}}" hidden$="{{item.hidden}}">
                                 <div class="flexchild-vertical collapse-content">
-                                    <paper-tags-dropdown name="{{item.name}}" label="{{item.name}}" on-value-array-changed="addFilter" type="{{item.type}}" items="{{item.values}}" vertical-offset="0" horizontal-offset="-150">
+                                    <paper-tags-dropdown name="{{item.name}}" label="{{_getSanitizeItemName(item.name)}}" on-value-array-changed="addFilter" type="{{item.type}}" items="{{item.values}}" vertical-offset="0" horizontal-offset="-150">
                                     </paper-tags-dropdown>
                                 </div>
                             </paper-collapse-item>
                         </template>
                         <template is="dom-if" if="[[_settingType(item.type, 'number')]]">
-                            <paper-collapse-item header="{{item.name}}" hidden$="{{item.hidden}}">
+                            <paper-collapse-item header="{{_getSanitizeItemName(item.name)}}" hidden$="{{item.hidden}}">
                                 <div class="flexchild-vertical collapse-content">
                                     <iron-label class="category-headers">
-                                        <div title="text">{{item.name}}</div>
-                                        <paper-range-slider pin="" name="{{item.name}}" label="{{item.name}}" class="slider" value-min="[[_getItemMin(item)]]" value-max="[[_getItemMax(item)]]" min="[[_getItemMin(item)]]" max="[[_getItemMax(item)]]"></paper-range-slider>
+                                        <div title="text">{{_getSanitizeItemName(item.name)}}</div>
+                                        <paper-range-slider pin="" name="{{item.name}}" label="{{_getSanitizeItemName(item.name)}}" class="slider" value-min="[[_getItemMin(item)]]" value-max="[[_getItemMax(item)]]" min="[[_getItemMin(item)]]" max="[[_getItemMax(item)]]"></paper-range-slider>
                                     </iron-label>
                                 </div>
                             </paper-collapse-item>
                         </template>
                     </template>
                 </div>
+                <paper-button id="reset-button" raised="" on-click="resetFilters">Reset</paper-button>
+                <paper-button id="apply-button" raised="" on-click="applyFilters">Apply</paper-button>
             </div>
 
             <array-selector id="selector" items="{{tableData}}" selected="{{selectedItems}}" multi="" toggle=""></array-selector>
@@ -69177,7 +69724,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                         <paper-tags class="filterItems" items="[[_filterValues(category, filterStringArray.*)]]" prevent-remove-tag=""></paper-tags>
                     </template>
                 </div>
-                <paper-menu-button class="sItem sButton" id="columnSelector" ignore-select="">
+                <paper-menu-button style="display: none;" hidden$="[[!_showTable(layoutCard)]]" class="sItem sButton" id="columnSelector" ignore-select="">
                     <paper-button slot="dropdown-trigger">
                         Columns
                         <iron-icon icon="icons:expand-more"></iron-icon>
@@ -69190,6 +69737,11 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                         </template>
                     </paper-listbox>
                 </paper-menu-button>
+                <paper-dropdown name="sortColumn" label="Sort" value="{{sortCardColumn}}" no-animations="" horizontal-align="left">
+                    <template is="dom-repeat" items="[[defaultColumns]]">
+                        <paper-item value$="[[item]]">[[item]]</paper-item>
+                    </template>
+                </paper-dropdown>
                 <paper-dropdown-menu class="sItem" on-value-changed="_sContainerChanged" label="Selection Type">
                     <paper-listbox slot="dropdown-content" selected="1">
                         <paper-item>Auto</paper-item>
@@ -69207,36 +69759,87 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                     <paper-range-slider main-div-style="{ 'display': 'inline'}" id="sperc" class="sItem autoItem" single-slider="" always-show-pin="" name="selection %" label="selection %" min="0" max="100" value="0"></paper-range-slider>
                 </iron-label>
                 <paper-button class="sItem autoItem sButton" on-click="applySelection" raised="">Apply Selection</paper-button>
-                <div id="tableContainer">
-                    <table class="gridtable">
-                        <thead>
-                            <tr>
-                                <th>
-                                    <input type="checkbox" checked="[[_isAllSelected(selectedItems.*)]]" indeterminate="[[_isIndeterminate(selectedItems.*)]]" on-click="_toggleSelectAll">
-                                </th>
-                                <template is="dom-repeat" items="[[showColumns]]" as="column">
-                                    <th class="table-headers" on-click="sortColumn">
-                                        <span>[[column]]
-                                            <iron-icon class="small-icon" icon="icons:sort"></iron-icon>
-                                        </span>
+                <template is="dom-if" if="[[_showTable(layoutCard)]]">
+
+                    <div id="tableContainer">
+                        <table class="gridtable">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" checked="[[_isAllSelected(selectedItems.*)]]" indeterminate="[[_isIndeterminate(selectedItems.*)]]" on-click="_toggleSelectAll">
                                     </th>
-                                </template>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <template id="dataTable" is="dom-repeat" items="[[tableData]]" as="row" initial-count="30">
-                                <tr on-click="toggleSelection">
-                                    <td>
-                                        <input class="row-check" type="checkbox">
-                                    </td>
                                     <template is="dom-repeat" items="[[showColumns]]" as="column">
-                                        <td>[[ _getItem(row, column) ]]</td>
+                                        <th class="table-headers" on-click="sortColumn">
+                                            <span>[[_getSanitizeItemName(column)]]
+                                                <iron-icon class="small-icon" icon="icons:sort"></iron-icon>
+                                            </span>
+                                        </th>
                                     </template>
                                 </tr>
-                            </template>
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                <template id="dataTable" is="dom-repeat" items="[[tableData]]" as="row" initial-count="30">
+                                    <tr on-click="toggleSelection">
+                                        <td>
+                                            <input class="row-check" type="checkbox">
+                                        </td>
+                                        <template is="dom-repeat" items="[[showColumns]]" as="column">
+                                            <td>[[ _getItem(row, column) ]]</td>
+                                        </template>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+                <template is="dom-if" if="[[!_showTable(layoutCard)]]">
+                    <div id="cardContainer">
+                        <template mutable-data="" is="dom-repeat" id="cardRepeater" items="[[_getCardIterator(tableData.*, _selected.*)]]" as="item">
+                            <paper-card class="rate">
+                                <div class="card-content">
+                                  <div class="name">[[item.name]]</div>
+                                    <template is="dom-repeat" items="[[_getAnnotations(item)]]" as="anno">
+                                        <div>[[_getSanitizeItemName(anno)]] : [[_getItemAnnotation(item, anno)]]</div>
+                                    </template>
+                                  </div>
+                                <div class="card-actions">
+                                    <template restamp="" is="dom-if" if="{{!_isItemSelected(item, _selected.*, tableData.*)}}">
+                                        <paper-button on-click="_addItemToSelection">
+                                            <iron-icon icon="icons:check"></iron-icon>
+                                            Add to Selection
+                                        </paper-button>
+                                    </template>
+                                    <template restamp="" is="dom-if" if="{{_isItemSelected(item, _selected.*, tableData.*)}}">
+                                        <paper-button on-click="_removeItemFromSelection">
+                                            <iron-icon icon="icons:delete"></iron-icon>
+                                            Remove from Selection
+                                        </paper-button>
+                                    </template>
+                                </div>
+                                <div class="rate-image"></div>
+                              </paper-card>
+                        </template>
+                    </div>
+                </template>
+            </div>
+
+            <div id="selectedContainer">
+                <template is="dom-if" if="[[!_showSelectedMeasurements(_selected)]]">
+                    <span>No measurements selected</span>
+                </template>
+                <template is="dom-if" if="[[_showSelectedMeasurements(_selected)]]">
+                    <paper-listbox>
+                        <template is="dom-repeat" items="[[_getSelectItemAsArray(_selected)]]" as="item">
+                            <paper-item>[[item]] </paper-item>
+                        </template>
+                      </paper-listbox>
+                </template>
+                <template is="dom-if" if="[[_showSelectedMeasurements(_selected)]]">
+                    <paper-button raised="" on-click="_clearSelected">
+                        <iron-icon icon="icons:delete"></iron-icon>
+                        Clear selection
+                    </paper-button> 
+                </template>           
             </div>
         </div>
     </template>
@@ -69379,8 +69982,126 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                         type: Array,
                         notify: true
                         // observer: "_selectedItemsChanged"
+                    },
+
+                    layoutCard: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
+                    },
+
+                    _selected: {
+                        type: Object,
+                        notify: true,
+                        value: {},
+                        observer: "_selectedSelChanged"
+                    },
+
+                    sortCardColumn: {
+                        type: String,
+                        notify: true,
+                        observer: "_sortColumnChanged"
                     }
                 }
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+                // this._selected = {};
+            }
+
+            _showTable(layoutCard) {
+                console.log("_showTable");
+                if (layoutCard) {
+                    return true;
+                }
+
+                return false;
+            }
+
+            _sortColumnChanged(newVal, oldVal) {
+                var self = this;
+                if(self.sortCardColumn && self.sortCardColumn != "") {
+                    self.tableData = self.tableData.sort(function(a,b) {
+                        var vala = a[self.sortCardColumn].toLowerCase(), 
+                            valb = b[self.sortCardColumn].toLowerCase();
+
+                        if (vala < valb) {
+                            return -1
+                        }
+
+                        if (vala  > valb) {
+                            return 1;
+                        }
+
+                        return 0;
+                    });
+                }
+            }
+
+            _clearSelected(event) {
+                this._selected = {};
+            }
+
+            _getSelectItemAsArray(_selected) {
+                return Object.keys(_selected);
+            }
+
+            _getAnnotations(item) {
+                var ilist = Object.keys(item);
+                ilist = ilist.filter(function(e) { return !["id", "annotation.collection", "name"].includes(e); });
+                return ilist.slice(0,2);
+            }
+
+            _getItemAnnotation(item, anno) {
+                return item[anno];
+            }
+
+            _selectedSelChanged(newVal, oldVal) {
+                var sitems = []
+                for (var l in this._selected) {
+                    sitems.push(this._selected[l]);
+                }
+
+                this.selectedItems = sitems;
+            }
+
+            _getCardIterator(tableData, _selected) {
+                return this.tableData;
+            }
+
+            _addItemToSelection(e) {
+                var self = this;
+                var item = e.model.item;
+
+                this._selected[item.id] = item;
+                this.notifyPath("_selected", this._selected);
+                // this.set("_selected", this._selected);
+                // this.shadowRoot.querySelector("#cardRepeater").modelForElement(e.target).set('item.selected', true);
+                // this.shadowRoot.querySelector("#cardRepeater").render();
+            }
+
+            _removeItemFromSelection(e) {
+                var item = e.model.item;
+
+                delete this._selected[item.id];
+                this.notifyPath("_selected", this._selected);
+                // this.shadowRoot.querySelector("#cardRepeater").modelForElement(e.target).set('item.selected', false);
+                // this.shadowRoot.querySelector("#cardRepeater").render();
+
+            }
+
+            _showSelectedMeasurements(_selected) {
+                return _selected && Object.keys(_selected).length > 0;
+            }
+
+            _isItemSelected(item, _selected) {
+                return Object.keys(this._selected).includes(item.id);
+            }
+
+
+            _getSanitizeItemName(name) {
+                return name.replace("annotation.", "")
             }
 
             /**
@@ -69576,7 +70297,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             applyFilters() {
                 var self = this;
                 var filterString = [];
-                self.selectedItems = [];
+                // self.selectedItems = [];
                 self._deselectAll();
 
                 for (var key in this.filters) {
@@ -69604,6 +70325,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
                 if (filterString.length === 0) {
                     self.tableData = self.flattenedData;
+                    self._sortColumnChanged();
                     return;
                 }
 
@@ -69615,7 +70337,9 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
                 var fString = filterString.join(" && ");
                 var newData = this.flattenedData.filter(item => eval(fString));
-                this.set("tableData", newData);
+                self.set("tableData", newData);
+
+                self._sortColumnChanged();
             }
 
             /**
@@ -69725,11 +70449,11 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
              * Deselect all rows in the table.
              */
             _deselectAll() {
-                this.$.selector.clearSelection();
-                var elems = this.shadowRoot.querySelectorAll(".row-check");
-                elems.forEach(function (elem) {
-                    elem.checked = false;
-                });
+                // this.$.selector.clearSelection();
+                // var elems = this.shadowRoot.querySelectorAll(".row-check");
+                // elems.forEach(function (elem) {
+                //     elem.checked = false;
+                // });
             }
 
             /**
@@ -69756,7 +70480,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 allColumns = _.uniq(allColumns)
 
                 if (self.showColumns.length == 0) {
-                    self.set("showColumns", allColumns.filter(function(e) { return e !== 'id' }));
+                    self.set("showColumns", allColumns.filter(function(e) { return !["id", "annotation.collection"].includes(e); }));
                     self.set("defaultColumns", allColumns);
                 }
 
@@ -69773,6 +70497,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                         });
                     }
                 }, 1000);
+
             }
 
             /**
@@ -71333,6 +72058,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
     <template>
 
         <style>
+
             paper-button {
                 --paper-button: {
                     display: inline-block;
@@ -71345,6 +72071,14 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 };
             }
 
+            #modal {
+                position: fixed;
+                top:0;
+                left: 0;
+                /* height: 90%; */
+                width: 90%;
+            }
+
             iron-image {
                 padding: 1em;
             }
@@ -71354,7 +72088,8 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             }
 
             data-filter {
-                max-height: calc(72vh - 100px);
+                /* max-height: calc(72vh - 100px); */
+                height: auto;
             }
 
             paper-tabs {
@@ -71377,7 +72112,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 @apply --paper-font-subhead;
             }
 
-            #title {
+            .title {
                 display: inline;
                 @apply --paper-font-title;
                 position: relative;
@@ -71409,13 +72144,13 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
         <paper-dialog id="modal" modal="">
             <div class="header">
-                <div id="title">Add a</div>
+                <div class="title">Choose Chart </div>
                 <paper-dropdown label="Chart" value="{{selectedChart}}" no-animations="" no-label-float="">
                     <template is="dom-repeat" items="{{_charts}}">
                         <paper-item on-click="_chartSelectionChanged" value$="[[item]]">[[item]]</paper-item>
                     </template>
                 </paper-dropdown>
-                <div id="title">and select datasets below</div>
+                <div class="title">and select datasets below</div>
                 <paper-tabs selected="{{tabSelected}}" noink="">
                     <paper-tab>All datasets </paper-tab>
                     <paper-tab>Use from existing charts</paper-tab>
@@ -71424,11 +72159,17 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             <paper-dialog-scrollable>
                 <iron-pages selected="{{tabSelected}}">
                     <div class="dialog-content">
-                        <template is="dom-if" if="[[_tableDataExists(_jsonMeasurements)]]">
+                        <div class="title">Choose a collection</div>
+                        <paper-dropdown label="collection" value="{{selectedCollection}}" no-animations="" no-label-float="">
+                            <template is="dom-repeat" items="{{collections}}">
+                                <paper-item on-click="_chartSelectionChanged" value$="[[item]]">[[item]]</paper-item>
+                            </template>
+                        </paper-dropdown>
+                        <template is="dom-if" if="[[_tableDataExistsCollection(_jsonMeasurements)]]">
                             <data-filter data="{{_jsonMeasurements}}" class="new-charts" selected-items="{{selectedMeasurements}}">
                             </data-filter>
                         </template>
-                        <p class="infoMessage" hidden$="[[_tableDataExists(_jsonMeasurements)]]">Choose a Chart Type</p>
+                        <p class="infoMessage" hidden$="[[_tableDataExistsCollection(_jsonMeasurements)]]">Choose a Chart Type or Collection</p>
                     </div>
                     <div class="dialog-content">
                         <template is="dom-if" if="[[_tableDataExists(_existingChartMeasurements)]]">
@@ -71438,6 +72179,9 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                         <p class="infoMessage" hidden$="[[_tableDataExists(_existingChartMeasurements)]]">No Existing Charts</p>
                     </div>
                 </iron-pages>
+                <div id="chartPreview">
+
+                </div>
             </paper-dialog-scrollable>
             <div class="buttons">
                 <paper-button on-tap="_submit" disabled="{{!_enableButton(selectedChart, selectedMeasurements.*, selectedExistingMeasurements.*, tabSelected.*)}}" dialog-confirm="" autofocus="">Add Chart</paper-button>
@@ -71554,13 +72298,26 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                             return 0;
                         },
                         observer: "_refitModal",
+                    },
+
+                    collections: {
+                        type: Array,
+                        notify: true
+                    },
+
+                    selectedCollection: {
+                        type: String,
+                        notify: true,
+                        observer: "selectedCollectionChanged",
                     }
+
                 }
             }
 
             static get observers() {
                 return [
                     /* observer array just like 1.x */
+                    "_chartPreviewUpdate(selectedMeasurements.*, selectedChart)"
                 ]
             }
 
@@ -71573,12 +72330,16 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             }
 
             disconnectedCallback() {
-                super.connectedCallback();
+                super.disconnectedCallback();
             }
 
             _getJSONMeasurements(data) {
                 return data.raw();
             }
+
+            // _chartPreviewUpdate(selectedMeasurements, selectedChart) {
+            //     var 
+            // }
 
             /**
              * Get Available Chart Types
@@ -71597,6 +72358,21 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             _tableDataExists(tableData) {
                 return tableData.length > 0;
             }
+
+            _tableDataExistsCollection(tableData) {
+                return this.selectedCollection && this.selectedCollection != "" ? this._tableDataExists(tableData) : false;
+            }
+
+            selectedCollectionChanged(newVal, oldVal) {
+                var self = this;
+
+                if (this.selectedCollection && this.selectedCollection != "") {
+                    self.$.modal.refit();
+                    // self.$.modal.center();
+                }
+
+
+            }   
 
             _enableButton(selectedChart, selectedMeasurements, selectedExistingMeasurements, tabSelected) {
                 if (selectedChart !== null && this._charts.includes(selectedChart)) {
@@ -71665,11 +72441,24 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 this.currentChartObj = currentChartObj;
                 this.set("_existingChartMeasurements", currentCharts);
 
+                var collections = [];
+                var mData = envElement.measurementAll.raw();
+                mData.forEach(function(m) {
+                    if (!collections.includes(m.annotation["collection"])) {
+                        collections.push(m.annotation["collection"]);
+                    }
+                });
+
+                this.set("collections", collections);
+
                 this.set("selectedChart", "MultiStackedLineTrack");
                 this.selectedChart = "MultiStackedLineTrack";
                 this._chartSelectionChanged();
 
+                // this.$.modal.positionTarget = document;
+
                 this.$.modal.open();
+                this.$.modal.refit();
             }
 
             /**
@@ -71691,7 +72480,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                     }
 
                     if (self.selection.chartType == "GenesTrack") {
-                        var data = envElement.measurementSet.subset(function (m) { return m.defaultChartType() == "Genes Track" });
+                        var data = envElement.measurementAll.subset(function (m) { return m.defaultChartType() == "Genes Track" });
                         var datasourceGroups = {};
                         data.foreach(function (m) {
                             if (data.dataprovider && data.dataprovider != m.dataprovider()) { return; }
@@ -71707,8 +72496,13 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                         // self.set("_jsonMeasurements", data.raw());
                     }
                     else {
+
                         var data = envElement.measurementAll;
                         var source = "epiviz";
+                        if (this.selectedCollection && this.selectedCollection != "") {
+                            var envElement = self._parentContainer;
+                            var data = envElement.measurementAll.subset(function (m) { return m.annotation()["collection"] == self.selectedCollection});
+                        }
 
                         // self.set("_jsonMeasurements", data.raw());
                     }
@@ -71740,9 +72534,12 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
                     if(!self._jsonMeasurements) {
                         self.set("_jsonMeasurements", nData);
-                    } else if (self._jsonMeasurements.length != nData.length) {
+                    } else if (self._jsonMeasurements !== nData) {
                         self.set("_jsonMeasurements", nData);
                     }
+
+                    self.$.modal.refit();
+                    // self.$.modal.center();
                     
                 // }
                 // else {
@@ -71820,7 +72617,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
              */
             showAdd(target, callback) {
                 this.callback = callback;
-                this.$.modal.positionTarget = target;
+                this.$.modal.positionTarget = document;
                 this.$.modal.open();
             }
 
@@ -79780,7 +80577,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
               </paper-dropdown-input>
           </div>
           <div class="flexchild" hidden$="{{hideGenomeInput}}">
-            <paper-dropdown id="genomeInput" name="Genome" label="Genome" value="{{genome}}" no-animations="" horizontal-align="left">
+            <paper-dropdown disabled="" id="genomeInput" name="Genome" label="Genome" value="{{genome}}" no-animations="" horizontal-align="left">
               <template id="itemRepeater" is="dom-repeat" items="[[_genomeList]]">
                   <paper-item value$="[[item]]">[[item]]</paper-item>
               </template>
