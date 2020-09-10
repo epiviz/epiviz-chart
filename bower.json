@@ -48,7 +48,11 @@
     "paper-tabs": "PolymerElements/paper-tabs#2.1.1",
     "iron-pages": "PolymerElements/iron-pages#2.0.0",
     "jquery-ui": "^1.12.1",
-    "paper-dropdown": "pushkar8723/paper-dropdown#2.5"
+    "paper-dropdown": "pushkar8723/paper-dropdown#2.5",
+    "paper-card": "polymerelements/paper-card#2"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "resolutions": {
+    "paper-card": "2"
+  }
 }

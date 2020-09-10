@@ -26,6 +26,7 @@
     <template>
 
         <style>
+
             paper-button {
                 --paper-button: {
                     display: inline-block;
@@ -38,6 +39,14 @@
                 };
             }
 
+            #modal {
+                position: fixed;
+                top:0;
+                left: 0;
+                /* height: 90%; */
+                width: 90%;
+            }
+
             iron-image {
                 padding: 1em;
             }
@@ -47,7 +56,8 @@
             }
 
             data-filter {
-                max-height: calc(72vh - 100px);
+                /* max-height: calc(72vh - 100px); */
+                height: auto;
             }
 
             paper-tabs {
@@ -70,7 +80,7 @@
                 @apply --paper-font-subhead;
             }
 
-            #title {
+            .title {
                 display: inline;
                 @apply --paper-font-title;
                 position: relative;
@@ -104,7 +114,7 @@
 
         <paper-dialog id="modal" modal>
             <div class="header">
-                <div id="title">Add a</div>
+                <div class="title">Choose Chart </div>
                 <!-- <paper-dropdown-menu label="Chart">
                     <paper-listbox slot="dropdown-content" selected="{{selectedChart}}">
                         <template is="dom-repeat" items="{{_charts}}">
@@ -117,7 +127,8 @@
                         <paper-item on-click="_chartSelectionChanged" value$="[[item]]">[[item]]</paper-item>
                     </template>
                 </paper-dropdown>
-                <div id="title">and select datasets below</div>
+                <!-- <br/> -->
+                <div class="title">and select datasets below</div>
                 <paper-tabs selected="{{tabSelected}}" noink>
                     <paper-tab>All datasets </paper-tab>
                     <paper-tab>Use from existing charts</paper-tab>
@@ -126,11 +137,17 @@
             <paper-dialog-scrollable>
                 <iron-pages selected="{{tabSelected}}">
                     <div class="dialog-content">
-                        <template is="dom-if" if="[[_tableDataExists(_jsonMeasurements)]]">
+                        <div class="title">Choose a collection</div>
+                        <paper-dropdown label="collection" value="{{selectedCollection}}" no-animations no-label-float>
+                            <template is="dom-repeat" items="{{collections}}">
+                                <paper-item on-click="_chartSelectionChanged" value$="[[item]]">[[item]]</paper-item>
+                            </template>
+                        </paper-dropdown>
+                        <template is="dom-if" if="[[_tableDataExistsCollection(_jsonMeasurements)]]">
                             <data-filter data="{{_jsonMeasurements}}" class="new-charts" selected-items="{{selectedMeasurements}}">
                             </data-filter>
                         </template>
-                        <p class="infoMessage" hidden$="[[_tableDataExists(_jsonMeasurements)]]">Choose a Chart Type</p>
+                        <p class="infoMessage" hidden$="[[_tableDataExistsCollection(_jsonMeasurements)]]">Choose a Chart Type or Collection</p>
                     </div>
                     <div class="dialog-content">
                         <template is="dom-if" if="[[_tableDataExists(_existingChartMeasurements)]]">
@@ -140,6 +157,9 @@
                         <p class="infoMessage" hidden$="[[_tableDataExists(_existingChartMeasurements)]]">No Existing Charts</p>
                     </div>
                 </iron-pages>
+                <div id="chartPreview">
+
+                </div>
             </paper-dialog-scrollable>
             <div class="buttons">
                 <paper-button on-tap="_submit" disabled="{{!_enableButton(selectedChart, selectedMeasurements.*, selectedExistingMeasurements.*, tabSelected.*)}}" dialog-confirm autofocus>Add Chart</paper-button>
@@ -258,13 +278,26 @@
                             return 0;
                         },
                         observer: "_refitModal",
+                    },
+
+                    collections: {
+                        type: Array,
+                        notify: true
+                    },
+
+                    selectedCollection: {
+                        type: String,
+                        notify: true,
+                        observer: "selectedCollectionChanged",
                     }
+
                 }
             }
 
             static get observers() {
                 return [
                     /* observer array just like 1.x */
+                    "_chartPreviewUpdate(selectedMeasurements.*, selectedChart)"
                 ]
             }
 
@@ -277,12 +310,16 @@
             }
 
             disconnectedCallback() {
-                super.connectedCallback();
+                super.disconnectedCallback();
             }
 
             _getJSONMeasurements(data) {
                 return data.raw();
             }
+
+            // _chartPreviewUpdate(selectedMeasurements, selectedChart) {
+            //     var 
+            // }
 
             /**
              * Get Available Chart Types
@@ -301,6 +338,21 @@
             _tableDataExists(tableData) {
                 return tableData.length > 0;
             }
+
+            _tableDataExistsCollection(tableData) {
+                return this.selectedCollection && this.selectedCollection != "" ? this._tableDataExists(tableData) : false;
+            }
+
+            selectedCollectionChanged(newVal, oldVal) {
+                var self = this;
+
+                if (this.selectedCollection && this.selectedCollection != "") {
+                    self.$.modal.refit();
+                    // self.$.modal.center();
+                }
+
+
+            }   
 
             _enableButton(selectedChart, selectedMeasurements, selectedExistingMeasurements, tabSelected) {
                 if (selectedChart !== null && this._charts.includes(selectedChart)) {
@@ -369,11 +421,24 @@
                 this.currentChartObj = currentChartObj;
                 this.set("_existingChartMeasurements", currentCharts);
 
+                var collections = [];
+                var mData = envElement.measurementAll.raw();
+                mData.forEach(function(m) {
+                    if (!collections.includes(m.annotation["collection"])) {
+                        collections.push(m.annotation["collection"]);
+                    }
+                });
+
+                this.set("collections", collections);
+
                 this.set("selectedChart", "MultiStackedLineTrack");
                 this.selectedChart = "MultiStackedLineTrack";
                 this._chartSelectionChanged();
 
+                // this.$.modal.positionTarget = document;
+
                 this.$.modal.open();
+                this.$.modal.refit();
             }
 
             /**
@@ -395,7 +460,7 @@
                     }
 
                     if (self.selection.chartType == "GenesTrack") {
-                        var data = envElement.measurementSet.subset(function (m) { return m.defaultChartType() == "Genes Track" });
+                        var data = envElement.measurementAll.subset(function (m) { return m.defaultChartType() == "Genes Track" });
                         var datasourceGroups = {};
                         data.foreach(function (m) {
                             if (data.dataprovider && data.dataprovider != m.dataprovider()) { return; }
@@ -411,8 +476,13 @@
                         // self.set("_jsonMeasurements", data.raw());
                     }
                     else {
+
                         var data = envElement.measurementAll;
                         var source = "epiviz";
+                        if (this.selectedCollection && this.selectedCollection != "") {
+                            var envElement = self._parentContainer;
+                            var data = envElement.measurementAll.subset(function (m) { return m.annotation()["collection"] == self.selectedCollection});
+                        }
 
                         // self.set("_jsonMeasurements", data.raw());
                     }
@@ -444,9 +514,12 @@
 
                     if(!self._jsonMeasurements) {
                         self.set("_jsonMeasurements", nData);
-                    } else if (self._jsonMeasurements.length != nData.length) {
+                    } else if (self._jsonMeasurements !== nData) {
                         self.set("_jsonMeasurements", nData);
                     }
+
+                    self.$.modal.refit();
+                    // self.$.modal.center();
                     
                 // }
                 // else {
@@ -524,7 +597,7 @@
              */
             showAdd(target, callback) {
                 this.callback = callback;
-                this.$.modal.positionTarget = target;
+                this.$.modal.positionTarget = document;
                 this.$.modal.open();
             }
 
