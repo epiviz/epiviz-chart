@@ -516,7 +516,11 @@
                     }
                     else {
 
-                        var data = envElement.measurementAll.raw();
+                        var data = envElement.measurementAll;
+                        // data = data.subset(function(m) {
+                        //     return m.type() != "range";
+                        // });
+                        data = data.raw();
                         data = data.concat(self.currChartCollections);
                         var source = "epiviz";
                         if (this.selectedCollection && this.selectedCollection != "") {
