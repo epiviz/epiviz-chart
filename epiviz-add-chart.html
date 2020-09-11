@@ -514,12 +514,38 @@
                             data = data.filter(function (m) { return m["annotation"]["collection"] == self.selectedCollection});
                         }
                     }
+                    else if (self.selection.chartType.indexOf("Plot") != -1) {
+                        var data = envElement.measurementAll;
+                        var source = "epiviz";
+                        data = data.subset(function(m) {
+                            return m.type() != "range" && ["tiledb", "tabix"].includes(m.annotation()["_filetype"]);
+                        });
+
+                        data = data.raw();
+
+                        if (this.selectedCollection && this.selectedCollection != "") {
+                            data = data.filter(function (m) { return m["annotation"]["collection"] == self.selectedCollection});
+                        }
+                    }
+                    else if (self.selection.chartType.indexOf("Gwas") != -1) {
+                        var data = envElement.measurementAll;
+                        var source = "epiviz";
+                        data = data.subset(function(m) {
+                            return ["gwas"].includes(m.annotation()["_filetype"]);
+                        });
+
+                        data = data.raw();
+
+                        if (this.selectedCollection && this.selectedCollection != "") {
+                            data = data.filter(function (m) { return m["annotation"]["collection"] == self.selectedCollection});
+                        }
+                    }
                     else {
 
                         var data = envElement.measurementAll;
-                        // data = data.subset(function(m) {
-                        //     return m.type() != "range";
-                        // });
+                        data = data.subset(function(m) {
+                            return m.type() != "range" && ["bigwig"].includes(m.annotation()["_filetype"]);
+                        });
                         data = data.raw();
                         data = data.concat(self.currChartCollections);
                         var source = "epiviz";
