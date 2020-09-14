@@ -69666,17 +69666,20 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 padding: 3px 10px;
                 /* flex: 0 0 auto; */
                 display: grid;
-                grid-template-columns: 1fr 2fr 50px;
+                grid-template-columns: 150px auto 50px;
                 align-items: center;
             }
 
             .header-card {
                 grid-column: 1;
-                color: black;
                 word-wrap: break-word;
+                /* color: #4285f4; */
+                color: black;
+                padding: 5px;
             }
 
             .anno-card {
+                color: grey;
                 grid-column: 2;
                 word-wrap: break-word;
             }
@@ -69699,6 +69702,15 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 height: 100%;
                 /* margin: 3px; */
                 /* border-left: 1px solid gray; */
+            }
+
+            .selected-list {
+                display: grid;
+                grid-template-columns: 50px auto;
+                align-items: center;
+                padding: 5px;
+                margin: 3px;
+                border-bottom: 1px solid lightgrey;
             }
         </style>
         <div class="container">
@@ -69849,10 +69861,13 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 <template is="dom-if" if="[[_showSelectedMeasurements(_selected)]]">
                     <paper-listbox>
                         <template is="dom-repeat" items="[[_getSelectItemAsArray(_selected)]]" as="item">
-                            <paper-item>[[item]] 
-                                <paper-icon-button icon="icons:clear" on-click="_removeItemFromSelection"></paper-icon-button>
-                            </paper-item>
-                        </template>
+                            <paper-icon-item class="selected-list">
+                                <iron-icon icon="icons:clear" on-click="_removeItemFromSelection" slot="item-icon"></iron-icon>
+                                <paper-item-body style="word-break: break-word;">
+                                    [[item]] 
+                                </paper-item-body>
+                            </paper-icon-item>
+                            </template>
                       </paper-listbox>
                 </template>
                 <template is="dom-if" if="[[_showSelectedMeasurements(_selected)]]">
@@ -70081,7 +70096,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
             _getAnnotations(item) {
                 var ilist = Object.keys(item);
-                ilist = ilist.filter(function(e) { return !["_filetype", "id", "annotation.collection", "name", "checked"].includes(e); });
+                ilist = ilist.filter(function(e) { return !["annotation._filetype", "id", "annotation.collection", "name", "checked"].includes(e); });
                 return ilist.slice(0,2);
             }
 
@@ -70089,7 +70104,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 var self = this;
                 var ilist = Object.keys(item);
 
-                ilist = ilist.filter(function(e) { return !["_filetype", "id", "annotation.collection", "name", "checked"].includes(e); });
+                ilist = ilist.filter(function(e) { return !["annotation._filetype", "id", "annotation.collection", "name", "checked"].includes(e); });
                 var strilist = [];
                 ilist.forEach(function(k) {
                     strilist.push(self._getSanitizeItemName(k) + " : " + item[k]);
@@ -70533,8 +70548,8 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 allColumns = _.uniq(allColumns)
 
                 if (self.showColumns.length == 0) {
-                    self.set("showColumns", allColumns.filter(function(e) { return !["_filetype", "id", "annotation.collection"].includes(e); }));
-                    self.set("defaultColumns", allColumns);
+                    self.set("showColumns", allColumns.filter(function(e) { return !["annotation._filetype", "id", "annotation.collection"].includes(e); }));
+                    self.set("defaultColumns", allColumns.filter(function(e) { return !["annotation._filetype", "id", "annotation.collection"].includes(e); }));
                 }
 
                 var attributes = self._buildAttributes(self.flattenedData, self.showColumns);
@@ -72646,11 +72661,11 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                         }
                     });
 
-                    if(!self._jsonMeasurements) {
+                    // if(!self._jsonMeasurements) {
                         self.set("_jsonMeasurements", nData);
-                    } else if (self._jsonMeasurements !== nData) {
-                        self.set("_jsonMeasurements", nData);
-                    }
+                    // } else if (self._jsonMeasurements !== nData) {
+                        // self.set("_jsonMeasurements", nData);
+                    // }
 
                     self.$.modal.refit();
                     // self.$.modal.center();
