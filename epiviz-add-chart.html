@@ -450,6 +450,7 @@
                 });
 
                 this.set("collections", collections);
+                this.set("selectedCollection", null);
                 this.set("selectedMeasurements", []);
                 this.set("selectedChart", "MultiStackedLineTrack");
                 this.selectedChart = "MultiStackedLineTrack";
@@ -581,11 +582,11 @@
                         }
                     });
 
-                    if(!self._jsonMeasurements) {
+                    // if(!self._jsonMeasurements) {
                         self.set("_jsonMeasurements", nData);
-                    } else if (self._jsonMeasurements !== nData) {
-                        self.set("_jsonMeasurements", nData);
-                    }
+                    // } else if (self._jsonMeasurements !== nData) {
+                        // self.set("_jsonMeasurements", nData);
+                    // }
 
                     self.$.modal.refit();
                     // self.$.modal.center();
