@@ -241,6 +241,7 @@
                             return {
                                 // "GenesTrack": "epiviz-genes-track",
                                 "BlocksTrack": 'epiviz-blocks-track',
+                                "InteractionTrack": 'epiviz-interaction-track',
                                 "StackedBlocksTrack": 'epiviz-stacked-blocks-track',
                                 "HeatmapPlot": "epiviz-heatmap-plot",
                                 "ScatterPlot": "epiviz-scatter-plot",
@@ -542,6 +543,19 @@
                         var source = "epiviz";
                         data = data.subset(function(m) {
                             return ["gwas"].includes(m.annotation()["_filetype"]);
+                        });
+
+                        data = data.raw();
+
+                        if (this.selectedCollection && this.selectedCollection != "") {
+                            data = data.filter(function (m) { return m["annotation"]["collection"] == self.selectedCollection});
+                        }
+                    }
+                    else if (self.selection.chartType.indexOf("Interaction") != -1) {
+                        var data = envElement.measurementAll;
+                        var source = "epiviz";
+                        data = data.subset(function(m) {
+                            return ["hic"].includes(m.annotation()["_filetype"]);
                         });
 
                         data = data.raw();
