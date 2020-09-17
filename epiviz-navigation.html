@@ -641,8 +641,20 @@
         this._getElementSeqInfo(this, this);
 
         this.geneUpdateFlag = true;
-
         // this.addEventListener('transitionend', e => this._onResize(e));
+      }
+
+      getUrlParameter(sParam) {
+        var currPage = decodeURIComponent(window.location.search.substring(1));
+        var pageVars = currPage.split('&');
+
+        for (var i = 0; i < pageVars.length; i++) {
+            var pageParamName = pageVars[i].split('=');
+
+            if (pageParamName[0] === sParam) {
+                return pageParamName[1] === undefined ? true : pageParamName[1];
+            }
+        }
       }
 
       connectedCallback() {
@@ -677,6 +689,12 @@
             self.seqInfo = seqinfo;
           });
         }
+
+        var gene = self.getUrlParameter("gene");
+        if (gene == "" || gene == null) {
+            gene = this.gene;
+        }
+        this.gene = gene;
 
         // if (self.gene) {
         //   var range = {
@@ -1150,9 +1168,22 @@
         var self = this;
 
         var range = {
-            range: self.getGenomicRange(null, null, null, self.genome)
+          range: self.getGenomicRange(null, null, null, self.genome)
+        }
+
+        var gene = self.getUrlParameter("gene");
+        if (gene == "" || gene == null) {
+          gene = self.gene;
+          var ws = self.getUrlParameter("ws");
+          if (ws && ws != "") {
+            window.history.replaceState("gene", '', "?ws=" + ws + "&gene=" + gene);
           }
-        self._getElementSearch(self.gene, range, null, function (data) {
+          else {
+            window.history.replaceState("gene", '', "?gene=" + gene);
+          }
+        }
+
+        self._getElementSearch(gene, range, null, function (data) {
           self.chr = data[0].chr;
 
           var width = data[0].end - data[0].start;
@@ -1166,15 +1197,11 @@
           self._strRange = self.getStrRange(self.chr, self.start, self.end);
 
           // self.geneUpdateFlag = true;
-          self.$.geneSearch.items = [{"gene": self.gene, "chr": self.chr, "start": self.start, "end": self.end, "value": self.gene}];
+          self.$.geneSearch.items = [{"gene": gene, "chr": self.chr, "start": self.start, "end": self.end, "value": gene}];
           // self.$.geneSearch.selectedItem = {"gene": self.gene, "chr": self.chr, "start": self.start, "end": self.end, "value": self.gene};
           // self.$.geneSearch.selectedItemLabel = self.gene;
-          self.$.geneSearch.value = self.gene;
+          self.$.geneSearch.value = gene;
         });
-
-        // self.geneUpdateFlag = false;
-        // self.$.geneSearch.searchValue = self.gene;
-
       }
 
       /**
@@ -1216,6 +1243,15 @@
        */
       _selectGene(e) {
         var selected = e.model.item;
+
+        var ws = this.getUrlParameter("ws");
+        if (ws && ws != "") {
+          window.history.replaceState("gene", '', "?ws=" + ws + "&gene=" + selected.gene);
+        }
+        else {
+          window.history.replaceState("gene", '', "?gene=" + selected.gene);
+        }
+
         var self = this;
         this.chr = selected.chr;
         var width = selected.end - selected.start;
