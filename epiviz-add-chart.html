@@ -150,7 +150,7 @@
                             </template>
                         </paper-dropdown>
                         <template is="dom-if" if="[[_tableDataExistsCollection(_jsonMeasurements)]]">
-                            <data-filter id="cardElem" data="{{_jsonMeasurements}}" class="new-charts" selected-items="{{selectedMeasurements}}">
+                            <data-filter filters="{{filters}}" id="cardElem" data="{{_jsonMeasurements}}" class="new-charts" selected-items="{{selectedMeasurements}}">
                             </data-filter>
                         </template>
                         <p class="infoMessage" hidden$="[[_tableDataExistsCollection(_jsonMeasurements)]]"> No measurement are available for the chart type and/or collection. Choose a different chart or collection</p>
@@ -295,6 +295,11 @@
                         type: String,
                         notify: true,
                         observer: "selectedCollectionChanged",
+                    },
+
+                    filters: {
+                        type: Array,
+                        notify: true
                     }
 
                 }
@@ -356,8 +361,6 @@
                     self.$.modal.refit();
                     // self.$.modal.center();
                 }
-
-
             }   
 
             _enableButton(selectedChart, selectedMeasurements, selectedExistingMeasurements, tabSelected) {
@@ -452,6 +455,11 @@
                 this.set("collections", collections);
                 this.set("selectedCollection", null);
                 this.set("selectedMeasurements", []);
+                // this.set("filters", [])
+                for (var k in this.filters) {
+                    self.filters[k] = [];
+                }
+                this.set("filters", self.filters)
                 this.set("selectedChart", "MultiStackedLineTrack");
                 this.selectedChart = "MultiStackedLineTrack";
                 this._chartSelectionChanged();
@@ -463,6 +471,7 @@
 
                 if(this.shadowRoot.querySelector("#cardElem")) {
                     this.shadowRoot.querySelector("#cardElem")._selected = {};
+                    this.shadowRoot.querySelector("#cardElem").filters = self.filters;
                 }
             }
 
