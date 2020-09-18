@@ -69609,7 +69609,9 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
             .sButton {
                 height: fit-content;
-                margin: 8px 0;
+                /* margin: 8px 0; */
+                height: 30px;
+                font-size: x-small;
             }
 
             .columnSelection {
@@ -69623,7 +69625,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             #selectionContainer {
                 padding: 0 10px;
                 display: grid;
-                grid-template-rows: auto 75px 100%;
+                grid-template-rows: auto 50px 25px 100%;
                 grid-template-columns: repeat(5, minmax(50px, 1fr));
                 grid-column-gap: 15px;
                 grid-column: 2;
@@ -69757,6 +69759,31 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             paper-collapse-item {
                 cursor: pointer;
             }
+
+            .cardselectall {
+                grid-row: 3;
+                grid-column: 5;
+                height: 25px;
+                margin-bottom: 1px;
+                padding-bottom: 1px;
+            }
+
+            .cardselectall paper-button {
+                height: 25px;
+            }
+
+            .clearallcontainer {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+            }
+
+            .selectionclearall {
+                height: 25px;
+                font-size: small;
+            }
         </style>
         <div class="container">
             <div id="filterContainer">
@@ -69809,19 +69836,6 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                         <paper-tags class="filterItems" items="[[_filterValues(category, filterStringArray.*)]]" prevent-remove-tag=""></paper-tags>
                     </template>
                 </div>
-                <paper-menu-button style="display: none;" hidden$="[[!_showTable(layoutCard)]]" class="sItem sButton" id="columnSelector" ignore-select="">
-                    <paper-button slot="dropdown-trigger">
-                        Columns
-                        <iron-icon icon="icons:expand-more"></iron-icon>
-                    </paper-button>
-                    <paper-listbox slot="dropdown-content">
-                        <template is="dom-repeat" items="[[defaultColumns]]" as="column">
-                            <paper-item class="columnSelection" role="menuitemcheckbox">
-                                <paper-checkbox name="{{column}}" checked="" on-click="toggleColumn">{{column}}</paper-checkbox>
-                            </paper-item>
-                        </template>
-                    </paper-listbox>
-                </paper-menu-button>
                 <paper-dropdown name="sortColumn" label="Sort" value="{{sortCardColumn}}" no-animations="" horizontal-align="left">
                     <template is="dom-repeat" items="[[defaultColumns]]">
                         <paper-item value$="[[item]]">[[_getSanitizeItemName(item)]]</paper-item>
@@ -69877,6 +69891,9 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                         </table>
                     </div>
                 </template>
+                <div class="cardselectall">
+                    <paper-button hidden$="[[_showCardSelectAll(_selected.*, tableData.*)]]" on-click="_cardSelectAll" raised="">select All </paper-button>
+                </div>
                 <template is="dom-if" if="[[!_showTable(layoutCard)]]">
                     <div id="cardContainer">
                         <template is="dom-if" if="[[!_showCardsMeasurements(tableData.*, _selected.*)]]">
@@ -69905,6 +69922,14 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 <template is="dom-if" if="[[!_showSelectedMeasurements(_selected)]]">
                     <div style="text-align: center;">No measurements selected</div>
                 </template>
+                <div class="clearallcontainer">
+                    <template is="dom-if" if="[[_showSelectedMeasurements(_selected)]]">
+                        <paper-button class="selectionclearall" raised="" on-click="_clearSelected">
+                            <iron-icon icon="icons:delete"></iron-icon>
+                            Clear all
+                        </paper-button> 
+                    </template>  
+                </div>
                 <template is="dom-if" if="[[_showSelectedMeasurements(_selected)]]">
                     <paper-listbox>
                         <template is="dom-repeat" items="[[_getSelectItemAsArray(_selected)]]" as="item">
@@ -69917,12 +69942,6 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                             </template>
                       </paper-listbox>
                 </template>
-                <template is="dom-if" if="[[_showSelectedMeasurements(_selected)]]">
-                    <paper-button raised="" on-click="_clearSelected">
-                        <iron-icon icon="icons:delete"></iron-icon>
-                        Clear all
-                    </paper-button> 
-                </template>           
             </div>
         </div>
     </template>
@@ -70150,11 +70169,28 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 return false;
             }
 
+            _cardSelectAll(e) {
+                var self = this;
+                self.tableData.forEach(function(td) {
+                    self._selected[td.id] = td;
+                });
+
+                self.notifyPath("_selected");
+            }
+
             _showCardsMeasurements(tableData, _selected) {
                 var self = this;
                 var data = self._getCardIterator();
 
                 if (data.length > 0) {
+                    return true;
+                }
+
+                return false;
+            }
+
+            _showCardSelectAll(_selected, tableData) {
+                if (this.tableData && this._selected && Object.keys(this._selected).length == this.tableData.length) {
                     return true;
                 }
 
@@ -70468,6 +70504,28 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 this.filters[category] = [min, max];
             }
 
+            _sortTableData(data) {
+                var self = this;
+                if(self.sortCardColumn && self.sortCardColumn != "") {
+                    return data.sort(function(a,b) {
+                        var vala = a[self.sortCardColumn] ? a[self.sortCardColumn].toLowerCase() : "", 
+                            valb = b[self.sortCardColumn] ? b[self.sortCardColumn].toLowerCase() : "";
+
+                        if (vala < valb) {
+                            return -1
+                        }
+
+                        if (vala  > valb) {
+                            return 1;
+                        }
+
+                        return 0;
+                    });
+                }
+
+                return data;
+            }
+
             /**
              * Handler to apply all selected filters to the `data`
              */
@@ -70501,8 +70559,12 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 }
 
                 if (filterString.length === 0) {
-                    self.tableData = self.flattenedData;
-                    self._sortColumnChanged();
+                    // self.tableData = self.flattenedData;
+                    var sorted = self._sortTableData(self.flattenedData)
+                    self.set("tableData", sorted);
+                    // self._sortColumnChanged();
+                    // self.notifyPath("tableData");
+                    // self.set("tableData", self.tableData);
                     return;
                 }
 
@@ -70514,9 +70576,12 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
                 var fString = filterString.join(" && ");
                 var newData = this.flattenedData.filter(item => eval(fString));
-                self.set("tableData", newData);
+                var sorted = self._sortTableData(newData)
+                self.set("tableData", sorted);
+                // self.set("tableData", newData);
 
                 self._sortColumnChanged();
+                self.set("tableData", self.tableData);
             }
 
             /**
@@ -70540,7 +70605,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
                 if (selectionperc === 100) {
                     // self._selectAll();
-                    sellf._selected = self.tableData;
+                    self._cardSelectAll();
                     return;
                 }
 
@@ -70659,6 +70724,8 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 // sanitize data - flatten array
 
                 data = data.map(self._flattenObject);
+                self.showColumns = [];
+                self.resetFilters();
 
                 this.set('flattenedData', data);
                 // self.tableData = self.flattenedData;
@@ -70678,6 +70745,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
                 var attributes = self._buildAttributes(self.flattenedData, self.showColumns);
                 self._attributes = attributes;
+                self.set("_attributes", attributes);
 
                 // TODO: Replace with polymer's this.async
                 setTimeout(function () {
