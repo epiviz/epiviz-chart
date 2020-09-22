@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>epiviz-charts</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes"
+    />
+    <script src="../../jquery/dist/jquery.js"></script>
+    <script src="../../jquery-ui/jquery-ui.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../src/renderingQueues/renderingQueue.js"></script>
+
+    <style>
+      /* https://loading.io/css/ */
+      .lds-ellipsis {
+        display: inline-block;
+        width: 80px;
+        height: 80px;
+      }
+
+      .lds-ellipsis div {
+        position: absolute;
+        top: 33px;
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background: #cef;
+        animation-timing-function: cubic-bezier(0, 1, 1, 0);
+      }
+
+      .lds-ellipsis div:nth-child(1) {
+        left: 8px;
+        animation: lds-ellipsis1 0.6s infinite;
+      }
+
+      .lds-ellipsis div:nth-child(2) {
+        left: 8px;
+        animation: lds-ellipsis2 0.6s infinite;
+      }
+
+      .lds-ellipsis div:nth-child(3) {
+        left: 32px;
+        animation: lds-ellipsis2 0.6s infinite;
+      }
+
+      .lds-ellipsis div:nth-child(4) {
+        left: 56px;
+        animation: lds-ellipsis3 0.6s infinite;
+      }
+
+      @keyframes lds-ellipsis1 {
+        0% {
+          transform: scale(0);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @keyframes lds-ellipsis3 {
+        0% {
+          transform: scale(1);
+        }
+        100% {
+          transform: scale(0);
+        }
+      }
+      
+      @keyframes lds-ellipsis2 {
+        0% {
+          transform: translate(0, 0);
+        }
+        100% {
+          transform: translate(24px, 0);
+        }
+      }
+
+      #loader {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        display: block;
+      }
+
+      #loader span {
+          display: block;
+      }
+
+      #epivizcontainer {
+          display:none;
+      }
+    </style>
+
+    <link rel="import" href="../epiviz-charts.html" />
+    <!-- Testing various builds -->
+    <!-- <link rel="import" href="../cdn/epiviz-components-gear.html"> -->
+    <!-- <link rel="import" href="../cdn/epiviz-components-devel.html"> -->
+    <!-- <link rel="import" href="https://cdn.jsdelivr.net/gh/epiviz/epiviz-chart/cdn/epiviz-components.html"> -->
+  </head>
+
+  <body>
+    <h3>epiviz-navigation Demo</h3>
+
+    <div id="loader">
+        <div class="lds-ellipsis"><span>Loading </span><div></div><div></div><div></div><div></div></div>
+    </div>
+
+    <epiviz-data-source
+      provider-type="epiviz.data.WebServerDataProvider"
+      provider-id="umd"
+      provider-url="http://localhost:8000"
+    >
+    </epiviz-data-source>
+
+    <div id="epivizcontainer">
+        <epiviz-navigation genome="hg38" gene="BIN1" show-viewer>
+        </epiviz-navigation>
+    </div>
+
+    <script type="text/javascript">
+        window.addEventListener('WebComponentsReady', function() {
+    
+            document.querySelector("#loader").style["display"] = "none";
+            document.querySelector("#epivizcontainer").style["display"] = "block";
+        });
+
+      </script>
+  </body>
+</html>
