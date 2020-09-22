@@ -30,22 +30,32 @@
                 var chartContainer = this.shadowRoot.querySelector('#' + this.plotId);
                 var currSetting = this.shadowRoot.querySelector('epiviz-chart-settings');
 
+
                 if (currSetting == null) {
                     var currSetting = document.createElement('epiviz-chart-settings');
                     // self.visualization().properties().customSettingsDefs
                     currSetting.setAttribute('defs', JSON.stringify(self.chart.properties().customSettingsDefs));
                     currSetting.setAttribute('vals', JSON.stringify(self.chartSettings));
+                    currSetting.setAttribute('_measurements', JSON.stringify(self.measurements));
 
                     chartContainer.appendChild(currSetting);
                 }
                 else {
+                    currSetting.remove();
+
+                    var currSetting = document.createElement('epiviz-chart-settings');
+
                     currSetting.setAttribute('defs', JSON.stringify(self.chart.properties().customSettingsDefs));
                     currSetting.setAttribute('vals', JSON.stringify(self.chartSettings));
+                    currSetting.setAttribute('_measurements', JSON.stringify(self.measurements));
+
+                    chartContainer.appendChild(currSetting);
                 }
 
-                currSetting.showSettings(this.shadowRoot, function (newSettings) {
+                currSetting.showSettings(this.shadowRoot, function (newSettings, measurements) {
                     // self.chartSettings = newSettings;
                     self.set("chartSettings", newSettings);
+                    self.set("measurements", measurements);
                 });
             }
 
