@@ -241,8 +241,27 @@
           <div class="flexchild" hidden$="{{hideNav}}">
             <paper-icon-button title="move left" icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
             <paper-icon-button title="move right" icon="icons:chevron-right" on-click="moveRight"></paper-icon-button>
-            <paper-icon-button title="zoom out" icon="icons:zoom-out" on-click="zoomOut"></paper-icon-button>
-            <paper-icon-button title="zoom in" icon="icons:zoom-in" on-click="zoomIn"></paper-icon-button>
+            <paper-icon-button id="ZoomOutButton" on-down="_onZoomOutDown" on-up="_onZoomOutUp" 
+              title="zoom out" icon="icons:zoom-out" ></paper-icon-button>
+            <iron-dropdown id="ZoomOutDropdown" no-cancel-on-outside-click no-overlap>
+              <paper-listbox slot="dropdown-content">
+                <paper-item value="2" on-click="setZoomOut">2x ([[getBPZoomOut(range, zoomOutRatio, 2)]])</paper-item>
+                <paper-item value="5" on-click="setZoomOut">5x ([[getBPZoomOut(range, zoomOutRatio, 5)]])</paper-item>
+                <paper-item value="10" on-click="setZoomOut">10x ([[getBPZoomOut(range, zoomOutRatio, 10)]])</paper-item>
+                <paper-item value="100" on-click="setZoomOut">100x ([[getBPZoomOut(range, zoomOutRatio, 100)]])</paper-item>
+              </paper-listbox>
+            </iron-dropdown>
+            <!-- on-click="zoomIn" -->
+            <paper-icon-button id="ZoomInButton" on-down="_onZoomInDown" on-up="_onZoomInUp" 
+              title="zoom in" icon="icons:zoom-in" ></paper-icon-button>
+            <iron-dropdown id="ZoomInDropdown" no-cancel-on-outside-click no-overlap>
+              <paper-listbox slot="dropdown-content">
+                <paper-item value="2" on-click="setZoomIn">2x ([[getBPZoomIn(range, zoomInRatio, 2)]])</paper-item>
+                <paper-item value="5" on-click="setZoomIn">5x ([[getBPZoomIn(range, zoomInRatio, 5)]])</paper-item>
+                <paper-item value="10" on-click="setZoomIn">10x ([[getBPZoomIn(range, zoomInRatio, 10)]])</paper-item>
+                <paper-item value="100" on-click="setZoomIn">100x ([[getBPZoomIn(range, zoomInRatio, 100)]])</paper-item>
+              </paper-listbox>
+            </iron-dropdown>
           </div>
           <div class="flexchild" hidden$="{{hideSearch}}">
             <paper-dropdown-input id="geneSearch" label="Search" on-search-value-changed="_searchGene">
@@ -442,6 +461,18 @@
             value: 0.2
           },
 
+          zoomInRatio: {
+            type: Number,
+            notify: true,
+            value: 2
+          },
+
+          zoomOutRatio: {
+            type: Number,
+            notify: true,
+            value: 2
+          },
+
           /**
            * padding around gene (wrt gene length)
            *
@@ -634,14 +665,125 @@
         this.addEventListener("iron-resize", e => {
           this._debouncer = Polymer.Debouncer.debounce(
             this._debouncer,
-            Polymer.Async.timeOut.after(250),
+            Polymer.Async.timeOut.after(750),
             () => this._onResize(e)
           );
         });
+
         this._getElementSeqInfo(this, this);
 
         this.geneUpdateFlag = true;
         // this.addEventListener('transitionend', e => this._onResize(e));
+      }
+
+      setZoomOut(e) {
+        // console.log(e);
+        this.zoomOutRatio = e.target.getAttribute("value");
+        this.shadowRoot.querySelector("#ZoomOutDropdown").close();
+      }
+
+      setZoomIn(e) {
+        // console.log(e);
+        this.zoomInRatio = e.target.getAttribute("value");
+        this.shadowRoot.querySelector("#ZoomInDropdown").close();
+      }
+
+      _getCurrentZoomOutValue(range, xfactor) {
+        if (this.range) {
+          return  xfactor + "x ("+ Math.round(this.range.width() * xfactor) + "bp)";
+        }
+      }
+
+      _getCurrentZoomInValue(range, xfactor) {
+        if (this.range) {
+          return  xfactor + "x ("+ Math.round(this.range.width() / xfactor) + "bp)";
+        }
+      }
+
+      getBPZoomIn(range, ratio, xfactor) {
+        // console.log(ratio, xfactor);
+        if (this.range) {
+          return Math.round(this.range.width() / xfactor) + " bp";
+        }
+      }
+
+      getBPZoomOut(range, ratio, xfactor) {
+        // console.log(ratio, xfactor);
+        if (this.range) {
+          return Math.round(this.range.width() * xfactor) + " bp";
+        }
+      }
+
+      _onZoomOutDown(e) {
+        this.startZoomOutTime = Date.now();
+        var self = this;
+
+        self._zoomOutTimeout = setTimeout(check, 300);
+
+        function check() {
+          self.shadowRoot.querySelector("#ZoomInDropdown").close();
+          self.shadowRoot.querySelector("#ZoomOutDropdown").open();
+        }
+
+      }
+
+      _onZoomOutUp(e) {
+        // console.log(e);
+        e.stopPropagation();
+        e.preventDefault();
+
+        clearTimeout(this._zoomOutTimeout);
+      
+          if (!this.shadowRoot.querySelector("#ZoomOutDropdown").opened) {
+            var width = Math.round(this.end - this.start);
+            // var mid = Math.round(this.start + width / 2);
+            var newWidthFactor = Math.round(width * this.zoomOutRatio);
+            var center  = Math.round( (this.start + this.end) /2 );
+            var newStart = center - Math.round(newWidthFactor/2);
+            var newEnd = center + Math.round(newWidthFactor/2);
+
+            this.start = Math.max(0, newStart);
+            this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+
+            this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
+            this._strRange = this.getStrRange(this.chr, this.start, this.end);
+          }
+      }
+
+      _onZoomInDown(e) {
+        this.startZoomInTime = Date.now();
+
+        var self = this;
+        self._zoomInTimeout = setTimeout(check, 300);
+
+        function check() {
+          self.shadowRoot.querySelector("#ZoomOutDropdown").close();
+          self.shadowRoot.querySelector("#ZoomInDropdown").open();
+        }
+      }
+
+      _onZoomInUp(e) {
+        // console.log(e);
+        e.stopPropagation();
+        e.preventDefault();
+
+        clearTimeout(this._zoomInTimeout);
+
+        if (!this.shadowRoot.querySelector("#ZoomInDropdown").opened) {
+          this._zoomIn++;
+          var width = Math.round(this.end - this.start);
+          // var mid = Math.round(this.start + width / 2);
+          var newWidthFactor = Math.round(width / this.zoomInRatio);
+          var center  = Math.round( (this.start + this.end) /2 );
+          var newStart = center + Math.round(newWidthFactor/2);
+          var newEnd = center - Math.round(newWidthFactor/2);
+
+          this.start = Math.max(0, newStart);
+          this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+
+          this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
+          this._strRange = this.getStrRange(this.chr, this.start, this.end);
+        }
       }
 
       getUrlParameter(sParam) {
@@ -663,6 +805,15 @@
 
         self._initializeGrid();
         self._initializeSortable();
+
+        // self.shadowRoot.querySelector("#ZoomOutButton").addEventListener('long-press', function(e) {
+        //   console.log(e.target);
+        // });
+
+        // self.shadowRoot.querySelector("#ZoomInButton").addEventListener('long-press', function(e) {
+        //   console.log(e.target);
+        // });
+
 
         var origCollapsed = self.collapsed || false;
 
@@ -1336,35 +1487,40 @@
        */
       zoomIn(e) {
 
-        this._zoomIn++;
-        var width = Math.round(this.end - this.start);
-        // var mid = Math.round(this.start + width / 2);
-        var newWidthFactor = Math.round(width * this.zoomRatio);
-        var newStart = this.start + newWidthFactor;
-        var newEnd = this.end - newWidthFactor;
+        if (!this._startZoomInFlag) {
+          this._zoomIn++;
+          var width = Math.round(this.end - this.start);
+          // var mid = Math.round(this.start + width / 2);
+          var newWidthFactor = Math.round(width * this.zoomRatio);
+          var newStart = this.start + newWidthFactor;
+          var newEnd = this.end - newWidthFactor;
 
-        this.start = Math.max(0, newStart);
-        this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+          this.start = Math.max(0, newStart);
+          this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
 
-        this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
-        this._strRange = this.getStrRange(this.chr, this.start, this.end);
+          this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
+          this._strRange = this.getStrRange(this.chr, this.start, this.end);
+        }
       }
 
       /**
        * Navigation handler - zoom out
        */
       zoomOut(e) {
-        var width = Math.round(this.end - this.start);
-        // var mid = Math.round(this.start + width / 2);
-        var newWidthFactor = Math.round(width * this.zoomRatio);
-        var newStart = this.start - newWidthFactor;
-        var newEnd = this.end + newWidthFactor;
 
-        this.start = Math.max(0, newStart);
-        this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+        if (!this._startZoomOutFlag) {
+          var width = Math.round(this.end - this.start);
+          // var mid = Math.round(this.start + width / 2);
+          var newWidthFactor = Math.round(width * this.zoomRatio);
+          var newStart = this.start - newWidthFactor;
+          var newEnd = this.end + newWidthFactor;
 
-        this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
-        this._strRange = this.getStrRange(this.chr, this.start, this.end);
+          this.start = Math.max(0, newStart);
+          this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+
+          this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
+          this._strRange = this.getStrRange(this.chr, this.start, this.end);
+        }
       }
 
       /**
