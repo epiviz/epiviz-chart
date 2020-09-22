@@ -464,13 +464,13 @@
           zoomInRatio: {
             type: Number,
             notify: true,
-            value: 2
+            value: 1.2
           },
 
           zoomOutRatio: {
             type: Number,
             notify: true,
-            value: 2
+            value: 1.2
           },
 
           /**
@@ -678,39 +678,66 @@
 
       setZoomOut(e) {
         // console.log(e);
-        this.zoomOutRatio = e.target.getAttribute("value");
+        var zoomOutRatio = e.target.getAttribute("value");
         this.shadowRoot.querySelector("#ZoomOutDropdown").close();
+
+        var width = Math.round(this.end - this.start);
+        // var mid = Math.round(this.start + width / 2);
+        var newWidthFactor = Math.round(width * zoomOutRatio);
+        var center  = Math.round( (this.start + this.end) /2 );
+        var newStart = center - Math.round(newWidthFactor/2);
+        var newEnd = center + Math.round(newWidthFactor/2);
+
+        this.start = Math.max(0, newStart);
+        this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+
+        this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
+        this._strRange = this.getStrRange(this.chr, this.start, this.end);
       }
 
       setZoomIn(e) {
         // console.log(e);
-        this.zoomInRatio = e.target.getAttribute("value");
+        var zoomInRatio = e.target.getAttribute("value");
         this.shadowRoot.querySelector("#ZoomInDropdown").close();
+
+        this._zoomIn++;
+        var width = Math.round(this.end - this.start);
+        // var mid = Math.round(this.start + width / 2);
+        var newWidthFactor = Math.round(width / zoomInRatio);
+        var center  = Math.round( (this.start + this.end) /2 );
+        var newStart = center + Math.round(newWidthFactor/2);
+        var newEnd = center - Math.round(newWidthFactor/2);
+
+        this.start = Math.max(0, newStart);
+        this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+
+        this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
+        this._strRange = this.getStrRange(this.chr, this.start, this.end);
       }
 
       _getCurrentZoomOutValue(range, xfactor) {
         if (this.range) {
-          return  xfactor + "x ("+ Math.round(this.range.width() * xfactor) + "bp)";
+          return  xfactor + "x ("+ Math.round(this.range.width() * xfactor/1000) + "kb)";
         }
       }
 
       _getCurrentZoomInValue(range, xfactor) {
         if (this.range) {
-          return  xfactor + "x ("+ Math.round(this.range.width() / xfactor) + "bp)";
+          return  xfactor + "x ("+ Math.round(this.range.width() / (xfactor * 1000)) + "kb)";
         }
       }
 
       getBPZoomIn(range, ratio, xfactor) {
         // console.log(ratio, xfactor);
         if (this.range) {
-          return Math.round(this.range.width() / xfactor) + " bp";
+          return Math.round(this.range.width() / (xfactor * 1000)) + " kb";
         }
       }
 
       getBPZoomOut(range, ratio, xfactor) {
         // console.log(ratio, xfactor);
         if (this.range) {
-          return Math.round(this.range.width() * xfactor) + " bp";
+          return Math.round(this.range.width() * xfactor/1000) + " kb";
         }
       }
 
@@ -724,7 +751,6 @@
           self.shadowRoot.querySelector("#ZoomInDropdown").close();
           self.shadowRoot.querySelector("#ZoomOutDropdown").open();
         }
-
       }
 
       _onZoomOutUp(e) {
@@ -1271,15 +1297,20 @@
             self.set("_isEmpty", true);
           }
           for (var index = 0; index < numChildren; index++) {
+            
             var currentChild = navChildren[index];
+            
             if (currentChild == undefined || currentChild.plotId == undefined) {
               return;
             }
+            
             currentChild.shadowRoot.querySelector(
               "paper-spinner-lite"
             ).active = true;
+            
             currentChild.range = self.range;
             var measurements = self.measurementSet;
+            
             if (self._parentContainer) {
               measurements = self._parentContainer.measurementSet;
             }

@@ -298,7 +298,16 @@
              * Automatically triggered when the browser window or the css for the element changes.
              */
             _onResize(e) {
-                console.log(e);
+                // console.log(e);
+
+                if (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                }
+
+                if(e && e.path.length > 0 && (e.path[0].id == "ZoomOutDropdown" || e.path[0].id == "ZoomInDropdown")) {
+                    return;
+                }
                 // if(! (e instanceof TransitionEvent)) {
                 //     e.stopPropagation();
                 // }
