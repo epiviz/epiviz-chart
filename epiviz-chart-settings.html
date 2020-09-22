@@ -19,6 +19,8 @@
 <link rel="import" href="bower_components/iron-label/iron-label.html">
 <link rel="import" href="bower_components/paper-collapse-item/paper-collapse-item.html">
 
+<link rel="import" href="bower_components/sortable-list/sortable-list.html">
+
 <!--
 `<epiviz-chart-settings>` is a view element that manages chart settings. 
 
@@ -98,6 +100,12 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
             .toggleLabel {
                 padding-top: 8px;
             }
+
+            .mea-item {
+                padding: 3px;
+                margin: 3px;
+                width: 100%;
+            }
         </style>
 
         <!-- local DOM goes here -->
@@ -172,6 +180,22 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                             </div>
                         </paper-collapse-item>
 
+
+                        <paper-collapse-item id="renameMeasurements" header="Rename/order Measurements">
+                            <div class="collapse-content">
+                                <div class="container flex">
+                                    <sortable-list sortable=".item">
+                                        <template is="dom-repeat" items="{{_getMeasurementsList(_measurements.*)}}">
+                                            <div class="item mea-item">
+                                                <paper-input raised name="{{item.id}}" label="{{item.id}}" value="[[item.name]]"></paper-input> 
+                                            </div>
+                                        </template>
+                                      </sortable-list>
+
+                                </div>
+                            </div>
+                        </paper-collapse-item>
+
                         <!-- </paper-dialog-scrollable> -->
 
                     </form>
@@ -211,6 +235,11 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                     vals: {
                         type: Object,
                         notify: true
+                    },
+
+                    _measurements: {
+                        type: Array,
+                        notify: true
                     }
                 }
             }
@@ -249,6 +278,10 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
 
             disconnectedCallback() {
                 super.connectedCallback();
+            }
+
+            _getMeasurementsList(measurements) {
+                return this._measurements;
             }
 
             _getSelectedValue(item) {
@@ -394,7 +427,27 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                         }
                     }
                 });
-                this.callback(this.vals);
+
+                var order = this.shadowRoot.querySelector("sortable-list").items;
+
+                var orderedMeasurements = [];
+                order.forEach(function(om) {
+                    orderedMeasurements.push(om.querySelector("paper-input").name);
+                });
+
+                var newMeasurements = JSON.parse(JSON.stringify(self._measurements));
+                newMeasurements.sort(function(a, b) {
+                    var am = orderedMeasurements.indexOf(a.id),
+                        bm = orderedMeasurements.indexOf(b.id);
+                    return am-bm;
+                });
+
+                newMeasurements.forEach(function(m) {
+                    m.name = self.vals[m.id];
+                    delete self.vals[m.id];
+                });
+
+                this.callback(this.vals, newMeasurements);
                 this.closeSettings();
             }
 

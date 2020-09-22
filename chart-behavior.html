@@ -199,17 +199,6 @@
                     },
 
                     /**
-                    * Measurements for the chart. Charts automatically sets measurements from `dimS`.
-                    *
-                    * @type {Array<Object>}
-                    */
-                    measurements: {
-                        type: Array,
-                        notify: true,
-                        observer: '_measurementsChanged'
-                    },
-
-                    /**
                     * Computed Range from `<chr>`, `<start>` & `<end>`. 
                     *
                     * @type {Object<epiviz.datatypes.GenomicRange>}
@@ -300,14 +289,14 @@
             _onResize(e) {
                 // console.log(e);
 
-                if (e) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                }
+                // if (e) {
+                //     e.stopPropagation();
+                //     e.preventDefault();
+                // }
 
-                if(e && e.path.length > 0 && (e.path[0].id == "ZoomOutDropdown" || e.path[0].id == "ZoomInDropdown")) {
-                    return;
-                }
+                // if(e && e.path.length > 0 && (e.path[0].id == "ZoomOutDropdown" || e.path[0].id == "ZoomInDropdown")) {
+                //     return;
+                // }
                 // if(! (e instanceof TransitionEvent)) {
                 //     e.stopPropagation();
                 // }
@@ -565,6 +554,48 @@
             _measurementsChanged() {
 
                 var self = this;
+
+                if(self.chart) {
+                    var mSet = new epiviz.measurements.MeasurementSet();
+
+                    for (var i = 0; i < self.measurements.length; i++) {
+
+                        var measurement = self.measurements[i];
+                        mSet.add(new epiviz.measurements.Measurement(
+                            measurement.id,
+                            measurement.name,
+                            measurement.type,
+                            measurement.datasourceId,
+                            measurement.datasourceGroup,
+                            measurement.dataprovider,
+                            measurement.formula,
+                            measurement.defaultChartType,
+                            measurement.annotation,
+                            measurement.minValue,
+                            measurement.maxValue,
+                            measurement.metadata
+                        ));
+                    }
+
+                    // self.visConfigSelection = new epiviz.ui.controls.VisConfigSelection(mSet);
+
+                    // self.chart._properties.visConfigSelection = self.visConfigSelection;
+
+                    // self.chart.measurements = mSet;
+
+                    var chartData = new epiviz.measurements.MeasurementHashtable();
+
+                    mSet.foreach(function(m) {
+                        chartData.put(m, self.data.getSeries(m));
+                    });
+
+                    self.data = new epiviz.datatypes.MapGenomicData(chartData);
+                    //  = data;
+                    // self._dataChanged();
+                    self._onResize();
+
+                    return;
+                }
 
                 if (this.measurements != null && self.config != null) {
 
