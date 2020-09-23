@@ -105,6 +105,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                 padding: 3px;
                 margin: 3px;
                 width: 100%;
+                background-color: white;
             }
         </style>
 
@@ -187,6 +188,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                                     <sortable-list sortable=".item">
                                         <template is="dom-repeat" items="{{_getMeasurementsList(_measurements.*)}}">
                                             <div class="item mea-item">
+                                                <div style$="[[_getStyle(item)]]"></div>
                                                 <paper-input raised name="{{item.id}}" label="{{item.id}}" value="[[item.name]]"></paper-input> 
                                             </div>
                                         </template>
@@ -282,6 +284,10 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
 
             _getMeasurementsList(measurements) {
                 return this._measurements;
+            }
+
+            _getStyle(item) {
+                return "height:10px; width:10px; border-radius:5px; background-color:" + this._colors.getByKey(item.id);
             }
 
             _getSelectedValue(item) {

@@ -37,6 +37,7 @@
                     currSetting.setAttribute('defs', JSON.stringify(self.chart.properties().customSettingsDefs));
                     currSetting.setAttribute('vals', JSON.stringify(self.chartSettings));
                     currSetting.setAttribute('_measurements', JSON.stringify(self.measurements));
+                    currSetting._colors= self.chart.colors();
 
                     chartContainer.appendChild(currSetting);
                 }
@@ -48,7 +49,7 @@
                     currSetting.setAttribute('defs', JSON.stringify(self.chart.properties().customSettingsDefs));
                     currSetting.setAttribute('vals', JSON.stringify(self.chartSettings));
                     currSetting.setAttribute('_measurements', JSON.stringify(self.measurements));
-
+                    currSetting._colors= self.chart.colors();
                     chartContainer.appendChild(currSetting);
                 }
 
