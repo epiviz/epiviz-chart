@@ -10307,7 +10307,7 @@ epiviz.datatypes.RowItemImpl.prototype.globalIndex=function(){return this._globa
 epiviz.datatypes.MeasurementAggregatedGenomicData.prototype._initialize=function(){if(this._deferredInit)return this._deferredInit;this._deferredInit=new epiviz.deferred.Deferred;var a=this,b=this._groupByMarker,c=this._data;c.ready(function(){b.preMark()(c).done(function(d){var e=new epiviz.measurements.MeasurementHashtable,f={},g=c.measurements();epiviz.utils.deferredFor(g.length,function(a){var e=new epiviz.deferred.Deferred,h=g[a];b.mark()(h,c,d).done(function(a){a in f||(f[a]=[]);f[a].push(h);
 e.resolve()});return e}).done(function(){var b={},d,g;for(d in f)if(f.hasOwnProperty(d)){g=f[d];var p=d+"-group",n=d,u=g[0].type(),v=g[0].datasourceId(),q=g[0].datasourceGroup(),r=g[0].dataprovider(),x=g[0].defaultChartType(),t=epiviz.utils.mapCopy(g[0].annotation()),B=g[0].minValue(),D=g[0].maxValue(),A=g[0].metadata(),w={};A.forEach(function(a){w[a]=a});f[d].forEach(function(a){v!=a.datasourceId()&&(v="*");q!=a.datasourceGroup()&&(q="*");r!=a.dataprovider()&&(r="*");x!=a.defaultChartType()&&(x=
 "*");var b=a.annotation();if(t!=b)if(void 0==t)t=epiviz.utils.mapCopy(b);else if(void 0!=b)for(var c in b)b.hasOwnProperty(c)&&(c in t?t[c]!=b[c]&&(t[c]="*"):t[c]=b[c]);B=Math.min(B,a.minValue());D=Math.max(D,a.maxValue());a.metadata().forEach(function(a){a in w||(w[a]=a,A.push(a))})});b[d]=new epiviz.measurements.Measurement(p,n,u,v,q,r,null,x,t,B,D,A)}for(d in f)if(f.hasOwnProperty(d)){p=b[d];n=[];u={};g=f[d];for(var C=Math.min.apply(void 0,g.map(function(a){return c.globalStartIndex(a)})),H=Math.max.apply(void 0,
-g.map(function(a){return c.globalEndIndex(a)})),G=C;G<H;++G){var y=g.map(function(a){return c.getByGlobalIndex(a,G)}).filter(function(a){return a});y.length&&(C=y.map(function(a){return a.value}),C=a._aggregator.aggregate(d,g,C),y=y[0].rowItem,y=new epiviz.datatypes.RowItemImpl(y.id(),y.seqName(),y.start(),y.end(),y.globalIndex(),y.strand(),y.rowMetadata()||{}),C=new epiviz.datatypes.GenomicData.ValueItem(G,y,C.value,p,{errMinus:C.errMinus,errPlus:C.errPlus}),n.push(C),u[G]=C)}g=new epiviz.datatypes.MeasurementGenomicDataArrayWrapper(p,
+g.map(function(a){return c.globalEndIndex(a)})),G=C;G<H;++G){var z=g.map(function(a){return c.getByGlobalIndex(a,G)}).filter(function(a){return a});z.length&&(C=z.map(function(a){return a.value}),C=a._aggregator.aggregate(d,g,C),z=z[0].rowItem,z=new epiviz.datatypes.RowItemImpl(z.id(),z.seqName(),z.start(),z.end(),z.globalIndex(),z.strand(),z.rowMetadata()||{}),C=new epiviz.datatypes.GenomicData.ValueItem(G,z,C.value,p,{errMinus:C.errMinus,errPlus:C.errPlus}),n.push(C),u[G]=C)}g=new epiviz.datatypes.MeasurementGenomicDataArrayWrapper(p,
 n,u);e.put(p,g)}a._setMap(e);a._deferredInit.resolve()})})});return this._deferredInit};epiviz.datatypes.MeasurementOrderedGenomicData=function(a,b){epiviz.datatypes.MapGenomicData.call(this);this._data=a;this._order=b;this._deferredInit=null;this._initialize()};epiviz.datatypes.MeasurementOrderedGenomicData.prototype=epiviz.utils.mapCopy(epiviz.datatypes.MapGenomicData.prototype);epiviz.datatypes.MeasurementOrderedGenomicData.constructor=epiviz.datatypes.MeasurementOrderedGenomicData;
 epiviz.datatypes.MeasurementOrderedGenomicData.prototype._initialize=function(){if(this._deferredInit)return this._deferredInit;this._deferredInit=new epiviz.deferred.Deferred;var a=this,b=this._data,c=this._order;b.ready(function(){c.preMark()(b).done(function(d){var e=new epiviz.measurements.MeasurementHashtable,f=b.measurements(),g=new epiviz.measurements.MeasurementHashtable;epiviz.utils.deferredFor(f.length,function(a){var e=new epiviz.deferred.Deferred,h=f[a];c.mark()(h,b,d).done(function(a){g.put(h,
 a);e.resolve()});return e}).done(function(){f.sort(function(a,b){var c=g.get(a),d=g.get(b);return c==d?0:c<d?-1:1});f.forEach(function(a){e.put(a,b.getSeries(a))});a._setMap(e);a._deferredInit.resolve()})})});return this._deferredInit};epiviz.deferred.Promise=function(a){this._promise=a};epiviz.deferred.Promise.prototype.then=function(a,b,c){return new epiviz.deferred.Promise(this._promise.then(a,b,c))};epiviz.deferred.Promise.prototype.done=function(a,b){return new epiviz.deferred.Deferred(this._promise.done(a,b))};epiviz.deferred.Promise.prototype.fail=function(a,b){return new epiviz.deferred.Deferred(this._promise.fail(a,b))};
@@ -10548,18 +10548,18 @@ l.empty()?l=this._svg.append("g").attr("class","lines").attr("transform","transl
 l.selectAll(".line-series-index-"+e);m=l.selectAll(".point-series-index-"+e);if(h.empty())break;h.remove();m.remove()}return this._drawLines(a,b,c,d,f,g)};
 epiviz.plugins.charts.LineTrack.prototype._drawLines=function(a,b,c,d,e,f){var g=this.colors(),h=parseInt(this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.STEP]),m=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_POINTS],l=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_LINES],p=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_ERROR_BARS],n=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.POINT_RADIUS],
 u=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.LINE_THICKNESS],v=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.INTERPOLATION];d=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.ABS_LINE_VAL];var q=this,r=d3.scale.linear().domain([0,this.width()-this.margins().sumAxis(epiviz.ui.charts.Axis.X)]).range([a.start(),a.end()])(c)-a.start(),x=epiviz.datatypes.GenomicRange.fromStartEnd(a.seqName(),Math.min(a.start(),
-a.start()+r),Math.max(a.end(),a.end()+r),a.genome()),t=this._svg.select(".lines"),B=[];b.foreach(function(a,b,d){var r=q._measurementColorLabels?g.getByKey(q._measurementColorLabels.get(a)):g.get(d),D=b.binarySearchStarts(x);if(0!=D.length){var w=Math.ceil(D.index/h)*h;D.length=Math.max(0,D.length-w+D.index);D.index=w;for(var w=epiviz.utils.range(D.length,D.index).filter(function(a){return!h||1>=h||0==(a-D.index)%h}),y=0;y<w.length;++y){var z=b.get(w[y]);B.push(new epiviz.ui.charts.ChartObject(sprintf("line_%s_%s",
-d,z.globalIndex),z.rowItem.start(),z.rowItem.end(),[z.value],d,[[z]],[a],sprintf("item data-series-%s",d),z.rowItem.seqName()))}var A=function(a){a=b.get(a);return e(a.rowItem.start())};a=function(a){a=b.get(a);return f(a.value)};l?(y=d3.svg.line().x(A).y(a).interpolate(v),z=t.select(".line-series-index-"+d).selectAll("path").data([w]),z.enter().append("path").attr("d",y).style("shape-rendering","auto").style("stroke-opacity","0.8").on("mouseover",function(){q._captureMouseHover()}).on("mousemove",
-function(){q._captureMouseHover()}).on("mouseout",function(){q._unhover.notify(new epiviz.ui.charts.VisEventArgs(q.id()))}),z.attr("d",y).style("stroke",r).style("stroke-width",u).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)")):t.select(".line-series-index-"+d).selectAll("path").remove();t.select(".point-series-index-"+d).selectAll("circle").remove();t.select(".point-series-index-"+d).selectAll(".error-bar").remove();m&&(y=t.select(".point-series-index-"+
-d).selectAll("circle").data(w),y.exit().transition().duration(500).style("opacity",0).remove(),y.enter().append("circle").attr("class","point-series-index-"+d).attr("r",n).attr("cx",A).attr("cy",a).attr("fill",r).attr("stroke",r).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)"),y.attr("r",n).attr("cx",A).attr("cy",a).attr("fill",r).attr("stroke",r).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)"),y.on("mouseover",
+a.start()+r),Math.max(a.end(),a.end()+r),a.genome()),t=this._svg.select(".lines"),B=[];b.foreach(function(a,b,d){var r=q._measurementColorLabels?g.getByKey(q._measurementColorLabels.get(a)):g.get(d),D=b.binarySearchStarts(x);if(0!=D.length){var w=Math.ceil(D.index/h)*h;D.length=Math.max(0,D.length-w+D.index);D.index=w;for(var w=epiviz.utils.range(D.length,D.index).filter(function(a){return!h||1>=h||0==(a-D.index)%h}),z=0;z<w.length;++z){var y=b.get(w[z]);B.push(new epiviz.ui.charts.ChartObject(sprintf("line_%s_%s",
+d,y.globalIndex),y.rowItem.start(),y.rowItem.end(),[y.value],d,[[y]],[a],sprintf("item data-series-%s",d),y.rowItem.seqName()))}var A=function(a){a=b.get(a);return e(a.rowItem.start())};a=function(a){a=b.get(a);return f(a.value)};l?(z=d3.svg.line().x(A).y(a).interpolate(v),y=t.select(".line-series-index-"+d).selectAll("path").data([w]),y.enter().append("path").attr("d",z).style("shape-rendering","auto").style("stroke-opacity","0.8").on("mouseover",function(){q._captureMouseHover()}).on("mousemove",
+function(){q._captureMouseHover()}).on("mouseout",function(){q._unhover.notify(new epiviz.ui.charts.VisEventArgs(q.id()))}),y.attr("d",z).style("stroke",r).style("stroke-width",u).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)")):t.select(".line-series-index-"+d).selectAll("path").remove();t.select(".point-series-index-"+d).selectAll("circle").remove();t.select(".point-series-index-"+d).selectAll(".error-bar").remove();m&&(z=t.select(".point-series-index-"+
+d).selectAll("circle").data(w),z.exit().transition().duration(500).style("opacity",0).remove(),z.enter().append("circle").attr("class","point-series-index-"+d).attr("r",n).attr("cx",A).attr("cy",a).attr("fill",r).attr("stroke",r).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)"),z.attr("r",n).attr("cx",A).attr("cy",a).attr("fill",r).attr("stroke",r).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)"),z.on("mouseover",
 function(){q._captureMouseHover()}).on("mousemove",function(){q._captureMouseHover()}).on("mouseout",function(){q._unhover.notify(new epiviz.ui.charts.VisEventArgs(q.id()))}),p&&(d=t.select(".point-series-index-"+d).selectAll(".error-bar").data(w),d.enter().append("g").attr("class","error-bar").each(function(a){var c;c=b.get(a);c=c.valueAnnotation?c.valueAnnotation.errMinus:null;c=void 0!=c?f(c):null;var d;d=b.get(a);d=d.valueAnnotation?d.valueAnnotation.errPlus:null;d=void 0!=d?f(d):null;null!=c&&
 null!=d&&(d3.select(this).append("line").attr("x1",A(a)).attr("x2",A(a)).attr("y1",c).attr("y2",d).style("stroke",r).style("shape-rendering","auto"),d3.select(this).append("line").attr("x1",A(a)-2).attr("x2",A(a)+2).attr("y1",c).attr("y2",c).style("stroke",r).style("shape-rendering","auto"),d3.select(this).append("line").attr("x1",A(a)-2).attr("x2",A(a)+2).attr("y1",d).attr("y2",d).style("stroke",r).style("shape-rendering","auto"))}).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform",
 "translate(0)"),d.on("mouseover",function(){q._captureMouseHover()}).on("mousemove",function(){q._captureMouseHover()}).on("mouseout",function(){q._unhover.notify(new epiviz.ui.charts.VisEventArgs(q.id()))}),d.exit().transition().duration(500).style("opacity",0).remove()))}});d!=epiviz.ui.charts.CustomSetting.DEFAULT&&(t.selectAll(".abLine").remove(),t.append("svg:line").attr("class","abLine").attr("x1",0).attr("x2",q.width()-q.margins().sumAxis(epiviz.ui.charts.Axis.X)).attr("y1",f(d)).attr("y2",
 f(d)).style("stroke","black").style("stroke-dasharray","5, 5"));return B};
 epiviz.plugins.charts.LineTrack.prototype._drawLinesCanvas=function(a,b,c,d,e,f,g){var h=this.colors(),m=parseInt(this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.STEP]),l=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_POINTS],p=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_LINES],n=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_ERROR_BARS],u=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.POINT_RADIUS],
 v=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.LINE_THICKNESS],q=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.INTERPOLATION];d=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.ABS_LINE_VAL];var r=this;c=d3.scale.linear().domain([0,this.width()-this.margins().sumAxis(epiviz.ui.charts.Axis.X)]).range([a.start(),a.end()])(c)-a.start();var x=epiviz.datatypes.GenomicRange.fromStartEnd(a.seqName(),Math.min(a.start(),
-a.start()+c),Math.max(a.end(),a.end()+c),a.genome()),t=g.getContext("2d"),B=[];b.foreach(function(a,b,c){var d=r._measurementColorLabels?h.getByKey(r._measurementColorLabels.get(a)):h.get(c),g=b.binarySearchStarts(x);if(0!=g.length){var D=Math.ceil(g.index/m)*m;g.length=Math.max(0,g.length-D+g.index);g.index=D;for(var D=epiviz.utils.range(g.length,g.index).filter(function(a){return!m||1>=m||0==(a-g.index)%m}),y=0;y<D.length;++y){var z=b.get(D[y]);B.push(new epiviz.ui.charts.ChartObject(sprintf("line_%s_%s",
-c,z.globalIndex),z.rowItem.start(),z.rowItem.end(),[z.value],c,[[z]],[a],sprintf("item data-series-%s",c),z.rowItem.seqName()))}var w=function(a){a=b.get(a);return e(a.rowItem.start())},A=function(a){a=b.get(a);return f(a.value)};p&&(a=d3.svg.line().x(w).y(A).interpolate(q),t.globalAlpha=.8,t.beginPath(),a=new Path2D(a(D)),t.strokeStyle=d,t.lineWidth=v,t.stroke(a),t.beginPath());l&&(D.forEach(function(a){var b=w(a);a=A(a);t.beginPath();t.arc(b,a,u,0,2*Math.PI);t.strokeStyle=d;t.stroke();t.fillStyle=
+a.start()+c),Math.max(a.end(),a.end()+c),a.genome()),t=g.getContext("2d"),B=[];b.foreach(function(a,b,c){var d=r._measurementColorLabels?h.getByKey(r._measurementColorLabels.get(a)):h.get(c),g=b.binarySearchStarts(x);if(0!=g.length){var D=Math.ceil(g.index/m)*m;g.length=Math.max(0,g.length-D+g.index);g.index=D;for(var D=epiviz.utils.range(g.length,g.index).filter(function(a){return!m||1>=m||0==(a-g.index)%m}),z=0;z<D.length;++z){var y=b.get(D[z]);B.push(new epiviz.ui.charts.ChartObject(sprintf("line_%s_%s",
+c,y.globalIndex),y.rowItem.start(),y.rowItem.end(),[y.value],c,[[y]],[a],sprintf("item data-series-%s",c),y.rowItem.seqName()))}var w=function(a){a=b.get(a);return e(a.rowItem.start())},A=function(a){a=b.get(a);return f(a.value)};p&&(a=d3.svg.line().x(w).y(A).interpolate(q),t.globalAlpha=.8,t.beginPath(),a=new Path2D(a(D)),t.strokeStyle=d,t.lineWidth=v,t.stroke(a),t.beginPath());l&&(D.forEach(function(a){var b=w(a);a=A(a);t.beginPath();t.arc(b,a,u,0,2*Math.PI);t.strokeStyle=d;t.stroke();t.fillStyle=
 d;t.fill()}),n&&D.forEach(function(a){var c;c=b.get(a);c=c.valueAnnotation?c.valueAnnotation.errMinus:null;c=void 0!=c?f(c):null;var e;e=b.get(a);e=e.valueAnnotation?e.valueAnnotation.errPlus:null;e=void 0!=e?f(e):null;null!=c&&null!=e&&(t.beginPath(),t.moveTo(w(a),A(a)),t.lineTo(c,e),t.strokeStyle=d,t.stroke(),t.beginPath(),t.globalAlpha=.7,t.moveTo(w(a)-2,A(a)+2),t.lineTo(c,c),t.strokeStyle=d,t.stroke(),t.beginPath(),t.globalAlpha=.7,t.moveTo(w(a)-2,A(a)+2),t.lineTo(e,e),t.strokeStyle=d,t.stroke(),
 t.beginPath())}))}});d!=epiviz.ui.charts.CustomSetting.DEFAULT&&(t.beginPath(),t.globalAlpha=.7,t.moveTo(0,f(d)),t.lineTo(r.width()-r.margins().sumAxis(epiviz.ui.charts.Axis.X),f(d)),t.strokeStyle=color,t.stroke());return B};epiviz.plugins.charts.LineTrackType=function(a){epiviz.ui.charts.TrackType.call(this,a)};epiviz.plugins.charts.LineTrackType.prototype=epiviz.utils.mapCopy(epiviz.ui.charts.TrackType.prototype);epiviz.plugins.charts.LineTrackType.constructor=epiviz.plugins.charts.LineTrackType;epiviz.plugins.charts.LineTrackType.prototype.createNew=function(a,b,c){return new epiviz.plugins.charts.LineTrack(a,b,c)};epiviz.plugins.charts.LineTrackType.prototype.typeName=function(){return"epiviz.plugins.charts.LineTrack"};
 epiviz.plugins.charts.LineTrackType.prototype.chartName=function(){return"Line Track"};epiviz.plugins.charts.LineTrackType.prototype.chartHtmlAttributeName=function(){return"lines"};epiviz.plugins.charts.LineTrackType.prototype.measurementsFilter=function(){return function(a){return a.type()==epiviz.measurements.Measurement.Type.FEATURE}};
@@ -10602,35 +10602,35 @@ m);if(p.empty())break;p.remove();n.remove()}return this._drawLines(a,b,c,d,e,h,f
 epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLines=function(a,b,c,d,e,f,g,h){var m=this.colors(),l=parseInt(this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.STEP]),p=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_POINTS],n=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_LINES],u=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_FILL],
 v=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_ERROR_BARS],q=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.POINT_RADIUS],r=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.LINE_THICKNESS],x=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.INTERPOLATION],t=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.ABS_LINE_VAL],
 B=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_Y_AXIS],D=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.AUTO_SCALE],A;D&&(A=this.getDataMinMax(b));var w=this;d=d3.scale.linear().domain([0,this.width()-this.margins().sumAxis(epiviz.ui.charts.Axis.X)]).range([a.start(),a.end()])(c)-a.start();var C=epiviz.datatypes.GenomicRange.fromStartEnd(a.seqName(),Math.min(a.start(),a.start()+d),Math.max(a.end(),a.end()+
-d),a.genome()),H=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_TRACKS],G=(w.height()-w.margins().sumAxis(epiviz.ui.charts.Axis.Y))/b.measurements().length;"default"!=H&&(d=H.split(","),G=(w.height()-w.margins().sumAxis(epiviz.ui.charts.Axis.Y))/d.length);var y=0,z=this._svg.select(".lines"),E=[];w._svg.selectAll(".no-data-text").remove();for(b.foreach(function(b,d,f){f=!1;"default"!=H&&(H.split(",").includes(b.id())||(f=!0));if(!f){var g=w._measurementColorLabels?
-m.getByKey(w._measurementColorLabels.get(b)):m.get(y),h=d.binarySearchStarts(C);if(0==h.length)w._svg.select(".line-series-index-"+y).selectAll("path").remove();else{f=Math.ceil(h.index/l)*l;h.length=Math.max(0,h.length-f+h.index);h.index=f;f=epiviz.utils.range(h.length,h.index).filter(function(a){return!l||1>=l||0==(a-h.index)%l});var J=1E3;smaxY=-1E3;for(var M=0;M<f.length;++M){var K=d.get(f[M]);E.push(new epiviz.ui.charts.ChartObject(sprintf("line_%s_%s",y,K.globalIndex),K.rowItem.start(),K.rowItem.end(),
-[K.value],y,[[K]],[b],sprintf("item data-series-%s",y),K.rowItem.seqName()));K.value<J&&(J=K.value);K.value>smaxY&&(smaxY=K.value)}b=epiviz.ui.charts.CustomSetting;M=w.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];K=w.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];D?(M==b.DEFAULT&&(M=Math.min(0,Math.floor(A[0]))),K==b.DEFAULT&&(K=Math.ceil(A[1]))):(M=Math.min(0,Math.floor(J)),K=Math.ceil(smaxY));var F=d3.scale.linear().domain([M,K]).range([(y+
-1)*G,y*G]),I=function(a){a=d.get(a);return e(a.rowItem.start())};b=function(a){a=d.get(a);return F(a.value)};if(B){var J=w._svg.select(".axes"),Q=J.select(".yAxis-grid"),P=J.select(".yAxis-line");Q.empty()&&(Q=J.append("g").attr("class","yAxis yAxis-grid"));P.empty()&&(P=J.append("g").attr("class","yAxis yAxis-line"));d3.svg.line().x([a.start(),a.start()]).y([(y+1)*G,y*G]);P.append("line").attr("x1",e(a.start())).attr("y1",F(M)).attr("x2",e(a.start())).attr("y2",F(.8*K)).attr("class","yAxis-line-series-"+
-y).style("shape-rendering","auto").style("stroke-opacity","0.6").attr("transform","translate("+w.margins().left()+", "+w.margins().top()+")");P.append("text").attr("class","yAxis-line-minlabel-series"+y).attr("x",e(a.start())-17).attr("y",F(.8*K)).text(d3.format(".2g")(K)).style("opacity","0.6").attr("transform","translate("+w.margins().left()+", "+w.margins().top()+")");P.append("text").attr("class","yAxis-line-maxlabel-series"+y).attr("x",e(a.start())-17).attr("y",F(M)).text(d3.format(".2g")(M)).style("opacity",
-"0.6").attr("transform","translate("+w.margins().left()+", "+w.margins().top()+")")}else z.select(".line-series-index-"+y).selectAll("text").remove(),z.select(".line-series-index-"+y).append("text").attr("class","chart-title").attr("font-weight","bold").attr("fill",function(a,b){return w._measurementColorLabels?w.colors().getByKey(w._measurementColorLabels.get(a)):w.colors().get(y)}).attr("x",0).attr("y",y*G+20).text("max: "+d3.format(".2g")(K));n?(K=d3.svg.line().x(I).y(b).interpolate(x),M=z.select(".line-series-index-"+
-y).selectAll("path").data([f]),M.enter().append("path").attr("d",K).style("shape-rendering","auto").style("stroke-opacity","0.8").on("mouseover",function(){w._captureMouseHover()}).on("mousemove",function(){w._captureMouseHover()}).on("mouseout",function(){w._unhover.notify(new epiviz.ui.charts.VisEventArgs(w.id()))}),M.attr("d",K).style("stroke",g).style("stroke-width",r).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)")):z.select(".line-series-index-"+
-y).selectAll("path").remove();u&&(K=d3.svg.area().x1(I).y1(b).x0(I).y0(F(0)).interpolate(x),M=z.select(".line-series-index-"+y).selectAll("path").data([f]),M.enter().append("path").attr("d",K).style("shape-rendering","auto").style("stroke-opacity","0.8").on("mouseover",function(){w._captureMouseHover()}).on("mousemove",function(){w._captureMouseHover()}).on("mouseout",function(){w._unhover.notify(new epiviz.ui.charts.VisEventArgs(w.id()))}),M.attr("d",K).style("fill",g).attr("transform","translate("+
-+c+")").transition().duration(500).attr("transform","translate(0)"));z.select(".point-series-index-"+y).selectAll("circle").remove();z.select(".point-series-index-"+y).selectAll(".error-bar").remove();p&&(M=z.select(".point-series-index-"+y).selectAll("circle").data(f),M.enter().append("circle").attr("class","point-series-index-"+y).attr("r",q).attr("cx",I).attr("cy",b).attr("fill",g).attr("stroke",g).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)"),
-M.on("mouseover",function(){w._captureMouseHover()}).on("mousemove",function(){w._captureMouseHover()}).on("mouseout",function(){w._unhover.notify(new epiviz.ui.charts.VisEventArgs(w.id()))}),M.exit().transition().duration(500).style("opacity",0).remove(),v&&(f=z.select(".point-series-index-"+y).selectAll(".error-bar").data(f),f.enter().append("g").attr("class","error-bar").each(function(a){var b;b=d.get(a);b=b.valueAnnotation?b.valueAnnotation.errMinus:null;b=void 0!=b?F(b):null;var c;c=d.get(a);
+d),a.genome()),H=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_TRACKS],G=(w.height()-w.margins().sumAxis(epiviz.ui.charts.Axis.Y))/b.measurements().length;"default"!=H&&(d=H.split(","),G=(w.height()-w.margins().sumAxis(epiviz.ui.charts.Axis.Y))/d.length);var z=0,y=this._svg.select(".lines"),E=[];w._svg.selectAll(".no-data-text").remove();for(b.foreach(function(b,d,f){f=!1;"default"!=H&&(H.split(",").includes(b.id())||(f=!0));if(!f){var g=w._measurementColorLabels?
+m.getByKey(w._measurementColorLabels.get(b)):m.getByKey(b.id()),h=d.binarySearchStarts(C);if(0==h.length)w._svg.select(".line-series-index-"+z).selectAll("path").remove();else{f=Math.ceil(h.index/l)*l;h.length=Math.max(0,h.length-f+h.index);h.index=f;f=epiviz.utils.range(h.length,h.index).filter(function(a){return!l||1>=l||0==(a-h.index)%l});var J=1E3;smaxY=-1E3;for(var M=0;M<f.length;++M){var K=d.get(f[M]);E.push(new epiviz.ui.charts.ChartObject(sprintf("line_%s_%s",z,K.globalIndex),K.rowItem.start(),
+K.rowItem.end(),[K.value],z,[[K]],[b],sprintf("item data-series-%s",z),K.rowItem.seqName()));K.value<J&&(J=K.value);K.value>smaxY&&(smaxY=K.value)}b=epiviz.ui.charts.CustomSetting;M=w.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];K=w.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];D?(M==b.DEFAULT&&(M=Math.min(0,Math.floor(A[0]))),K==b.DEFAULT&&(K=Math.ceil(A[1]))):(M=Math.min(0,Math.floor(J)),K=Math.ceil(smaxY));var F=d3.scale.linear().domain([M,
+K]).range([(z+1)*G,z*G]),I=function(a){a=d.get(a);return e(a.rowItem.start())};b=function(a){a=d.get(a);return F(a.value)};if(B){var J=w._svg.select(".axes"),Q=J.select(".yAxis-grid"),P=J.select(".yAxis-line");Q.empty()&&(Q=J.append("g").attr("class","yAxis yAxis-grid"));P.empty()&&(P=J.append("g").attr("class","yAxis yAxis-line"));d3.svg.line().x([a.start(),a.start()]).y([(z+1)*G,z*G]);P.append("line").attr("x1",e(a.start())).attr("y1",F(M)).attr("x2",e(a.start())).attr("y2",F(.8*K)).attr("class",
+"yAxis-line-series-"+z).style("shape-rendering","auto").style("stroke-opacity","0.6").attr("transform","translate("+w.margins().left()+", "+w.margins().top()+")");P.append("text").attr("class","yAxis-line-minlabel-series"+z).attr("x",e(a.start())-17).attr("y",F(.8*K)).text(d3.format(".2g")(K)).style("opacity","0.6").attr("transform","translate("+w.margins().left()+", "+w.margins().top()+")");P.append("text").attr("class","yAxis-line-maxlabel-series"+z).attr("x",e(a.start())-17).attr("y",F(M)).text(d3.format(".2g")(M)).style("opacity",
+"0.6").attr("transform","translate("+w.margins().left()+", "+w.margins().top()+")")}else y.select(".line-series-index-"+z).selectAll("text").remove(),y.select(".line-series-index-"+z).append("text").attr("class","chart-title").attr("font-weight","bold").attr("fill",function(a,b){return w._measurementColorLabels?w.colors().getByKey(w._measurementColorLabels.get(a)):w.colors().get(z)}).attr("x",0).attr("y",z*G+20).text("max: "+d3.format(".2g")(K));n?(K=d3.svg.line().x(I).y(b).interpolate(x),M=y.select(".line-series-index-"+
+z).selectAll("path").data([f]),M.enter().append("path").attr("d",K).style("shape-rendering","auto").style("stroke-opacity","0.8").on("mouseover",function(){w._captureMouseHover()}).on("mousemove",function(){w._captureMouseHover()}).on("mouseout",function(){w._unhover.notify(new epiviz.ui.charts.VisEventArgs(w.id()))}),M.attr("d",K).style("stroke",g).style("stroke-width",r).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)")):y.select(".line-series-index-"+
+z).selectAll("path").remove();u&&(K=d3.svg.area().x1(I).y1(b).x0(I).y0(F(0)).interpolate(x),M=y.select(".line-series-index-"+z).selectAll("path").data([f]),M.enter().append("path").attr("d",K).style("shape-rendering","auto").style("stroke-opacity","0.8").on("mouseover",function(){w._captureMouseHover()}).on("mousemove",function(){w._captureMouseHover()}).on("mouseout",function(){w._unhover.notify(new epiviz.ui.charts.VisEventArgs(w.id()))}),M.attr("d",K).style("fill",g).attr("transform","translate("+
++c+")").transition().duration(500).attr("transform","translate(0)"));y.select(".point-series-index-"+z).selectAll("circle").remove();y.select(".point-series-index-"+z).selectAll(".error-bar").remove();p&&(M=y.select(".point-series-index-"+z).selectAll("circle").data(f),M.enter().append("circle").attr("class","point-series-index-"+z).attr("r",q).attr("cx",I).attr("cy",b).attr("fill",g).attr("stroke",g).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)"),
+M.on("mouseover",function(){w._captureMouseHover()}).on("mousemove",function(){w._captureMouseHover()}).on("mouseout",function(){w._unhover.notify(new epiviz.ui.charts.VisEventArgs(w.id()))}),M.exit().transition().duration(500).style("opacity",0).remove(),v&&(f=y.select(".point-series-index-"+z).selectAll(".error-bar").data(f),f.enter().append("g").attr("class","error-bar").each(function(a){var b;b=d.get(a);b=b.valueAnnotation?b.valueAnnotation.errMinus:null;b=void 0!=b?F(b):null;var c;c=d.get(a);
 c=c.valueAnnotation?c.valueAnnotation.errPlus:null;c=void 0!=c?F(c):null;null!=b&&null!=c&&(d3.select(this).append("line").attr("x1",I(a)).attr("x2",I(a)).attr("y1",b).attr("y2",c).style("stroke",g).style("shape-rendering","auto"),d3.select(this).append("line").attr("x1",I(a)-2).attr("x2",I(a)+2).attr("y1",b).attr("y2",b).style("stroke",g).style("shape-rendering","auto"),d3.select(this).append("line").attr("x1",I(a)-2).attr("x2",I(a)+2).attr("y1",c).attr("y2",c).style("stroke",g).style("shape-rendering",
-"auto"))}).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)"),f.on("mouseover",function(){w._captureMouseHover()}).on("mousemove",function(){w._captureMouseHover()}).on("mouseout",function(){w._unhover.notify(new epiviz.ui.charts.VisEventArgs(w.id()))}),f.exit().transition().duration(500).style("opacity",0).remove()),t!=epiviz.ui.charts.CustomSetting.DEFAULT&&(z.selectAll(".abLine").remove(),z.append("svg:line").attr("class","abLine").attr("x1",0).attr("x2",
-w.width()-w.margins().sumAxis(epiviz.ui.charts.Axis.X)).attr("y1",F(t)).attr("y2",F(t)).style("stroke","black").style("stroke-dasharray","5, 5")));y++}}});y<b.measurements().length;y++)z.select(".line-series-index-"+y).remove(),z.select(".point-series-index-"+y).remove();return E};
+"auto"))}).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)"),f.on("mouseover",function(){w._captureMouseHover()}).on("mousemove",function(){w._captureMouseHover()}).on("mouseout",function(){w._unhover.notify(new epiviz.ui.charts.VisEventArgs(w.id()))}),f.exit().transition().duration(500).style("opacity",0).remove()),t!=epiviz.ui.charts.CustomSetting.DEFAULT&&(y.selectAll(".abLine").remove(),y.append("svg:line").attr("class","abLine").attr("x1",0).attr("x2",
+w.width()-w.margins().sumAxis(epiviz.ui.charts.Axis.X)).attr("y1",F(t)).attr("y2",F(t)).style("stroke","black").style("stroke-dasharray","5, 5")));z++}}});z<b.measurements().length;z++)y.select(".line-series-index-"+z).remove(),y.select(".point-series-index-"+z).remove();return E};
 epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLinesCanvas=function(a,b,c,d,e,f,g,h,m){var l=this.colors(),p=parseInt(this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.STEP]),n=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_POINTS],u=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_LINES],v=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_FILL],
 q=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_ERROR_BARS],r=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.POINT_RADIUS],x=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.LINE_THICKNESS],t=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.INTERPOLATION];d=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.ABS_LINE_VAL];
 var B=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_Y_AXIS],D=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.AUTO_SCALE],A;D&&(A=this.getDataMinMax(b));var w=this;h=d3.scale.linear().domain([0,this.width()-this.margins().sumAxis(epiviz.ui.charts.Axis.X)]).range([a.start(),a.end()])(c)-a.start();var C=epiviz.datatypes.GenomicRange.fromStartEnd(a.seqName(),Math.min(a.start(),a.start()+h),Math.max(a.end(),a.end()+
-h),a.genome()),H=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_TRACKS],G=(w.height()-w.margins().sumAxis(epiviz.ui.charts.Axis.Y))/b.measurements().length;"default"!=H&&(h=H.split(","),G=(w.height()-w.margins().sumAxis(epiviz.ui.charts.Axis.Y))/h.length);var y=0,z=g.getContext("2d"),E=[];b.foreach(function(b,d,f){f=!1;"default"!=H&&(H.split(",").includes(b.id())||(f=!0));if(!f){var g=w._measurementColorLabels?l.getByKey(w._measurementColorLabels.get(b)):
-l.get(y),h=d.binarySearchStarts(C);if(0!=h.length){f=Math.ceil(h.index/p)*p;h.length=Math.max(0,h.length-f+h.index);h.index=f;f=epiviz.utils.range(h.length,h.index).filter(function(a){return!p||1>=p||0==(a-h.index)%p});var m=1E3;smaxY=-1E3;for(var F=0;F<f.length;++F){var J=d.get(f[F]);E.push(new epiviz.ui.charts.ChartObject(sprintf("line_%s_%s",y,J.globalIndex),J.rowItem.start(),J.rowItem.end(),[J.value],y,[[J]],[b],sprintf("item data-series-%s",y),J.rowItem.seqName()));J.value<m&&(m=J.value);J.value>
-smaxY&&(smaxY=J.value)}var F=epiviz.ui.charts.CustomSetting,J=w.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN],I=w.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];D?(J==F.DEFAULT&&(J=Math.min(0,Math.floor(A[0]))),I==F.DEFAULT&&(I=Math.ceil(A[1]))):(J=Math.min(0,Math.floor(m)),I=Math.ceil(smaxY));var R=d3.scale.linear().domain([J,I]).range([(y+1)*G,y*G]),Q=function(a){a=d.get(a);return e(a.rowItem.start())},P=function(a){a=d.get(a);return R(a.value)},
-g=w._measurementColorLabels?w.colors().getByKey(w._measurementColorLabels.get(b)):w.colors().get(y);B?(z.beginPath(),z.strokeStyle="black",z.fillStyle="black",z.globalAlpha=.6,z.moveTo(e(w.margins().left()+a.start()),R(J)),z.lineTo(e(w.margins().left()+a.start()),R(.8*I)),z.strokeStyle=g,z.stroke(),z.beginPath(),z.strokeStyle="black",z.fillStyle="black",z.textAlign="start",z.globalAlpha=.6,z.fillText(d3.format(".2g")(I),e(a.start())-17,R(.8*I)),z.beginPath(),z.strokeStyle="black",z.fillStyle="black",
-z.textAlign="start",z.globalAlpha=.6,z.fillText(d3.format(".2g")(J),e(a.start())-17,R(J))):(z.beginPath(),z.strokeStyle=g,z.fillStyle=g,z.textAlign="start",z.fillText("max: "+d3.format(".2g")(I),w.margins().left(),y*G+20));u&&(b=d3.svg.line().x(Q).y(P).interpolate(t),z.globalAlpha=.8,z.beginPath(),b=new Path2D(b(f)),z.strokeStyle=g,z.lineWidth=x,z.stroke(b),z.beginPath());v&&(b=d3.svg.area().x1(function(a){return Q(a)+c}).y1(P).x0(function(a){return Q(a)+c}).y0(R(0)).interpolate(t),z.globalAlpha=
-.8,z.beginPath(),z.strokeStyle=g,z.fillStyle=g,b=new Path2D(b(f)),z.stroke(b),z.fill(b),z.beginPath());n&&(f.forEach(function(a){var b=Q(a)+c;a=P(a);z.beginPath();z.arc(b,a,r,0,2*Math.PI);z.strokeStyle=g;z.stroke();z.fillStyle=g;z.fill()}),q&&f.forEach(function(a){var b;b=d.get(a);b=b.valueAnnotation?b.valueAnnotation.errMinus:null;b=void 0!=b?R(b):null;var e;e=d.get(a);e=e.valueAnnotation?e.valueAnnotation.errPlus:null;e=void 0!=e?R(e):null;null!=b&&null!=e&&(z.beginPath(),z.moveTo(Q(a)+c,P(a)),
-z.lineTo(b,e),z.strokeStyle=g,z.stroke(),z.beginPath(),z.globalAlpha=.7,z.moveTo(Q(a)-2+c,P(a)+2),z.lineTo(b,b),z.strokeStyle=g,z.stroke(),z.beginPath(),z.globalAlpha=.7,z.moveTo(Q(a)-2+c,P(a)+2),z.lineTo(e,e),z.strokeStyle=g,z.stroke(),z.beginPath())}));y++}}});d!=epiviz.ui.charts.CustomSetting.DEFAULT&&(z.beginPath(),z.globalAlpha=.7,z.moveTo(0,f(d)),z.lineTo(w.width()-w.margins().sumAxis(epiviz.ui.charts.Axis.X),f(d)),z.strokeStyle=color,z.stroke());return E};
+h),a.genome()),H=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_TRACKS],G=(w.height()-w.margins().sumAxis(epiviz.ui.charts.Axis.Y))/b.measurements().length;"default"!=H&&(h=H.split(","),G=(w.height()-w.margins().sumAxis(epiviz.ui.charts.Axis.Y))/h.length);var z=0,y=g.getContext("2d"),E=[];b.foreach(function(b,d,f){f=!1;"default"!=H&&(H.split(",").includes(b.id())||(f=!0));if(!f){var g=w._measurementColorLabels?l.getByKey(w._measurementColorLabels.get(b)):
+l.get(z),h=d.binarySearchStarts(C);if(0!=h.length){f=Math.ceil(h.index/p)*p;h.length=Math.max(0,h.length-f+h.index);h.index=f;f=epiviz.utils.range(h.length,h.index).filter(function(a){return!p||1>=p||0==(a-h.index)%p});var m=1E3;smaxY=-1E3;for(var F=0;F<f.length;++F){var J=d.get(f[F]);E.push(new epiviz.ui.charts.ChartObject(sprintf("line_%s_%s",z,J.globalIndex),J.rowItem.start(),J.rowItem.end(),[J.value],z,[[J]],[b],sprintf("item data-series-%s",z),J.rowItem.seqName()));J.value<m&&(m=J.value);J.value>
+smaxY&&(smaxY=J.value)}var F=epiviz.ui.charts.CustomSetting,J=w.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN],I=w.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];D?(J==F.DEFAULT&&(J=Math.min(0,Math.floor(A[0]))),I==F.DEFAULT&&(I=Math.ceil(A[1]))):(J=Math.min(0,Math.floor(m)),I=Math.ceil(smaxY));var R=d3.scale.linear().domain([J,I]).range([(z+1)*G,z*G]),Q=function(a){a=d.get(a);return e(a.rowItem.start())},P=function(a){a=d.get(a);return R(a.value)},
+g=w._measurementColorLabels?w.colors().getByKey(w._measurementColorLabels.get(b)):w.colors().getByKey(b.id());B?(y.beginPath(),y.strokeStyle="black",y.fillStyle="black",y.globalAlpha=.6,y.moveTo(e(w.margins().left()+a.start()),R(J)),y.lineTo(e(w.margins().left()+a.start()),R(.8*I)),y.strokeStyle=g,y.stroke(),y.beginPath(),y.strokeStyle="black",y.fillStyle="black",y.textAlign="start",y.globalAlpha=.6,y.fillText(d3.format(".2g")(I),e(a.start())-17,R(.8*I)),y.beginPath(),y.strokeStyle="black",y.fillStyle=
+"black",y.textAlign="start",y.globalAlpha=.6,y.fillText(d3.format(".2g")(J),e(a.start())-17,R(J))):(y.beginPath(),y.strokeStyle=g,y.fillStyle=g,y.textAlign="start",y.fillText("max: "+d3.format(".2g")(I),w.margins().left(),z*G+20));u&&(b=d3.svg.line().x(Q).y(P).interpolate(t),y.globalAlpha=.8,y.beginPath(),b=new Path2D(b(f)),y.strokeStyle=g,y.lineWidth=x,y.stroke(b),y.beginPath());v&&(b=d3.svg.area().x1(function(a){return Q(a)+c}).y1(P).x0(function(a){return Q(a)+c}).y0(R(0)).interpolate(t),y.globalAlpha=
+.8,y.beginPath(),y.strokeStyle=g,y.fillStyle=g,b=new Path2D(b(f)),y.stroke(b),y.fill(b),y.beginPath());n&&(f.forEach(function(a){var b=Q(a)+c;a=P(a);y.beginPath();y.arc(b,a,r,0,2*Math.PI);y.strokeStyle=g;y.stroke();y.fillStyle=g;y.fill()}),q&&f.forEach(function(a){var b;b=d.get(a);b=b.valueAnnotation?b.valueAnnotation.errMinus:null;b=void 0!=b?R(b):null;var e;e=d.get(a);e=e.valueAnnotation?e.valueAnnotation.errPlus:null;e=void 0!=e?R(e):null;null!=b&&null!=e&&(y.beginPath(),y.moveTo(Q(a)+c,P(a)),
+y.lineTo(b,e),y.strokeStyle=g,y.stroke(),y.beginPath(),y.globalAlpha=.7,y.moveTo(Q(a)-2+c,P(a)+2),y.lineTo(b,b),y.strokeStyle=g,y.stroke(),y.beginPath(),y.globalAlpha=.7,y.moveTo(Q(a)-2+c,P(a)+2),y.lineTo(e,e),y.strokeStyle=g,y.stroke(),y.beginPath())}));z++}}});d!=epiviz.ui.charts.CustomSetting.DEFAULT&&(y.beginPath(),y.globalAlpha=.7,y.moveTo(0,f(d)),y.lineTo(w.width()-w.margins().sumAxis(epiviz.ui.charts.Axis.X),f(d)),y.strokeStyle=color,y.stroke());return E};
 epiviz.plugins.charts.MultiStackedLineTrack.prototype._drawLegend=function(){var a=this;this._svg.selectAll(".chart-title").remove();this._svg.selectAll(".chart-title-color ").remove();if(this._lastData&&this._lastData.isReady()){var b=this._lastData.measurements();if(-1!=a._id.indexOf("stacked")&&"canvas"==this.chartDrawType){var c=(a.height()-a.margins().sumAxis(epiviz.ui.charts.Axis.Y))/a.measurements().size(),d=b,e=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_TRACKS];
 if("default"!=e){var f=e.split(","),c=(a.height()-a.margins().sumAxis(epiviz.ui.charts.Axis.Y))/f.length;b.forEach(function(a){f.includes(a.id())&&d.push(a)})}var g=a.canvas.getContext("2d");d.forEach(function(b,d){var e;e=a._measurementColorLabels?a.colors().getByKey(a._measurementColorLabels.get(b)):a.colors().get(d);g.strokeStyle=e;g.fillStyle=e;g.beginPath();g.arc(2,d*c+14,3,0,2*Math.PI);g.stroke();g.fill();g.font="9px";g.beginPath();g.textAlign="start";g.fillText(b.name(),8,d*c+10)})}else if(-1!=
 a._id.indexOf("stacked"))c=(a.height()-a.margins().sumAxis(epiviz.ui.charts.Axis.Y))/a.measurements().size(),d=b,e=this.customSettingsValues()[epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_TRACKS],"default"!=e&&(f=e.split(","),c=(a.height()-a.margins().sumAxis(epiviz.ui.charts.Axis.Y))/f.length,d=[],b.forEach(function(a){f.includes(a.id())&&d.push(a)})),e=this._svg.selectAll(".chart-title").data(d).enter().append("text").attr("class","chart-title").attr("font-weight","bold").attr("fill",
-function(b,c){return a._measurementColorLabels?a.colors().getByKey(a._measurementColorLabels.get(b)):a.colors().get(c)}).attr("x",0).attr("y",function(a,b){return b*c+10}).text(function(a,b){return a.name()}).attr("transform","translate("+a.margins().left()+", "+a.margins().top()+")");else{var e=this._svg.selectAll(".chart-title").data(b).enter().append("text").attr("class","chart-title").attr("font-weight","bold").attr("fill",function(b,c){return a._measurementColorLabels?a.colors().getByKey(a._measurementColorLabels.get(b)):
-a.colors().get(c)}).attr("y",a.margins().top()-5).text(function(a,b){return a.name()}),h=0,m=[];this._container.find(" .chart-title").each(function(a){m.push(h);h+=this.getBBox().width+15});e.attr("x",function(b,c){return a.margins().left()+10+m[c]});this._svg.selectAll(".chart-title-color").data(b).enter().append("circle").attr("class","chart-title-color").attr("cx",function(b,c){return a.margins().left()+4+m[c]}).attr("cy",a.margins().top()-9).attr("r",4).style("shape-rendering","auto").style("stroke-width",
-"0").style("fill",function(b,c){return a._measurementColorLabels?a.colors().getByKey(a._measurementColorLabels.get(b)):a.colors().get(c)})}}};epiviz.plugins.charts.MultiStackedLineTrackType=function(a){epiviz.ui.charts.TrackType.call(this,a)};epiviz.plugins.charts.MultiStackedLineTrackType.prototype=epiviz.utils.mapCopy(epiviz.ui.charts.TrackType.prototype);epiviz.plugins.charts.MultiStackedLineTrackType.constructor=epiviz.plugins.charts.MultiStackedLineTrackType;epiviz.plugins.charts.MultiStackedLineTrackType.prototype.createNew=function(a,b,c){return new epiviz.plugins.charts.MultiStackedLineTrack(a,b,c)};
+function(b,c){return a._measurementColorLabels?a.colors().getByKey(a._measurementColorLabels.get(b)):a.colors().getByKey(b.id())}).attr("x",0).attr("y",function(a,b){return b*c+10}).text(function(a,b){return a.name()}).attr("transform","translate("+a.margins().left()+", "+a.margins().top()+")");else{var e=this._svg.selectAll(".chart-title").data(b).enter().append("text").attr("class","chart-title").attr("font-weight","bold").attr("fill",function(b,c){return a._measurementColorLabels?a.colors().getByKey(a._measurementColorLabels.get(b)):
+a.colors().getByKey(b.id())}).attr("y",a.margins().top()-5).text(function(a,b){return a.name()}),h=0,m=[];this._container.find(" .chart-title").each(function(a){m.push(h);h+=this.getBBox().width+15});e.attr("x",function(b,c){return a.margins().left()+10+m[c]});this._svg.selectAll(".chart-title-color").data(b).enter().append("circle").attr("class","chart-title-color").attr("cx",function(b,c){return a.margins().left()+4+m[c]}).attr("cy",a.margins().top()-9).attr("r",4).style("shape-rendering","auto").style("stroke-width",
+"0").style("fill",function(b,c){return a._measurementColorLabels?a.colors().getByKey(a._measurementColorLabels.get(b)):a.colors().getByKey(b.id())})}}};epiviz.plugins.charts.MultiStackedLineTrackType=function(a){epiviz.ui.charts.TrackType.call(this,a)};epiviz.plugins.charts.MultiStackedLineTrackType.prototype=epiviz.utils.mapCopy(epiviz.ui.charts.TrackType.prototype);epiviz.plugins.charts.MultiStackedLineTrackType.constructor=epiviz.plugins.charts.MultiStackedLineTrackType;epiviz.plugins.charts.MultiStackedLineTrackType.prototype.createNew=function(a,b,c){return new epiviz.plugins.charts.MultiStackedLineTrack(a,b,c)};
 epiviz.plugins.charts.MultiStackedLineTrackType.prototype.typeName=function(){return"epiviz.plugins.charts.MultiStackedLineTrackType"};epiviz.plugins.charts.MultiStackedLineTrackType.prototype.chartName=function(){return"Multi Stacked Line Track"};epiviz.plugins.charts.MultiStackedLineTrackType.prototype.chartHtmlAttributeName=function(){return"MULTI-stacked-lines"};epiviz.plugins.charts.MultiStackedLineTrackType.prototype.isRestrictedToSameDatasourceGroup=function(){return!1};
 epiviz.plugins.charts.MultiStackedLineTrackType.prototype.measurementsFilter=function(){return function(a){return a.type()==epiviz.measurements.Measurement.Type.FEATURE}};
 epiviz.plugins.charts.MultiStackedLineTrackType.prototype.customSettingsDefs=function(){return epiviz.ui.charts.TrackType.prototype.customSettingsDefs.call(this).concat([new epiviz.ui.charts.CustomSetting(epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.STEP,epiviz.ui.charts.CustomSetting.Type.NUMBER,50,"Step"),new epiviz.ui.charts.CustomSetting(epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_POINTS,epiviz.ui.charts.CustomSetting.Type.BOOLEAN,!1,"Show points"),new epiviz.ui.charts.CustomSetting(epiviz.plugins.charts.MultiStackedLineTrackType.CustomSettings.SHOW_LINES,
@@ -10645,20 +10645,20 @@ epiviz.plugins.charts.ScatterPlot.prototype._drawCirclesCanvas=function(a,b){var
 b.foreach(function(a,b){var c=b.globalStartIndex(),d=b.globalEndIndex();c>m&&(m=c);d<l&&(l=d)});var p=l-m,n=this.margins(),u=this.width(),v=this.height(),q=epiviz.ui.charts.CustomSetting,r=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN],x=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX],t=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MIN],B=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MAX];
 t==q.DEFAULT&&(t=this._measurementsX[0].minValue());r==q.DEFAULT&&(r=this._measurementsY[0].minValue());B==q.DEFAULT&&(B=this._measurementsX[0].maxValue());x==q.DEFAULT&&(x=this._measurementsY[0].maxValue());var D=epiviz.measurements.Measurement.Type.isOrdered(this._measurementsX[0].type()),q=d3.scale.linear().domain([t,B]).range([0,u-n.sumAxis(d.X)]),A=d3.scale.linear().domain([r,x]).range([v-n.sumAxis(d.Y),0]);this._container.find("svg").remove();this._container.find("#"+this.id()+"-canvas").remove();
 var w=document.createElement("canvas");this.chartDrawType="canvas";this.canvas=w;w.id=this.id()+"-canvas";this._container.append(w);w.width=u;w.height=v;this._container.find("#"+this.id()+"-hoverCanvas").remove();var C=document.createElement("canvas");this.hoverCanvas=C;C.id=this.id()+"-hoverCanvas";this._container.append(C);C.width=this.width();C.height=this.height();C.style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:1";this._drawAxesCanvas(q,A,15,15,w);var H=w.getContext("2d");
-this.renderQueue=renderQueue(function(a){H.beginPath();H.arc(n.left()+(a.values[0]-t)*(u-n.sumAxis(d.X))/(B-t),v-n.bottom()-(a.values[1]-r)*(v-n.sumAxis(d.Y))/(x-r),e,0,2*Math.PI);a=c.colors().get(a.seriesIndex);H.strokeStyle=a;H.stroke();H.fillStyle=a;H.fill()});var G,y,z=[];for(G=0;G<p;++G){y=G+m;var E=b.getSeries(this._measurementsX[0]).getRowByGlobalIndex(y);if(E&&(!D||void 0==a.start()||void 0==a.end()||E.start()<a.end()&&E.end()>a.start()))for(E=0;E<g;++E)z.push(E*p+G)}E={};g=[];D=1;for(G=0;G<
-z.length;++G){y=z[G]%p;var I=y+m;y=Math.floor(z[G]/p);var F=c._measurementsX[y],J=c._measurementsY[y],L=b.getSeries(F).getByGlobalIndex(I),I=b.getSeries(J).getByGlobalIndex(I);if(L&&I){var N=sprintf("item data-series-%s",y),O=q(L.value),M=A(I.value),O=Math.floor(O/f)*f,M=Math.floor(M/f)*f,K=null;E[M]&&E[M][O]?(K=E[M][O],K.id+="_"+L.globalIndex,K.start=Math.min(K.start,L.rowItem.start()),K.end=Math.max(K.end,L.rowItem.end()),K.values[0]=(K.values[0]*K.valueItems[0].length+L.value)/(K.valueItems[0].length+
-1),K.values[1]=(K.values[1]*K.valueItems[1].length+I.value)/(K.valueItems[1].length+1),K.valueItems[0].push(L),K.valueItems[1].push(I),K.valueItems[0].length>D&&(D=K.valueItems[0].length)):(K=new epiviz.ui.charts.ChartObject(sprintf("scatter_%s_%s",y,L.globalIndex),L.rowItem.start(),L.rowItem.end(),[L.value,I.value],y,[[L],[I]],[F,J],N,L.rowItem.seqName()),E[M]||(E[M]={}),E[M][O]=K,g.push(K))}}f=this._chartContent.select(".items");f.empty()&&(f=this._chartContent.append("g").attr("class","items"),
+this.renderQueue=renderQueue(function(a){H.beginPath();H.arc(n.left()+(a.values[0]-t)*(u-n.sumAxis(d.X))/(B-t),v-n.bottom()-(a.values[1]-r)*(v-n.sumAxis(d.Y))/(x-r),e,0,2*Math.PI);a=c.colors().get(a.seriesIndex);H.strokeStyle=a;H.stroke();H.fillStyle=a;H.fill()});var G,z,y=[];for(G=0;G<p;++G){z=G+m;var E=b.getSeries(this._measurementsX[0]).getRowByGlobalIndex(z);if(E&&(!D||void 0==a.start()||void 0==a.end()||E.start()<a.end()&&E.end()>a.start()))for(E=0;E<g;++E)y.push(E*p+G)}E={};g=[];D=1;for(G=0;G<
+y.length;++G){z=y[G]%p;var I=z+m;z=Math.floor(y[G]/p);var F=c._measurementsX[z],J=c._measurementsY[z],L=b.getSeries(F).getByGlobalIndex(I),I=b.getSeries(J).getByGlobalIndex(I);if(L&&I){var N=sprintf("item data-series-%s",z),O=q(L.value),M=A(I.value),O=Math.floor(O/f)*f,M=Math.floor(M/f)*f,K=null;E[M]&&E[M][O]?(K=E[M][O],K.id+="_"+L.globalIndex,K.start=Math.min(K.start,L.rowItem.start()),K.end=Math.max(K.end,L.rowItem.end()),K.values[0]=(K.values[0]*K.valueItems[0].length+L.value)/(K.valueItems[0].length+
+1),K.values[1]=(K.values[1]*K.valueItems[1].length+I.value)/(K.valueItems[1].length+1),K.valueItems[0].push(L),K.valueItems[1].push(I),K.valueItems[0].length>D&&(D=K.valueItems[0].length)):(K=new epiviz.ui.charts.ChartObject(sprintf("scatter_%s_%s",z,L.globalIndex),L.rowItem.start(),L.rowItem.end(),[L.value,I.value],z,[[L],[I]],[F,J],N,L.rowItem.seqName()),E[M]||(E[M]={}),E[M][O]=K,g.push(K))}}f=this._chartContent.select(".items");f.empty()&&(f=this._chartContent.append("g").attr("class","items"),
 p=f.append("g").attr("class","selected"),f.append("g").attr("class","hovered"),p.append("g").attr("class","hovered"));H.globalAlpha=.7;c.renderQueue(g);if(this._globalIndexColorLabels){f={};for(E=m;E<l;++E)f[this._globalIndexColorLabels[E]]=this._globalIndexColorLabels[E];this._colorLabels=Object.keys(f);var S=0;this._colorLabels.forEach(function(a,b){var d=c.colors().getByKey(a);H.strokeStyle=d;H.fillStyle=d;H.beginPath();H.arc(c.margins().left()+S-2,-9,4,0,2*Math.PI);H.stroke();H.fill();H.font=
 "9px";H.beginPath();H.textAlign="start";H.fillText(a,c.margins().left()+S+8,c.margins().top()-5);d=H.measureText(a).width;S=S+8+d+10})}else{f=Math.min(this._measurementsX.length,this._measurementsY.length);p=Array(f);for(E=0;E<f;++E)p[E]=sprintf("%s vs %s",this._measurementsX[E].name(),this._measurementsY[E].name());this._colorLabels=p}h!=epiviz.ui.charts.CustomSetting.DEFAULT&&(H.beginPath(),H.globalAlpha=.7,H.moveTo(n.left(),A(h)),H.lineTo(n.left()+(B-t)*(u-n.sumAxis(d.X))/(B-t),A(h)),H.strokeStyle=
 black,H.stroke());this.addCanvasEvents(w,C,g,q,A,n,t,B,r,x,e);return g};
 epiviz.plugins.charts.ScatterPlot.prototype._drawCircles=function(a,b){var c=this,d=epiviz.ui.charts.Axis,e=Math.max(1,this.customSettingsValues()[epiviz.plugins.charts.ScatterPlotType.CustomSettings.CIRCLE_RADIUS_RATIO]*Math.min(this.width(),this.height())),f=Math.max(Math.floor(e),1),g=Math.min(this._measurementsX.length,this._measurementsY.length),h=this.customSettingsValues()[epiviz.plugins.charts.ScatterPlotType.CustomSettings.ABS_LINE_VAL],m=b.firstSeries().globalStartIndex(),l=b.firstSeries().globalEndIndex();
 b.foreach(function(a,b){var c=b.globalStartIndex(),d=b.globalEndIndex();c>m&&(m=c);d<l&&(l=d)});var p=l-m,n=this.margins(),u=this.width(),v=this.height(),q=epiviz.ui.charts.CustomSetting,r=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN],x=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX],t=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MIN],B=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MAX];
 t==q.DEFAULT&&(t=this._measurementsX[0].minValue());r==q.DEFAULT&&(r=this._measurementsY[0].minValue());B==q.DEFAULT&&(B=this._measurementsX[0].maxValue());x==q.DEFAULT&&(x=this._measurementsY[0].maxValue());var D=epiviz.measurements.Measurement.Type.isOrdered(this._measurementsX[0].type()),q=d3.scale.linear().domain([t,B]).range([0,u-n.sumAxis(d.X)]),A=d3.scale.linear().domain([r,x]).range([v-n.sumAxis(d.Y),0]);this._clearAxes(this._chartContent);this._drawAxes(q,A,15,15,this._chartContent);var w,
-C,H=[];for(w=0;w<p;++w){C=w+m;var G=b.getSeries(this._measurementsX[0]).getRowByGlobalIndex(C);if(G&&(!D||void 0==a.start()||void 0==a.end()||G.start()<a.end()&&G.end()>a.start()))for(G=0;G<g;++G)H.push(G*p+w)}var G={},g=[],y=1;for(w=0;w<H.length;++w){C=H[w]%p;var z=C+m,D=Math.floor(H[w]/p);C=c._measurementsX[D];var E=c._measurementsY[D],I=b.getSeries(C).getByGlobalIndex(z),z=b.getSeries(E).getByGlobalIndex(z);if(I&&z){var F=sprintf("item data-series-%s",D),J=q(I.value),L=A(z.value),J=Math.floor(J/
-f)*f,L=Math.floor(L/f)*f,N=null;G[L]&&G[L][J]?(N=G[L][J],N.id+="_"+I.globalIndex,N.start=Math.min(N.start,I.rowItem.start()),N.end=Math.max(N.end,I.rowItem.end()),N.values[0]=(N.values[0]*N.valueItems[0].length+I.value)/(N.valueItems[0].length+1),N.values[1]=(N.values[1]*N.valueItems[1].length+z.value)/(N.valueItems[1].length+1),N.valueItems[0].push(I),N.valueItems[1].push(z),N.valueItems[0].length>y&&(y=N.valueItems[0].length)):(N=new epiviz.ui.charts.ChartObject(sprintf("scatter_%s_%s",D,I.globalIndex),
-I.rowItem.start(),I.rowItem.end(),[I.value,z.value],D,[[I],[z]],[C,E],F,I.rowItem.seqName()),G[L]||(G[L]={}),G[L][J]=N,g.push(N))}}f=this._chartContent.select(".items");f.empty()&&(f=this._chartContent.append("g").attr("class","items"),p=f.append("g").attr("class","selected"),f.append("g").attr("class","hovered"),p.append("g").attr("class","hovered"));p=f.selectAll("circle").data(g,function(a){return a.id});p.enter().insert("circle",":first-child").attr("id",function(a){return sprintf("%s-item-%s-%s",
+C,H=[];for(w=0;w<p;++w){C=w+m;var G=b.getSeries(this._measurementsX[0]).getRowByGlobalIndex(C);if(G&&(!D||void 0==a.start()||void 0==a.end()||G.start()<a.end()&&G.end()>a.start()))for(G=0;G<g;++G)H.push(G*p+w)}var G={},g=[],z=1;for(w=0;w<H.length;++w){C=H[w]%p;var y=C+m,D=Math.floor(H[w]/p);C=c._measurementsX[D];var E=c._measurementsY[D],I=b.getSeries(C).getByGlobalIndex(y),y=b.getSeries(E).getByGlobalIndex(y);if(I&&y){var F=sprintf("item data-series-%s",D),J=q(I.value),L=A(y.value),J=Math.floor(J/
+f)*f,L=Math.floor(L/f)*f,N=null;G[L]&&G[L][J]?(N=G[L][J],N.id+="_"+I.globalIndex,N.start=Math.min(N.start,I.rowItem.start()),N.end=Math.max(N.end,I.rowItem.end()),N.values[0]=(N.values[0]*N.valueItems[0].length+I.value)/(N.valueItems[0].length+1),N.values[1]=(N.values[1]*N.valueItems[1].length+y.value)/(N.valueItems[1].length+1),N.valueItems[0].push(I),N.valueItems[1].push(y),N.valueItems[0].length>z&&(z=N.valueItems[0].length)):(N=new epiviz.ui.charts.ChartObject(sprintf("scatter_%s_%s",D,I.globalIndex),
+I.rowItem.start(),I.rowItem.end(),[I.value,y.value],D,[[I],[y]],[C,E],F,I.rowItem.seqName()),G[L]||(G[L]={}),G[L][J]=N,g.push(N))}}f=this._chartContent.select(".items");f.empty()&&(f=this._chartContent.append("g").attr("class","items"),p=f.append("g").attr("class","selected"),f.append("g").attr("class","hovered"),p.append("g").attr("class","hovered"));p=f.selectAll("circle").data(g,function(a){return a.id});p.enter().insert("circle",":first-child").attr("id",function(a){return sprintf("%s-item-%s-%s",
 c.id(),a.seriesIndex,a.valueItems[0][0].globalIndex)}).style("opacity",0).style("fill-opacity",0).attr("r",0);p.each(function(a){var b=d3.select(this),e;e=c._globalIndexColorLabels?c.colors().getByKey(c._globalIndexColorLabels[a.valueItems[0][0].globalIndex]):c.colors().get(a.seriesIndex);b.attr("cx",n.left()+(a.values[0]-t)*(u-n.sumAxis(d.X))/(B-t)).attr("cy",v-n.bottom()-(a.values[1]-r)*(v-n.sumAxis(d.Y))/(x-r)).attr("class",a.cssClasses).style("fill",e)});p.transition().duration(1E3).style("fill-opacity",
-function(a){return Math.max(.6,a.valueItems[0].length/y)}).style("opacity",null).attr("r",e);p.exit().transition().duration(1E3).style("opacity",0).attr("r",0).remove();p.on("mouseover",function(a){c._hover.notify(new epiviz.ui.charts.VisEventArgs(c.id(),a))}).on("mouseout",function(){c._unhover.notify(new epiviz.ui.charts.VisEventArgs(c.id()))}).on("click",function(a){c._deselect.notify(new epiviz.ui.charts.VisEventArgs(c.id()));c._select.notify(new epiviz.ui.charts.VisEventArgs(c.id(),a));d3.event.stopPropagation()});
+function(a){return Math.max(.6,a.valueItems[0].length/z)}).style("opacity",null).attr("r",e);p.exit().transition().duration(1E3).style("opacity",0).attr("r",0).remove();p.on("mouseover",function(a){c._hover.notify(new epiviz.ui.charts.VisEventArgs(c.id(),a))}).on("mouseout",function(){c._unhover.notify(new epiviz.ui.charts.VisEventArgs(c.id()))}).on("click",function(a){c._deselect.notify(new epiviz.ui.charts.VisEventArgs(c.id()));c._select.notify(new epiviz.ui.charts.VisEventArgs(c.id(),a));d3.event.stopPropagation()});
 if(this._globalIndexColorLabels){e={};for(G=m;G<l;++G)e[this._globalIndexColorLabels[G]]=this._globalIndexColorLabels[G];this._colorLabels=Object.keys(e);this._svg.selectAll(".chart-title").remove();this._svg.selectAll(".chart-title-color ").remove();e=this._svg.selectAll(".chart-title").data(this._colorLabels);e.enter().append("text").attr("class","chart-title").attr("font-weight","bold").attr("y",c.margins().top()-5);e.attr("fill",function(a,b){return c.colors().getByKey(a)}).text(function(a){return a});
 var O=0,M=[];this._container.find(" .chart-title").each(function(a){M.push(O);O+=this.getBBox().width+15});e.attr("x",function(a,b){return c.margins().left()+10+M[b]});this._svg.selectAll(".chart-title-color").data(this._colorLabels).enter().append("circle").attr("class","chart-title-color").attr("cx",function(a,b){return c.margins().left()+4+M[b]}).attr("cy",c.margins().top()-9).attr("r",4).style("shape-rendering","auto").style("stroke-width","0").attr("fill",function(a,b){return c.colors().getByKey(a)}).style("stroke-width",
 0)}else{e=Math.min(this._measurementsX.length,this._measurementsY.length);p=Array(e);for(G=0;G<e;++G)p[G]=sprintf("%s vs %s",this._measurementsX[G].name(),this._measurementsY[G].name());this._colorLabels=p}h!=epiviz.ui.charts.CustomSetting.DEFAULT&&(f.selectAll(".abLine").remove(),f.append("svg:line").attr("class","abLine").attr("x1",n.left()+(t-t)*(u-n.sumAxis(d.X))/(B-t)).attr("x2",n.left()+(B-t)*(u-n.sumAxis(d.X))/(B-t)).attr("y1",v-n.bottom()-(h-r)*(v-n.sumAxis(d.Y))/(x-r)).attr("y2",v-n.bottom()-
@@ -10738,8 +10738,8 @@ u=this.customSettingsValues()[epiviz.plugins.charts.HeatmapPlotType.CustomSettin
 e?(e=sprintf("item data-series-%s",c),l=new epiviz.ui.charts.ChartObject(sprintf("heatmap_%s_%s",c,B),d.rowItem.start(),d.rowItem.end(),[d.value],c,[[d]],[a],e,d.rowItem.seqName()),A.push(l),e=d=Math.ceil((t.length-h)/g),--g):(l=A[A.length-1],l.id+="_"+B,epiviz.measurements.Measurement.Type.isOrdered(b.measurement().type())&&(l.start=Math.min(l.start,d.rowItem.start()),l.end=Math.max(l.end,d.rowItem.end())),l.values[0]=(l.values[0]*l.valueItems[0].length+d.value)/(l.valueItems[0].length+1),l.valueItems[0].push(d));
 0==c&&(w[B]=A.length-1);--e}});var C;this._min=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN];this._max=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX];c=epiviz.ui.charts.CustomSetting;this._min==c.DEFAULT&&(this._min=b.measurements()[0].minValue());this._max==c.DEFAULT&&(this._max=b.measurements()[0].maxValue());if(this._globalIndexColorLabels){c={};for(a=g;a<h;++a)c[this._globalIndexColorLabels[a]]=this._globalIndexColorLabels[a];
 this._colorLabels=Object.keys(c);C={};this._colorLabels.forEach(function(a,b){var c=d.colors().getByKey(a);C[a]=epiviz.utils.colorizeBinary(d._min,d._max,"#ffffff",c)})}else this._colorLabels=[sprintf("Max",b.firstSeries().measurement().maxValue())],this._colorScale=epiviz.utils.colorizeBinary(this._min,this._max,"#ffffff",this.colors().getByKey("Max"));var H=(c=Math.min(t.length,f))?(v-this.margins().sumAxis(e.X))/c:0,G=(u-this.margins().sumAxis(e.Y))/b.measurements().length;b=this._chartContent.select(".items");
-b.empty()&&(b=this._chartContent.append("g").attr("class","items"),e=b.append("g").attr("class","selected"),b.append("g").attr("class","hovered"),e.append("g").attr("class","hovered"));b.attr("transform","translate("+this.margins().left()+", "+this.margins().top()+")");b.selectAll("rect").data(A,function(a){return a.id});this._container.find("svg").remove();var e=this.canvas,u=this.hoverCanvas,y=e.getContext("2d");y.globalAlpha=.6;y.translate(this.margins().left(),this.margins().top());u.getContext("2d").translate(this.margins().left(),
-this.margins().top());this.renderQueue=renderQueue(function(a){y.beginPath();var b=d._globalIndexColorLabels?C[d._globalIndexColorLabels[a.valueItems[0][0].globalIndex]](a.values[0]):d._colorScale(a.values[0]);y.fillStyle=b;y.strokeStyle="black";y.rect(H*w[a.valueItems[0][0].globalIndex],G*a.seriesIndex,H,G);y.fill();y.stroke()});this.renderQueue(A);this._canvasHoverOptions={colIndex:w,cellWidth:H,cellHeight:G};this.addCanvasEvents(e,u,A,null,H,w);this._drawLabelsCanvas(b,t,x,c,m,H,G,g,v);return A};
+b.empty()&&(b=this._chartContent.append("g").attr("class","items"),e=b.append("g").attr("class","selected"),b.append("g").attr("class","hovered"),e.append("g").attr("class","hovered"));b.attr("transform","translate("+this.margins().left()+", "+this.margins().top()+")");b.selectAll("rect").data(A,function(a){return a.id});this._container.find("svg").remove();var e=this.canvas,u=this.hoverCanvas,z=e.getContext("2d");z.globalAlpha=.6;z.translate(this.margins().left(),this.margins().top());u.getContext("2d").translate(this.margins().left(),
+this.margins().top());this.renderQueue=renderQueue(function(a){z.beginPath();var b=d._globalIndexColorLabels?C[d._globalIndexColorLabels[a.valueItems[0][0].globalIndex]](a.values[0]):d._colorScale(a.values[0]);z.fillStyle=b;z.strokeStyle="black";z.rect(H*w[a.valueItems[0][0].globalIndex],G*a.seriesIndex,H,G);z.fill();z.stroke()});this.renderQueue(A);this._canvasHoverOptions={colIndex:w,cellWidth:H,cellHeight:G};this.addCanvasEvents(e,u,A,null,H,w);this._drawLabelsCanvas(b,t,x,c,m,H,G,g,v);return A};
 epiviz.plugins.charts.HeatmapPlot.prototype._drawDendrogram=function(a,b,c,d,e,f){var g=f?"dendrogram-horizontal":"dendrogram-vertical",h=this._svg.append("g").attr("class",g);f?h.attr("transform","translate("+c+","+b+")scale(-1, 1)rotate(90, 0, 0)"):h.attr("transform","translate("+c+","+b+")");this._drawSubDendrogram(this._svg.select("."+g),a.root(),0,0,e,d,!1)};
 epiviz.plugins.charts.HeatmapPlot.prototype._drawDendrogramCanvas=function(a,b,c,d,e,f){var g=this.canvas,h=g.getContext("2d");f?(h.save(),h.translate(c,b),h.scale(-1,1),h.rotate(Math.PI/2)):(h.save(),h.translate(c,b));this._drawSubDendrogramCanvas(g,a.root(),0,0,e,d,!1);h.restore()};
 epiviz.plugins.charts.HeatmapPlot.prototype._drawSubDendrogramCanvas=function(a,b,c,d,e,f,g){var h=b.children();if(0==h.length)return c+.5*f;for(var m=a.getContext("2d"),l=d3.scale.linear().domain([0,b.distance()]).range([0,e]),p=0,n,u,v=0;v<h.length;++v){var q=c+p,r=f/b.weight()*h[v].weight(),x=l(h[v].distance()),q=this._drawSubDendrogramCanvas(a,h[v],q,d,x,r,g);m.beginPath();m.moveTo(d+x,q);m.lineTo(d+e,q);m.strokeStyle="#555555";m.stroke();0==v&&g&&(m.font="9px",m.beginPath(),m.textAlign="center",
@@ -10780,23 +10780,23 @@ this.id()+"-canvas").remove();var h=document.createElement("canvas");this.chartD
 this._drawAxesCanvas(c,d,b.measurements().length,5,h,void 0,void 0,void 0,void 0,void 0,b.measurements().map(function(a){return"name"==g?a.name():(a=a.annotation())&&g in a?a[g]:"<NA>"}));h.getContext("2d").translate(this.margins().left(),this.margins().top());m.getContext("2d").translate(this.margins().left(),this.margins().top());return this._drawLinesCanvas(a,b,c,d,h,m)};
 epiviz.plugins.charts.LinePlot.prototype._drawLines=function(a,b,c,d){var e=this.colors(),f=this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.SHOW_POINTS],g=this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.SHOW_LINES],h=this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.SHOW_ERROR_BARS],m=this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.POINT_RADIUS],l=this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.LINE_THICKNESS],
 p=this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.INTERPOLATION],n=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.COL_LABEL],u=this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.ABS_LINE_VAL],v=this,q=this._svg.select(".lines"),r=b.firstSeries().globalStartIndex(),x=b.firstSeries().globalEndIndex();b.foreach(function(a,b){var c=b.globalStartIndex(),d=b.globalEndIndex();c>r&&(r=c);d<x&&(x=d)});for(var t=x-r,B=epiviz.measurements.Measurement.Type.isOrdered(b.measurements()[0].type()),
-D,A,w=0;w<t;++w){var C=w+r,H=b.firstSeries().getRowByGlobalIndex(C);if(!B||void 0==a.start()||void 0==a.end()||H.start()<a.end()&&H.end()>=a.start())void 0==D&&(D=C),A=C+1}r=D;x=A;t=A-D;this.width();var G=d3.svg.line().x(function(a){return c(a.x)}).y(function(a){return d(a.y)}).interpolate(p),y=function(a){return v._globalIndexColorLabels?v._globalIndexColorLabels[a.globalIndex()]:a.metadata(n)},z=function(a){return b.measurements().map(function(c,d){var e=b.getByGlobalIndex(c,a);return{x:d,y:e?e.value:
-null,errMinus:e&&e.valueAnnotation?e.valueAnnotation.errMinus:null,errPlus:e&&e.valueAnnotation?e.valueAnnotation.errPlus:null}}).filter(function(a){return null!==a.y})};a=epiviz.utils.range(t,r);var E;g?(E=a.map(function(a){var c=b.firstSeries().getRowByGlobalIndex(a);return new epiviz.ui.charts.ChartObject(sprintf("line-series-%s",a),c.start(),c.end(),z(a),a,b.measurements().map(function(c,d){return[b.getByGlobalIndex(c,a)]}),b.measurements(),"",c.seqName())}),g=q.selectAll(".line-series").data(E,
+D,A,w=0;w<t;++w){var C=w+r,H=b.firstSeries().getRowByGlobalIndex(C);if(!B||void 0==a.start()||void 0==a.end()||H.start()<a.end()&&H.end()>=a.start())void 0==D&&(D=C),A=C+1}r=D;x=A;t=A-D;this.width();var G=d3.svg.line().x(function(a){return c(a.x)}).y(function(a){return d(a.y)}).interpolate(p),z=function(a){return v._globalIndexColorLabels?v._globalIndexColorLabels[a.globalIndex()]:a.metadata(n)},y=function(a){return b.measurements().map(function(c,d){var e=b.getByGlobalIndex(c,a);return{x:d,y:e?e.value:
+null,errMinus:e&&e.valueAnnotation?e.valueAnnotation.errMinus:null,errPlus:e&&e.valueAnnotation?e.valueAnnotation.errPlus:null}}).filter(function(a){return null!==a.y})};a=epiviz.utils.range(t,r);var E;g?(E=a.map(function(a){var c=b.firstSeries().getRowByGlobalIndex(a);return new epiviz.ui.charts.ChartObject(sprintf("line-series-%s",a),c.start(),c.end(),y(a),a,b.measurements().map(function(c,d){return[b.getByGlobalIndex(c,a)]}),b.measurements(),"",c.seqName())}),g=q.selectAll(".line-series").data(E,
 function(a){return a.id}),g.enter().insert("g",":first-child").attr("class","line-series item").style("opacity","0").on("mouseover",function(a){v._hover.notify(new epiviz.ui.charts.VisEventArgs(v.id(),a))}).on("mouseout",function(){v._unhover.notify(new epiviz.ui.charts.VisEventArgs(v.id()))}).each(function(a){d3.select(this).append("path").attr("class","bg-line").attr("d",G(a.values)).style("shape-rendering","auto").style("stroke-width",10).style("stroke","#dddddd").style("stroke-opacity","0.1");
-d3.select(this).append("path").attr("class","main-line").attr("d",G(a.values)).style("shape-rendering","auto")}),g.transition().duration(500).style("opacity","0.7").each(function(a){var c=e.getByKey(y(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)));d3.select(this).selectAll(".bg-line").attr("d",G(a.values));d3.select(this).selectAll(".main-line").attr("d",G(a.values)).style("stroke",c).style("stroke-width",l)}),g.exit().transition().duration(500).style("opacity","0").remove()):q.selectAll(".line-series").remove();
+d3.select(this).append("path").attr("class","main-line").attr("d",G(a.values)).style("shape-rendering","auto")}),g.transition().duration(500).style("opacity","0.7").each(function(a){var c=e.getByKey(z(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)));d3.select(this).selectAll(".bg-line").attr("d",G(a.values));d3.select(this).selectAll(".main-line").attr("d",G(a.values)).style("stroke",c).style("stroke-width",l)}),g.exit().transition().duration(500).style("opacity","0").remove()):q.selectAll(".line-series").remove();
 f?(f=q.selectAll(".points").data(E,function(a){return a.id}),f.enter().append("g").attr("class","points").style("opacity","0"),f.each(function(a){d3.select(this).selectAll(".data-point").remove();var f=d3.select(this).selectAll(".data-point").data(a.values);f.enter().append("g").attr("class","data-point").each(function(f){d3.select(this).append("circle").attr("cx",function(a){return c(a.x)}).attr("cy",function(a){return d(a.y)}).attr("r",m).style("stroke-width",2).attr("fill","none").attr("stroke",
-e.getByKey(y(b.firstSeries().getRowByGlobalIndex(a.seriesIndex))));d3.select(this).selectAll(".error-bar").remove();h&&void 0!=f.errMinus&&void 0!=f.errPlus&&(d3.select(this).append("line").attr("x1",c(f.x)).attr("x2",c(f.x)).attr("y1",d(f.errMinus)).attr("y2",d(f.errPlus)).style("stroke",e.getByKey(y(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)))).style("stroke-width",2).attr("class","error-bar"),d3.select(this).append("line").attr("x1",c(f.x)-4).attr("x2",c(f.x)+4).attr("y1",d(f.errMinus)).attr("y2",
-d(f.errMinus)).style("stroke",e.getByKey(y(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)))).style("stroke-width",2).attr("class","error-bar"),d3.select(this).append("line").attr("x1",c(f.x)-4).attr("x2",c(f.x)+4).attr("y1",d(f.errPlus)).attr("y2",d(f.errPlus)).style("stroke",e.getByKey(y(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)))).style("stroke-width",2).attr("class","error-bar"))});f.exit().remove()}).transition().duration(500).style("opacity","1"),f.exit().transition().duration(500).style("opacity",
-"0").remove()):q.selectAll(".points").remove();var I={};a.forEach(function(a){a=y(b.firstSeries().getRowByGlobalIndex(a));I[a]=a});this._svg.selectAll(".chart-title").remove();this._svg.selectAll(".chart-title-color").remove();f=this._svg.selectAll(".chart-title").data(Object.keys(I));f.enter().append("text").attr("class","chart-title").attr("font-weight","bold").attr("y",v.margins().top()-5);f.attr("fill",function(a){return e.getByKey(a)}).text(function(a){return a});var F=0,J=[];this._container.find(" .chart-title").each(function(a){J.push(F);
+e.getByKey(z(b.firstSeries().getRowByGlobalIndex(a.seriesIndex))));d3.select(this).selectAll(".error-bar").remove();h&&void 0!=f.errMinus&&void 0!=f.errPlus&&(d3.select(this).append("line").attr("x1",c(f.x)).attr("x2",c(f.x)).attr("y1",d(f.errMinus)).attr("y2",d(f.errPlus)).style("stroke",e.getByKey(z(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)))).style("stroke-width",2).attr("class","error-bar"),d3.select(this).append("line").attr("x1",c(f.x)-4).attr("x2",c(f.x)+4).attr("y1",d(f.errMinus)).attr("y2",
+d(f.errMinus)).style("stroke",e.getByKey(z(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)))).style("stroke-width",2).attr("class","error-bar"),d3.select(this).append("line").attr("x1",c(f.x)-4).attr("x2",c(f.x)+4).attr("y1",d(f.errPlus)).attr("y2",d(f.errPlus)).style("stroke",e.getByKey(z(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)))).style("stroke-width",2).attr("class","error-bar"))});f.exit().remove()}).transition().duration(500).style("opacity","1"),f.exit().transition().duration(500).style("opacity",
+"0").remove()):q.selectAll(".points").remove();var I={};a.forEach(function(a){a=z(b.firstSeries().getRowByGlobalIndex(a));I[a]=a});this._svg.selectAll(".chart-title").remove();this._svg.selectAll(".chart-title-color").remove();f=this._svg.selectAll(".chart-title").data(Object.keys(I));f.enter().append("text").attr("class","chart-title").attr("font-weight","bold").attr("y",v.margins().top()-5);f.attr("fill",function(a){return e.getByKey(a)}).text(function(a){return a});var F=0,J=[];this._container.find(" .chart-title").each(function(a){J.push(F);
 F+=this.getBBox().width+15});f.attr("x",function(a,b){return v.margins().left()+10+J[b]});this._svg.selectAll(".chart-title-color").data(Object.keys(I)).enter().append("circle").attr("class","chart-title-color").attr("cx",function(a,b){return v.margins().left()+4+J[b]}).attr("cy",v.margins().top()-9).attr("r",4).style("shape-rendering","auto").style("stroke-width","0").style("fill",function(a){return e.getByKey(a)});u!=epiviz.ui.charts.CustomSetting.DEFAULT&&(q.selectAll(".abLine").remove(),q.append("svg:line").attr("class",
 "abLine").attr("x1",0).attr("x2",v.width()-v.margins().sumAxis(epiviz.ui.charts.Axis.X)).attr("y1",d(u)).attr("y2",d(u)).style("stroke","black").style("stroke-dasharray","5, 5"));return E};
 epiviz.plugins.charts.LinePlot.prototype._drawLinesCanvas=function(a,b,c,d,e,f){var g=this.colors(),h=this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.SHOW_POINTS],m=this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.SHOW_LINES],l=this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.SHOW_ERROR_BARS],p=this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.POINT_RADIUS],n=this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.LINE_THICKNESS],
 u=this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.INTERPOLATION],v=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.COL_LABEL],q=this.customSettingsValues()[epiviz.plugins.charts.LinePlotType.CustomSettings.ABS_LINE_VAL],r=this;this._svg.select(".lines");var x=b.firstSeries().globalStartIndex(),t=b.firstSeries().globalEndIndex();b.foreach(function(a,b){var c=b.globalStartIndex(),d=b.globalEndIndex();c>x&&(x=c);d<t&&(t=d)});for(var B=t-x,D=epiviz.measurements.Measurement.Type.isOrdered(b.measurements()[0].type()),
-A,w,C=0;C<B;++C){var H=C+x,G=b.firstSeries().getRowByGlobalIndex(H);if(!D||void 0==a.start()||void 0==a.end()||G.start()<a.end()&&G.end()>=a.start())void 0==A&&(A=H),w=H+1}x=A;t=w;B=w-A;this.width();var y=d3.svg.line().x(function(a){return c(a.x)}).y(function(a){return d(a.y)}).interpolate(u),z=function(a){return r._globalIndexColorLabels?r._globalIndexColorLabels[a.globalIndex()]:a.metadata(v)},E=function(a){return b.measurements().map(function(c,d){var e=b.getByGlobalIndex(c,a);return{x:d,y:e?e.value:
+A,w,C=0;C<B;++C){var H=C+x,G=b.firstSeries().getRowByGlobalIndex(H);if(!D||void 0==a.start()||void 0==a.end()||G.start()<a.end()&&G.end()>=a.start())void 0==A&&(A=H),w=H+1}x=A;t=w;B=w-A;this.width();var z=d3.svg.line().x(function(a){return c(a.x)}).y(function(a){return d(a.y)}).interpolate(u),y=function(a){return r._globalIndexColorLabels?r._globalIndexColorLabels[a.globalIndex()]:a.metadata(v)},E=function(a){return b.measurements().map(function(c,d){var e=b.getByGlobalIndex(c,a);return{x:d,y:e?e.value:
 null,errMinus:e&&e.valueAnnotation?e.valueAnnotation.errMinus:null,errPlus:e&&e.valueAnnotation?e.valueAnnotation.errPlus:null}}).filter(function(a){return null!==a.y})};a=epiviz.utils.range(B,x);var I,F=e.getContext("2d");m&&(I=a.map(function(a){var c=b.firstSeries().getRowByGlobalIndex(a);return new epiviz.ui.charts.ChartObject(sprintf("line-series-%s",a),c.start(),c.end(),E(a),a,b.measurements().map(function(c,d){return[b.getByGlobalIndex(c,a)]}),b.measurements(),"",c.seqName())}),I.forEach(function(a){F.globalAlpha=
-.8;F.beginPath();var c=new Path2D(y(a.values));F.strokeStyle=g.getByKey(z(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)));F.lineWidth=n;F.stroke(c);F.beginPath()}));h&&I.forEach(function(a){a.values.forEach(function(e){var f=c(e.x),h=d(e.y);F.beginPath();F.arc(f,h,p,0,2*Math.PI);h=g.getByKey(z(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)));F.strokeStyle=h;F.lineWidth=2;F.stroke();F.fillStyle=h;F.fill();if(l){var m=d(e.errMinus);e=d(e.errPlus);null!=m&&null!=e&&(F.beginPath(),F.moveTo(f,
-m),F.lineTo(f,e),F.strokeStyle=h,F.stroke(),F.beginPath(),F.globalAlpha=.7,F.moveTo(f-4,m),F.lineTo(f+4,m),F.strokeStyle=h,F.stroke(),F.beginPath(),F.globalAlpha=.7,F.moveTo(f-4,e),F.lineTo(f+4,e),F.strokeStyle=h,F.stroke(),F.beginPath())}})});var J={};a.forEach(function(a){a=z(b.firstSeries().getRowByGlobalIndex(a));J[a]=a});var L=0;Object.keys(J).forEach(function(a,b){var c=g.getByKey(a);F.strokeStyle=c;F.fillStyle=c;F.beginPath();F.arc(r.margins().left()+L-2,-9,4,0,2*Math.PI);F.stroke();F.fill();
-F.font="9px";F.beginPath();F.textAlign="start";F.fillText(a,r.margins().left()+L+8,-12);c=F.measureText(a).width;L=L+8+c+10});q!=epiviz.ui.charts.CustomSetting.DEFAULT&&(F.beginPath(),F.globalAlpha=.7,F.moveTo(0,d(q)),F.lineTo(r.width()-r.margins().sumAxis(epiviz.ui.charts.Axis.X),d(q)),F.strokeStyle=black,F.stroke());this.addCanvasEvents(e,f,I,c,d,y);return I};
+.8;F.beginPath();var c=new Path2D(z(a.values));F.strokeStyle=g.getByKey(y(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)));F.lineWidth=n;F.stroke(c);F.beginPath()}));h&&I.forEach(function(a){a.values.forEach(function(e){var f=c(e.x),h=d(e.y);F.beginPath();F.arc(f,h,p,0,2*Math.PI);h=g.getByKey(y(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)));F.strokeStyle=h;F.lineWidth=2;F.stroke();F.fillStyle=h;F.fill();if(l){var m=d(e.errMinus);e=d(e.errPlus);null!=m&&null!=e&&(F.beginPath(),F.moveTo(f,
+m),F.lineTo(f,e),F.strokeStyle=h,F.stroke(),F.beginPath(),F.globalAlpha=.7,F.moveTo(f-4,m),F.lineTo(f+4,m),F.strokeStyle=h,F.stroke(),F.beginPath(),F.globalAlpha=.7,F.moveTo(f-4,e),F.lineTo(f+4,e),F.strokeStyle=h,F.stroke(),F.beginPath())}})});var J={};a.forEach(function(a){a=y(b.firstSeries().getRowByGlobalIndex(a));J[a]=a});var L=0;Object.keys(J).forEach(function(a,b){var c=g.getByKey(a);F.strokeStyle=c;F.fillStyle=c;F.beginPath();F.arc(r.margins().left()+L-2,-9,4,0,2*Math.PI);F.stroke();F.fill();
+F.font="9px";F.beginPath();F.textAlign="start";F.fillText(a,r.margins().left()+L+8,-12);c=F.measureText(a).width;L=L+8+c+10});q!=epiviz.ui.charts.CustomSetting.DEFAULT&&(F.beginPath(),F.globalAlpha=.7,F.moveTo(0,d(q)),F.lineTo(r.width()-r.margins().sumAxis(epiviz.ui.charts.Axis.X),d(q)),F.strokeStyle=black,F.stroke());this.addCanvasEvents(e,f,I,c,d,z);return I};
 epiviz.plugins.charts.LinePlot.prototype.colorLabels=function(){for(var a=[],b=0;b<this.colors().size()&&20>b;++b)a.push("Color "+(b+1));return a};
 epiviz.plugins.charts.LinePlot.prototype.addCanvasEvents=function(a,b,c,d,e,f){var g=this,h=b.getContext("2d");g.hoverCanvasObjects=c;g.width();g.height();b.addEventListener("click",function(a){});b.addEventListener("mousemove",function(a){b.getBoundingClientRect();var d=a.offsetX,e=a.offsetY,m=null;h.clearRect(0,0,b.width,b.height);c&&c.forEach(function(a){var b=new Path2D(f(a.values));h.isPointInPath(b,d,e)&&(m=a)});m&&g._hover.notify(new epiviz.ui.charts.VisEventArgs(g.id(),m))});b.addEventListener("mouseout",
 function(a){g._canvasHoverObject=null;h.clearRect(0,0,b.width,b.height);g._unhover.notify(new epiviz.ui.charts.VisEventArgs(g.id()))})};epiviz.plugins.charts.LinePlotType=function(a){epiviz.ui.charts.PlotType.call(this,a)};epiviz.plugins.charts.LinePlotType.prototype=epiviz.utils.mapCopy(epiviz.ui.charts.PlotType.prototype);epiviz.plugins.charts.LinePlotType.constructor=epiviz.plugins.charts.LinePlotType;epiviz.plugins.charts.LinePlotType.prototype.createNew=function(a,b,c){return new epiviz.plugins.charts.LinePlot(a,b,c)};epiviz.plugins.charts.LinePlotType.prototype.typeName=function(){return"epiviz.plugins.charts.LinePlot"};
@@ -10821,17 +10821,17 @@ epiviz.plugins.charts.StackedLinePlot.prototype._drawLines=function(a,b,c){var d
 l=this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.HOVER_OPACITY],p=this,n=this._svg.select(".lines"),u=b.firstSeries().globalStartIndex(),v=b.firstSeries().globalEndIndex();b.foreach(function(a,b){var c=b.globalStartIndex(),d=b.globalEndIndex();c>u&&(u=c);d<v&&(v=d)});for(var q=v-u,r=epiviz.measurements.Measurement.Type.isOrdered(this.measurements().first().type()),x,t,B=0;B<q;++B){var D=B+u,A=b.firstSeries().getRowByGlobalIndex(D);A&&(!r||void 0==a.start()||void 0==
 a.end()||A.start()<a.end()&&A.end()>=a.start())&&(void 0==x&&(x=D),t=D+1)}var u=x,v=t,w=epiviz.utils.range(t-x,u);if(0==w.length)return[];var C=null;m&&(C=new epiviz.measurements.MeasurementHashtable,b.measurements().forEach(function(a){var c=w.filter(function(c){return b.getByGlobalIndex(a,c)}).map(function(c){return b.getByGlobalIndex(a,c).value}).reduce(function(a,b){return a+b});C.put(a,c)}));var H=function(a){return p._globalIndexColorLabels?p._globalIndexColorLabels[a.globalIndex()]:a.metadata(g)},
 G=function(a){var c=[];"step-before"==f&&c.push({x:0,y:0});var d=b.measurements(),c=c.concat(d.map(function(d,e){var f=m?C.get(d):1,f=f||1,g=b.getByGlobalIndex(d,a);return{x:c.length+e,y:g?g.value/f:null}}));"step-after"==f&&c.push({x:c.length,y:0});return c.filter(function(a){return null!==a.y})};a=w.filter(function(a){return b.firstSeries().getRowByGlobalIndex(a)}).map(function(a){var c=b.firstSeries().getRowByGlobalIndex(a),d=b.measurements();return new epiviz.ui.charts.ChartObject(sprintf("line-series-%s",
-a),c.start(),c.end(),G(a),a,d.map(function(c,d){return[b.getByGlobalIndex(c,a)]}),d,"",c.seqName())});var q=w.map(function(a){return G(a)}),y=d3.layout.stack().offset(h)(q),z=d3.scale.linear().domain([Math.min(0,d3.min(y,function(a){return d3.min(a,function(a){return a.y0+a.y})})),d3.max(y,function(a){return d3.max(a,function(a){return a.y0+a.y})})]).range([this.height()-this.margins().sumAxis(d.Y),0]),E=d3.svg.area().x(function(a){return c(a.x)}).y0(function(a){return z(a.y0)}).y1(function(a){return z(a.y0+
-a.y)}).interpolate(f),d=n.selectAll(".line-series").data(a,function(a){return a.seriesIndex});d.enter().insert("path",":first-child").attr("class","line-series item").attr("d",function(a,b){return E(y[b])}).style("opacity","0").style("shape-rendering","auto").style("fill",function(a,c){return e.getByKey(H(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)))}).on("mouseover",function(a,b){p._hover.notify(new epiviz.ui.charts.VisEventArgs(p.id(),a));n.selectAll(".item").style("opacity",1-l);n.selectAll(".hovered .item").style("opacity",
-l)}).on("mouseout",function(){p._unhover.notify(new epiviz.ui.charts.VisEventArgs(p.id()))});d.transition().duration(500).style("opacity","0.7").attr("d",function(a,b){return E(y[b])}).style("fill",function(a,c){return e.getByKey(H(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)))});d.exit().transition().duration(500).style("opacity","0").remove();var I={};w.forEach(function(a){b.firstSeries().getByGlobalIndex(a)&&(a=H(b.firstSeries().getRowByGlobalIndex(a)),I[a]=a)});this._svg.selectAll(".chart-title").remove();
+a),c.start(),c.end(),G(a),a,d.map(function(c,d){return[b.getByGlobalIndex(c,a)]}),d,"",c.seqName())});var q=w.map(function(a){return G(a)}),z=d3.layout.stack().offset(h)(q),y=d3.scale.linear().domain([Math.min(0,d3.min(z,function(a){return d3.min(a,function(a){return a.y0+a.y})})),d3.max(z,function(a){return d3.max(a,function(a){return a.y0+a.y})})]).range([this.height()-this.margins().sumAxis(d.Y),0]),E=d3.svg.area().x(function(a){return c(a.x)}).y0(function(a){return y(a.y0)}).y1(function(a){return y(a.y0+
+a.y)}).interpolate(f),d=n.selectAll(".line-series").data(a,function(a){return a.seriesIndex});d.enter().insert("path",":first-child").attr("class","line-series item").attr("d",function(a,b){return E(z[b])}).style("opacity","0").style("shape-rendering","auto").style("fill",function(a,c){return e.getByKey(H(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)))}).on("mouseover",function(a,b){p._hover.notify(new epiviz.ui.charts.VisEventArgs(p.id(),a));n.selectAll(".item").style("opacity",1-l);n.selectAll(".hovered .item").style("opacity",
+l)}).on("mouseout",function(){p._unhover.notify(new epiviz.ui.charts.VisEventArgs(p.id()))});d.transition().duration(500).style("opacity","0.7").attr("d",function(a,b){return E(z[b])}).style("fill",function(a,c){return e.getByKey(H(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)))});d.exit().transition().duration(500).style("opacity","0").remove();var I={};w.forEach(function(a){b.firstSeries().getByGlobalIndex(a)&&(a=H(b.firstSeries().getRowByGlobalIndex(a)),I[a]=a)});this._svg.selectAll(".chart-title").remove();
 this._svg.selectAll(".chart-title-color ").remove();d=this._svg.selectAll(".chart-title").data(Object.keys(I));d.enter().append("text").attr("class","chart-title").attr("font-weight","bold").attr("y",p.margins().top()-5);d.attr("fill",function(a){return e.getByKey(a)}).text(function(a){return a});var F=0,J=[];this._container.find(" .chart-title").each(function(a){J.push(F);F+=this.getBBox().width+15});d.attr("x",function(a,b){return p.margins().left()+10+J[b]});this._svg.selectAll(".chart-title-color").data(Object.keys(I)).enter().append("circle").attr("class",
 "chart-title-color").attr("cx",function(a,b){return p.margins().left()+4+J[b]}).attr("cy",p.margins().top()-9).attr("r",4).style("shape-rendering","auto").style("stroke-width","0").attr("fill",function(a){return e.getByKey(a)});return a};
 epiviz.plugins.charts.StackedLinePlot.prototype._drawLinesCanvas=function(a,b,c,d){var e=epiviz.ui.charts.Axis,f=this.colors(),g=this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.INTERPOLATION],h=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.COL_LABEL],m=this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.OFFSET],l=this.customSettingsValues()[epiviz.plugins.charts.StackedLinePlotType.CustomSettings.SCALE_TO_PERCENT];
 this.customSettingsValues();var p=this;this._svg.select(".lines");var n=b.firstSeries().globalStartIndex(),u=b.firstSeries().globalEndIndex();b.foreach(function(a,b){var c=b.globalStartIndex(),d=b.globalEndIndex();c>n&&(n=c);d<u&&(u=d)});for(var v=u-n,q=epiviz.measurements.Measurement.Type.isOrdered(this.measurements().first().type()),r,x,t=0;t<v;++t){var B=t+n,D=b.firstSeries().getRowByGlobalIndex(B);D&&(!q||void 0==a.start()||void 0==a.end()||D.start()<a.end()&&D.end()>=a.start())&&(void 0==r&&
 (r=B),x=B+1)}var n=r,u=x,A=epiviz.utils.range(x-r,n);if(0==A.length)return[];var w=null;l&&(w=new epiviz.measurements.MeasurementHashtable,b.measurements().forEach(function(a){var c=A.filter(function(c){return b.getByGlobalIndex(a,c)}).map(function(c){return b.getByGlobalIndex(a,c).value}).reduce(function(a,b){return a+b});w.put(a,c)}));var C=function(a){return p._globalIndexColorLabels?p._globalIndexColorLabels[a.globalIndex()]:a.metadata(h)},H=function(a){var c=[];"step-before"==g&&c.push({x:0,
 y:0});var d=b.measurements(),c=c.concat(d.map(function(d,e){var f=l?w.get(d):1,f=f||1,g=b.getByGlobalIndex(d,a);return{x:c.length+e,y:g?g.value/f:null}}));"step-after"==g&&c.push({x:c.length,y:0});return c.filter(function(a){return null!==a.y})};a=A.filter(function(a){return b.firstSeries().getRowByGlobalIndex(a)}).map(function(a){var c=b.firstSeries().getRowByGlobalIndex(a),d=b.measurements();return new epiviz.ui.charts.ChartObject(sprintf("line-series-%s",a),c.start(),c.end(),H(a),a,d.map(function(c,
-d){return[b.getByGlobalIndex(c,a)]}),d,"",c.seqName())});var v=A.map(function(a){return H(a)}),G=d3.layout.stack().offset(m)(v),y=d3.scale.linear().domain([Math.min(0,d3.min(G,function(a){return d3.min(a,function(a){return a.y0+a.y})})),d3.max(G,function(a){return d3.max(a,function(a){return a.y0+a.y})})]).range([this.height()-this.margins().sumAxis(e.Y),0]),z=d3.svg.area().x(function(a){return c(a.x)}).y0(function(a){return y(a.y0)}).y1(function(a){return y(a.y0+a.y)}).interpolate(g),E=d.getContext("2d");
-a.forEach(function(a,c){E.globalAlpha=.8;E.beginPath();var d=new Path2D(z(G[c]));E.fillStyle=E.strokeStyle=f.getByKey(C(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)));E.lineWidth=2;E.stroke(d);E.fill(d);E.beginPath()});var I={};A.forEach(function(a){a=C(b.firstSeries().getRowByGlobalIndex(a));I[a]=a});var F=0;Object.keys(I).forEach(function(a,b){var c=f.getByKey(a);E.strokeStyle=c;E.fillStyle=c;E.beginPath();E.arc(p.margins().left()+F-2,-9,4,0,2*Math.PI);E.stroke();E.fill();E.font="9px";E.beginPath();
+d){return[b.getByGlobalIndex(c,a)]}),d,"",c.seqName())});var v=A.map(function(a){return H(a)}),G=d3.layout.stack().offset(m)(v),z=d3.scale.linear().domain([Math.min(0,d3.min(G,function(a){return d3.min(a,function(a){return a.y0+a.y})})),d3.max(G,function(a){return d3.max(a,function(a){return a.y0+a.y})})]).range([this.height()-this.margins().sumAxis(e.Y),0]),y=d3.svg.area().x(function(a){return c(a.x)}).y0(function(a){return z(a.y0)}).y1(function(a){return z(a.y0+a.y)}).interpolate(g),E=d.getContext("2d");
+a.forEach(function(a,c){E.globalAlpha=.8;E.beginPath();var d=new Path2D(y(G[c]));E.fillStyle=E.strokeStyle=f.getByKey(C(b.firstSeries().getRowByGlobalIndex(a.seriesIndex)));E.lineWidth=2;E.stroke(d);E.fill(d);E.beginPath()});var I={};A.forEach(function(a){a=C(b.firstSeries().getRowByGlobalIndex(a));I[a]=a});var F=0;Object.keys(I).forEach(function(a,b){var c=f.getByKey(a);E.strokeStyle=c;E.fillStyle=c;E.beginPath();E.arc(p.margins().left()+F-2,-9,4,0,2*Math.PI);E.stroke();E.fill();E.font="9px";E.beginPath();
 E.textAlign="start";E.fillText(a,p.margins().left()+F+8,-12);c=E.measureText(a).width;F=F+8+c+10});return a};epiviz.plugins.charts.StackedLinePlot.prototype.colorLabels=function(){for(var a=[],b=0;b<this.colors().size()&&20>b;++b)a.push("Color "+(b+1));return a};epiviz.plugins.charts.StackedLinePlotType=function(a){epiviz.ui.charts.PlotType.call(this,a)};epiviz.plugins.charts.StackedLinePlotType.prototype=epiviz.utils.mapCopy(epiviz.ui.charts.PlotType.prototype);epiviz.plugins.charts.StackedLinePlotType.constructor=epiviz.plugins.charts.StackedLinePlotType;epiviz.plugins.charts.StackedLinePlotType.prototype.createNew=function(a,b,c){return new epiviz.plugins.charts.StackedLinePlot(a,b,c)};epiviz.plugins.charts.StackedLinePlotType.prototype.typeName=function(){return"epiviz.plugins.charts.StackedLinePlot"};
 epiviz.plugins.charts.StackedLinePlotType.prototype.chartName=function(){return"Stacked Plot"};epiviz.plugins.charts.StackedLinePlotType.prototype.chartHtmlAttributeName=function(){return"stacked-line-plot"};epiviz.plugins.charts.StackedLinePlotType.prototype.measurementsFilter=function(){return function(a){return a.type()==epiviz.measurements.Measurement.Type.FEATURE}};epiviz.plugins.charts.StackedLinePlotType.prototype.isRestrictedToSameDatasourceGroup=function(){return!0};
 epiviz.plugins.charts.StackedLinePlotType.prototype.customSettingsDefs=function(){return epiviz.ui.charts.PlotType.prototype.customSettingsDefs.call(this).concat([new epiviz.ui.charts.CustomSetting(epiviz.ui.charts.Visualization.CustomSettings.COL_LABEL,epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA,"colLabel","Color by"),new epiviz.ui.charts.CustomSetting(epiviz.ui.charts.Visualization.CustomSettings.ROW_LABEL,epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION,"name","Labels"),
@@ -10850,16 +10850,16 @@ epiviz.plugins.charts.DiversityScatterPlot.prototype.drawScatter=function(a,b,c,
 epiviz.plugins.charts.DiversityScatterPlot.prototype._drawCircles=function(a,b,c,d){function e(a){a.sort(d3.ascending);var b=d3.quantile(a,.25);a=d3.quantile(a,.75);return[b,a]}var f=this,g=epiviz.ui.charts.Axis,h=Math.max(1,this.customSettingsValues()[epiviz.plugins.charts.DiversityScatterPlotType.CustomSettings.CIRCLE_RADIUS_RATIO]*Math.min(this.width(),this.height())),m=Math.max(Math.floor(h),1),l=this.margins(),p=this.width(),n=this.height(),u=epiviz.ui.charts.CustomSetting,v=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN],
 q=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX],r=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MIN],x=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MAX];v==u.DEFAULT&&(v=this._measurementsY[0].minValue());q==u.DEFAULT&&(q=this._measurementsY[0].maxValue());var t=[];a.forEach(function(a){t.push(a[b])});var B=[];t.forEach(function(a){-1==B.indexOf(a)&&B.push(a)});console.log(B);this.xTickValues=B;a.forEach(function(a){var c=
 B.indexOf(a[b]);a._xVal=c+1});var D=0,A=[];B.forEach(function(a){A[D]=[];A[D][0]=D;A[D][1]=[];D++});a.forEach(function(a){var d=B.indexOf(a[b]);A[d][1].push(a[c])});r==u.DEFAULT&&(r=0);x==u.DEFAULT&&(x=B.length+1);var u=d3.scale.linear().domain([r,x]).range([0,p-l.sumAxis(g.X)]),w=d3.scale.linear().domain([v,q]).range([n-l.sumAxis(g.Y),0]);this._clearAxes(this._chartContent);xLabelsPadded=[""];B.forEach(function(a){xLabelsPadded.push(a)});console.log(xLabelsPadded);this._drawAxes(u,w,xLabelsPadded.length,
-15,this._chartContent,p,n,l,void 0,void 0,xLabelsPadded,void 0,void 0);for(var C={},H=[],G=1,y=0;y<a.length;++y){console.log(a[y]);var z=a[y]._xVal,E=a[y][c];if(z&&E){var I=sprintf("item data-series-%s",0),F=u(z),J=w(E),F=Math.floor(F/m)*m,J=Math.floor(J/m)*m,L=null;C[J]&&C[J][F]?(L=C[J][F],L.id+="_"+a[y][d],L.values[0]=(L.values[0]*L.valueItems[0].length+z)/(L.valueItems[0].length+1),L.values[1]=(L.values[1]*L.valueItems[1].length+E)/(L.valueItems[1].length+1),L.valueItems[0].push(a[y]),L.valueItems[1].push(a[y]),
-L.valueItems[0].length>G&&(G=L.valueItems[0].length)):(L=new epiviz.ui.charts.ChartIndexObject(sprintf("scatter_%s_%s_%s_%s",z,E,0,a[y][d]),[d],a[y][d],[z,E],[[a[y]],[a[y]]],["_xVal",c],0,I),C[J]||(C[J]={}),C[J][F]=L,H.push(L))}}console.log("after loop");y=this._chartContent.select(".items");y.empty()&&(y=this._chartContent.append("g").attr("class","items"),a=y.append("g").attr("class","selected"),y.append("g").attr("class","hovered"),a.append("g").attr("class","hovered"));a=y.selectAll("circle").data(H,
+15,this._chartContent,p,n,l,void 0,void 0,xLabelsPadded,void 0,void 0);for(var C={},H=[],G=1,z=0;z<a.length;++z){console.log(a[z]);var y=a[z]._xVal,E=a[z][c];if(y&&E){var I=sprintf("item data-series-%s",0),F=u(y),J=w(E),F=Math.floor(F/m)*m,J=Math.floor(J/m)*m,L=null;C[J]&&C[J][F]?(L=C[J][F],L.id+="_"+a[z][d],L.values[0]=(L.values[0]*L.valueItems[0].length+y)/(L.valueItems[0].length+1),L.values[1]=(L.values[1]*L.valueItems[1].length+E)/(L.valueItems[1].length+1),L.valueItems[0].push(a[z]),L.valueItems[1].push(a[z]),
+L.valueItems[0].length>G&&(G=L.valueItems[0].length)):(L=new epiviz.ui.charts.ChartIndexObject(sprintf("scatter_%s_%s_%s_%s",y,E,0,a[z][d]),[d],a[z][d],[y,E],[[a[z]],[a[z]]],["_xVal",c],0,I),C[J]||(C[J]={}),C[J][F]=L,H.push(L))}}console.log("after loop");z=this._chartContent.select(".items");z.empty()&&(z=this._chartContent.append("g").attr("class","items"),a=z.append("g").attr("class","selected"),z.append("g").attr("class","hovered"),a.append("g").attr("class","hovered"));a=z.selectAll("circle").data(H,
 function(a){return a.id});a.enter().insert("circle",":first-child").attr("id",function(a){return sprintf("%s-item-%s",f.id(),a.seriesIndex)}).style("opacity",0).style("fill-opacity",0).attr("r",0);a.each(function(a){var b=d3.select(this),c=f.colors().get(a.seriesIndex);b.attr("cx",l.left()+(a.values[0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("cy",n-l.bottom()-(a.values[1]-v)*(n-l.sumAxis(g.Y))/(q-v)).attr("class",a.cssClasses).style("fill",c)});a.transition().duration(1E3).style("fill-opacity",function(a){return Math.max(.6,
 a.valueItems[0].length/G)}).style("opacity",null).attr("r",h);a.exit().transition().duration(1E3).style("opacity",0).attr("r",0).remove();a.on("click",function(a){console.log("click");console.log(a);f._deselect.notify(new epiviz.ui.charts.VisEventArgs(f.id()));f._select.notify(new epiviz.ui.charts.VisEventArgs(f.id(),a));f._dispatch.click(f.id(),null);d3.event.stopPropagation()});if(this._globalIndexColorLabels){h={};for(j=firstGlobalIndex;j<lastGlobalIndex;++j)h[this._globalIndexColorLabels[j]]=
 this._globalIndexColorLabels[j];this._colorLabels=Object.keys(h);this._svg.selectAll(".chart-title").remove();this._svg.selectAll(".chart-title-color ").remove();h=this._svg.selectAll(".chart-title").data(this._colorLabels);h.enter().append("text").attr("class","chart-title").attr("font-weight","bold").attr("y",f.margins().top()-5);h.attr("fill",function(a,b){return f.colors().getByKey(a)}).text(function(a){return a});var N=0,O=[];this._container.find(" .chart-title").each(function(a){O.push(N);N+=
 this.getBBox().width+15});h.attr("x",function(a,b){return f.margins().left()+10+O[b]});this._svg.selectAll(".chart-title-color").data(this._colorLabels).enter().append("circle").attr("class","chart-title-color").attr("cx",function(a,b){return f.margins().left()+4+O[b]}).attr("cy",f.margins().top()-9).attr("r",4).style("shape-rendering","auto").style("stroke-width","0").attr("fill",function(a,b){return f.colors().getByKey(a)}).style("stroke-width",0)}else{h=Math.min(this._measurementsX.length,this._measurementsY.length);
-a=Array(h);for(j=0;j<h;++j)a[j]=sprintf("%s vs %s",this._measurementsX[j].name(),this._measurementsY[j].name());this._colorLabels=a}h=y;console.log(B);h.selectAll(".iqr-range").remove();h.selectAll(".whisker").remove();for(y=0;y<A.length;y++){a=A[y][1];console.log(a);d=[];d=e(a);console.log(d);m=1.5*(d[1]-d[0]);C=0;z=a.length-1;for(j=0;j<a.length;j++)if(a[j]<d[0]-m)C=j;else break;for(k=a.length-1;0<k;k--)if(a[k]>d[1]+m)z=k;else break;h.append("rect").attr("id","0").attr("class","iqr-range").style("opacity",
-1).style("fill-opacity",.2).attr("x",l.left()+(.6+A[y][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y",n-l.bottom()-(d[1]-v)*(n-l.sumAxis(g.Y))/(q-v)).attr("width",u(.8)).attr("height",Math.abs(w(d[1])-w(d[0]))).attr("fill","#1E90FF");h.append("line").style("stroke","gray").attr("class","whisker").attr("x1",l.left()+(1+A[y][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y1",n-l.bottom()-(d[1]-v)*(n-l.sumAxis(g.Y))/(q-v)).attr("x2",l.left()+(1+A[y][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y2",n-l.bottom()-(a[z]-v)*(n-
-l.sumAxis(g.Y))/(q-v));h.append("line").style("stroke","gray").attr("class","whisker").attr("x1",l.left()+(1+A[y][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y1",n-l.bottom()-(d[0]-v)*(n-l.sumAxis(g.Y))/(q-v)).attr("x2",l.left()+(1+A[y][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y2",n-l.bottom()-(a[C]-v)*(n-l.sumAxis(g.Y))/(q-v));h.append("line").style("stroke","gray").attr("class","whisker").attr("x1",l.left()+(.6+A[y][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y1",n-l.bottom()-(a[z]-v)*(n-l.sumAxis(g.Y))/(q-v)).attr("x2",
-l.left()+(1.4+A[y][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y2",n-l.bottom()-(a[z]-v)*(n-l.sumAxis(g.Y))/(q-v));h.append("line").style("stroke","gray").attr("class","whisker").attr("x1",l.left()+(.6+A[y][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y1",n-l.bottom()-(a[C]-v)*(n-l.sumAxis(g.Y))/(q-v)).attr("x2",l.left()+(1.4+A[y][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y2",n-l.bottom()-(a[C]-v)*(n-l.sumAxis(g.Y))/(q-v))}return H};epiviz.plugins.charts.DiversityScatterPlot.prototype.colorLabels=function(){return this._colorLabels};
+a=Array(h);for(j=0;j<h;++j)a[j]=sprintf("%s vs %s",this._measurementsX[j].name(),this._measurementsY[j].name());this._colorLabels=a}h=z;console.log(B);h.selectAll(".iqr-range").remove();h.selectAll(".whisker").remove();for(z=0;z<A.length;z++){a=A[z][1];console.log(a);d=[];d=e(a);console.log(d);m=1.5*(d[1]-d[0]);C=0;y=a.length-1;for(j=0;j<a.length;j++)if(a[j]<d[0]-m)C=j;else break;for(k=a.length-1;0<k;k--)if(a[k]>d[1]+m)y=k;else break;h.append("rect").attr("id","0").attr("class","iqr-range").style("opacity",
+1).style("fill-opacity",.2).attr("x",l.left()+(.6+A[z][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y",n-l.bottom()-(d[1]-v)*(n-l.sumAxis(g.Y))/(q-v)).attr("width",u(.8)).attr("height",Math.abs(w(d[1])-w(d[0]))).attr("fill","#1E90FF");h.append("line").style("stroke","gray").attr("class","whisker").attr("x1",l.left()+(1+A[z][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y1",n-l.bottom()-(d[1]-v)*(n-l.sumAxis(g.Y))/(q-v)).attr("x2",l.left()+(1+A[z][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y2",n-l.bottom()-(a[y]-v)*(n-
+l.sumAxis(g.Y))/(q-v));h.append("line").style("stroke","gray").attr("class","whisker").attr("x1",l.left()+(1+A[z][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y1",n-l.bottom()-(d[0]-v)*(n-l.sumAxis(g.Y))/(q-v)).attr("x2",l.left()+(1+A[z][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y2",n-l.bottom()-(a[C]-v)*(n-l.sumAxis(g.Y))/(q-v));h.append("line").style("stroke","gray").attr("class","whisker").attr("x1",l.left()+(.6+A[z][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y1",n-l.bottom()-(a[y]-v)*(n-l.sumAxis(g.Y))/(q-v)).attr("x2",
+l.left()+(1.4+A[z][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y2",n-l.bottom()-(a[y]-v)*(n-l.sumAxis(g.Y))/(q-v));h.append("line").style("stroke","gray").attr("class","whisker").attr("x1",l.left()+(.6+A[z][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y1",n-l.bottom()-(a[C]-v)*(n-l.sumAxis(g.Y))/(q-v)).attr("x2",l.left()+(1.4+A[z][0]-r)*(p-l.sumAxis(g.X))/(x-r)).attr("y2",n-l.bottom()-(a[C]-v)*(n-l.sumAxis(g.Y))/(q-v))}return H};epiviz.plugins.charts.DiversityScatterPlot.prototype.colorLabels=function(){return this._colorLabels};
 epiviz.plugins.charts.DiversityScatterPlot.prototype._drawAxesOld=function(a,b,c,d,e,f,g,h){epiviz.ui.charts.Plot.prototype._drawAxes(a,b,c,d,e,f,g,h,void 0,void 0,this.xTickValues,void 0,void 0);this._legend.selectAll("text").remove();a=this._measurementsX;var m=this;this._legend.selectAll(".x-measurement").remove();this._legend.selectAll(".x-measurement-color").remove();b=this._legend.selectAll(".x-measurement").data(a).enter().append("text").attr("class","x-measurement").attr("font-weight","bold").attr("fill",
 function(a,b){return m._globalIndexColorLabels?"#000000":m.colors().get(b)}).attr("y",this.height()-this.margins().bottom()+35).text(function(a,b){return a.name()});var l=0,p=[];this._container.find(" .x-measurement").each(function(a){p.push(l);l+=this.getBBox().width+15});b.attr("x",function(a,b){return.5*(m.width()-l)+7+p[b]});this._legend.selectAll(".x-measurement-color").data(a).enter().append("circle").attr("class","x-measurement-color").attr("cx",function(a,b){return.5*(m.width()-l)+1+p[b]}).attr("cy",
 this.height()-this.margins().bottom()+31).attr("r",4).style("shape-rendering","auto").style("stroke-width","0").style("fill",function(a,b){return m._globalIndexColorLabels?"#ffffff":m.colors().get(b)});a=["alphaDiversity"];this._legend.selectAll(".y-measurement").remove();this._legend.selectAll(".y-measurement-color").remove();b=this._legend.selectAll(".y-measurement").data(a).enter().append("text").attr("class","y-measurement").attr("font-weight","bold").attr("fill",function(a,b){return m._globalIndexColorLabels?
@@ -10875,8 +10875,8 @@ epiviz.plugins.charts.CustomScatterPlot.prototype._initialize=function(){epiviz.
 epiviz.plugins.charts.CustomScatterPlot.prototype.draw=function(){epiviz.ui.charts.Plot.prototype.draw.call(this,void 0,void 0);this._variance_labels=this._lastData.pca_variance_explained;this.drawScatter(this._lastRange,this._lastData.data,"sample_id","PC1","PC2")};epiviz.plugins.charts.CustomScatterPlot.prototype.drawScatter=function(a,b,c,d,e){return this._drawCircles(b,d,e,c)};
 epiviz.plugins.charts.CustomScatterPlot.prototype._drawCircles=function(a,b,c,d){var e=this,f=epiviz.ui.charts.Axis,g=Math.max(1,this.customSettingsValues()[epiviz.plugins.charts.CustomScatterPlotType.CustomSettings.CIRCLE_RADIUS_RATIO]*Math.min(this.width(),this.height())),h=Math.max(Math.floor(g),1),m=this.margins(),l=this.width(),p=this.height(),n=epiviz.ui.charts.CustomSetting,u=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN],v=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX],
 q=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MIN],r=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.X_MAX],x=this.customSettingsValues()[epiviz.plugins.charts.CustomScatterPlotType.CustomSettings.COLOR_BY];q==n.DEFAULT&&(q=this._measurementsX[0].minValue());u==n.DEFAULT&&(u=this._measurementsY[0].minValue());r==n.DEFAULT&&(r=this._measurementsX[0].maxValue());v==n.DEFAULT&&(v=this._measurementsY[0].maxValue());var t=d3.scale.linear().domain([q,
-r]).range([0,l-m.sumAxis(f.X)]).nice(),B=d3.scale.linear().domain([u,v]).range([p-m.sumAxis(f.Y),0]).nice();this._clearAxes(this._chartContent);this._drawAxes(t,B,15,15,this._chartContent);for(var D={},n=[],A=1,w=0;w<a.length;++w){var C=a[w][b],H=a[w][c];if(C&&H){var G=sprintf("item data-series-%s",0),y=t(C),z=B(H),y=Math.floor(y/h)*h,z=Math.floor(z/h)*h,E=null;D[z]&&D[z][y]?(E=D[z][y],E.id+="_"+a[w][d],E.values[0]=(E.values[0]*E.valueItems[0].length+C)/(E.valueItems[0].length+1),E.values[1]=(E.values[1]*
-E.valueItems[1].length+H)/(E.valueItems[1].length+1),E.valueItems[0].push(a[w]),E.valueItems[1].push(a[w]),E.valueItems[0].length>A&&(A=E.valueItems[0].length)):(E=new epiviz.ui.charts.ChartIndexObject(sprintf("scatter_%s_%s_%s_%s",C,H,0,a[w][d]),[d],a[w][d],[C,H],[[a[w]],[a[w]]],[b,c],0,G),D[z]||(D[z]={}),D[z][y]=E,n.push(E))}}a=this._chartContent.select(".items");a.empty()&&(a=this._chartContent.append("g").attr("class","items"),b=a.append("g").attr("class","selected"),a.append("g").attr("class",
+r]).range([0,l-m.sumAxis(f.X)]).nice(),B=d3.scale.linear().domain([u,v]).range([p-m.sumAxis(f.Y),0]).nice();this._clearAxes(this._chartContent);this._drawAxes(t,B,15,15,this._chartContent);for(var D={},n=[],A=1,w=0;w<a.length;++w){var C=a[w][b],H=a[w][c];if(C&&H){var G=sprintf("item data-series-%s",0),z=t(C),y=B(H),z=Math.floor(z/h)*h,y=Math.floor(y/h)*h,E=null;D[y]&&D[y][z]?(E=D[y][z],E.id+="_"+a[w][d],E.values[0]=(E.values[0]*E.valueItems[0].length+C)/(E.valueItems[0].length+1),E.values[1]=(E.values[1]*
+E.valueItems[1].length+H)/(E.valueItems[1].length+1),E.valueItems[0].push(a[w]),E.valueItems[1].push(a[w]),E.valueItems[0].length>A&&(A=E.valueItems[0].length)):(E=new epiviz.ui.charts.ChartIndexObject(sprintf("scatter_%s_%s_%s_%s",C,H,0,a[w][d]),[d],a[w][d],[C,H],[[a[w]],[a[w]]],[b,c],0,G),D[y]||(D[y]={}),D[y][z]=E,n.push(E))}}a=this._chartContent.select(".items");a.empty()&&(a=this._chartContent.append("g").attr("class","items"),b=a.append("g").attr("class","selected"),a.append("g").attr("class",
 "hovered"),b.append("g").attr("class","hovered"));a=a.selectAll("circle").data(n,function(a){return a.id});a.enter().insert("circle",":first-child").attr("id",function(a){return sprintf("%s-item-%s",e.id(),a.seriesIndex)}).style("opacity",0).style("fill-opacity",0).attr("r",0);a.each(function(a){var b=d3.select(this),c=e.colors().getByKey(a.valueItems[0][0][x]);null!=e._globalIndexColorLabels&&-1==e._globalIndexColorLabels.indexOf(a.valueItems[0][0][x])&&e._globalIndexColorLabels.push(a.valueItems[0][0][x]);
 b.attr("cx",m.left()+(a.values[0]-q)*(l-m.sumAxis(f.X))/(r-q)).attr("cy",p-m.bottom()-(a.values[1]-u)*(p-m.sumAxis(f.Y))/(v-u)).attr("class",a.cssClasses).style("fill",c)});a.transition().duration(1E3).style("fill-opacity",function(a){return Math.max(.6,a.valueItems[0].length/A)}).style("opacity",null).attr("r",g);a.exit().transition().duration(1E3).style("opacity",0).attr("r",0).remove();a.on("click",function(a){console.log("click");e._deselect.notify(new epiviz.ui.charts.VisEventArgs(e.id()));e._select.notify(new epiviz.ui.charts.VisEventArgs(e.id(),
 a));d3.event.stopPropagation()});if(this._globalIndexColorLabels){g={};for(j=firstGlobalIndex;j<lastGlobalIndex;++j)g[this._globalIndexColorLabels[j]]=this._globalIndexColorLabels[j];this._colorLabels=Object.keys(g);this._svg.selectAll(".chart-title").remove();this._svg.selectAll(".chart-title-color ").remove();g=this._svg.selectAll(".chart-title").data(this._colorLabels);g.enter().append("text").attr("class","chart-title").attr("font-weight","bold").attr("y",e.margins().top()-5);g.attr("fill",function(a,
@@ -10900,12 +10900,12 @@ v=this._svg.append("g").attr("class","lines").attr("transform","translate("+this
 v.selectAll(".line-series-index-"+e);n=v.selectAll(".point-series-index-"+e);if(h.empty())break;h.remove();n.remove()}return this._drawLines(a,b,c,d,f,g)};
 epiviz.plugins.charts.GwasTrack.prototype._drawLines=function(a,b,c,d,e,f){var g=this.colors(),h=parseInt(this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.STEP]),m=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_POINTS],l=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_LINES],p=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_ERROR_BARS],n=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.POINT_RADIUS],
 u=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.LINE_THICKNESS],v=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.INTERPOLATION],q=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.ABS_LINE_VAL],r=this.customSettingsValues()[epiviz.plugins.charts.GwasTrackType.CustomSettings.Y_AXIS_SEL],g=this.colors(),x=this;d=d3.scale.linear().domain([0,this.width()-this.margins().sumAxis(epiviz.ui.charts.Axis.X)]).range([a.start(),
-a.end()])(c)-a.start();var t=epiviz.datatypes.GenomicRange.fromStartEnd(a.seqName(),Math.min(a.start(),a.start()+d),Math.max(a.end(),a.end()+d),a.genome()),B=this._svg.select(".lines"),D=[];b.foreach(function(b,d,C){var w=x._measurementColorLabels?g.getByKey(x._measurementColorLabels.get(b)):g.get(C),A=d.binarySearchStarts(t);if(0!=A.length){var y=Math.ceil(A.index/h)*h;A.length=Math.max(0,A.length-y+A.index);A.index=y;for(var y=epiviz.utils.range(A.length,A.index).filter(function(a){return!h||1>=
-h||0==(a-A.index)%h}),z=0;z<y.length;++z){var E=d.get(y[z]);E.rowItem.start()>a.end()||E.rowItem.end()<a.start()||D.push(new epiviz.ui.charts.ChartObject(sprintf("line_%s_%s",C,E.globalIndex),E.rowItem.start(),E.rowItem.end(),[E.rowItem.rowMetadata()[r]],C,[[E]],[b],sprintf("item data-series-%s",C),E.rowItem.seqName()))}var I=function(a){a=d.get(a);return e(a.rowItem.start())};b=function(a){a=d.get(a);return f(parseInt(a.rowItem.rowMetadata()[r]))};l?(z=d3.svg.line().x(I).y(b).interpolate(v),E=B.select(".line-series-index-"+
-C).selectAll("path").data([y]),E.enter().append("path").attr("d",z).style("shape-rendering","auto").style("stroke-opacity","0.8").on("mouseover",function(){x._captureMouseHover()}).on("mousemove",function(){x._captureMouseHover()}).on("mouseout",function(){x._unhover.notify(new epiviz.ui.charts.VisEventArgs(x.id()))}),E.attr("d",z).style("stroke",w).style("stroke-width",u).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)")):B.select(".line-series-index-"+
-C).selectAll("path").remove();B.select(".point-series-index-"+C).selectAll("circle").remove();B.select(".point-series-index-"+C).selectAll(".error-bar").remove();m&&(z=B.select(".point-series-index-"+C).selectAll("circle").data(y),z.exit().transition().duration(500).style("opacity",0).remove(),z.enter().append("circle").attr("class","point-series-index-"+C).attr("r",n).attr("cx",I).attr("cy",b).attr("fill",w).attr("stroke",w).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform",
-"translate(0)"),z.attr("r",n).attr("cx",I).attr("cy",b).attr("fill",w).attr("stroke",w).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)"),z.each(function(a){a=d.get(a);q>=parseInt(a.rowItem.rowMetadata()[r])?d3.select(this).transition().duration(1E3).attr("fill","grey").attr("stroke","grey").attr("r",n/2):d3.select(this).transition().duration(1E3).attr("fill",w).attr("stroke",w).attr("r",n)}),z.on("mouseover",function(){x._captureMouseHover()}).on("mousemove",
-function(){x._captureMouseHover()}).on("mouseout",function(){x._unhover.notify(new epiviz.ui.charts.VisEventArgs(x.id()))}),p&&(C=B.select(".point-series-index-"+C).selectAll(".error-bar").data(y),C.enter().append("g").attr("class","error-bar").each(function(a){var b;b=d.get(a);b=b.valueAnnotation?b.valueAnnotation.errMinus:null;b=void 0!=b?f(b):null;var c;c=d.get(a);c=c.valueAnnotation?c.valueAnnotation.errPlus:null;c=void 0!=c?f(c):null;null!=b&&null!=c&&(d3.select(this).append("line").attr("x1",
+a.end()])(c)-a.start();var t=epiviz.datatypes.GenomicRange.fromStartEnd(a.seqName(),Math.min(a.start(),a.start()+d),Math.max(a.end(),a.end()+d),a.genome()),B=this._svg.select(".lines"),D=[];b.foreach(function(b,d,C){var w=x._measurementColorLabels?g.getByKey(x._measurementColorLabels.get(b)):g.get(C),A=d.binarySearchStarts(t);if(0!=A.length){var z=Math.ceil(A.index/h)*h;A.length=Math.max(0,A.length-z+A.index);A.index=z;for(var z=epiviz.utils.range(A.length,A.index).filter(function(a){return!h||1>=
+h||0==(a-A.index)%h}),y=0;y<z.length;++y){var E=d.get(z[y]);E.rowItem.start()>a.end()||E.rowItem.end()<a.start()||D.push(new epiviz.ui.charts.ChartObject(sprintf("line_%s_%s",C,E.globalIndex),E.rowItem.start(),E.rowItem.end(),[E.rowItem.rowMetadata()[r]],C,[[E]],[b],sprintf("item data-series-%s",C),E.rowItem.seqName()))}var I=function(a){a=d.get(a);return e(a.rowItem.start())};b=function(a){a=d.get(a);return f(parseInt(a.rowItem.rowMetadata()[r]))};l?(y=d3.svg.line().x(I).y(b).interpolate(v),E=B.select(".line-series-index-"+
+C).selectAll("path").data([z]),E.enter().append("path").attr("d",y).style("shape-rendering","auto").style("stroke-opacity","0.8").on("mouseover",function(){x._captureMouseHover()}).on("mousemove",function(){x._captureMouseHover()}).on("mouseout",function(){x._unhover.notify(new epiviz.ui.charts.VisEventArgs(x.id()))}),E.attr("d",y).style("stroke",w).style("stroke-width",u).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)")):B.select(".line-series-index-"+
+C).selectAll("path").remove();B.select(".point-series-index-"+C).selectAll("circle").remove();B.select(".point-series-index-"+C).selectAll(".error-bar").remove();m&&(y=B.select(".point-series-index-"+C).selectAll("circle").data(z),y.exit().transition().duration(500).style("opacity",0).remove(),y.enter().append("circle").attr("class","point-series-index-"+C).attr("r",n).attr("cx",I).attr("cy",b).attr("fill",w).attr("stroke",w).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform",
+"translate(0)"),y.attr("r",n).attr("cx",I).attr("cy",b).attr("fill",w).attr("stroke",w).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)"),y.each(function(a){a=d.get(a);q>=parseInt(a.rowItem.rowMetadata()[r])?d3.select(this).transition().duration(1E3).attr("fill","grey").attr("stroke","grey").attr("r",n/2):d3.select(this).transition().duration(1E3).attr("fill",w).attr("stroke",w).attr("r",n)}),y.on("mouseover",function(){x._captureMouseHover()}).on("mousemove",
+function(){x._captureMouseHover()}).on("mouseout",function(){x._unhover.notify(new epiviz.ui.charts.VisEventArgs(x.id()))}),p&&(C=B.select(".point-series-index-"+C).selectAll(".error-bar").data(z),C.enter().append("g").attr("class","error-bar").each(function(a){var b;b=d.get(a);b=b.valueAnnotation?b.valueAnnotation.errMinus:null;b=void 0!=b?f(b):null;var c;c=d.get(a);c=c.valueAnnotation?c.valueAnnotation.errPlus:null;c=void 0!=c?f(c):null;null!=b&&null!=c&&(d3.select(this).append("line").attr("x1",
 I(a)).attr("x2",I(a)).attr("y1",b).attr("y2",c).style("stroke",w).style("shape-rendering","auto"),d3.select(this).append("line").attr("x1",I(a)-2).attr("x2",I(a)+2).attr("y1",b).attr("y2",b).style("stroke",w).style("shape-rendering","auto"),d3.select(this).append("line").attr("x1",I(a)-2).attr("x2",I(a)+2).attr("y1",c).attr("y2",c).style("stroke",w).style("shape-rendering","auto"))}).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)"),C.on("mouseover",
 function(){x._captureMouseHover()}).on("mousemove",function(){x._captureMouseHover()}).on("mouseout",function(){x._unhover.notify(new epiviz.ui.charts.VisEventArgs(x.id()))}),C.exit().transition().duration(500).style("opacity",0).remove()))}});q!=epiviz.ui.charts.CustomSetting.DEFAULT&&(B.selectAll(".abLine").remove(),B.append("svg:line").attr("class","abLine").attr("x1",0).attr("x2",x.width()-x.margins().sumAxis(epiviz.ui.charts.Axis.X)).attr("y1",f(q)).attr("y2",f(q)).style("stroke","black").style("stroke-dasharray",
 "5, 5"));return D};epiviz.plugins.charts.GwasTrackType=function(a){epiviz.plugins.charts.LineTrackType.call(this,a)};epiviz.plugins.charts.GwasTrackType.prototype=epiviz.utils.mapCopy(epiviz.plugins.charts.LineTrackType.prototype);epiviz.plugins.charts.GwasTrackType.constructor=epiviz.plugins.charts.GwasTrackType;epiviz.plugins.charts.GwasTrackType.prototype.createNew=function(a,b,c){return new epiviz.plugins.charts.GwasTrack(a,b,c)};epiviz.plugins.charts.GwasTrackType.prototype.typeName=function(){return"epiviz.plugins.charts.GwasTrack"};
@@ -46721,17 +46721,6 @@ class WeakCache {
                     },
 
                     /**
-                    * Measurements for the chart. Charts automatically sets measurements from `dimS`.
-                    *
-                    * @type {Array<Object>}
-                    */
-                    measurements: {
-                        type: Array,
-                        notify: true,
-                        observer: '_measurementsChanged'
-                    },
-
-                    /**
                     * Computed Range from `<chr>`, `<start>` & `<end>`. 
                     *
                     * @type {Object<epiviz.datatypes.GenomicRange>}
@@ -46820,7 +46809,16 @@ class WeakCache {
              * Automatically triggered when the browser window or the css for the element changes.
              */
             _onResize(e) {
-                console.log(e);
+                // console.log(e);
+
+                // if (e) {
+                //     e.stopPropagation();
+                //     e.preventDefault();
+                // }
+
+                // if(e && e.path.length > 0 && (e.path[0].id == "ZoomOutDropdown" || e.path[0].id == "ZoomInDropdown")) {
+                //     return;
+                // }
                 // if(! (e instanceof TransitionEvent)) {
                 //     e.stopPropagation();
                 // }
@@ -47078,6 +47076,48 @@ class WeakCache {
             _measurementsChanged() {
 
                 var self = this;
+
+                if(self.chart) {
+                    var mSet = new epiviz.measurements.MeasurementSet();
+
+                    for (var i = 0; i < self.measurements.length; i++) {
+
+                        var measurement = self.measurements[i];
+                        mSet.add(new epiviz.measurements.Measurement(
+                            measurement.id,
+                            measurement.name,
+                            measurement.type,
+                            measurement.datasourceId,
+                            measurement.datasourceGroup,
+                            measurement.dataprovider,
+                            measurement.formula,
+                            measurement.defaultChartType,
+                            measurement.annotation,
+                            measurement.minValue,
+                            measurement.maxValue,
+                            measurement.metadata
+                        ));
+                    }
+
+                    // self.visConfigSelection = new epiviz.ui.controls.VisConfigSelection(mSet);
+
+                    // self.chart._properties.visConfigSelection = self.visConfigSelection;
+
+                    // self.chart.measurements = mSet;
+
+                    var chartData = new epiviz.measurements.MeasurementHashtable();
+
+                    mSet.foreach(function(m) {
+                        chartData.put(m, self.data.getSeries(m));
+                    });
+
+                    self.data = new epiviz.datatypes.MapGenomicData(chartData);
+                    //  = data;
+                    // self._dataChanged();
+                    self._onResize();
+
+                    return;
+                }
 
                 if (this.measurements != null && self.config != null) {
 
@@ -48352,6 +48392,15 @@ class WeakCache {
                                 var dataChartElem = pDom.querySelector('[plot-id$="' + id + '"]') || Polymer.dom(pDom).querySelector('[plot-id$="' + id + '"]');
                                 if (dataChartElem) {
                                     // dataChartElem.data = pDom.transformFunc(data);
+                                    // // fix order of data with the order of measurements;
+                                    // var chartData = new epiviz.measurements.MeasurementHashtable();
+
+                                    // self.measurements.forEach(function(m) {
+                                    //     chartData.put(m, new epiviz.datatypes.MeasurementGenomicDataWrapper(m, data.getSeries(m)));
+                                    // });
+
+                                    // data = new epiviz.datatypes.MapGenomicData(chartData);
+
                                     dataChartElem.set("data", pDom.transformFunc(data));
                                 }
                                 dataChartElem._onResize();
@@ -72332,9 +72381,9 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                     color: #fff;
                     padding: 5px;
                 }
-                --paper-button-disabled: {
+                /* --paper-button-disabled: {
                     color: white
-                };
+                }; */
             }
 
             #modal {
@@ -72442,8 +72491,8 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 </div>
             </paper-dialog-scrollable>
             <div class="buttons">
-                <paper-button on-tap="_submit" disabled="{{!_enableButton(selectedChart, selectedMeasurements.*, selectedExistingMeasurements.*, tabSelected.*)}}" dialog-confirm="" autofocus="">Add Chart</paper-button>
                 <paper-button on-tap="_close" dialog-dismiss="">Close</paper-button>
+                <paper-button on-tap="_submit" disabled="{{!_enableButton(selectedChart, selectedMeasurements.*, selectedExistingMeasurements.*, tabSelected.*)}}" dialog-confirm="" autofocus="">Add Chart</paper-button>
             </div>
         </paper-dialog>
         </template>
@@ -74089,10 +74138,6 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 return {};
             }
 
-            // static get observers() {
-            //     return [ ];
-            // }
-
             /**
             * Shows the `<epiviz-chart-colors>` element
             */
@@ -74139,7 +74184,345 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             }
         }
     }
-</script><dom-module id="epiviz-chart-settings">
+</script><dom-module id="sortable-list" assetpath="bower_components/sortable-list/">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+
+      ::slotted(*) {
+        user-drag: none;
+        user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        -webkit-user-drag: none;
+        -webkit-user-select: none;
+        -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+      }
+
+      ::slotted(.item--transform) {
+        left: 0;
+        margin: 0 !important;
+        position: fixed !important;
+        top: 0;
+        transition: transform 0.2s cubic-bezier(0.333, 0, 0, 1);
+        will-change: transform;
+        z-index: 1;
+      }
+
+      ::slotted(.item--pressed) {
+        transition: none !important;
+      }
+
+      ::slotted(.item--dragged) {
+        -webkit-box-shadow: 0 2px 10px rgba(0,0,0,.2);
+        box-shadow: 0 2px 10px rgba(0,0,0,.2);
+        filter: brightness(1.1);
+        z-index: 2;
+      }
+    </style>
+    
+    <div id="items">
+      <slot id="slot"></slot>
+    </div>
+
+  </template>
+
+  <script>
+
+    class SortableList extends Polymer.GestureEventListeners(Polymer.Element) {
+
+      static get is() {return 'sortable-list';}
+
+      static get properties() {
+        return {
+
+          /**
+           * This is a CSS selector string. If this is set, only items that 
+           * match the CSS selector are sortable.
+           */
+          sortable: String,
+
+          /**
+           * The list of sortable items.
+           */
+          items: {
+            type: Array,
+            notify: true,
+            readOnly: true
+          },
+
+          /**
+          * Returns true when an item is being drag.
+          */
+          dragging: {
+            type: Boolean,
+            notify: true,
+            readOnly: true,
+            reflectToAttribute: true,
+            value: false
+          },
+
+          /**
+           * Disables the draggable if set to true.
+           */
+          disabled: {
+            type: Boolean,
+            reflectToAttribute: true,
+            value: false
+          }
+
+        };
+      }
+
+      constructor() {
+        super();
+        this._observer = null;
+        this._target = null;
+        this._targetRect = null;
+        this._rects = null;
+        this._onTrack = this._onTrack.bind(this);
+        this._onDragStart = this._onDragStart.bind(this);
+        this._onTransitionEnd = this._onTransitionEnd.bind(this);
+        this._onContextMenu = this._onContextMenu.bind(this);
+        this._onTouchMove = this._onTouchMove.bind(this);
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        Polymer.Async.idlePeriod.run(_ => {
+          this._observeItems();
+          this._updateItems();
+          this._toggleListeners({enable: true});
+        });
+      } 
+
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this._unobserveItems();
+        this._toggleListeners({enable: false});
+      }
+
+      _toggleListeners({enable}) {
+        const m = enable ? 'addEventListener' : 'removeEventListener';
+        this.$.items[m]('dragstart', this._onDragStart);
+        this.$.items[m]('transitionend', this._onTransitionEnd);
+        this.$.items[m]('contextmenu', this._onContextMenu);
+        this.$.items[m]('touchmove', this._onTouchMove);
+        if (enable) {
+          Polymer.Gestures.addListener(this, 'track', this._onTrack);
+        } else {
+          Polymer.Gestures.removeListener(this, 'track', this._onTrack);
+        }
+      }
+
+      _onTrack(event) {
+        switch(event.detail.state) {
+          case 'start': this._trackStart(event); break;
+          case 'track': this._track(event); break;
+          case 'end': this._trackEnd(event); break;
+        }
+      }
+
+      _trackStart(event) {
+        if (this.disabled) {
+          return;
+        }
+        this._target = this._itemFromEvent(event);
+        if (!this._target) {
+          return;
+        }
+        event.stopPropagation();
+        this._rects = this._getItemsRects();
+        this._targetRect = this._rects[this.items.indexOf(this._target)];
+        this._target.classList.add('item--dragged', 'item--pressed');
+        if ('vibrate' in navigator) {
+          navigator.vibrate(30);
+        }
+        const rect = this.getBoundingClientRect();
+        this.style.height = rect.height + 'px';
+        this.style.width = rect.width + 'px';
+        this.items.forEach((item, idx) => {
+          const rect = this._rects[idx];
+          item.classList.add('item--transform');
+          item.style.transition = 'none';
+          item.__originalWidth = item.style.width;
+          item.__originalHeight = item.style.height;
+          item.style.width = rect.width + 'px';
+          item.style.height = rect.height + 'px';
+          this._translate3d(rect.left, rect.top, 1, item);
+          setTimeout(_ => {
+            item.style.transition = null;
+          }, 20);
+        });
+        this._setDragging(true);
+      }
+
+      _track(event) {
+        if (!this.dragging) {
+          return;
+        }
+        const left = this._targetRect.left + event.detail.dx;
+        const top = this._targetRect.top + event.detail.dy;
+        this._translate3d(left, top, 1, this._target);
+        const overItem = this._itemFromCoords(event.detail);
+        if (overItem && overItem !== this._target) {
+          const overItemIndex = this.items.indexOf(overItem);
+          const targetIndex = this.items.indexOf(this._target);
+          this._moveItemArray(this.items, targetIndex, overItemIndex);
+          for(let i = 0; i < this.items.length; i++) {
+            if (this.items[i] !== this._target) {
+              const rect = this._rects[i];
+              requestAnimationFrame(_ => {
+                this._translate3d(rect.left, rect.top, 1, this.items[i]);
+              });
+            }
+          }
+        }
+      }
+
+      // The track really ends
+      _trackEnd(event) {
+        if (!this.dragging) {
+          return;
+        }
+        const rect = this._rects[this.items.indexOf(this._target)];
+        this._target.classList.remove('item--pressed');
+        this._setDragging(false);
+        this._translate3d(rect.left, rect.top, 1, this._target);
+      }
+
+      _onTransitionEnd() {
+        if (this.dragging || !this._target) {
+          return;
+        }
+        const fragment = document.createDocumentFragment();
+        this.items.forEach(item => {
+          item.style.transform = '';
+          item.style.width = item.__originalWidth;
+          item.style.height = item.__originalHeight;
+          item.classList.remove('item--transform');
+          fragment.appendChild(item);
+        });
+        if (this.children[0]) {
+          this.insertBefore(fragment, this.children[0]);
+        } else {
+          this.appendChild(fragment);
+        }
+        this.style.height = '';
+        this._target.classList.remove('item--dragged');
+        this._rects = null;
+        this._targetRect = null;
+        this._updateItems();
+        this.dispatchEvent(new CustomEvent('sort-finish', {
+          composed: true,
+          detail: {
+            target: this._target
+          }
+        }));
+        this._target = null;
+      }
+
+      _onDragStart(event) {
+        event.preventDefault();
+      }
+
+      _onContextMenu(event) {
+        if (this.dragging) {
+          event.preventDefault();
+          this._trackEnd();
+        }
+      }
+
+      _onTouchMove(event) {
+        event.preventDefault();
+      }
+
+      _updateItems() {
+        if (this.dragging) {
+          return;
+        }
+        const items = this.$.slot.assignedNodes().filter(node => {
+          if ((node.nodeType === Node.ELEMENT_NODE) &&
+              (!this.sortable || node.matches(this.sortable))) {
+            return true;
+          }
+        });
+        this._setItems(items);
+      }
+
+      _itemFromCoords({x, y}) {
+        if (!this._rects) {return;}
+        let match = null;
+        this._rects.forEach((rect, i) => {
+          if ((x >= rect.left) &&
+              (x <= rect.left + rect.width) &&
+              (y >= rect.top) &&
+              (y <= rect.top + rect.height)) {
+            match = this.items[i];
+          }
+        });
+        return match;
+      }
+
+      _itemFromEvent(event) {
+        const path = event.composedPath();
+        for (var i = 0; i < path.length; i++) {
+          if (this.items.indexOf(path[i]) > -1) {
+            return path[i];
+          }
+        }
+      }
+
+      _getItemsRects() {
+        return this.items.map(item => {
+          return item.getBoundingClientRect();
+        })
+      }
+
+      _observeItems() {
+        if (!this._observer) {
+          this._observer = new MutationObserver(_ => {
+            this._updateItems();
+          });
+          this._observer.observe(this, {childList: true});
+        }
+      }
+
+      _unobserveItems() {
+        if (this._observer) {
+          this._observer.disconnect();
+          this._observer = null;
+        }
+      }
+
+      /**
+       * Move an array item from one position to another.     
+       * Source: http://stackoverflow.com/questions/5306680/move-an-array-element-from-one-array-position-to-another
+       */
+      _moveItemArray(array, oldIndex, newIndex) {
+        if (newIndex >= array.length) {
+          var k = newIndex - array.length;
+          while ((k--) + 1) {
+          array.push(undefined);
+          }
+        }
+        array.splice(newIndex, 0, array.splice(oldIndex, 1)[0]);
+        return array;
+      }
+
+      _translate3d(x, y, z, el) {
+        el.style.transform = `translate3d(${x}px, ${y}px, ${z}px)`;
+      }
+
+    }
+
+    customElements.define(SortableList.is, SortableList);
+
+  </script>
+</dom-module>
+<dom-module id="epiviz-chart-settings">
 
     <template>
         <style>
@@ -74213,6 +74596,13 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             .toggleLabel {
                 padding-top: 8px;
             }
+
+            .mea-item {
+                padding: 3px;
+                margin: 3px;
+                width: 100%;
+                background-color: white;
+            }
         </style>
 
         <div id="settings">
@@ -74274,6 +74664,23 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                             </div>
                         </paper-collapse-item>
 
+
+                        <paper-collapse-item id="renameMeasurements" header="Rename/order Measurements">
+                            <div class="collapse-content">
+                                <div class="container flex">
+                                    <sortable-list sortable=".item">
+                                        <template is="dom-repeat" items="{{_getMeasurementsList(_measurements.*)}}">
+                                            <div class="item mea-item">
+                                                <div style$="[[_getStyle(item)]]"></div>
+                                                <paper-input raised="" name="{{item.id}}" label="{{item.id}}" value="[[item.name]]"></paper-input> 
+                                            </div>
+                                        </template>
+                                      </sortable-list>
+
+                                </div>
+                            </div>
+                        </paper-collapse-item>
+
                         </form>
                 </iron-form>
                 <div class="footer">
@@ -74310,6 +74717,11 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                     */
                     vals: {
                         type: Object,
+                        notify: true
+                    },
+
+                    _measurements: {
+                        type: Array,
                         notify: true
                     }
                 }
@@ -74349,6 +74761,14 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
             disconnectedCallback() {
                 super.connectedCallback();
+            }
+
+            _getMeasurementsList(measurements) {
+                return this._measurements;
+            }
+
+            _getStyle(item) {
+                return "height:10px; width:10px; border-radius:5px; background-color:" + this._colors.getByKey(item.id);
             }
 
             _getSelectedValue(item) {
@@ -74494,7 +74914,27 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                         }
                     }
                 });
-                this.callback(this.vals);
+
+                var order = this.shadowRoot.querySelector("sortable-list").items;
+
+                var orderedMeasurements = [];
+                order.forEach(function(om) {
+                    orderedMeasurements.push(om.querySelector("paper-input").name);
+                });
+
+                var newMeasurements = JSON.parse(JSON.stringify(self._measurements));
+                newMeasurements.sort(function(a, b) {
+                    var am = orderedMeasurements.indexOf(a.id),
+                        bm = orderedMeasurements.indexOf(b.id);
+                    return am-bm;
+                });
+
+                newMeasurements.forEach(function(m) {
+                    m.name = self.vals[m.id];
+                    delete self.vals[m.id];
+                });
+
+                this.callback(this.vals, newMeasurements);
                 this.closeSettings();
             }
 
@@ -74548,22 +74988,33 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 var chartContainer = this.shadowRoot.querySelector('#' + this.plotId);
                 var currSetting = this.shadowRoot.querySelector('epiviz-chart-settings');
 
+
                 if (currSetting == null) {
                     var currSetting = document.createElement('epiviz-chart-settings');
                     // self.visualization().properties().customSettingsDefs
                     currSetting.setAttribute('defs', JSON.stringify(self.chart.properties().customSettingsDefs));
                     currSetting.setAttribute('vals', JSON.stringify(self.chartSettings));
+                    currSetting.setAttribute('_measurements', JSON.stringify(self.measurements));
+                    currSetting._colors= self.chart.colors();
 
                     chartContainer.appendChild(currSetting);
                 }
                 else {
+                    currSetting.remove();
+
+                    var currSetting = document.createElement('epiviz-chart-settings');
+
                     currSetting.setAttribute('defs', JSON.stringify(self.chart.properties().customSettingsDefs));
                     currSetting.setAttribute('vals', JSON.stringify(self.chartSettings));
+                    currSetting.setAttribute('_measurements', JSON.stringify(self.measurements));
+                    currSetting._colors= self.chart.colors();
+                    chartContainer.appendChild(currSetting);
                 }
 
-                currSetting.showSettings(this.shadowRoot, function (newSettings) {
+                currSetting.showSettings(this.shadowRoot, function (newSettings, measurements) {
                     // self.chartSettings = newSettings;
                     self.set("chartSettings", newSettings);
+                    self.set("measurements", measurements);
                 });
             }
 
@@ -78217,7 +78668,8 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 }
 
                 currSetting.showSettings(this.shadowRoot, function (newSettings) {
-                    self.chartSettings = newSettings;
+                    // self.chartSettings = newSettings;
+                    self.set("chartSettings", newSettings);
                 });
             }
 
@@ -81109,8 +81561,24 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
           <div class="flexchild" hidden$="{{hideNav}}">
             <paper-icon-button title="move left" icon="icons:chevron-left" on-click="moveLeft"></paper-icon-button>
             <paper-icon-button title="move right" icon="icons:chevron-right" on-click="moveRight"></paper-icon-button>
-            <paper-icon-button title="zoom out" icon="icons:zoom-out" on-click="zoomOut"></paper-icon-button>
-            <paper-icon-button title="zoom in" icon="icons:zoom-in" on-click="zoomIn"></paper-icon-button>
+            <paper-icon-button id="ZoomOutButton" on-down="_onZoomOutDown" on-up="_onZoomOutUp" title="zoom out" icon="icons:zoom-out"></paper-icon-button>
+            <iron-dropdown id="ZoomOutDropdown" no-cancel-on-outside-click="" no-overlap="">
+              <paper-listbox slot="dropdown-content">
+                <paper-item value="2" on-click="setZoomOut">2x ([[getBPZoomOut(range, zoomOutRatio, 2)]])</paper-item>
+                <paper-item value="5" on-click="setZoomOut">5x ([[getBPZoomOut(range, zoomOutRatio, 5)]])</paper-item>
+                <paper-item value="10" on-click="setZoomOut">10x ([[getBPZoomOut(range, zoomOutRatio, 10)]])</paper-item>
+                <paper-item value="100" on-click="setZoomOut">100x ([[getBPZoomOut(range, zoomOutRatio, 100)]])</paper-item>
+              </paper-listbox>
+            </iron-dropdown>
+            <paper-icon-button id="ZoomInButton" on-down="_onZoomInDown" on-up="_onZoomInUp" title="zoom in" icon="icons:zoom-in"></paper-icon-button>
+            <iron-dropdown id="ZoomInDropdown" no-cancel-on-outside-click="" no-overlap="">
+              <paper-listbox slot="dropdown-content">
+                <paper-item value="2" on-click="setZoomIn">1/2x ([[getBPZoomIn(range, zoomInRatio, 2)]])</paper-item>
+                <paper-item value="5" on-click="setZoomIn">1/5x ([[getBPZoomIn(range, zoomInRatio, 5)]])</paper-item>
+                <paper-item value="10" on-click="setZoomIn">1/10x ([[getBPZoomIn(range, zoomInRatio, 10)]])</paper-item>
+                <paper-item value="100" on-click="setZoomIn">1/100x ([[getBPZoomIn(range, zoomInRatio, 100)]])</paper-item>
+              </paper-listbox>
+            </iron-dropdown>
           </div>
           <div class="flexchild" hidden$="{{hideSearch}}">
             <paper-dropdown-input id="geneSearch" label="Search" on-search-value-changed="_searchGene">
@@ -81300,6 +81768,18 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             type: Number,
             notify: true,
             value: 0.2
+          },
+
+          zoomInRatio: {
+            type: Number,
+            notify: true,
+            value: 1.2
+          },
+
+          zoomOutRatio: {
+            type: Number,
+            notify: true,
+            value: 1.2
           },
 
           /**
@@ -81494,14 +81974,151 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
         this.addEventListener("iron-resize", e => {
           this._debouncer = Polymer.Debouncer.debounce(
             this._debouncer,
-            Polymer.Async.timeOut.after(250),
+            Polymer.Async.timeOut.after(750),
             () => this._onResize(e)
           );
         });
+
         this._getElementSeqInfo(this, this);
 
         this.geneUpdateFlag = true;
         // this.addEventListener('transitionend', e => this._onResize(e));
+      }
+
+      setZoomOut(e) {
+        // console.log(e);
+        var zoomOutRatio = e.target.getAttribute("value");
+        this.shadowRoot.querySelector("#ZoomOutDropdown").close();
+
+        var width = Math.round(this.end - this.start);
+        // var mid = Math.round(this.start + width / 2);
+        var newWidthFactor = Math.round(width * zoomOutRatio);
+        var center  = Math.round( (this.start + this.end) /2 );
+        var newStart = center - Math.round(newWidthFactor/2);
+        var newEnd = center + Math.round(newWidthFactor/2);
+
+        this.start = Math.max(0, newStart);
+        this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+
+        this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
+        this._strRange = this.getStrRange(this.chr, this.start, this.end);
+      }
+
+      setZoomIn(e) {
+        // console.log(e);
+        var zoomInRatio = e.target.getAttribute("value");
+        this.shadowRoot.querySelector("#ZoomInDropdown").close();
+
+        this._zoomIn++;
+        var width = Math.round(this.end - this.start);
+        // var mid = Math.round(this.start + width / 2);
+        var newWidthFactor = Math.round(width / zoomInRatio);
+        var center  = Math.round( (this.start + this.end) /2 );
+        var newStart = center + Math.round(newWidthFactor/2);
+        var newEnd = center - Math.round(newWidthFactor/2);
+
+        this.start = Math.max(0, newStart);
+        this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+
+        this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
+        this._strRange = this.getStrRange(this.chr, this.start, this.end);
+      }
+
+      _getCurrentZoomOutValue(range, xfactor) {
+        if (this.range) {
+          return  xfactor + "x ("+ Math.round(this.range.width() * xfactor/1000) + "Kb)";
+        }
+      }
+
+      _getCurrentZoomInValue(range, xfactor) {
+        if (this.range) {
+          return  xfactor + "x ("+ Math.round(this.range.width() / (xfactor * 1000)) + "Kb)";
+        }
+      }
+
+      getBPZoomIn(range, ratio, xfactor) {
+        // console.log(ratio, xfactor);
+        if (this.range) {
+          return Math.round(this.range.width() / (xfactor * 1000)) + " Kb";
+        }
+      }
+
+      getBPZoomOut(range, ratio, xfactor) {
+        // console.log(ratio, xfactor);
+        if (this.range) {
+          return Math.round(this.range.width() * xfactor/1000) + " Kb";
+        }
+      }
+
+      _onZoomOutDown(e) {
+        this.startZoomOutTime = Date.now();
+        var self = this;
+
+        self._zoomOutTimeout = setTimeout(check, 300);
+
+        function check() {
+          self.shadowRoot.querySelector("#ZoomInDropdown").close();
+          self.shadowRoot.querySelector("#ZoomOutDropdown").open();
+        }
+      }
+
+      _onZoomOutUp(e) {
+        // console.log(e);
+        e.stopPropagation();
+        e.preventDefault();
+
+        clearTimeout(this._zoomOutTimeout);
+      
+          if (!this.shadowRoot.querySelector("#ZoomOutDropdown").opened) {
+            var width = Math.round(this.end - this.start);
+            // var mid = Math.round(this.start + width / 2);
+            var newWidthFactor = Math.round(width * this.zoomOutRatio);
+            var center  = Math.round( (this.start + this.end) /2 );
+            var newStart = center - Math.round(newWidthFactor/2);
+            var newEnd = center + Math.round(newWidthFactor/2);
+
+            this.start = Math.max(0, newStart);
+            this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+
+            this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
+            this._strRange = this.getStrRange(this.chr, this.start, this.end);
+          }
+      }
+
+      _onZoomInDown(e) {
+        this.startZoomInTime = Date.now();
+
+        var self = this;
+        self._zoomInTimeout = setTimeout(check, 300);
+
+        function check() {
+          self.shadowRoot.querySelector("#ZoomOutDropdown").close();
+          self.shadowRoot.querySelector("#ZoomInDropdown").open();
+        }
+      }
+
+      _onZoomInUp(e) {
+        // console.log(e);
+        e.stopPropagation();
+        e.preventDefault();
+
+        clearTimeout(this._zoomInTimeout);
+
+        if (!this.shadowRoot.querySelector("#ZoomInDropdown").opened) {
+          this._zoomIn++;
+          var width = Math.round(this.end - this.start);
+          // var mid = Math.round(this.start + width / 2);
+          var newWidthFactor = Math.round(width / this.zoomInRatio);
+          var center  = Math.round( (this.start + this.end) /2 );
+          var newStart = center + Math.round(newWidthFactor/2);
+          var newEnd = center - Math.round(newWidthFactor/2);
+
+          this.start = Math.max(0, newStart);
+          this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+
+          this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
+          this._strRange = this.getStrRange(this.chr, this.start, this.end);
+        }
       }
 
       getUrlParameter(sParam) {
@@ -81523,6 +82140,15 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
 
         self._initializeGrid();
         self._initializeSortable();
+
+        // self.shadowRoot.querySelector("#ZoomOutButton").addEventListener('long-press', function(e) {
+        //   console.log(e.target);
+        // });
+
+        // self.shadowRoot.querySelector("#ZoomInButton").addEventListener('long-press', function(e) {
+        //   console.log(e.target);
+        // });
+
 
         var origCollapsed = self.collapsed || false;
 
@@ -81980,15 +82606,20 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             self.set("_isEmpty", true);
           }
           for (var index = 0; index < numChildren; index++) {
+            
             var currentChild = navChildren[index];
+            
             if (currentChild == undefined || currentChild.plotId == undefined) {
               return;
             }
+            
             currentChild.shadowRoot.querySelector(
               "paper-spinner-lite"
             ).active = true;
+            
             currentChild.range = self.range;
             var measurements = self.measurementSet;
+            
             if (self._parentContainer) {
               measurements = self._parentContainer.measurementSet;
             }
@@ -82196,35 +82827,40 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
        */
       zoomIn(e) {
 
-        this._zoomIn++;
-        var width = Math.round(this.end - this.start);
-        // var mid = Math.round(this.start + width / 2);
-        var newWidthFactor = Math.round(width * this.zoomRatio);
-        var newStart = this.start + newWidthFactor;
-        var newEnd = this.end - newWidthFactor;
+        if (!this._startZoomInFlag) {
+          this._zoomIn++;
+          var width = Math.round(this.end - this.start);
+          // var mid = Math.round(this.start + width / 2);
+          var newWidthFactor = Math.round(width * this.zoomRatio);
+          var newStart = this.start + newWidthFactor;
+          var newEnd = this.end - newWidthFactor;
 
-        this.start = Math.max(0, newStart);
-        this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+          this.start = Math.max(0, newStart);
+          this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
 
-        this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
-        this._strRange = this.getStrRange(this.chr, this.start, this.end);
+          this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
+          this._strRange = this.getStrRange(this.chr, this.start, this.end);
+        }
       }
 
       /**
        * Navigation handler - zoom out
        */
       zoomOut(e) {
-        var width = Math.round(this.end - this.start);
-        // var mid = Math.round(this.start + width / 2);
-        var newWidthFactor = Math.round(width * this.zoomRatio);
-        var newStart = this.start - newWidthFactor;
-        var newEnd = this.end + newWidthFactor;
 
-        this.start = Math.max(0, newStart);
-        this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+        if (!this._startZoomOutFlag) {
+          var width = Math.round(this.end - this.start);
+          // var mid = Math.round(this.start + width / 2);
+          var newWidthFactor = Math.round(width * this.zoomRatio);
+          var newStart = this.start - newWidthFactor;
+          var newEnd = this.end + newWidthFactor;
 
-        this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
-        this._strRange = this.getStrRange(this.chr, this.start, this.end);
+          this.start = Math.max(0, newStart);
+          this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+
+          this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
+          this._strRange = this.getStrRange(this.chr, this.start, this.end);
+        }
       }
 
       /**
