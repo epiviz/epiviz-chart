@@ -256,10 +256,10 @@
               title="zoom in" icon="icons:zoom-in" ></paper-icon-button>
             <iron-dropdown id="ZoomInDropdown" no-cancel-on-outside-click no-overlap>
               <paper-listbox slot="dropdown-content">
-                <paper-item value="2" on-click="setZoomIn">2x ([[getBPZoomIn(range, zoomInRatio, 2)]])</paper-item>
-                <paper-item value="5" on-click="setZoomIn">5x ([[getBPZoomIn(range, zoomInRatio, 5)]])</paper-item>
-                <paper-item value="10" on-click="setZoomIn">10x ([[getBPZoomIn(range, zoomInRatio, 10)]])</paper-item>
-                <paper-item value="100" on-click="setZoomIn">100x ([[getBPZoomIn(range, zoomInRatio, 100)]])</paper-item>
+                <paper-item value="2" on-click="setZoomIn">1/2x ([[getBPZoomIn(range, zoomInRatio, 2)]])</paper-item>
+                <paper-item value="5" on-click="setZoomIn">1/5x ([[getBPZoomIn(range, zoomInRatio, 5)]])</paper-item>
+                <paper-item value="10" on-click="setZoomIn">1/10x ([[getBPZoomIn(range, zoomInRatio, 10)]])</paper-item>
+                <paper-item value="100" on-click="setZoomIn">1/100x ([[getBPZoomIn(range, zoomInRatio, 100)]])</paper-item>
               </paper-listbox>
             </iron-dropdown>
           </div>
@@ -717,27 +717,27 @@
 
       _getCurrentZoomOutValue(range, xfactor) {
         if (this.range) {
-          return  xfactor + "x ("+ Math.round(this.range.width() * xfactor/1000) + "kb)";
+          return  xfactor + "x ("+ Math.round(this.range.width() * xfactor/1000) + "Kb)";
         }
       }
 
       _getCurrentZoomInValue(range, xfactor) {
         if (this.range) {
-          return  xfactor + "x ("+ Math.round(this.range.width() / (xfactor * 1000)) + "kb)";
+          return  xfactor + "x ("+ Math.round(this.range.width() / (xfactor * 1000)) + "Kb)";
         }
       }
 
       getBPZoomIn(range, ratio, xfactor) {
         // console.log(ratio, xfactor);
         if (this.range) {
-          return Math.round(this.range.width() / (xfactor * 1000)) + " kb";
+          return Math.round(this.range.width() / (xfactor * 1000)) + " Kb";
         }
       }
 
       getBPZoomOut(range, ratio, xfactor) {
         // console.log(ratio, xfactor);
         if (this.range) {
-          return Math.round(this.range.width() * xfactor/1000) + " kb";
+          return Math.round(this.range.width() * xfactor/1000) + " Kb";
         }
       }
 
