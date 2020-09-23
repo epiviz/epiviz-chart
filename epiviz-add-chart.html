@@ -40,9 +40,9 @@
                     color: #fff;
                     padding: 5px;
                 }
-                --paper-button-disabled: {
+                /* --paper-button-disabled: {
                     color: white
-                };
+                }; */
             }
 
             #modal {
@@ -168,8 +168,8 @@
                 </div>
             </paper-dialog-scrollable>
             <div class="buttons">
-                <paper-button on-tap="_submit" disabled="{{!_enableButton(selectedChart, selectedMeasurements.*, selectedExistingMeasurements.*, tabSelected.*)}}" dialog-confirm autofocus>Add Chart</paper-button>
                 <paper-button on-tap="_close" dialog-dismiss>Close</paper-button>
+                <paper-button on-tap="_submit" disabled="{{!_enableButton(selectedChart, selectedMeasurements.*, selectedExistingMeasurements.*, tabSelected.*)}}" dialog-confirm autofocus>Add Chart</paper-button>
             </div>
         </paper-dialog>
         <!-- </div> -->
