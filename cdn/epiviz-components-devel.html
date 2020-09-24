@@ -72876,7 +72876,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                         var data = envElement.measurementAll;
                         var source = "epiviz";
                         data = data.subset(function(m) {
-                            return ["hic"].includes(m.annotation()["_filetype"]);
+                            return ["interaction_bigbed"].includes(m.annotation()["_filetype"]);
                         });
 
                         data = data.raw();
