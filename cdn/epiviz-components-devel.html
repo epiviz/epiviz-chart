@@ -10505,13 +10505,14 @@ D,f.rowItem.start(),f.rowItem.end()),f.rowItem.start(),f.rowItem.end(),f.rowItem
 b=this._svg.select(".items");c=b.select(".selected");c=this._svg.select("#clip-"+this.id());b.empty()&&(c.empty()&&this._svg.select("defs").append("clipPath").attr("id","clip-"+this.id()).append("rect").attr("class","clip-path-rect"),b=this._svg.append("g").attr("class","items").attr("id",this.id()+"-gene-content").attr("clip-path","url(#clip-"+this.id()+")"),c=b.append("g").attr("class","selected"),b.append("g").attr("class","hovered"),c.append("g").attr("class","hovered"));b.attr("transform","translate("+
 l.left()+", "+l.top()+")");this._svg.select(".clip-path-rect").attr("x",0).attr("y",0).attr("width",h-l.sumAxis(e.X)).attr("height",m-l.sumAxis(e.Y));b.selectAll(".item").remove();h=b.selectAll(".item").data(C,function(a){return a.id});h.enter().insert("rect",":first-child").attr("class",function(a){return a.cssClasses}).style("fill",function(a){return q?n.getByKey(a.values):n.get(a.seriesIndex)}).attr("x",function(a){return r(a.start)/d+x}).attr("width",function(a){return d*(r(a.end+1)-r(a.start))}).on("mouseout",
 function(){t._unhover.notify(new epiviz.ui.charts.VisEventArgs(t.id()))}).on("mouseover",function(a){t._hover.notify(new epiviz.ui.charts.VisEventArgs(t.id(),a))}).on("click",function(a){t._deselect.notify(new epiviz.ui.charts.VisEventArgs(t.id()));t._select.notify(new epiviz.ui.charts.VisEventArgs(t.id(),a));d3.event.stopPropagation()});h.attr("class",function(a){return a.cssClasses}).attr("height",Math.ceil(.1*(m-l.sumAxis(e.Y)))).attr("y",Math.ceil(.9*(m-l.sumAxis(e.Y)))).transition().duration(500).attr("x",
-function(a){return r(a.start)}).attr("width",function(a){return r(a.end+1)-r(a.start)});h.exit().transition().duration(500).attr("x",function(a){return r(a.start)}).remove();b.selectAll(".arcs").remove();h=b.selectAll(".arcs").data(A);h.enter().append("path").attr("class","arcs").attr("d",function(a){var b=parseInt(a.region1start),c=parseInt(a.region1end),d=parseInt(a.region2start);a=parseInt(a.region2end);b=r(Math.round((b+c)/2));d=r(Math.round((d+a)/2));return["M",b,Math.ceil(.9*(m-l.sumAxis(e.Y))),
-"A",(d-b)/2,",",Math.ceil(.9*(m-l.sumAxis(e.Y))),0,0,",",b<d?1:0,d,",",Math.ceil(.9*(m-l.sumAxis(e.Y)))].join(" ")}).on("mouseout",function(){t._unhover.notify(new epiviz.ui.charts.VisEventArgs(t.id()))}).on("mouseover",function(b){t._arcHover(b,a,this)});h.exit().remove();t._drawLegend();return B};
+function(a){return r(a.start)}).attr("width",function(a){return r(a.end+1)-r(a.start)});h.exit().transition().duration(500).attr("x",function(a){return r(a.start)}).remove();b.selectAll(".arcs-group").remove();h=b.selectAll(".arcs-group").data(A);h.enter().append("g").attr("class","arcs-group").each(function(b){var c=this;d3.select(this).append("path").attr("class","arcs").attr("d",function(a){var b=parseInt(a.region1start),c=parseInt(a.region1end),d=parseInt(a.region2start);a=parseInt(a.region2end);
+b=r(Math.round((b+c)/2));d=r(Math.round((d+a)/2));return["M",b,Math.ceil(.9*(m-l.sumAxis(e.Y))),"A",(d-b)/2,",",Math.ceil(.9*(m-l.sumAxis(e.Y))),0,0,",",b<d?1:0,d,",",Math.ceil(.9*(m-l.sumAxis(e.Y)))].join(" ")});d3.select(this).append("path").attr("class","arcs-padding").attr("d",function(a){var b=parseInt(a.region1start),c=parseInt(a.region1end),d=parseInt(a.region2start);a=parseInt(a.region2end);b=r(Math.round((b+c)/2));d=r(Math.round((d+a)/2));return["M",b,Math.ceil(.9*(m-l.sumAxis(e.Y))),"A",
+(d-b)/2,",",Math.ceil(.9*(m-l.sumAxis(e.Y))),0,0,",",b<d?1:0,d,",",Math.ceil(.9*(m-l.sumAxis(e.Y)))].join(" ")}).on("mouseout",function(){t._unhover.notify(new epiviz.ui.charts.VisEventArgs(t.id()))}).on("mouseover",function(b){t._arcHover(b,a,c)})});h.exit().remove();t._drawLegend();return B};
 epiviz.plugins.charts.InteractionBlocksTrack.prototype._mergeIntervals=function(a){return a.sort(function(a,c){return a.start-c.start}).reduce(function(a,c){return!a.length||a[a.length-1].end<c.start?a.push(c):a[a.length-1].end=Math.max(a[a.length-1].end,c.end),a},[])};
 epiviz.plugins.charts.InteractionBlocksTrack.prototype._arcHover=function(a,b,c){var d=this.measurements(),e=[],f=parseInt(a.region1start),g=parseInt(a.region1end),h=parseInt(a.region2start);a=parseInt(a.region2end);e.push(new epiviz.ui.charts.ChartObject("track-Interaction-hover",f,a,null,0,[[new epiviz.datatypes.GenomicData.ValueItem(0,new epiviz.datatypes.RowItemImpl(null,b.seqName(),f,g,0,"*",{}),null,d,null),new epiviz.datatypes.GenomicData.ValueItem(0,new epiviz.datatypes.RowItemImpl(null,b.seqName(),
 h,a,0,"*",{}),null,d,null)]],[d],null,b.seqName()));b=this._container.find(".items");b.find("> .hovered");b.find("> .selected").find("> .hovered").append(c);this._hover.notify(new epiviz.ui.charts.VisEventArgs(this.id(),e[0]))};
 epiviz.plugins.charts.InteractionBlocksTrack.prototype.doHover=function(a){epiviz.plugins.charts.BlocksTrack.prototype.doHover.call(this,a);if("track-Interaction-hover"!=a.id){var b=this._container.find(".items"),c=b.find("> .hovered"),d=b.find("> .selected"),e=d.find("> .hovered"),f=function(){if(Array.isArray(a)){for(var b=!1,c=0;c<a.length;c++){var d=a[c],e=d3.select(this).data()[0],f=parseInt(e.region1start),n=parseInt(e.region1end),u=parseInt(e.region2start),e=parseInt(e.region2end);if(d.regionStart()<
-n&&d.regionEnd()>f||d.regionStart()<e&&d.regionEnd()>u)b=!0}return b}e=d3.select(this).data()[0];f=parseInt(e.region1start);n=parseInt(e.region1end);u=parseInt(e.region2start);e=parseInt(e.region2end);return a.regionStart()<n&&a.regionEnd()>f||a.regionStart()<e&&a.regionEnd()>u},b=b.find("> .arcs").filter(f);c.append(b);b=d.find("> .arcs").filter(f);e.append(b)}};epiviz.plugins.charts.InteractionBlocksTrackType=function(a){epiviz.ui.charts.TrackType.call(this,a)};epiviz.plugins.charts.InteractionBlocksTrackType.prototype=epiviz.utils.mapCopy(epiviz.ui.charts.TrackType.prototype);epiviz.plugins.charts.InteractionBlocksTrackType.constructor=epiviz.plugins.charts.InteractionBlocksTrackType;epiviz.plugins.charts.InteractionBlocksTrackType.prototype.createNew=function(a,b,c){return new epiviz.plugins.charts.InteractionBlocksTrack(a,b,c)};
+n&&d.regionEnd()>f||d.regionStart()<e&&d.regionEnd()>u)b=!0}return b}e=d3.select(this).data()[0];f=parseInt(e.region1start);n=parseInt(e.region1end);u=parseInt(e.region2start);e=parseInt(e.region2end);return a.regionStart()<n&&a.regionEnd()>f||a.regionStart()<e&&a.regionEnd()>u},b=b.find("> .arcs-group").filter(f);c.append(b);b=d.find("> .arcs-group").filter(f);e.append(b)}};epiviz.plugins.charts.InteractionBlocksTrackType=function(a){epiviz.ui.charts.TrackType.call(this,a)};epiviz.plugins.charts.InteractionBlocksTrackType.prototype=epiviz.utils.mapCopy(epiviz.ui.charts.TrackType.prototype);epiviz.plugins.charts.InteractionBlocksTrackType.constructor=epiviz.plugins.charts.InteractionBlocksTrackType;epiviz.plugins.charts.InteractionBlocksTrackType.prototype.createNew=function(a,b,c){return new epiviz.plugins.charts.InteractionBlocksTrack(a,b,c)};
 epiviz.plugins.charts.InteractionBlocksTrackType.prototype.typeName=function(){return"epiviz.plugins.charts.InteractionBlocksTrack"};epiviz.plugins.charts.InteractionBlocksTrackType.prototype.chartName=function(){return"Interaction Track"};epiviz.plugins.charts.InteractionBlocksTrackType.prototype.chartHtmlAttributeName=function(){return"Interaction"};epiviz.plugins.charts.InteractionBlocksTrackType.prototype.isRestrictedToRangeMeasurements=function(){return!0};
 epiviz.plugins.charts.InteractionBlocksTrackType.prototype.measurementsFilter=function(){return function(a){return a.type()==epiviz.measurements.Measurement.Type.RANGE}};
 epiviz.plugins.charts.InteractionBlocksTrackType.prototype.customSettingsDefs=function(){return epiviz.ui.charts.TrackType.prototype.customSettingsDefs.call(this).concat([new epiviz.ui.charts.CustomSetting(epiviz.plugins.charts.InteractionBlocksTrackType.CustomSettings.MIN_BLOCK_DISTANCE,epiviz.ui.charts.CustomSetting.Type.NUMBER,0,"Minimum block distance"),new epiviz.ui.charts.CustomSetting(epiviz.plugins.charts.InteractionBlocksTrackType.CustomSettings.USE_COLOR_BY,epiviz.ui.charts.CustomSetting.Type.BOOLEAN,
@@ -78938,19 +78939,44 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 stroke-width: 1;
             }
 
-            .blocks-track .selected {
-                stroke: #ffc600;
-                stroke-width: 5;
-                stroke-opacity: 0.7;
-                fill-opacity: 1;
+            .blocks-track .hovered { 
+                stroke: #ffc600 !important; 
+                stroke-width: 5 !important; 
+                stroke-opacity: 0.7 !important; 
+                fill-opacity: 1 !important; 
+            }
+            
+            .blocks-track .hovered .arcs { 
+                stroke: #ffc600 !important; 
+                stroke-width: 5 !important; 
+                stroke-opacity: 0.7 !important; 
+                fill-opacity: 1 !important; 
             }
 
-            .blocks-track .hovered {
-                stroke: #ffc600;
-                stroke-width: 5;
-                stroke-opacity: 0.7;
-                fill-opacity: 1;
+            .blocks-track .items .arcs-group .arcs {
+                fill: none;
+                stroke: grey;
+                stroke-width: 2px;
+                shape-rendering: auto;
+                stroke-opacity: 0.4;
             }
+
+            /* .blocks-track .items .arcs-group {
+                fill: none;
+                stroke: grey;
+                stroke-width: 8;
+                shape-rendering: auto;
+                stroke-opacity: 0;
+            } */
+
+            .blocks-track .items .arcs-group .arcs-padding {
+                fill: none;
+                stroke: transparent;
+                stroke-width: 20px;
+                shape-rendering: auto;
+                stroke-opacity: 0;
+            }
+
 
             /* Heatmap */
 
