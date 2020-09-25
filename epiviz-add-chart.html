@@ -542,7 +542,7 @@
                         var data = envElement.measurementAll;
                         var source = "epiviz";
                         data = data.subset(function(m) {
-                            return ["gwas"].includes(m.annotation()["_filetype"]);
+                            return m.type() == "range";
                         });
 
                         data = data.raw();

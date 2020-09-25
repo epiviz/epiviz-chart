@@ -25,7 +25,8 @@
                 }
 
                 // var dataManagerElem = document.querySelector("epiviz-app").shadowRoot.querySelectorAll('epiviz-data-source');
-                var dataManagerElem = document.querySelectorAll('epiviz-data-source');
+                var dataManagerElem = document.querySelector("#" + self.id).parentNode.querySelectorAll('epiviz-data-source');
+                // var dataManagerElem = document.querySelectorAll('epiviz-data-source');
 
                 if (dataManagerElem && dataManagerElem.length > 0) {
 
@@ -394,6 +395,15 @@
                                 var dataChartElem = pDom.querySelector('[plot-id$="' + id + '"]') || Polymer.dom(pDom).querySelector('[plot-id$="' + id + '"]');
                                 if (dataChartElem) {
                                     // dataChartElem.data = pDom.transformFunc(data);
+                                    // // fix order of data with the order of measurements;
+                                    // var chartData = new epiviz.measurements.MeasurementHashtable();
+
+                                    // self.measurements.forEach(function(m) {
+                                    //     chartData.put(m, new epiviz.datatypes.MeasurementGenomicDataWrapper(m, data.getSeries(m)));
+                                    // });
+
+                                    // data = new epiviz.datatypes.MapGenomicData(chartData);
+
                                     dataChartElem.set("data", pDom.transformFunc(data));
                                 }
                                 dataChartElem._onResize();
