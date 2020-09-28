@@ -78,8 +78,8 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
         <!-- local DOM goes here -->
         <paper-dropdown label="Hide/Show Tracks" value="{{selectedItems}}" multi no-animations no-label-float
             horizontal-align="left">
-            <template id="itemRepeater" is="dom-repeat" items="[[items]]">
-                <paper-item value$="[[item]]">[[item]]</paper-item>
+            <template id="itemRepeater" is="dom-repeat" items="[[_getKeys(items)]]">
+                <paper-item value$="[[item]]">[[_getValue(item)]]</paper-item>
             </template>
         </paper-dropdown>
 
@@ -127,7 +127,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                 super.connectedCallback();
 
                 if (this.settings["showTracks"] == "default") {
-                    self.selectedItems = this.items;
+                    self.selectedItems = self._getKeys(self.items);
                 } else {
                     self.selectedItems = this.settings["showTracks"].split(",");
                 }
@@ -142,6 +142,14 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
              */
             _submit(event) {
                 this.$.formSettings.submit();
+            }
+
+            _getKeys(items) {
+                return Object.keys(this.items);
+            }
+
+            _getValue(item) {
+                return this.items[item];
             }
 
             _onSelectedItemsChanged(newVal, oldVal) {

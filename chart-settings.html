@@ -57,6 +57,10 @@
                     // self.chartSettings = newSettings;
                     self.set("chartSettings", newSettings);
                     self.set("measurements", measurements);
+
+                    if(self._initializeShowTracksDialog){
+                        self._initializeShowTracksDialog();
+                    }
                 });
             }
 

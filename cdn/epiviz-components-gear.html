@@ -73925,9 +73925,9 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 <iron-form id="formSettings">
                     <form>
                         <div class="container">
-                            <template id="colorPickers" is="dom-repeat" items="{{labels}}">
+                            <template id="colorPickers" is="dom-repeat" items="{{_getLabels(_measurements.*)}}">
                                 <div class="color-item">
-                                    <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
+                                    <paper-swatch-picker id="[[_getId(item)]]" name="{{_getName(item)}}" color="[[_getColor(item)]]"></paper-swatch-picker>
                                     <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
                                 </div>
                             </template>
@@ -73980,6 +73980,11 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                     */
                     selected: {
                         type: Object,
+                        notify: true
+                    },
+
+                    _measurements: {
+                        type: Array,
                         notify: true
                     }
                 }
@@ -74057,6 +74062,20 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 return label.split(' ').join('');
             }
 
+            _getName(item) {
+                return this._mList[item];
+            }
+
+            _getLabels(_measurements) {
+                var order = this._measurements.map(x => {return x.id});
+
+                this.labels.sort((a,b) => {
+                    return order.indexOf(a) - order.indexOf(b);
+                });
+
+                return this.labels;
+            }
+
             /**
              * handles form submit action
              */
@@ -74097,6 +74116,11 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             showColors(target, callback) {
                 var self = this;
                 // this.$.scrollContent.dialogElement = this.$.modal;
+                this._mList = {}
+                this._measurements.forEach(function(m) {
+                    self._mList[m.id] = m.name;
+                });
+
                 this.callback = callback;
                 this.$.modal.positionTarget = target;
                 this.$.modal.open();
@@ -74138,17 +74162,17 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 var chartContainer = this.shadowRoot.querySelector('#' + this.plotId);
                 var currColors = this.shadowRoot.querySelector('epiviz-chart-colors');
 
-                if (currColors == null) {
-                    var currColors = document.createElement('epiviz-chart-colors');
-                    currColors.setAttribute('labels', JSON.stringify(self.chart.colorLabels()));
-                    currColors.palettes = self.config.colorPalettes;
-                    currColors.selected = self.chart.colors();
-                    chartContainer.appendChild(currColors);
+                if(currColors) {
+                    currColors.remove();
                 }
-                else {
-                    currColors.setAttribute('labels', JSON.stringify(self.chart.colorLabels()));
-                    currColors.selected = self.chart.colors();
-                }
+
+                var currColors = document.createElement('epiviz-chart-colors');
+                currColors.setAttribute('labels', JSON.stringify(self.chart.colorLabels()));
+                // currColors.setAttribute('_measurements', JSON.stringify(self.measurements));
+                currColors._measurements = self.measurements;
+                currColors.palettes = self.config.colorPalettes;
+                currColors.selected = self.chart.colors();
+                chartContainer.appendChild(currColors);
 
                 currColors.showColors(this.shadowRoot, function (newColors) {
                     self.chartColors = newColors;
@@ -75007,6 +75031,10 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                     // self.chartSettings = newSettings;
                     self.set("chartSettings", newSettings);
                     self.set("measurements", measurements);
+
+                    if(self._initializeShowTracksDialog){
+                        self._initializeShowTracksDialog();
+                    }
                 });
             }
 
@@ -78501,8 +78529,8 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
         </style>
 
         <paper-dropdown label="Hide/Show Tracks" value="{{selectedItems}}" multi="" no-animations="" no-label-float="" horizontal-align="left">
-            <template id="itemRepeater" is="dom-repeat" items="[[items]]">
-                <paper-item value$="[[item]]">[[item]]</paper-item>
+            <template id="itemRepeater" is="dom-repeat" items="[[_getKeys(items)]]">
+                <paper-item value$="[[item]]">[[_getValue(item)]]</paper-item>
             </template>
         </paper-dropdown>
 
@@ -78549,7 +78577,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 super.connectedCallback();
 
                 if (this.settings["showTracks"] == "default") {
-                    self.selectedItems = this.items;
+                    self.selectedItems = self._getKeys(self.items);
                 } else {
                     self.selectedItems = this.settings["showTracks"].split(",");
                 }
@@ -78564,6 +78592,14 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
              */
             _submit(event) {
                 this.$.formSettings.submit();
+            }
+
+            _getKeys(items) {
+                return Object.keys(this.items);
+            }
+
+            _getValue(item) {
+                return this.items[item];
             }
 
             _onSelectedItemsChanged(newVal, oldVal) {
@@ -78637,30 +78673,24 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 var chartContainer = this.shadowRoot.querySelector('#' + this.plotId);
                 var currSetting = this.shadowRoot.querySelector('epiviz-chart-showtracks');
 
-                var options = [];
-                if(self.dimS && self.dimS.length > 0) {
-                    
-                    self.dimS.forEach(function(m) {
-                        options.push(m);
-                    });
-                } else if (self.measurements.length > 0) {
+                var options = {};
+
+                if (self.measurements.length > 0) {
                     self.measurements.forEach(function(m) {
-                        options.push(m.id);
+                        options[m.id] = m.name;
                     });
                 }
 
-                if (currSetting == null) {
-                    var currSetting = document.createElement('epiviz-chart-showtracks');
-                  
-                    currSetting.setAttribute('items', JSON.stringify(options));
-                    currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
-                    chartContainer.appendChild(currSetting);
-                }
-                else {
-                    currSetting.setAttribute('items', JSON.stringify(options));
-                    currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
+                if(currSetting) {
+                    currSetting.remove();
                 }
 
+                var currSetting = document.createElement('epiviz-chart-showtracks');
+                
+                currSetting.setAttribute('items', JSON.stringify(options));
+                currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
+                chartContainer.appendChild(currSetting);
+                
                 currSetting.showSettings(this.shadowRoot, function (newSettings) {
                     // self.chartSettings = newSettings;
                     self.set("chartSettings", newSettings);
@@ -78676,42 +78706,30 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 var chartSettingsContainer = this.shadowRoot.querySelector('#chartSettingsLeftContainer');
                 var currSettingIcon = this.shadowRoot.querySelector('#chartShowTracksIcon');
 
-                if (currSettingIcon == null) {
-                    var currSetting = document.createElement('epiviz-chart-showtracks');
-                    currSetting.id = "chartShowTracksIcon";
-
-                    var options = [];
-                    if(self.dimS && self.dimS.length > 0) {
-                        
-                        self.dimS.forEach(function(m) {
-                            options.push(m);
-                        });
-                    } else if (self.measurements.length > 0) {
-                        self.measurements.forEach(function(m) {
-                            options.push(m.id);
-                        });
-                    }
-
-                    currSetting.setAttribute('items', JSON.stringify(options));
-                    currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
-                    // 
-
-                    // if (self.chartSettings["showTracks"] == "default") {
-                    //     currSetting.setAttribute('selected-items', JSON.stringify(options));
-                    // } else {
-                    //     currSetting.setAttribute('selected-items', JSON.stringify(self.chartSettings["showTracks"].split(",")));
-                    // }
-
-                    currSetting._parentNode = self;
-                    chartSettingsContainer.appendChild(currSetting);
-
-                    // var iconElem = document.createElement('paper-icon-button');
-                    // iconElem.id = "chartShowTracksIcon";
-                    // iconElem.icon = "editor:insert-chart";
-
-                    // iconElem.addEventListener("click", this._showTracksDialog.bind(this));
-                    // chartSettingsContainer.appendChild(iconElem);
+                if(currSettingIcon) {
+                    currSettingIcon.remove();
                 }
+
+                var currSetting = document.createElement('epiviz-chart-showtracks');
+                currSetting.id = "chartShowTracksIcon";
+
+                var options = {};
+
+                if (self.measurements.length > 0) {
+                    self.measurements.forEach(function(m) {
+                        options[m.id] = m.name;
+                    });
+                }
+
+                if(currSetting) {
+                    currSetting.remove();
+                }
+
+                currSetting.setAttribute('items', JSON.stringify(options));
+                currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
+                currSetting._parentNode = self;
+                chartSettingsContainer.appendChild(currSetting);
+                
             }
         }
     }

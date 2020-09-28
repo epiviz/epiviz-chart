@@ -22,10 +22,6 @@
                 return {};
             }
 
-            // static get observers() {
-            //     return [ ];
-            // }
-
             /**
             * Shows the `<epiviz-chart-colors>` element
             */
@@ -34,17 +30,17 @@
                 var chartContainer = this.shadowRoot.querySelector('#' + this.plotId);
                 var currColors = this.shadowRoot.querySelector('epiviz-chart-colors');
 
-                if (currColors == null) {
-                    var currColors = document.createElement('epiviz-chart-colors');
-                    currColors.setAttribute('labels', JSON.stringify(self.chart.colorLabels()));
-                    currColors.palettes = self.config.colorPalettes;
-                    currColors.selected = self.chart.colors();
-                    chartContainer.appendChild(currColors);
+                if(currColors) {
+                    currColors.remove();
                 }
-                else {
-                    currColors.setAttribute('labels', JSON.stringify(self.chart.colorLabels()));
-                    currColors.selected = self.chart.colors();
-                }
+
+                var currColors = document.createElement('epiviz-chart-colors');
+                currColors.setAttribute('labels', JSON.stringify(self.chart.colorLabels()));
+                // currColors.setAttribute('_measurements', JSON.stringify(self.measurements));
+                currColors._measurements = self.measurements;
+                currColors.palettes = self.config.colorPalettes;
+                currColors.selected = self.chart.colors();
+                chartContainer.appendChild(currColors);
 
                 currColors.showColors(this.shadowRoot, function (newColors) {
                     self.chartColors = newColors;

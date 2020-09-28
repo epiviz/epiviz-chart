@@ -30,30 +30,24 @@
                 var chartContainer = this.shadowRoot.querySelector('#' + this.plotId);
                 var currSetting = this.shadowRoot.querySelector('epiviz-chart-showtracks');
 
-                var options = [];
-                if(self.dimS && self.dimS.length > 0) {
-                    
-                    self.dimS.forEach(function(m) {
-                        options.push(m);
-                    });
-                } else if (self.measurements.length > 0) {
+                var options = {};
+
+                if (self.measurements.length > 0) {
                     self.measurements.forEach(function(m) {
-                        options.push(m.id);
+                        options[m.id] = m.name;
                     });
                 }
 
-                if (currSetting == null) {
-                    var currSetting = document.createElement('epiviz-chart-showtracks');
-                  
-                    currSetting.setAttribute('items', JSON.stringify(options));
-                    currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
-                    chartContainer.appendChild(currSetting);
-                }
-                else {
-                    currSetting.setAttribute('items', JSON.stringify(options));
-                    currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
+                if(currSetting) {
+                    currSetting.remove();
                 }
 
+                var currSetting = document.createElement('epiviz-chart-showtracks');
+                
+                currSetting.setAttribute('items', JSON.stringify(options));
+                currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
+                chartContainer.appendChild(currSetting);
+                
                 currSetting.showSettings(this.shadowRoot, function (newSettings) {
                     // self.chartSettings = newSettings;
                     self.set("chartSettings", newSettings);
@@ -69,42 +63,30 @@
                 var chartSettingsContainer = this.shadowRoot.querySelector('#chartSettingsLeftContainer');
                 var currSettingIcon = this.shadowRoot.querySelector('#chartShowTracksIcon');
 
-                if (currSettingIcon == null) {
-                    var currSetting = document.createElement('epiviz-chart-showtracks');
-                    currSetting.id = "chartShowTracksIcon";
-
-                    var options = [];
-                    if(self.dimS && self.dimS.length > 0) {
-                        
-                        self.dimS.forEach(function(m) {
-                            options.push(m);
-                        });
-                    } else if (self.measurements.length > 0) {
-                        self.measurements.forEach(function(m) {
-                            options.push(m.id);
-                        });
-                    }
-
-                    currSetting.setAttribute('items', JSON.stringify(options));
-                    currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
-                    // 
-
-                    // if (self.chartSettings["showTracks"] == "default") {
-                    //     currSetting.setAttribute('selected-items', JSON.stringify(options));
-                    // } else {
-                    //     currSetting.setAttribute('selected-items', JSON.stringify(self.chartSettings["showTracks"].split(",")));
-                    // }
-
-                    currSetting._parentNode = self;
-                    chartSettingsContainer.appendChild(currSetting);
-
-                    // var iconElem = document.createElement('paper-icon-button');
-                    // iconElem.id = "chartShowTracksIcon";
-                    // iconElem.icon = "editor:insert-chart";
-
-                    // iconElem.addEventListener("click", this._showTracksDialog.bind(this));
-                    // chartSettingsContainer.appendChild(iconElem);
+                if(currSettingIcon) {
+                    currSettingIcon.remove();
                 }
+
+                var currSetting = document.createElement('epiviz-chart-showtracks');
+                currSetting.id = "chartShowTracksIcon";
+
+                var options = {};
+
+                if (self.measurements.length > 0) {
+                    self.measurements.forEach(function(m) {
+                        options[m.id] = m.name;
+                    });
+                }
+
+                if(currSetting) {
+                    currSetting.remove();
+                }
+
+                currSetting.setAttribute('items', JSON.stringify(options));
+                currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
+                currSetting._parentNode = self;
+                chartSettingsContainer.appendChild(currSetting);
+                
             }
         }
     }

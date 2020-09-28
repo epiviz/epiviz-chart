@@ -49,9 +49,9 @@ All charts implement the `epiviz.ChartColorsBehavior` that manages this element.
                 <iron-form id="formSettings">
                     <form>
                         <div class="container">
-                            <template id="colorPickers" is="dom-repeat" items="{{labels}}">
+                            <template id="colorPickers" is="dom-repeat" items="{{_getLabels(_measurements.*)}}">
                                 <div class="color-item">
-                                    <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
+                                    <paper-swatch-picker id="[[_getId(item)]]" name="{{_getName(item)}}" color="[[_getColor(item)]]"></paper-swatch-picker>
                                     <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
                                 </div>
                             </template>
@@ -104,6 +104,11 @@ All charts implement the `epiviz.ChartColorsBehavior` that manages this element.
                     */
                     selected: {
                         type: Object,
+                        notify: true
+                    },
+
+                    _measurements: {
+                        type: Array,
                         notify: true
                     }
                 }
@@ -181,6 +186,20 @@ All charts implement the `epiviz.ChartColorsBehavior` that manages this element.
                 return label.split(' ').join('');
             }
 
+            _getName(item) {
+                return this._mList[item];
+            }
+
+            _getLabels(_measurements) {
+                var order = this._measurements.map(x => {return x.id});
+
+                this.labels.sort((a,b) => {
+                    return order.indexOf(a) - order.indexOf(b);
+                });
+
+                return this.labels;
+            }
+
             /**
              * handles form submit action
              */
@@ -221,6 +240,11 @@ All charts implement the `epiviz.ChartColorsBehavior` that manages this element.
             showColors(target, callback) {
                 var self = this;
                 // this.$.scrollContent.dialogElement = this.$.modal;
+                this._mList = {}
+                this._measurements.forEach(function(m) {
+                    self._mList[m.id] = m.name;
+                });
+
                 this.callback = callback;
                 this.$.modal.positionTarget = target;
                 this.$.modal.open();
