@@ -10895,17 +10895,17 @@ epiviz.plugins.charts.CustomScatterPlotType.prototype.customSettingsDefs=functio
 "Min X"),new epiviz.ui.charts.CustomSetting(epiviz.ui.charts.Visualization.CustomSettings.X_MAX,epiviz.ui.charts.CustomSetting.Type.NUMBER,epiviz.ui.charts.CustomSetting.DEFAULT,"Max X"),new epiviz.ui.charts.CustomSetting(epiviz.ui.charts.Visualization.CustomSettings.Y_MIN,epiviz.ui.charts.CustomSetting.Type.NUMBER,epiviz.ui.charts.CustomSetting.DEFAULT,"Min Y"),new epiviz.ui.charts.CustomSetting(epiviz.ui.charts.Visualization.CustomSettings.Y_MAX,epiviz.ui.charts.CustomSetting.Type.NUMBER,epiviz.ui.charts.CustomSetting.DEFAULT,
 "Max Y"),new epiviz.ui.charts.CustomSetting(epiviz.plugins.charts.CustomScatterPlotType.CustomSettings.COLOR_BY,epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION,"name","Color By")])};epiviz.plugins.charts.CustomScatterPlotType.CustomSettings={CIRCLE_RADIUS_RATIO:"circleRadiusRatio",COLOR_BY:"colorBy"};epiviz.plugins.charts.GwasTrack=function(a,b,c){epiviz.plugins.charts.LineTrack.call(this,a,b,c)};epiviz.plugins.charts.GwasTrack.prototype=epiviz.utils.mapCopy(epiviz.plugins.charts.LineTrack.prototype);epiviz.plugins.charts.GwasTrack.constructor=epiviz.plugins.charts.GwasTrack;
 epiviz.plugins.charts.GwasTrack.prototype.draw=function(a,b,c,d,e){epiviz.ui.charts.Track.prototype.draw.call(this,a,b,c,d);b=this._lastData;a=this._lastRange;c=c||this._slide||0;d=d||this._zoom||1;this._slide=0;this._zoom=1;if(!b||!a)return[];var f=epiviz.ui.charts.CustomSetting,g=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MIN],h=this.customSettingsValues()[epiviz.ui.charts.Visualization.CustomSettings.Y_MAX],m=this.customSettingsValues()[epiviz.plugins.charts.GwasTrackType.CustomSettings.Y_AXIS_SEL],
-l=1E5,p=-1E5;b.foreach(function(b,c){var d=l,e=p,f=c.binarySearchStarts(a);if(0<f.length)for(var f=epiviz.utils.range(f.length,f.index),g=0;g<f.length;++g){var h=c.get(f[g]);parseInt(h.rowItem.rowMetadata()[m])<d&&(d=parseInt(h.rowItem.rowMetadata()[m]));parseInt(h.rowItem.rowMetadata()[m])>e&&(e=parseInt(h.rowItem.rowMetadata()[m]))}d<l&&(l=d);e>p&&(p=e)});var n=[l,p];g==f.DEFAULT&&(g=n[0]);h==f.DEFAULT&&(h=n[1]);null===g&&null===h&&(g=-1,h=1);null===g&&(g=h-1);null===h&&(h=g+1);var u=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.ABS_LINE_VAL],
+l=1E5,p=-1E5;b.foreach(function(b,c){var d=l,e=p,f=c.binarySearchStarts(a);if(0<f.length)for(var f=epiviz.utils.range(f.length,f.index),g=0;g<f.length;++g){var h=c.get(f[g]);parseFloat(h.rowItem.rowMetadata()[m])<d&&(d=parseFloat(h.rowItem.rowMetadata()[m]));parseFloat(h.rowItem.rowMetadata()[m])>e&&(e=parseFloat(h.rowItem.rowMetadata()[m]))}d<l&&(l=d);e>p&&(p=e)});var n=[l,p];g==f.DEFAULT&&(g=n[0]);h==f.DEFAULT&&(h=n[1]);null===g&&null===h&&(g=-1,h=1);null===g&&(g=h-1);null===h&&(h=g+1);var u=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.ABS_LINE_VAL],
 n=epiviz.ui.charts.Axis,f=d3.scale.linear().domain([a.start(),a.end()]).range([0,this.width()-this.margins().sumAxis(n.X)]),g=d3.scale.linear().domain([g,u,h]).range([this.height()-this.margins().sumAxis(n.Y),3*(this.height()-this.margins().sumAxis(n.Y))/4,0]);this._clearAxes();e&&(g=d3.scale.linear().domain([-1*h,h]).range([this.height()-this.margins().sumAxis(n.Y),0]));this._drawAxes(f,g,10,5);c=c*(this.width()-this.margins().sumAxis(n.X))/a.width();var v=this._svg.selectAll(".lines");v.empty()?
 v=this._svg.append("g").attr("class","lines").attr("transform","translate("+this.margins().left()+", "+this.margins().top()+")"):v.attr("transform","translate("+this.margins().left()+", "+this.margins().top()+")");b.measurements().forEach(function(a,b){var c=v.selectAll(".line-series-index-"+b),d=v.selectAll(".point-series-index-"+b);c.empty()&&v.append("g").attr("class","line-series-index-"+b);d.empty()&&v.append("g").attr("class","point-series-index-"+b)});for(e=b.measurements().length;;++e){h=
 v.selectAll(".line-series-index-"+e);n=v.selectAll(".point-series-index-"+e);if(h.empty())break;h.remove();n.remove()}return this._drawLines(a,b,c,d,f,g)};
 epiviz.plugins.charts.GwasTrack.prototype._drawLines=function(a,b,c,d,e,f){var g=this.colors(),h=parseInt(this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.STEP]),m=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_POINTS],l=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_LINES],p=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.SHOW_ERROR_BARS],n=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.POINT_RADIUS],
 u=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.LINE_THICKNESS],v=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.INTERPOLATION],q=this.customSettingsValues()[epiviz.plugins.charts.LineTrackType.CustomSettings.ABS_LINE_VAL],r=this.customSettingsValues()[epiviz.plugins.charts.GwasTrackType.CustomSettings.Y_AXIS_SEL],g=this.colors(),x=this;d=d3.scale.linear().domain([0,this.width()-this.margins().sumAxis(epiviz.ui.charts.Axis.X)]).range([a.start(),
 a.end()])(c)-a.start();var t=epiviz.datatypes.GenomicRange.fromStartEnd(a.seqName(),Math.min(a.start(),a.start()+d),Math.max(a.end(),a.end()+d),a.genome()),B=this._svg.select(".lines"),D=[];b.foreach(function(b,d,C){var w=x._measurementColorLabels?g.getByKey(x._measurementColorLabels.get(b)):g.get(C),A=d.binarySearchStarts(t);if(0!=A.length){var z=Math.ceil(A.index/h)*h;A.length=Math.max(0,A.length-z+A.index);A.index=z;for(var z=epiviz.utils.range(A.length,A.index).filter(function(a){return!h||1>=
-h||0==(a-A.index)%h}),y=0;y<z.length;++y){var E=d.get(z[y]);E.rowItem.start()>a.end()||E.rowItem.end()<a.start()||D.push(new epiviz.ui.charts.ChartObject(sprintf("line_%s_%s",C,E.globalIndex),E.rowItem.start(),E.rowItem.end(),[E.rowItem.rowMetadata()[r]],C,[[E]],[b],sprintf("item data-series-%s",C),E.rowItem.seqName()))}var I=function(a){a=d.get(a);return e(a.rowItem.start())};b=function(a){a=d.get(a);return f(parseInt(a.rowItem.rowMetadata()[r]))};l?(y=d3.svg.line().x(I).y(b).interpolate(v),E=B.select(".line-series-index-"+
-C).selectAll("path").data([z]),E.enter().append("path").attr("d",y).style("shape-rendering","auto").style("stroke-opacity","0.8").on("mouseover",function(){x._captureMouseHover()}).on("mousemove",function(){x._captureMouseHover()}).on("mouseout",function(){x._unhover.notify(new epiviz.ui.charts.VisEventArgs(x.id()))}),E.attr("d",y).style("stroke",w).style("stroke-width",u).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)")):B.select(".line-series-index-"+
-C).selectAll("path").remove();B.select(".point-series-index-"+C).selectAll("circle").remove();B.select(".point-series-index-"+C).selectAll(".error-bar").remove();m&&(y=B.select(".point-series-index-"+C).selectAll("circle").data(z),y.exit().transition().duration(500).style("opacity",0).remove(),y.enter().append("circle").attr("class","point-series-index-"+C).attr("r",n).attr("cx",I).attr("cy",b).attr("fill",w).attr("stroke",w).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform",
-"translate(0)"),y.attr("r",n).attr("cx",I).attr("cy",b).attr("fill",w).attr("stroke",w).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)"),y.each(function(a){a=d.get(a);q>=parseInt(a.rowItem.rowMetadata()[r])?d3.select(this).transition().duration(1E3).attr("fill","grey").attr("stroke","grey").attr("r",n/2):d3.select(this).transition().duration(1E3).attr("fill",w).attr("stroke",w).attr("r",n)}),y.on("mouseover",function(){x._captureMouseHover()}).on("mousemove",
+h||0==(a-A.index)%h}),y=0;y<z.length;++y){var E=d.get(z[y]);E.rowItem.start()>a.end()||E.rowItem.end()<a.start()||D.push(new epiviz.ui.charts.ChartObject(sprintf("line_%s_%s",C,E.globalIndex),E.rowItem.start(),E.rowItem.end(),[E.rowItem.rowMetadata()[r]],C,[[E]],[b],sprintf("item data-series-%s",C),E.rowItem.seqName()))}var I=function(a){a=d.get(a);return e(a.rowItem.start())};b=function(a){a=d.get(a);return f(parseFloat(a.rowItem.rowMetadata()[r]))};l?(y=d3.svg.line().x(I).y(b).interpolate(v),E=
+B.select(".line-series-index-"+C).selectAll("path").data([z]),E.enter().append("path").attr("d",y).style("shape-rendering","auto").style("stroke-opacity","0.8").on("mouseover",function(){x._captureMouseHover()}).on("mousemove",function(){x._captureMouseHover()}).on("mouseout",function(){x._unhover.notify(new epiviz.ui.charts.VisEventArgs(x.id()))}),E.attr("d",y).style("stroke",w).style("stroke-width",u).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)")):
+B.select(".line-series-index-"+C).selectAll("path").remove();B.select(".point-series-index-"+C).selectAll("circle").remove();B.select(".point-series-index-"+C).selectAll(".error-bar").remove();m&&(y=B.select(".point-series-index-"+C).selectAll("circle").data(z),y.exit().transition().duration(500).style("opacity",0).remove(),y.enter().append("circle").attr("class","point-series-index-"+C).attr("r",n).attr("cx",I).attr("cy",b).attr("fill",w).attr("stroke",w).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform",
+"translate(0)"),y.attr("r",n).attr("cx",I).attr("cy",b).attr("fill",w).attr("stroke",w).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)"),y.each(function(a){a=d.get(a);q>=parseFloat(a.rowItem.rowMetadata()[r])?d3.select(this).transition().duration(1E3).attr("fill","grey").attr("stroke","grey").attr("r",n/2):d3.select(this).transition().duration(1E3).attr("fill",w).attr("stroke",w).attr("r",n)}),y.on("mouseover",function(){x._captureMouseHover()}).on("mousemove",
 function(){x._captureMouseHover()}).on("mouseout",function(){x._unhover.notify(new epiviz.ui.charts.VisEventArgs(x.id()))}),p&&(C=B.select(".point-series-index-"+C).selectAll(".error-bar").data(z),C.enter().append("g").attr("class","error-bar").each(function(a){var b;b=d.get(a);b=b.valueAnnotation?b.valueAnnotation.errMinus:null;b=void 0!=b?f(b):null;var c;c=d.get(a);c=c.valueAnnotation?c.valueAnnotation.errPlus:null;c=void 0!=c?f(c):null;null!=b&&null!=c&&(d3.select(this).append("line").attr("x1",
 I(a)).attr("x2",I(a)).attr("y1",b).attr("y2",c).style("stroke",w).style("shape-rendering","auto"),d3.select(this).append("line").attr("x1",I(a)-2).attr("x2",I(a)+2).attr("y1",b).attr("y2",b).style("stroke",w).style("shape-rendering","auto"),d3.select(this).append("line").attr("x1",I(a)-2).attr("x2",I(a)+2).attr("y1",c).attr("y2",c).style("stroke",w).style("shape-rendering","auto"))}).attr("transform","translate("+ +c+")").transition().duration(500).attr("transform","translate(0)"),C.on("mouseover",
 function(){x._captureMouseHover()}).on("mousemove",function(){x._captureMouseHover()}).on("mouseout",function(){x._unhover.notify(new epiviz.ui.charts.VisEventArgs(x.id()))}),C.exit().transition().duration(500).style("opacity",0).remove()))}});q!=epiviz.ui.charts.CustomSetting.DEFAULT&&(B.selectAll(".abLine").remove(),B.append("svg:line").attr("class","abLine").attr("x1",0).attr("x2",x.width()-x.margins().sumAxis(epiviz.ui.charts.Axis.X)).attr("y1",f(q)).attr("y2",f(q)).style("stroke","black").style("stroke-dasharray",
@@ -10914,7 +10914,7 @@ epiviz.plugins.charts.GwasTrackType.prototype.chartName=function(){return"GWAS T
 epiviz.plugins.charts.GwasTrackType.prototype.customSettingsDefs=function(){return epiviz.ui.charts.TrackType.prototype.customSettingsDefs.call(this).concat([new epiviz.ui.charts.CustomSetting(epiviz.plugins.charts.GwasTrackType.CustomSettings.STEP,epiviz.ui.charts.CustomSetting.Type.NUMBER,1,"Step"),new epiviz.ui.charts.CustomSetting(epiviz.plugins.charts.GwasTrackType.CustomSettings.SHOW_POINTS,epiviz.ui.charts.CustomSetting.Type.BOOLEAN,!0,"Show points"),new epiviz.ui.charts.CustomSetting(epiviz.plugins.charts.GwasTrackType.CustomSettings.SHOW_LINES,
 epiviz.ui.charts.CustomSetting.Type.BOOLEAN,!1,"Show lines"),new epiviz.ui.charts.CustomSetting(epiviz.plugins.charts.GwasTrackType.CustomSettings.SHOW_ERROR_BARS,epiviz.ui.charts.CustomSetting.Type.BOOLEAN,!1,"Show error bars"),new epiviz.ui.charts.CustomSetting(epiviz.plugins.charts.GwasTrackType.CustomSettings.POINT_RADIUS,epiviz.ui.charts.CustomSetting.Type.NUMBER,2,"Point radius"),new epiviz.ui.charts.CustomSetting(epiviz.plugins.charts.GwasTrackType.CustomSettings.LINE_THICKNESS,epiviz.ui.charts.CustomSetting.Type.NUMBER,
 1,"Line thickness"),new epiviz.ui.charts.CustomSetting(epiviz.ui.charts.Visualization.CustomSettings.Y_MIN,epiviz.ui.charts.CustomSetting.Type.NUMBER,epiviz.ui.charts.CustomSetting.DEFAULT,"Min Y"),new epiviz.ui.charts.CustomSetting(epiviz.ui.charts.Visualization.CustomSettings.Y_MAX,epiviz.ui.charts.CustomSetting.Type.NUMBER,epiviz.ui.charts.CustomSetting.DEFAULT,"Max Y"),new epiviz.ui.charts.CustomSetting(epiviz.plugins.charts.GwasTrackType.CustomSettings.INTERPOLATION,epiviz.ui.charts.CustomSetting.Type.CATEGORICAL,
-"linear","Interpolation","linear step-before step-after basis basis-open basis-closed bundle cardinal cardinal-open monotone".split(" ")),new epiviz.ui.charts.CustomSetting(epiviz.plugins.charts.GwasTrackType.CustomSettings.ABS_LINE_VAL,epiviz.ui.charts.CustomSetting.Type.NUMBER,500,"Threshold"),new epiviz.ui.charts.CustomSetting(epiviz.plugins.charts.GwasTrackType.CustomSettings.Y_AXIS_SEL,epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA,"name;","Y-axis column")])};
+"linear","Interpolation","linear step-before step-after basis basis-open basis-closed bundle cardinal cardinal-open monotone".split(" ")),new epiviz.ui.charts.CustomSetting(epiviz.plugins.charts.GwasTrackType.CustomSettings.ABS_LINE_VAL,epiviz.ui.charts.CustomSetting.Type.NUMBER,.5,"Threshold"),new epiviz.ui.charts.CustomSetting(epiviz.plugins.charts.GwasTrackType.CustomSettings.Y_AXIS_SEL,epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA,"score","Y-axis column")])};
 epiviz.plugins.charts.GwasTrackType.CustomSettings={STEP:"step",SHOW_POINTS:"showPoints",SHOW_ERROR_BARS:"showErrorBars",SHOW_LINES:"showLines",POINT_RADIUS:"pointRadius",LINE_THICKNESS:"lineThickness",INTERPOLATION:"interpolation",ABS_LINE_VAL:"abLine",Y_AXIS_SEL:"yAxisField"};epiviz.ui.charts.ChartFactory=function(a){this._config=a;this._types={};for(var b=this._size=0;b<a.chartTypes.length;++b)this.register(a.chartTypes[b])};epiviz.ui.charts.ChartFactory.prototype.size=function(){return this._size};epiviz.ui.charts.ChartFactory.prototype.registerType=function(a){a.typeName()in this._types||++this._size;this._types[a.typeName()]=a};
 epiviz.ui.charts.ChartFactory.prototype.unregisterType=function(a){if(!(a.typeName()in this._types))return!1;--this._size;delete this._types[a.typeName()];return!0};epiviz.ui.charts.ChartFactory.prototype.register=function(a){a=epiviz.utils.evaluateFullyQualifiedTypeName(a);if(!a)return!1;this.registerType(new a(this._config));return!0};epiviz.ui.charts.ChartFactory.prototype.unregister=function(a){return(a=epiviz.utils.evaluateFullyQualifiedTypeName(a))?this.unregisterType(new a(this._config)):!1};
 epiviz.ui.charts.ChartFactory.prototype.get=function(a){return a&&a in this._types?this._types[a]:null};epiviz.ui.charts.ChartFactory.prototype.foreach=function(a){for(var b in this._types)if(this._types.hasOwnProperty(b)&&a(b,this._types[b]))break};epiviz.ui.controls.Control=function(a,b,c){this._container=a;this._title=b||"";this._id=c||epiviz.utils.generatePseudoGUID(6)};epiviz.ui.controls.Control.prototype.initialize=function(){};epiviz.ui.controls.Control.prototype.id=function(){return this._id};epiviz.ui.controls.Control.prototype.title=function(){return this._title};epiviz.ui.controls.DataTable=function(a,b,c,d,e,f){epiviz.ui.controls.Control.call(this,a);this._columns=b;this._rows=c;this._rowsArray=[];var g=this;this._rows.foreach(function(a){g._rowsArray.push(a)});this._rowParser=d;this._multiselect=e||!1;this._showColumnSelector=f||!1;this._columnSelector=this._table=null;this._selectedIndices=[];this._selectedIndicesMap={};this._lastSelection=this._deselectList=this._selectList=null};epiviz.ui.controls.DataTable.prototype=epiviz.utils.mapCopy(epiviz.ui.controls.Control.prototype);
@@ -48393,15 +48393,6 @@ class WeakCache {
                                 var dataChartElem = pDom.querySelector('[plot-id$="' + id + '"]') || Polymer.dom(pDom).querySelector('[plot-id$="' + id + '"]');
                                 if (dataChartElem) {
                                     // dataChartElem.data = pDom.transformFunc(data);
-                                    // // fix order of data with the order of measurements;
-                                    // var chartData = new epiviz.measurements.MeasurementHashtable();
-
-                                    // self.measurements.forEach(function(m) {
-                                    //     chartData.put(m, new epiviz.datatypes.MeasurementGenomicDataWrapper(m, data.getSeries(m)));
-                                    // });
-
-                                    // data = new epiviz.datatypes.MapGenomicData(chartData);
-
                                     dataChartElem.set("data", pDom.transformFunc(data));
                                 }
                                 dataChartElem._onResize();
@@ -73934,9 +73925,9 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 <iron-form id="formSettings">
                     <form>
                         <div class="container">
-                            <template id="colorPickers" is="dom-repeat" items="{{labels}}">
+                            <template id="colorPickers" is="dom-repeat" items="{{_getLabels(_measurements.*)}}">
                                 <div class="color-item">
-                                    <paper-swatch-picker id="[[_getId(item)]]" name="{{item}}" color="[[_getColor(item)]]"></paper-swatch-picker>
+                                    <paper-swatch-picker id="[[_getId(item)]]" name="{{_getName(item)}}" color="[[_getColor(item)]]"></paper-swatch-picker>
                                     <iron-label for="{{_getId(item)}}">{{item}}</iron-label>
                                 </div>
                             </template>
@@ -73989,6 +73980,11 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                     */
                     selected: {
                         type: Object,
+                        notify: true
+                    },
+
+                    _measurements: {
+                        type: Array,
                         notify: true
                     }
                 }
@@ -74066,6 +74062,20 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 return label.split(' ').join('');
             }
 
+            _getName(item) {
+                return this._mList[item];
+            }
+
+            _getLabels(_measurements) {
+                var order = this._measurements.map(x => {return x.id});
+
+                this.labels.sort((a,b) => {
+                    return order.indexOf(a) - order.indexOf(b);
+                });
+
+                return this.labels;
+            }
+
             /**
              * handles form submit action
              */
@@ -74106,6 +74116,11 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
             showColors(target, callback) {
                 var self = this;
                 // this.$.scrollContent.dialogElement = this.$.modal;
+                this._mList = {}
+                this._measurements.forEach(function(m) {
+                    self._mList[m.id] = m.name;
+                });
+
                 this.callback = callback;
                 this.$.modal.positionTarget = target;
                 this.$.modal.open();
@@ -74147,17 +74162,17 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 var chartContainer = this.shadowRoot.querySelector('#' + this.plotId);
                 var currColors = this.shadowRoot.querySelector('epiviz-chart-colors');
 
-                if (currColors == null) {
-                    var currColors = document.createElement('epiviz-chart-colors');
-                    currColors.setAttribute('labels', JSON.stringify(self.chart.colorLabels()));
-                    currColors.palettes = self.config.colorPalettes;
-                    currColors.selected = self.chart.colors();
-                    chartContainer.appendChild(currColors);
+                if(currColors) {
+                    currColors.remove();
                 }
-                else {
-                    currColors.setAttribute('labels', JSON.stringify(self.chart.colorLabels()));
-                    currColors.selected = self.chart.colors();
-                }
+
+                var currColors = document.createElement('epiviz-chart-colors');
+                currColors.setAttribute('labels', JSON.stringify(self.chart.colorLabels()));
+                // currColors.setAttribute('_measurements', JSON.stringify(self.measurements));
+                currColors._measurements = self.measurements;
+                currColors.palettes = self.config.colorPalettes;
+                currColors.selected = self.chart.colors();
+                chartContainer.appendChild(currColors);
 
                 currColors.showColors(this.shadowRoot, function (newColors) {
                     self.chartColors = newColors;
@@ -75016,6 +75031,10 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                     // self.chartSettings = newSettings;
                     self.set("chartSettings", newSettings);
                     self.set("measurements", measurements);
+
+                    if(self._initializeShowTracksDialog){
+                        self._initializeShowTracksDialog();
+                    }
                 });
             }
 
@@ -78510,8 +78529,8 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
         </style>
 
         <paper-dropdown label="Hide/Show Tracks" value="{{selectedItems}}" multi="" no-animations="" no-label-float="" horizontal-align="left">
-            <template id="itemRepeater" is="dom-repeat" items="[[items]]">
-                <paper-item value$="[[item]]">[[item]]</paper-item>
+            <template id="itemRepeater" is="dom-repeat" items="[[_getKeys(items)]]">
+                <paper-item value$="[[item]]">[[_getValue(item)]]</paper-item>
             </template>
         </paper-dropdown>
 
@@ -78558,7 +78577,7 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 super.connectedCallback();
 
                 if (this.settings["showTracks"] == "default") {
-                    self.selectedItems = this.items;
+                    self.selectedItems = self._getKeys(self.items);
                 } else {
                     self.selectedItems = this.settings["showTracks"].split(",");
                 }
@@ -78573,6 +78592,14 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
              */
             _submit(event) {
                 this.$.formSettings.submit();
+            }
+
+            _getKeys(items) {
+                return Object.keys(this.items);
+            }
+
+            _getValue(item) {
+                return this.items[item];
             }
 
             _onSelectedItemsChanged(newVal, oldVal) {
@@ -78646,30 +78673,24 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 var chartContainer = this.shadowRoot.querySelector('#' + this.plotId);
                 var currSetting = this.shadowRoot.querySelector('epiviz-chart-showtracks');
 
-                var options = [];
-                if(self.dimS && self.dimS.length > 0) {
-                    
-                    self.dimS.forEach(function(m) {
-                        options.push(m);
-                    });
-                } else if (self.measurements.length > 0) {
+                var options = {};
+
+                if (self.measurements.length > 0) {
                     self.measurements.forEach(function(m) {
-                        options.push(m.id);
+                        options[m.id] = m.name;
                     });
                 }
 
-                if (currSetting == null) {
-                    var currSetting = document.createElement('epiviz-chart-showtracks');
-                  
-                    currSetting.setAttribute('items', JSON.stringify(options));
-                    currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
-                    chartContainer.appendChild(currSetting);
-                }
-                else {
-                    currSetting.setAttribute('items', JSON.stringify(options));
-                    currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
+                if(currSetting) {
+                    currSetting.remove();
                 }
 
+                var currSetting = document.createElement('epiviz-chart-showtracks');
+                
+                currSetting.setAttribute('items', JSON.stringify(options));
+                currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
+                chartContainer.appendChild(currSetting);
+                
                 currSetting.showSettings(this.shadowRoot, function (newSettings) {
                     // self.chartSettings = newSettings;
                     self.set("chartSettings", newSettings);
@@ -78685,42 +78706,30 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 var chartSettingsContainer = this.shadowRoot.querySelector('#chartSettingsLeftContainer');
                 var currSettingIcon = this.shadowRoot.querySelector('#chartShowTracksIcon');
 
-                if (currSettingIcon == null) {
-                    var currSetting = document.createElement('epiviz-chart-showtracks');
-                    currSetting.id = "chartShowTracksIcon";
-
-                    var options = [];
-                    if(self.dimS && self.dimS.length > 0) {
-                        
-                        self.dimS.forEach(function(m) {
-                            options.push(m);
-                        });
-                    } else if (self.measurements.length > 0) {
-                        self.measurements.forEach(function(m) {
-                            options.push(m.id);
-                        });
-                    }
-
-                    currSetting.setAttribute('items', JSON.stringify(options));
-                    currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
-                    // 
-
-                    // if (self.chartSettings["showTracks"] == "default") {
-                    //     currSetting.setAttribute('selected-items', JSON.stringify(options));
-                    // } else {
-                    //     currSetting.setAttribute('selected-items', JSON.stringify(self.chartSettings["showTracks"].split(",")));
-                    // }
-
-                    currSetting._parentNode = self;
-                    chartSettingsContainer.appendChild(currSetting);
-
-                    // var iconElem = document.createElement('paper-icon-button');
-                    // iconElem.id = "chartShowTracksIcon";
-                    // iconElem.icon = "editor:insert-chart";
-
-                    // iconElem.addEventListener("click", this._showTracksDialog.bind(this));
-                    // chartSettingsContainer.appendChild(iconElem);
+                if(currSettingIcon) {
+                    currSettingIcon.remove();
                 }
+
+                var currSetting = document.createElement('epiviz-chart-showtracks');
+                currSetting.id = "chartShowTracksIcon";
+
+                var options = {};
+
+                if (self.measurements.length > 0) {
+                    self.measurements.forEach(function(m) {
+                        options[m.id] = m.name;
+                    });
+                }
+
+                if(currSetting) {
+                    currSetting.remove();
+                }
+
+                currSetting.setAttribute('items', JSON.stringify(options));
+                currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
+                currSetting._parentNode = self;
+                chartSettingsContainer.appendChild(currSetting);
+                
             }
         }
     }
@@ -80763,6 +80772,8 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 this.plotId = self.plotId || this._generatePlotId();
                 // this.scopeSubtree(this.$.chart, true);
                 this.config = new epiviz.Config(this.configSrc);
+
+                this.style = "min-height:" + (150) + "px;"
             }
 
             /**
