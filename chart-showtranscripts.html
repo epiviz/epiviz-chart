@@ -1,0 +1,68 @@
+<!-- External Polymer Styles/elements dependency -->
+<link rel="import" href="bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
+
+<!-- Epiviz element dependency -->
+<link rel="import" href="epiviz-chart-showtranscripts.html">
+
+<script>
+    /**
+     * `ChartSettingsBehavior` object manages the `<epiviz-chart-settings>` element for each chart. 
+     * All charts inherit this behavior to update chart settings.
+     *
+     * @polymerBehavior
+    **/
+    EpivizChartShowTranscriptsBehavior = function (superClass) {
+        return class extends superClass {
+            constructor() {
+                super();
+            }
+
+            static get properties() {
+                return {};
+            }
+
+            /**
+            * Initializes the `<epiviz-chart-settings>` element
+            */
+            _initializeShowTranscriptsDialog() {
+                var self = this;
+
+                var chartSettingsContainer = this.shadowRoot.querySelector('#chartSettingsLeftContainer');
+                var currSettingIcon = this.shadowRoot.querySelector('#chartShowTranscriptsIcon');
+
+                // if(currSettingIcon) {
+                //     currSettingIcon.remove();
+                // }
+
+                if(!currSettingIcon) {
+                    // currSettingIcon.remove();
+
+                    var series = self.data.firstSeries();
+                    var options = series._container._rowData._metadata["transcript_id"];
+                    var genes = series._container._rowData._metadata["gene"];
+
+                    var currSetting = document.createElement('epiviz-chart-showtranscripts');
+                    currSetting.id = "chartShowTranscriptsIcon";
+
+                    currSetting.setAttribute('items', JSON.stringify(options));
+                    currSetting.setAttribute('settings', JSON.stringify(self.chartSettings));
+                    currSetting.setAttribute('genes', JSON.stringify(genes));
+                    currSetting._parentNode = self;
+                    chartSettingsContainer.appendChild(currSetting);
+                } else {
+
+                    var series = self.data.firstSeries();
+                    var options = series._container._rowData._metadata["transcript_id"];
+                    var genes = series._container._rowData._metadata["gene"];
+
+                    currSettingIcon.setAttribute('items', JSON.stringify(options));
+                    currSettingIcon.setAttribute('settings', JSON.stringify(self.chartSettings));
+                    currSettingIcon.setAttribute('genes', JSON.stringify(genes));
+                    currSettingIcon._parentNode = self;
+                }
+
+            }
+        }
+    }
+</script>

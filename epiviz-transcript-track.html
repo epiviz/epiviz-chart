@@ -1,0 +1,232 @@
+<!-- Polymer dependency -->
+<link rel="import" href="bower_components/polymer/polymer-element.html">
+
+<!-- Epiviz imports dependency -->
+<!-- <link rel="import" href="bower_components/epiviz-imports/epiviz-common-js.html"> -->
+
+<!-- Epiviz Polymer Behaviors dependency -->
+<link rel="import" href="chart-behavior.html">
+<link rel="import" href="chart-settings.html">
+<link rel="import" href="chart-colors.html">
+<link rel="import" href="chart-remove.html">
+<link rel="import" href="chart-grid-behavior.html">
+<link rel="import" href="chart-showtranscripts.html">
+
+<!-- Epiviz Shared css -->
+<link rel="import" href="chart-shared-css.html">
+
+<!--
+<h2> Chart Component </h2>
+epiviz-chart components are a collection of reusable and extensible visualization components for
+genomic data. 
+
+An epiviz-chart component requires two attributes to render a visualization on the page 
+<ul>
+    <li>data attribute,  </li>
+    <li>dimensions (or columns) from the data attribute to visualize.</li>
+</ul>
+
+`<epiviz-transcript-track>` is similar to line track with genomic location on the x-axis 
+    and can be used to visualize multiple annotation regions on the same track.
+
+Element attributes are defined in <a href="#epiviz.ChartBehavior">`<epiviz.ChartBehavior>`</a> element.
+
+To create a stacked-blocks plot on a HTML page, add
+
+      <epiviz-transcript-track></epiviz-transcript-track>
+
+@demo demo/index-stacked-line-track.html Example page showing a stacked-line track
+-->
+
+<dom-module id="epiviz-transcript-track">
+    <!--<link rel="import" href="bower_components/epiviz-imports/epiviz-common-css.html">-->
+    <template>
+        <style include="shared-settings"></style>
+        <style include="chart-shared-css"></style>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <style>
+            :host {
+                width: 100%;
+                height: 100%;
+                display: inline-block;
+                border: 1px solid black;
+                border-radius: 5px;
+                resize: vertical;
+                overflow: auto;
+                transition: width 0.01s, height 0.01s;
+                position: relative;
+            }
+        </style>
+
+        <!-- local DOM goes here -->
+        <paper-spinner-lite active class="green"></paper-spinner-lite>
+        <div id="chart" on-mouseover="hostHovered" on-mouseout="hostUnhovered">
+            <slot name="dragHandle"></slot>
+            <div id="{{plotId}}"></div>
+        </div>
+
+    </template>
+
+    <script>
+
+        // Extend Polymer.Element base class
+        class EpivizTranscriptTrack extends EpivizChartShowTranscriptsBehavior(EpivizChartGridBehavior(EpivizChartRemoveBehavior(EpivizChartColorsBehavior(EpivizChartSettingsBehavior(EpivizChartBehavior(Polymer.Element)))))) {
+
+            static get is() { return 'epiviz-transcript-track'; }
+
+            static get properties() {
+                return {
+                    /**
+                    * Default chart properties for stacked-line track.
+                    *
+                    * @type {Object}
+                    */
+                    configSrc: {
+                        type: Object,
+                        notify: true,
+                        value: function () {
+
+                            epiviz.Config.SETTINGS = {
+                                dataProviders: [
+                                    ["epiviz.data.WebServerDataProvider", "umd", "http://epiviz-dev.cbcb.umd.edu/api/"]
+                                ],
+                                workspacesDataProvider: sprintf('epiviz.data.EmptyResponseDataProvider', 'empty', ''),
+                                useCache: true,
+
+                                chartSettings: {
+                                    default: {
+                                        colors: 'd3-category10',
+                                        decorations: [
+                                            'epiviz.ui.charts.decoration.RemoveChartButton',
+                                            'epiviz.ui.charts.decoration.SaveChartButton',
+                                            'epiviz.ui.charts.decoration.CustomSettingsButton',
+                                            'epiviz.ui.charts.decoration.EditCodeButton',
+
+                                            'epiviz.ui.charts.decoration.ChartColorsButton',
+                                            'epiviz.ui.charts.decoration.ChartLoaderAnimation',
+                                            'epiviz.ui.charts.decoration.ChartResize'
+                                        ]
+                                    },
+
+                                    plot: {
+                                        width: 400,
+                                        height: 400,
+                                        margins: new epiviz.ui.charts.Margins(15, 30, 30, 15),
+                                        decorations: [
+                                            'epiviz.ui.charts.decoration.ToggleTooltipButton',
+
+                                            'epiviz.ui.charts.decoration.ChartTooltip',
+                                            'epiviz.ui.charts.decoration.ChartFilterCodeButton'
+                                        ]
+                                    },
+
+                                    track: {
+                                        width: 900,
+                                        height: 90,
+                                        margins: new epiviz.ui.charts.Margins(25, 20, 23, 10),
+                                        decorations: [
+                                            'epiviz.ui.charts.decoration.ToggleTooltipButton',
+
+                                            'epiviz.ui.charts.decoration.ChartTooltip',
+                                            'epiviz.ui.charts.decoration.ChartFilterCodeButton'
+                                        ]
+                                    },
+
+                                    'epiviz.plugins.charts.TranscriptTrack': {
+                                        height: 300,
+                                        colors: 'genes-default'
+                                    },
+                                },
+
+                                chartCustomSettings: {
+                                },
+
+                                colorPalettes: [
+                                    new epiviz.ui.charts.ColorPalette(
+                                        ['#f9a65a', '#599ad3', '#79c36a', '#f1595f', '#727272', '#cd7058', '#d77fb3'],
+                                        'Genes Default', 'genes-default')
+                                ]
+                            };
+
+                            return epiviz.Config.SETTINGS;
+                        }
+                    }
+                }
+            }
+
+            static get observers() {
+                return [
+                    /* observer array just like 1.x */
+                ]
+            }
+
+            constructor() {
+                super();
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+
+                var self = this;
+
+                self._initializeGrid();
+                self._measurementsChanged();
+
+                // if (self.dimS) {
+                //     this.style = "min-height:" + Math.max(300, self.dimS.length * 125) + "px;"
+                // } else if (self.measurements) {
+                //     this.style = "min-height:" + Math.max(300, self.measurements.length * 125) + "px;"
+                // } else {
+                //     this.style = "min-height:" + (250) + "px;"
+                // }
+            }
+
+            disconnectedCallback() {
+                super.connectedCallback();
+            }
+
+            ready() {
+                super.ready();
+                this.plotId = self.plotId || this._generatePlotId();
+                // this.scopeSubtree(this.$.chart, true);
+                this.config = new epiviz.Config(this.configSrc);
+            }
+
+            /**
+            * Draws the chart.
+            *
+            * @param {Object<epiviz.datatypes.GenomicRange>} range genomic range.
+            * @param {Object<epiviz.datatypes.MapGenomicData>} data to plot
+            */
+            _draw() {
+                if(this.data) {
+
+                    this.chart.draw(this.range, this.data);
+
+                    this._initializeShowTranscriptsDialog();
+
+                    if (this.data.measurements().length == this.measurements.length) {
+                        this.shadowRoot.querySelector("paper-spinner-lite").active = false;
+                    }
+                }
+            }
+
+            filter_transcripts(list) {
+                
+            }
+
+            /**
+             * Creates an instance of the stacked-line track chart.
+             *
+             * @return {epiviz.plugins.charts.TranscriptTrackType} StackedLineTrack chart object
+             */
+            _createChart() {
+                return new epiviz.plugins.charts.TranscriptTrackType(new epiviz.Config(this.configSrc));
+            }
+        };
+
+        customElements.define(EpivizTranscriptTrack.is, EpivizTranscriptTrack);
+
+    </script>
+</dom-module>
