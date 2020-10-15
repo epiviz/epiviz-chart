@@ -163,9 +163,9 @@
                         <p class="infoMessage" hidden$="[[_tableDataExists(_existingChartMeasurements)]]">No Existing Charts</p>
                     </div> -->
                 </iron-pages>
-                <div id="chartPreview">
+                <!-- <div id="chartPreview">
 
-                </div>
+                </div> -->
             </paper-dialog-scrollable>
             <div class="buttons">
                 <paper-button on-tap="_close" dialog-dismiss>Close</paper-button>
@@ -240,6 +240,7 @@
                         value: function () {
                             return {
                                 // "GenesTrack": "epiviz-genes-track",
+                                "TranscriptTrack": "epiviz-transcript-track",
                                 "BlocksTrack": 'epiviz-blocks-track',
                                 "InteractionTrack": 'epiviz-interaction-track',
                                 "StackedBlocksTrack": 'epiviz-stacked-blocks-track',
@@ -309,7 +310,7 @@
             static get observers() {
                 return [
                     /* observer array just like 1.x */
-                    "_chartPreviewUpdate(selectedMeasurements.*, selectedChart)"
+                    // "_chartPreviewUpdate(selectedMeasurements.*, selectedChart)"
                 ]
             }
 
@@ -328,10 +329,6 @@
             _getJSONMeasurements(data) {
                 return data.raw();
             }
-
-            // _chartPreviewUpdate(selectedMeasurements, selectedChart) {
-            //     var 
-            // }
 
             /**
              * Get Available Chart Types
@@ -543,6 +540,19 @@
                         var source = "epiviz";
                         data = data.subset(function(m) {
                             return ["gwas"].includes(m.annotation()["_filetype"]);
+                        });
+
+                        data = data.raw();
+
+                        if (this.selectedCollection && this.selectedCollection != "") {
+                            data = data.filter(function (m) { return m["annotation"]["collection"] == self.selectedCollection});
+                        }
+                    }
+                    else if (self.selection.chartType.indexOf("Transcript") != -1) {
+                        var data = envElement.measurementAll;
+                        var source = "epiviz";
+                        data = data.subset(function(m) {
+                            return ["transcript"].includes(m.annotation()["_filetype"]);
                         });
 
                         data = data.raw();

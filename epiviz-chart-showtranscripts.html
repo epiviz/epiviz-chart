@@ -1,0 +1,253 @@
+<!-- Polymer dependency -->
+<link rel="import" href="bower_components/polymer/polymer-element.html">
+
+<!-- External Polymer Styles/elements dependency -->
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/paper-dropdown-input/paper-dropdown-input.html">
+<link rel="import" href="bower_components/paper-styles/color.html">
+<link rel="import" href="bower_components/paper-styles/typography.html">
+<link rel="import" href="bower_components/paper-styles/default-theme.html">
+<link rel="import" href="bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="bower_components/iron-form/iron-form.html">
+<link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="bower_components/iron-label/iron-label.html">
+<link rel="import" href="bower_components/paper-collapse-item/paper-collapse-item.html">
+<link rel="import" href="bower_components/paper-dropdown/paper-dropdown.html">
+
+<!--
+`<epiviz-chart-settings>` is a view element that manages chart settings. 
+
+All charts implement the `epiviz.ChartSettingsBehavior` that manages this element.
+-->
+<dom-module id="epiviz-chart-showtranscripts">
+
+    <template>
+        <style>
+            paper-dropdown {
+                --paper-input-container-label: {
+                    /* color: var(--paper-pink-500); */
+                    font-style: italic;
+                    /* text-align: center; */
+                    font-weight: bold;
+                    /* width: 150px; */
+                };
+                --paper-input-container-input: {
+                    color: var(--paper-indigo-500);
+                    font-style: normal;
+                    font-family: serif;
+                    text-transform: uppercase;
+                    width: 150px;
+                };
+                /* Only show the underline when focused. */
+                --paper-input-container-underline: {
+                    display: none;
+                    width: 150px;
+                };
+                --paper-input-container-underline-focus: {
+                    border-color: var(--paper-cyan-500);
+                    width: 150px;
+                };
+
+                --paper-dropdown-menu: {
+                    min-width: 100px;
+                }
+
+                --paper-listbox: {
+                    min-width: 150px;
+                }
+            }
+
+            paper-item {
+                font-style: italic !important;
+                font-weight: normal !important;
+            }
+
+            paper-item.iron-selected {
+                font-style: normal !important;
+                font-weight: bold !important;
+            }
+
+        </style>
+
+        <!-- local DOM goes here -->
+        <paper-dropdown label="Hide/Show Transcripts" value="{{selectedItems}}" multi no-animations no-label-float
+            horizontal-align="left">
+            <template id="itemRepeater" is="dom-repeat" items="[[_getKeys(items)]]">
+                <paper-item value$="[[item]]">[[_getValue(item)]]</paper-item>
+            </template>
+        </paper-dropdown>
+
+        <!-- on-tap="_itemClicked" -->
+    </template>
+
+    <script>
+        // Extend Polymer.Element base class
+        class EpivizChartShowTranscripts extends Polymer.Element {
+
+            static get is() { return 'epiviz-chart-showtranscripts'; }
+
+            static get properties() {
+                return {
+                    items: {
+                        type: Array,
+                        notify: true,
+                        observer: "_itemsChanged"
+                    },
+                    
+                    settings: {
+                        type: Object,
+                        notify: true
+                        // observer: "_settingsChanged"
+                    },
+
+                    selectedItems: {
+                        type: Array,
+                        notify: true,
+                        observer: "_onSelectedItemsChanged"
+                    },
+
+                    genes: {
+                        type: Array,
+                        notify: true
+                    }
+                }
+            }
+
+            static get observers() {
+                return [
+                    /* observer array just like 1.x */
+                    "_inputDataChanged(items, genes)"
+                ]
+            }
+
+            constructor() {
+                super();
+            }
+
+            connectedCallback() {
+                var self = this;
+                super.connectedCallback();
+
+                self.connFlag = true;
+
+                if (this.settings["showTranscripts"] == "default") {
+                    self.selectedItems = self.items;
+                } else {
+                    var htrans = this.settings["showTranscripts"].split(",")
+                    var strans = self.items.filter(x => !htrans.includes(x));
+                    self.selectedItems = strans;
+                }
+
+                self.connFlag = false;
+            }
+
+            disconnectedCallback() {
+                super.connectedCallback();
+            }
+
+            _itemsChanged(newVal, oldVal) {
+                var self = this;
+
+                self.connFlag = true;
+
+                if (this.settings["showTranscripts"] == "default") {
+                    self.selectedItems = self.items;
+                } else {
+                    var htrans = this.settings["showTranscripts"].split(",")
+                    var strans = self.items.filter(x => !htrans.includes(x));
+                    self.selectedItems = strans;
+                }
+
+                self.connFlag = false;
+            }
+
+            // _inputDataChanged(items, genes) {
+            //     self.connFlag = true;
+
+            //     var self = this;
+            //     if (this.settings["showTranscripts"] == "default") {
+            //         self.selectedItems = self.items;
+            //     } else {
+            //         self.selectedItems = this.settings["showTranscripts"].split(",");
+            //     }
+            //     self.connFlag = false;
+
+            // }
+
+            /**
+             * handles form submit action
+             */
+            _submit(event) {
+                this.$.formSettings.submit();
+            }
+
+            _getKeys(items) {
+                return this.items;
+            }
+
+            _getValue(item) {
+                var index = this.items.indexOf(item);
+                return item + " (" + this.genes[index] + ")";
+            }
+
+            _onSelectedItemsChanged(newVal, oldVal) {
+                var self = this;
+
+                if (!self.connFlag) {
+                    if (newVal && (newVal.length > 0 && newVal.length < self.items.length)) {
+                        var strans = self.items.filter(x => !newVal.includes(x));
+
+                        self.settings["showTranscripts"] = strans.join(",");
+                        self._parentNode.chartSettings = this.settings;
+                        // TODO: have to force change currently, not sure why!
+                        self._parentNode._dataChanged();
+                    } else {
+                        self.settings["showTranscripts"] = "default";
+                        self._parentNode.chartSettings = this.settings;
+                        // TODO: have to force change currently, not sure why!
+                        self._parentNode._dataChanged();
+                    }
+                }
+            }
+
+            /**
+             * handles form submit action
+             */
+            _form_submit(event) {
+                var self = this;
+                // this.settings["showTranscripts"] = this.shadowRoot.querySelector("paper-dropdown").selectedItems.join(",");
+
+                // this.callback(this.settings);
+                this.closeSettings();
+            }
+
+            /**
+             * handles form cancel action
+             */
+            _cancel(event) {
+                this.closeSettings();
+            }
+
+            /**
+             * handles form show modal action
+             */
+            showSettings(target, callback) {
+                this.callback = callback;
+                this.$.modal.open();
+            }
+
+            /**
+             * handles form close modal action
+             */
+            closeSettings() {
+                this.$.modal.close();
+            }
+        };
+
+        customElements.define(EpivizChartShowTranscripts.is, EpivizChartShowTranscripts);
+    </script>
+</dom-module>
