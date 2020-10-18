@@ -78,5 +78,29 @@ npm install -g polymer-bundler
 polymer-bundler --inline-scripts --inline-css --strip-comments epiviz-charts.html > dist/epiviz-charts.html
 ```
 
+# Docker Instructions
 
+The docker setup, runs polymer server to serve the components and/or app pages, and nginx as a proxy.
+
+To build,
+
+`docker build . -t epiviz-chart`
+
+`--no-cache` for rebuilding during development
+
+To run,
+
+`docker run -p 80:80 -dt epiviz-chart`
+
+## Development
+
+For development, also expose port 8081 on the container. 
+
+`docker run -p 80:80 -p 8081:8081 -dt epiviz-chart`
+
+To use the container for serving app pages,
+
+copy html files to /app/, 
+there's an nginx route (\<HOSTNAME\>/app/) configured to serve these pages. 
+The included `index.html` uses the loader.
 
