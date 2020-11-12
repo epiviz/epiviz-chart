@@ -51,10 +51,10 @@
                 self.chr = self.workspace.chr;
                 self.start = self.workspace.start;
                 self.end = self.workspace.end;
-                self.genome = self.workspace.genome
+                self.genome = self.workspace.genome;
                 self.plotId = self.workspace.plotId;
                 self.collapsed = self.workspace.collapsed ? self.workspace.collapsed : false;
-                // self.noLogo = true;
+                self.noLogo = true;
 
                 for (var key in self.workspace.children) {
                     var chartWorkspaceObj = self.workspace.children[key];
@@ -101,6 +101,8 @@
                         }
                     }
                 }
+
+                self._onResize();
             }
 
             /**
