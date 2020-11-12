@@ -11,7 +11,7 @@
 
 <!-- Epiviz data behaviors dependency -->
 <link rel="import" href="chart-data-behavior.html" />
-<link rel="import" href="chart-add-behavior.html" />
+<!-- <link rel="import" href="chart-add-behavior.html" /> -->
 <link rel="import" href="chart-workspace-behavior.html" />
 <link rel="import" href="chart-grid-behavior.html" />
 <link rel="import" href="chart-draggable-behavior.html" />
@@ -19,6 +19,7 @@
 <!-- Chart elements dependency -->
 <link rel="import" href="epiviz-genes-track.html" />
 <link rel="import" href="epiviz-ideogram-track.html" />
+<link rel="import" href="bower_components/epiviz-mbrowser/epiviz-mbrowser.html" />
 
 <!-- Polymer Behavior dependency -->
 <link rel="import" href="bower_components/iron-fit-behavior/iron-fit-behavior.html" />
@@ -147,14 +148,14 @@
       }
 
       #header {
-        height: 50px;
+        /* height: 50px; */
         /* linear-gradient(white, #e0e2e2) */
       }
 
       .content {
         min-height: 250px;
         padding: 5px;
-        overflow: auto;
+        /* overflow: auto; */
       }
 
       .chartContainer {
@@ -214,7 +215,9 @@
       </a>
       <div style="display:inline-block" hidden$="{{collapsed}}">
         <!-- <div style="display:inline-block" > -->
-            <epiviz-add-chart hidden$="{{hideAddChart}}" id="addChart"></epiviz-add-chart>
+            <epiviz-measurement-browser hidden$="{{hideAddChart}}" id="addChart" ms-api={{msApi}} genome={{genome}}></epiviz-measurement-browser>
+            <!-- <epiviz-add-chart hidden$="{{hideAddChart}}" id="addChart"></epiviz-add-chart> -->
+            <!-- <slot id="chartHeader" name="header"></slot> -->
         <!-- </div> -->
         <!-- <div style="display:inline-block" > -->
           <paper-icon-button hidden$="{{!showViewer}}" style="margin-top:10px;margin-left:10px;" dynamic-align vertical-align="bottom" title="Open viewer in a new window" icon="image:filter" on-click="openFullViewer"></paper-icon-button>
@@ -334,6 +337,11 @@
             type: String,
             notify: true,
             observer: "_genomeChanged"
+          },
+
+          msApi: {
+            type: String,
+            notify:true
           },
 
           /**
@@ -1356,12 +1364,12 @@
         var gene = self.getUrlParameter("gene");
         if (gene == "" || gene == null) {
           gene = self.gene;
-          var ws = self.getUrlParameter("ws");
+          var ws = self.getUrlParameter("wid");
           if (ws && ws != "") {
-            window.history.replaceState("gene", '', "?ws=" + ws + "&gene=" + gene);
+            window.history.replaceState("gene", '', window.location.pathname + "?wid=" + ws + "&gene=" + gene);
           }
           else {
-            window.history.replaceState("gene", '', "?gene=" + gene);
+            window.history.replaceState("gene", '', window.location.pathname + "?gene=" + gene);
           }
         }
 
@@ -1426,12 +1434,12 @@
       _selectGene(e) {
         var selected = e.model.item;
 
-        var ws = this.getUrlParameter("ws");
+        var ws = this.getUrlParameter("wid");
         if (ws && ws != "") {
-          window.history.replaceState("gene", '', "?ws=" + ws + "&gene=" + selected.gene);
+          window.history.replaceState("gene", '', window.location.pathname + "?wid=" + ws + "&gene=" + selected.gene);
         }
         else {
-          window.history.replaceState("gene", '', "?gene=" + selected.gene);
+          window.history.replaceState("gene", '', window.location.pathname + "?gene=" + selected.gene);
         }
 
         var self = this;
