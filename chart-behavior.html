@@ -494,6 +494,10 @@
                 if (self.chartSettings && self.chart) {
                     self.chart.setCustomSettingsValues(self.chartSettings);
                     self._dataChanged();                
+                    
+                    if(self._parentContainer) {
+                        self._parentContainer.saveWorkspace();
+                    }
                 }
             }
 
@@ -532,6 +536,10 @@
                     self.chartColorPalette = new epiviz.ui.charts.ColorPalette(self.chartColors);
                     self.chart.setColors(self.chartColorPalette);
                     self._dataChanged();
+
+                    if(self._parentContainer) {
+                        self._parentContainer.saveWorkspace();
+                    }
                 }
             }
 
