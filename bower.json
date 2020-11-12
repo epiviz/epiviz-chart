@@ -49,7 +49,10 @@
     "iron-pages": "PolymerElements/iron-pages#2.0.0",
     "jquery-ui": "^1.12.1",
     "paper-dropdown": "pushkar8723/paper-dropdown#2.5",
-    "paper-card": "polymerelements/paper-card#2"
+    "paper-card": "polymerelements/paper-card#2",
+    "epiviz-workspace": "epiviz/epiviz-workspace",
+    "sortable-list": "sharedlabs/sortable-list#^1.0.2",
+    "epiviz-mbrowser": "http://github.com/epiviz/epiviz-mbrowser.git"
   },
   "devDependencies": {},
   "resolutions": {
