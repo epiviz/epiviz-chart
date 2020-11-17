@@ -1369,8 +1369,14 @@
             window.history.replaceState("gene", '', window.location.pathname + "?wid=" + ws + "&gene=" + gene);
           }
           else {
+            var coll = self.getUrlParameter("collection");
+            if (coll && coll != "") {
+              window.history.replaceState("gene", '', window.location.pathname + "?gene=" + gene + "&collection=" + coll);
+            }
+            else {
             window.history.replaceState("gene", '', window.location.pathname + "?gene=" + gene);
           }
+        }
         }
 
         self._getElementSearch(gene, range, null, function (data) {
