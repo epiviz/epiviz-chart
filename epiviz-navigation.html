@@ -481,6 +481,16 @@
             value: 1.2
           },
 
+          upstream: {
+            type: Number,
+            value: 100000
+          },
+
+          downstream: {
+            type: Number,
+            value: 50000
+          },
+
           /**
            * padding around gene (wrt gene length)
            *
@@ -1383,9 +1393,16 @@
           self.chr = data[0].chr;
 
           var width = data[0].end - data[0].start;
-          var newWidthFactor = Math.round(width * self.geneRatio);
-          var newStart = data[0].start - newWidthFactor;
-          var newEnd = data[0].end + newWidthFactor;
+          // var newWidthFactor = Math.round(width * self.geneRatio);
+          var strand = data[0].strand ? data[0].strand == "+" ? 1 : -1 : 1;
+          var newStart = data[0].start - self.upstream;
+          var newEnd = data[0].end + self.downstream;
+
+          if (strand == -1) {
+            newStart = data[0].start - self.downstream;
+            newEnd = data[0].end + self.upstream;
+          }
+
           self.start = Math.max(0, newStart);
           self.end = Math.min(newEnd, self.seqInfo[self.chr].max);
 
@@ -1451,9 +1468,21 @@
         var self = this;
         this.chr = selected.chr;
         var width = selected.end - selected.start;
-        var newWidthFactor = Math.round(width * this.geneRatio);
-        var newStart = selected.start - newWidthFactor;
-        var newEnd = selected.end + newWidthFactor;
+        // var newWidthFactor = Math.round(width * this.geneRatio);
+        var newStart = selected.start - self.downstream;
+        var newEnd = selected.end + self.upstream;
+
+        var strand = selected.strand ? selected.strand == "+" ? 1 : -1 : 1;
+        var newStart = selected.start - self.upstream;
+        var newEnd = selected.end + self.downstream;
+
+        if (strand == -1) {
+          newStart = selected.start - self.downstream;
+          newEnd = selected.end + self.upstream;
+        }
+
+        // var newStart = selected.start - newWidthFactor;
+        // var newEnd = selected.end + newWidthFactor;
         this.start = Math.max(0, newStart);
         this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
 
