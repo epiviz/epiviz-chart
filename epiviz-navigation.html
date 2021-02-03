@@ -354,7 +354,8 @@
            */
           chr: {
             type: String,
-            notify: true
+            notify: true,
+            reflectToAttribute: true
           },
 
           /**
@@ -365,7 +366,8 @@
            */
           start: {
             type: Number,
-            notify: true
+            notify: true,
+            reflectToAttribute: true
           },
 
           /**
@@ -376,7 +378,8 @@
            */
           end: {
             type: Number,
-            notify: true
+            notify: true,
+            reflectToAttribute: true
           },
 
           viewer: {
@@ -669,7 +672,8 @@
 
       static get observers() {
         return [
-          '_measurementSetChanged(measurementSet.*)'
+          '_measurementSetChanged(measurementSet.*)',
+          '_genomicRegionChanged(chr, start, end)'
         ];
       }
 
@@ -828,6 +832,16 @@
           this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
           this._strRange = this.getStrRange(this.chr, this.start, this.end);
         }
+      }
+
+      _genomicRegionChanged(chr, start, end) {
+
+        this.chr = chr;
+        this.start = start;
+        this.end = end;
+
+        this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
+        this._strRange = this.getStrRange(this.chr, this.start, this.end);
       }
 
       getUrlParameter(sParam) {
