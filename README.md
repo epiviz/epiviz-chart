@@ -1,3 +1,9 @@
+# Documentation
+
+Documentation for the web components is available at 
+
+https://epiviz.github.io/components/
+
 # Usage from cdn
 
 Add this to HTML head (loads dependencies)
@@ -13,38 +19,22 @@ Add this to HTML head (loads dependencies)
 
 `bower install epiviz/epiviz-chart`
 
-# Documentation
-
-run a local instance of polymer-server
-`polymer serve`
-
-Then navigate to http://localhost:8080/components/epiviz-chart/
-
 # Demo
 
-run a local instance of polymer-server
+demo folder contains examples of various epiviz components
+
+- `index-json.html` should work as it contains static data in the html
+
+most other examples, require an instance of EFS running. 
+
+To run a local instance of polymer-server
 `polymer serve`
 
-Then navigate to http://localhost:8080/components/epiviz-chart/demo/
+Then navigate to any files inside the demo folder
 
+http://localhost:8080/components/epiviz-chart/demo/<FILE_NAME.html>
 
-# Update chartSettings:
-
-```
-# get chart
-chart = document.querySelector("#chart1");
-# get current chart settings
-currentSettings = chart.ChartSettings;
-# modify chart settings
-...
-
-# set settings back to chart
-chart.setAttribute("chart-settings", JSON.stringify(currentSettings));
-```
-
-# Epiviz-environment
-
-### must use polymer api to add charts to environment. Js dom api does not properly initialize elements
+# Epiviz-environment or Epiviz-nav elements
 
 for example
 
@@ -55,23 +45,41 @@ if the page contains
 </epiviz-environment>
 ```
 
-to add an epiviz chart for example line-track.
+to add an epiviz chart for example a scatter plot,
+We create an element with attributes assigned to the 
+component.
 
-# create a new element
 ```
 elem = document.createElement('epiviz-scatter-plot'); 
 elem.dimS = ['affy1', 'affy2']; 
-elem.className="charts"
+// instead can also set `json-data` on the component
+elem.slot="charts"
 ```
 
-# query dom for environment
-`ot = document.querySelector('#env')`
+query dom for environment or navigation element
 
-# add chart
-`Polymer.dom(ot).appendChild(elem)`
+`env = document.querySelector('#env')`
+
+and appent the new element
+
+`env.appendChild(elem)`
+
+After the chart is rendered, we can also update any of the attributes. this is similar to modifying attributes of a html element in JS.
+
+```
+# get chart
+chart = document.querySelector("#chart1");
+# get current chart settings
+currentSettings = chart.chartSettings;
+# modify chart settings
+...
+
+# set settings back to chart
+chart.setAttribute("chart-settings", JSON.stringify(currentSettings));
+```
 
 
-# Optimize elements for productions. 
+# Optimize elements for production 
 ```
 npm install -g polymer-bundler
 
