@@ -60,11 +60,12 @@ query dom for environment or navigation element
 
 `env = document.querySelector('#env')`
 
-and appent the new element
+and append the new element
 
 `env.appendChild(elem)`
 
-After the chart is rendered, we can also update any of the attributes. this is similar to modifying attributes of a html element in JS.
+After the chart is rendered, we can also update any of the attributes. 
+This is similar to modifying attributes of a html element in JS.
 
 ```
 # get chart
