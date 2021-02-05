@@ -28,11 +28,12 @@ demo folder contains examples of various epiviz components
 most other examples, require an instance of EFS running. 
 
 To run a local instance of polymer-server
-`polymer serve`
+
+`polymer serve -p 8080`
 
 Then navigate to any files inside the demo folder
 
-http://localhost:8080/components/epiviz-chart/demo/<FILE_NAME.html>
+http://localhost:8080/components/epiviz-charts/demo/<FILE_NAME.html>
 
 # Epiviz-environment or Epiviz-nav elements
 
