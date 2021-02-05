@@ -215,7 +215,15 @@
       </a>
       <div style="display:inline-block" hidden$="{{collapsed}}">
         <!-- <div style="display:inline-block" > -->
-            <epiviz-measurement-browser hidden$="{{hideAddChart}}" id="addChart" ms-api={{msApi}} genome={{genome}}></epiviz-measurement-browser>
+        <epiviz-measurement-browser 
+          user="{{user}}" 
+          user-token="{{userToken}}" 
+          collection-genome="{{collectionGenome}}" 
+          hidden$="{{hideAddChart}}" 
+          id="addChart" 
+          ms-api="{{msApi}}" 
+          genome="{{genome}}">
+        </epiviz-measurement-browser>
             <!-- <epiviz-add-chart hidden$="{{hideAddChart}}" id="addChart"></epiviz-add-chart> -->
             <!-- <slot id="chartHeader" name="header"></slot> -->
         <!-- </div> -->
@@ -484,16 +492,6 @@
             value: 1.2
           },
 
-          upstream: {
-            type: Number,
-            value: 100000
-          },
-
-          downstream: {
-            type: Number,
-            value: 50000
-          },
-
           /**
            * padding around gene (wrt gene length)
            *
@@ -665,6 +663,32 @@
           genomes: {
             type: Object,
             notify: true
+          },
+
+          collectionGenome: {
+            type: String,
+            notify: true,
+            observer: "_collectionGenomeUpdated"
+          },
+
+          upstream: {
+            type: Number,
+            value: 100000
+          },
+
+          downstream: {
+            type: Number,
+            value: 50000
+          },
+
+          user: {
+            type: String,
+            notify: true
+          },
+
+          userToken: {
+            type: String,
+            notify: true
           }
 
         };
@@ -735,6 +759,12 @@
 
         this.range = this.getGenomicRange(this.chr, this.start, this.end, this.genome);
         this._strRange = this.getStrRange(this.chr, this.start, this.end);
+      }
+
+      _collectionGenomeUpdated(nVal, oVal) {
+        if (this.genome != this.collectionGenome) {
+          this.genome = this.collectionGenome;
+        }
       }
 
       _getCurrentZoomOutValue(range, xfactor) {
@@ -899,11 +929,15 @@
           });
         }
 
-        var gene = self.getUrlParameter("gene");
-        if (gene == "" || gene == null) {
-            gene = this.gene;
+        var ws = self.getUrlParameter("ws");
+        var wid = self.getUrlParameter("wid");
+        if (!(ws || wid)) {
+          var gene = self.getUrlParameter("gene");
+          if (gene == "" || gene == null) {
+              gene = this.gene;
+          }
+          this.gene = gene;
         }
-        this.gene = gene;
 
         // if (self.gene) {
         //   var range = {
@@ -1099,8 +1133,13 @@
         if(newVal && newVal != oldVal) {
           self.$.geneSearch.value = null;
           self._updateGenomeTrack();
-          self.range = self.getGenomicRange(self.chr, self.start, self.end, self.genome);
 
+          if (self.gene) {
+            self._geneUpdate();
+          }
+          else {
+            self.range = self.getGenomicRange(self.chr, self.start, self.end, self.genome);
+          }
         }
       }
 
@@ -1303,6 +1342,11 @@
        */
       _rangeUpdate(newVal, oldVal) {
         var self = this;
+
+        if(!(self.chr && self.start && self.end)) {
+          return;
+        }
+
         self.chartObject = new epiviz.ui.charts.ChartObject(
           self.plotId,
           self.start,
@@ -1385,28 +1429,45 @@
           range: self.getGenomicRange(null, null, null, self.genome)
         }
 
-        var gene = self.getUrlParameter("gene");
-        if (gene == "" || gene == null) {
-          gene = self.gene;
-          var ws = self.getUrlParameter("wid");
-          if (ws && ws != "") {
-            window.history.replaceState("gene", '', window.location.pathname + "?wid=" + ws + "&gene=" + gene);
-          }
-          else {
-            var coll = self.getUrlParameter("collection");
-            if (coll && coll != "") {
-              window.history.replaceState("gene", '', window.location.pathname + "?gene=" + gene + "&collection=" + coll);
-            }
-            else {
-            window.history.replaceState("gene", '', window.location.pathname + "?gene=" + gene);
-          }
+
+        const url = new URL(window.location);
+
+        var gene = self.gene;
+        // var urlstring = []
+        if (gene && gene != "") {
+          // urlstring.push("gene=" + gene);
+          url.searchParams.set('gene', gene);
         }
+        
+        var ws = self.getUrlParameter("wid");
+        if (ws && ws != "") {
+          // urlstring.push("wid=" + ws);
+          url.searchParams.set('wid', ws);
         }
+
+        var prj = self.getUrlParameter("project");
+        if (prj && prj != "") {
+          // urlstring.push("project=" + prj);
+          url.searchParams.set('project', prj);
+        }
+
+        var coll = self.getUrlParameter("collection");
+        if (coll && coll != "") {
+          // urlstring.push("collection=" + coll);
+          url.searchParams.set('collection', coll);
+        }
+
+        window.history.pushState({}, '', url);
+        // window.history.replaceState("gene", '', window.location.pathname + "?" + urlstring.join("&"));
+
 
         self._getElementSearch(gene, range, null, function (data) {
           self.chr = data[0].chr;
 
           var width = data[0].end - data[0].start;
+          // var newWidthFactor = Math.round(width * self.geneRatio);
+          // var newStart = data[0].start - newWidthFactor;
+          // var newEnd = data[0].end + newWidthFactor;
           // var newWidthFactor = Math.round(width * self.geneRatio);
           var strand = data[0].strand ? data[0].strand == "+" ? 1 : -1 : 1;
           var newStart = data[0].start - self.upstream;
@@ -1416,9 +1477,12 @@
             newStart = data[0].start - self.downstream;
             newEnd = data[0].end + self.upstream;
           }
-
+          
           self.start = Math.max(0, newStart);
-          self.end = Math.min(newEnd, self.seqInfo[self.chr].max);
+          self.end = newEnd;
+          if(self.seqInfo) {
+            self.end = Math.min(newEnd, self.seqInfo[self.chr].max);
+          }
 
           self.range = self.getGenomicRange(self.chr, self.start, self.end, self.genome);
           self._strRange = self.getStrRange(self.chr, self.start, self.end);
@@ -1469,20 +1533,54 @@
        * selected gene value @ e.detail.option
        */
       _selectGene(e) {
+        var self = this;
         var selected = e.model.item;
 
-        var ws = this.getUrlParameter("wid");
-        if (ws && ws != "") {
-          window.history.replaceState("gene", '', window.location.pathname + "?wid=" + ws + "&gene=" + selected.gene);
+        const url = new URL(window.location);
+
+        var gene = selected.gene;
+        // var urlstring = []
+        if (gene && gene != "") {
+          // urlstring.push("gene=" + gene);
+          url.searchParams.set('gene', gene);
         }
-        else {
-          window.history.replaceState("gene", '', window.location.pathname + "?gene=" + selected.gene);
+        
+        var ws = self.getUrlParameter("wid");
+        if (ws && ws != "") {
+          // urlstring.push("wid=" + ws);
+          url.searchParams.set('wid', ws);
         }
 
-        var self = this;
+        var prj = self.getUrlParameter("project");
+        if (prj && prj != "") {
+          // urlstring.push("project=" + prj);
+          url.searchParams.set('project', prj);
+        }
+
+        var coll = self.getUrlParameter("collection");
+        if (coll && coll != "") {
+          // urlstring.push("collection=" + coll);
+          url.searchParams.set('collection', coll);
+        }
+
+        window.history.pushState({}, '', url);
+        // window.history.replaceState("gene", '', window.location.pathname + "?" + urlstring.join("&"));
+
+        // var ws = this.getUrlParameter("wid");
+        // if (ws && ws != "") {
+        //   window.history.replaceState("gene", '', window.location.pathname + "?wid=" + ws + "&gene=" + selected.gene);
+        // }
+        // else {
+        //   window.history.replaceState("gene", '', window.location.pathname + "?gene=" + selected.gene);
+        // }
+
+        // var self = this;
         this.chr = selected.chr;
         var width = selected.end - selected.start;
         // var newWidthFactor = Math.round(width * this.geneRatio);
+        // var newStart = selected.start - newWidthFactor;
+        // var newEnd = selected.end + newWidthFactor;
+                // var newWidthFactor = Math.round(width * this.geneRatio);
         var newStart = selected.start - self.downstream;
         var newEnd = selected.end + self.upstream;
 
