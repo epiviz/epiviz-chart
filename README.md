@@ -15,11 +15,23 @@ Add this to HTML head (loads dependencies)
 
     <link rel="import" href="https://cdn.jsdelivr.net/gh/epiviz/epiviz-chart/cdn/epiviz-components.html">
 
-# Installation from source
+# For development
 
-`bower install epiviz/epiviz-chart`
+To locally setup `epiviz-chart`
 
-# Demo
+- Clone the repo 
+  `git clone https://github.com/epiviz/epiviz-chart`
+- Install Bower from bower.io
+- install bower dependencies 
+  `bower install`
+- Install polymer-cli
+  `polymer server`
+
+# Dependency in an application
+
+`bower install --save epiviz/epiviz-chart`
+
+# Demos
 
 demo folder contains examples of various epiviz components
 
@@ -37,48 +49,62 @@ http://localhost:8080/components/epiviz-charts/demo/<FILE_NAME.html>
 
 # Epiviz-environment or Epiviz-nav elements
 
-for example
+(also checkout `demo/index-readme.html`)
 
-if the page contains
+Imagine a html page containing a navigational element (a genome browser)
 
 ```
-<epiviz-environment id="env">
-</epiviz-environment>
+<epiviz-navigation 
+    id="nav" 
+    chr="chr11" 
+    start=101322295 
+    end=131454659>
+</epiviz-navigation>
 ```
 
-to add an epiviz chart for example a scatter plot,
-We create an element with attributes assigned to the 
-component.
+We can add a visualization with static data assigned to the element.
 
 ```
 elem = document.createElement('epiviz-scatter-plot'); 
-elem.dimS = ['affy1', 'affy2']; 
+elem.setAttribute('json-data', '{ \
+  "rows": { \
+         "end": [101454659,0,417130,0,0,83502,0,148863,0,0], \
+         "start": [101322295,0,463451,0,0,132428,0,63018,0,0], \
+         "chr": ["chr11","chr11","chr11","chr11","chr11","chr11","chr11","chr11","chr11","chr11"] \
+  }, \
+  "cols": { \
+         "ExpressionA": [-0.188,0.153,-0.762,0.53,-0.776,-0.32,-0.731,6.503,11.087,10.569], \
+         "ExpressionB": [-0.325,-0.289,-0.523,1.417,-0.636,-0.89,-0.786,4.885,9.112,8.862] \
+  } \
+}'); 
+elem.setAttribute('dim-s', '["ExpressionA", "ExpressionB"]');
 // instead can also set `json-data` on the component
 elem.slot="charts"
 ```
 
-query dom for environment or navigation element
+Add the plot to the dom
 
-`env = document.querySelector('#env')`
+```
+nav = document.querySelector('#nav')
+nav.appendChild(elem)
+```
 
-and append the new element
-
-`env.appendChild(elem)`
-
-After the chart is rendered, we can also update any of the attributes. 
-This is similar to modifying attributes of a html element in JS.
+We can programmatically update any of the attributes on the visualization. This should be similar to updating attributes in JS.
 
 ```
 # get chart
-chart = document.querySelector("#chart1");
+chart = document.querySelector("epiviz-scatter-plot")
+
 # get current chart settings
 currentSettings = chart.chartSettings;
 # modify chart settings
-...
+currentSettings["circleRadiusRatio"] = 0.1;
 
 # set settings back to chart
 chart.setAttribute("chart-settings", JSON.stringify(currentSettings));
 ```
+
+Similarly, can also update `chart-colors`  & other attributes
 
 
 # Optimize elements for production 
@@ -113,4 +139,3 @@ To use the container for serving app pages,
 copy html files to /app/, 
 there's an nginx route (\<HOSTNAME\>/app/) configured to serve these pages. 
 The included `index.html` uses the loader.
-

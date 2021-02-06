@@ -344,7 +344,8 @@
            genome: {
             type: String,
             notify: true,
-            observer: "_genomeChanged"
+            observer: "_genomeChanged",
+            value: null
           },
 
           msApi: {
@@ -1105,6 +1106,10 @@
 
       _updateGenomeTrack() {
         var self = this;
+
+        if (!self.genome) {
+          return;
+        }
 
         // change genome track
         let genesTrack = Polymer.FlattenedNodesObserver.getFlattenedNodes(
