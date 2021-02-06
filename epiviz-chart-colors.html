@@ -126,6 +126,10 @@ All charts implement the `epiviz.ChartColorsBehavior` that manages this element.
                 // this.addEventListener('cancel.click', e => this._cancel(e));
             }
 
+            _sanitizeString(text) {
+                return text.replace(/[^a-zA-Z0-9]/g, '');
+            }
+
             connectedCallback() {
                 var self = this;
                 super.connectedCallback();
@@ -183,7 +187,7 @@ All charts implement the `epiviz.ChartColorsBehavior` that manages this element.
              * @return {string} return label ignoring white spaces
              */
             _getId(label) {
-                return label.split(' ').join('');
+                return this._sanitizeString(label.split(' ').join(''));
             }
 
             _getName(item) {
