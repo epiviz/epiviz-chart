@@ -92,15 +92,15 @@ nav.appendChild(elem)
 We can programmatically update any of the attributes on the visualization. This should be similar to updating attributes in JS.
 
 ```
-# get chart
+// get chart
 chart = document.querySelector("epiviz-scatter-plot")
 
-# get current chart settings
+// get current chart settings
 currentSettings = chart.chartSettings;
-# modify chart settings
+// modify chart settings
 currentSettings["circleRadiusRatio"] = 0.1;
 
-# set settings back to chart
+// set settings back to chart
 chart.setAttribute("chart-settings", JSON.stringify(currentSettings));
 ```
 

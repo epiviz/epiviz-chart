@@ -10,20 +10,86 @@
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
     <script src="../src/renderingQueues/renderingQueue.js"></script>
 
-    <!-- <script src="https://use.fontawesome.com/e384f219f7.js"></script> -->
-
-    <!-- <script src="shiny.js"></script> -->
-
-    <!-- <link rel="import" href="../epiviz-environment.html"> -->
-    <!-- <link rel="import" href="../../epiviz-data-source/epiviz-data-source.html"> -->
     <link rel="import" href="../epiviz-charts.html">
-    <!-- <link rel="import" href="../cdn/epiviz-components.html"> -->
-    
-    <!-- <link rel="import" href="https://cdn.jsdelivr.net/gh/epiviz/epiviz-chart/cdn/epiviz-components.html"> -->
+
+    <script>
+        (function() {
+            window.addEventListener('WebComponentsReady', function() {
+                elem = document.createElement('epiviz-scatter-plot'); 
+                elem.setAttribute('json-data', '{ \
+                "rows": { \
+                        "end": [101454659,0,417130,0,0,83502,0,148863,0,0], \
+                        "start": [101322295,0,463451,0,0,132428,0,63018,0,0], \
+                        "chr": ["chr11","chr11","chr11","chr11","chr11","chr11","chr11","chr11","chr11","chr11"] \
+                }, \
+                "cols": { \
+                        "ExpressionA": [-0.188,0.153,-0.762,0.53,-0.776,-0.32,-0.731,6.503,11.087,10.569], \
+                        "ExpressionB": [-0.325,-0.289,-0.523,1.417,-0.636,-0.89,-0.786,4.885,9.112,8.862] \
+                } \
+                }'); 
+                elem.setAttribute('dim-s', '["ExpressionA", "ExpressionB"]');
+                // instead can also set `json-data` on the component
+                elem.slot="charts";
+
+                nav = document.querySelector('#nav');
+                nav.appendChild(elem);
+            });
+        })()
+    </script>
 </head>
 
 <body>
-    <h3>readme Demo</h3>
+    <h2>Example from README</h2>
+
+    <h2>Genome browser element on the page</h2>
+    <pre>
+        <code>
+            &lt;epiviz-navigation id="nav" chr="chr11" start=101322295 end=131454659&gt;
+            &lt;/epiviz-navigation&gt;
+        </code>
+    </pre>
+    <h2>Snippet to add a chart to the page (already executed, should see a scatter plot in the navigation element) </h2>
+    <pre>
+        <code>
+            elem = document.createElement('epiviz-scatter-plot'); 
+            elem.setAttribute('json-data', '{ \
+            "rows": { \
+                    "end": [101454659,0,417130,0,0,83502,0,148863,0,0], \
+                    "start": [101322295,0,463451,0,0,132428,0,63018,0,0], \
+                    "chr": ["chr11","chr11","chr11","chr11","chr11","chr11","chr11","chr11","chr11","chr11"] \
+            }, \
+            "cols": { \
+                    "ExpressionA": [-0.188,0.153,-0.762,0.53,-0.776,-0.32,-0.731,6.503,11.087,10.569], \
+                    "ExpressionB": [-0.325,-0.289,-0.523,1.417,-0.636,-0.89,-0.786,4.885,9.112,8.862] \
+            } \
+            }'); 
+            elem.setAttribute('dim-s', '["ExpressionA", "ExpressionB"]');
+            // instead can also set `json-data` on the component
+            elem.slot="charts";
+    
+            nav = document.querySelector('#nav');
+            nav.appendChild(elem);
+        </code>
+    </pre>
+
+    <h2>
+        Run the snippet in devtools to modify track settings
+    </h2>
+
+    <pre>
+        <code>
+            // get chart
+            chart = document.querySelector("epiviz-scatter-plot")
+            
+            // get current chart settings
+            currentSettings = chart.chartSettings;
+            // modify chart settings
+            currentSettings["circleRadiusRatio"] = 0.1;
+            
+            // set settings back to chart
+            chart.setAttribute("chart-settings", JSON.stringify(currentSettings));
+        </code>
+    </pre>
 
     <epiviz-navigation id="nav" chr="chr11" start=101322295 end=131454659>
     </epiviz-navigation>
