@@ -56,6 +56,8 @@
   },
   "devDependencies": {},
   "resolutions": {
-    "paper-card": "2"
+    "paper-card": "2",
+    "paper-dropdown": "^2.0.2",
+    "iron-ajax": "^2.0.1"
   }
 }
