@@ -1,6 +1,6 @@
 FROM node
 
-MAINTAINER Jayaram Kancherla <jayaram.kancherla@gmail.com>
+LABEL maintainer="Jayaram Kancherla <jayaram.kancherla@gmail.com>"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends vim nginx git default-jre && \
