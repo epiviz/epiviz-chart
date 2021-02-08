@@ -89,8 +89,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
             paper-collapse-item {
                 --paper-collapse-simple-paper-item-styles: {
                     border: 1px solid var(--light-theme-divider-color);
-                }
-                ;
+                };
             }
 
             paper-toggle-button {
@@ -182,7 +181,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                         </paper-collapse-item>
 
 
-                        <paper-collapse-item id="renameMeasurements" header="Rename/order Measurements">
+                        <paper-collapse-item id="renameMeasurements" header="Rename/Order Measurements">
                             <div class="collapse-content">
                                 <div class="container flex">
                                     <sortable-list sortable=".item">
@@ -194,6 +193,18 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                                         </template>
                                       </sortable-list>
 
+                                </div>
+                            </div>
+                        </paper-collapse-item>
+
+                        <paper-collapse-item id="enableTooltips" header="Show/Hide Tooltips">
+                            <div class="collapse-content">
+                                <div class="container flex">
+                                    <iron-label for="showtooltip">
+                                        <div class="toggleLabel">Show Tooltips</div>
+                                        <paper-toggle-button name="showtooltip" label="Show Tooltips" checked="{{showTooltip}}"
+                                            toggles></paper-toggle-button>
+                                    </iron-label>  
                                 </div>
                             </div>
                         </paper-collapse-item>
@@ -241,6 +252,11 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
 
                     _measurements: {
                         type: Array,
+                        notify: true
+                    },
+
+                    showTooltip: {
+                        type: Boolean,
                         notify: true
                     }
                 }
@@ -453,7 +469,7 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                     delete self.vals[m.id];
                 });
 
-                this.callback(this.vals, newMeasurements);
+                this.callback(this.vals, newMeasurements, this.showTooltip);
                 this.closeSettings();
             }
 

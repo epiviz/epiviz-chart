@@ -37,6 +37,7 @@
                     currSetting.setAttribute('defs', JSON.stringify(self.chart.properties().customSettingsDefs));
                     currSetting.setAttribute('vals', JSON.stringify(self.chartSettings));
                     currSetting.setAttribute('_measurements', JSON.stringify(self.measurements));
+                    currSetting.showTooltip = self.showTooltip;
                     currSetting._colors= self.chart.colors();
 
                     chartContainer.appendChild(currSetting);
@@ -49,14 +50,18 @@
                     currSetting.setAttribute('defs', JSON.stringify(self.chart.properties().customSettingsDefs));
                     currSetting.setAttribute('vals', JSON.stringify(self.chartSettings));
                     currSetting.setAttribute('_measurements', JSON.stringify(self.measurements));
+                    currSetting.showTooltip = self.showTooltip;
+
                     currSetting._colors= self.chart.colors();
                     chartContainer.appendChild(currSetting);
                 }
 
-                currSetting.showSettings(this.shadowRoot, function (newSettings, measurements) {
+                currSetting.showSettings(this.shadowRoot, function (newSettings, measurements, showTooltip) {
                     // self.chartSettings = newSettings;
                     self.set("chartSettings", newSettings);
                     self.set("measurements", measurements);
+
+                    self.set("showTooltip", showTooltip);
 
                     if(self._initializeShowTracksDialog){
                         self._initializeShowTracksDialog();
