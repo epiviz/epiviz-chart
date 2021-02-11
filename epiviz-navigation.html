@@ -930,15 +930,26 @@
           });
         }
 
-        var ws = self.getUrlParameter("ws");
-        var wid = self.getUrlParameter("wid");
-        if (!(ws || wid)) {
-          var gene = self.getUrlParameter("gene");
-          if (gene == "" || gene == null) {
-              gene = this.gene;
-          }
-          this.gene = gene;
-        }
+        // var ws = self.getUrlParameter("ws");
+        // var wid = self.getUrlParameter("wid");
+        // // if (!(ws || wid)) {
+        //   var gene = self.getUrlParameter("gene");
+        //   if (gene && gene != "") {
+        //     this.flagWS = true;
+        //     this.gene = gene;
+        //   } else {
+        //     if(self.workspace) {
+        //       self.loadWorkspace(self.workspace);
+        //     }
+        //   }
+          // this.gene = gene;
+        // } else {
+          // var gene = self.getUrlParameter("gene");
+          // if (gene == "" || gene == null) {
+          //     gene = this.gene;
+          // }
+          // this.gene = gene;
+        // }
 
         // if (self.gene) {
         //   var range = {
@@ -1580,7 +1591,7 @@
         // }
 
         // var self = this;
-        this.chr = selected.chr;
+        // this.chr = selected.chr;
         var width = selected.end - selected.start;
         // var newWidthFactor = Math.round(width * this.geneRatio);
         // var newStart = selected.start - newWidthFactor;
@@ -1600,8 +1611,13 @@
 
         // var newStart = selected.start - newWidthFactor;
         // var newEnd = selected.end + newWidthFactor;
-        this.start = Math.max(0, newStart);
-        this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
+        this.setProperties({
+          chr: selected.chr,
+          start: Math.max(0, newStart),
+          end: Math.min(newEnd, this.seqInfo[this.chr].max)
+        })
+        // this.start = Math.max(0, newStart);
+        // this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
 
         self.range = self.getGenomicRange(self.chr, self.start, self.end, self.genome);
         self._strRange = self.getStrRange(self.chr, self.start, self.end);
