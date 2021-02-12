@@ -148,7 +148,7 @@ See the file LICENSE.txt for further details.
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+  "use strict";
 
 
 var d3 = __webpack_require__(1);
@@ -27500,7 +27500,7 @@ window.ShadyCSS&&void 0!==window.ShadyCSS.nativeCss?r=window.ShadyCSS.nativeCss:
                 }
 
                 // var dataManagerElem = document.querySelector("epiviz-app").shadowRoot.querySelectorAll('epiviz-data-source');
-                var dataManagerElem = document.querySelector("#" + self.id).parentNode.querySelectorAll('epiviz-data-source');
+                var dataManagerElem = document.querySelectorAll('epiviz-data-source');
 
                 if (dataManagerElem && dataManagerElem.length > 0) {
 
@@ -70874,7 +70874,6 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 }
 
                 self.chartSettings["autoScale"] = self.toggleFixed;
-                self.chart.setCustomSettingsValues(self.chartSettings);
             }
 
             /**
@@ -71514,9 +71513,9 @@ customElements.define(PaperTagsDropdown.is, PaperTagsDropdown);
                 self._measurementsChanged();
 
                 if (self.dimS) {
-                    this.style = "min-height:" + (self.dimS.length * 150) + "px;"
+                    this.style = "min-height:" + (self.dimS.length * 100) + "px;"
                 } else if (self.measurements) {
-                    this.style = "min-height:" + (self.measurements.length * 150) + "px;"
+                    this.style = "min-height:" + (self.measurements.length * 100) + "px;"
                 } else {
                     this.style = "min-height:" + (300) + "px;"
                 }
