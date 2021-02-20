@@ -37,7 +37,8 @@
             #chartColorsIcon,
             #chartRemoveIcon,
             #chartExpandIcon,
-            #chartContractIcon {
+            #chartContractIcon,
+            #vizTxIcon {
                 float: right;
                 width: 24px;
                 height: 24px;
@@ -851,6 +852,10 @@
                             self._initializeShowTracksDialog();
                             self._chartFixedAxisChanged();
                             self._initializeFixedAxisDialog();
+                        }
+
+                        if(self.nodeName == "EPIVIZ-GENES-TRACK") {
+                            self._initializeVizTranscriptsDialog();
                         }
                         self._initializeResizeButtons();
                         self._initializeGrid();

@@ -1,0 +1,80 @@
+<!-- External Polymer Styles/elements dependency -->
+<link rel="import" href="bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
+
+<!-- Epiviz element dependency -->
+<link rel="import" href="epiviz-chart-settings.html">
+
+<script>
+    /**
+     * `FixedAxisBehavior` object toggles the fixed axis on StackedLinePlots. 
+     * <epiviz-multistacked-line-plot> inherit this behavior to update chart settings.
+     *
+     * @polymerBehavior
+    **/
+    EpivizVizTranscriptsBehavior = function (superClass) {
+        return class extends superClass {
+            constructor() {
+                super();
+            }
+
+            static get properties() {
+                return {
+                    vizTranscripts: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            /**
+            * Shows the `<epiviz-chart-settings>` element
+            */
+            _showVizTranscriptsDialog() {
+                var self = this;
+                self.vizTranscripts = !self.vizTranscripts;
+
+                if (self._parentContainer) {
+                    // change tx track
+                    let txTrack = Polymer.FlattenedNodesObserver.getFlattenedNodes(
+                        self._parentContainer
+                    ).filter(
+                        n =>
+                        n.nodeType === Node.ELEMENT_NODE &&
+                        n.nodeName.indexOf("EPIVIZ-TRANSCRIPT-TRACK") !== -1
+                    );
+
+                    if(txTrack.length > 0) {
+                        txTrack[0].remove();
+                    }
+                    else {
+                    var elem = document.createElement("epiviz-transcript-track");
+                        elem.slot = "charts";
+                        elem.setAttribute("dim-s", JSON.stringify([self._parentContainer.genome + ".transcripts"]));
+                        self._parentContainer.appendChild(elem);
+                    }
+                }
+            }
+
+            /**
+            * Initializes the `<epiviz-chart-settings>` element
+            */
+            _initializeVizTranscriptsDialog() {
+                var vizTranscriptsContainer = this.shadowRoot.querySelector('#chartSettingsContainer');
+                var chartContainer = this.shadowRoot.querySelector('#' + this.plotId);
+                var vizTxIcon = this.shadowRoot.querySelector('#vizTxIcon');
+
+                if (vizTxIcon == null) {
+
+                    var iconElem = document.createElement('paper-icon-button');
+                    iconElem.id = "vizTxIcon";
+                    iconElem.title = "show transcripts";
+                    iconElem.icon = "icons:filter-list";
+
+                    iconElem.addEventListener("click", this._showVizTranscriptsDialog.bind(this));
+                    vizTranscriptsContainer.appendChild(iconElem);
+                }
+            }
+        }
+    }
+</script>

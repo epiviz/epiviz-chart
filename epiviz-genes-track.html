@@ -10,6 +10,7 @@
 <link rel="import" href="chart-colors.html">
 <link rel="import" href="chart-remove.html">
 <link rel="import" href="chart-grid-behavior.html">
+<link rel="import" href="chart-viz-transcripts.html">
 
 <!-- Epiviz Shared css -->
 <link rel="import" type="css" href="chart-shared-css.html">
@@ -75,7 +76,7 @@ To create a genes track on a HTML page, add
         // Extend Polymer.Element base class
         // EpivizChartRemoveBehavior(EpivizChartColorsBehavior(EpivizChartSettingsBehavior(EpivizChartBehavior(Polymer.Element))))
 
-        class EpivizGenesTrack extends EpivizChartGridBehavior(EpivizChartRemoveBehavior(EpivizChartColorsBehavior(EpivizChartSettingsBehavior(EpivizChartBehavior(Polymer.Element))))) {
+        class EpivizGenesTrack extends EpivizVizTranscriptsBehavior(EpivizChartGridBehavior(EpivizChartRemoveBehavior(EpivizChartColorsBehavior(EpivizChartSettingsBehavior(EpivizChartBehavior(Polymer.Element)))))) {
 
             static get is() { return 'epiviz-genes-track'; }
 
