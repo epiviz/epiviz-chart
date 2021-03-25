@@ -61,8 +61,14 @@
                 self.plotId = self.workspace.plotId;
                 self.collapsed = self.workspace.collapsed ? self.workspace.collapsed : false;
                 self.noLogo = true;
+                
+                let currChildren = Polymer.FlattenedNodesObserver.getFlattenedNodes(this.$.chartNav).filter(n => n.nodeType === Node.ELEMENT_NODE).map(m => m.plotId);
 
                 for (var key in self.workspace.children) {
+                    if (currChildren.indexOf(key) != -1) {
+                        continue
+                    }
+
                     var chartWorkspaceObj = self.workspace.children[key];
 
                     var chart = document.createElement(chartWorkspaceObj.node);
@@ -106,9 +112,25 @@
                             chart._chartwidthChanged();
                         }
                     }
+                    chart.setAttribute("plot-id", key);
+                    chart.plotId = key
                 }
-
+                self.plotId = self.workspace.plotId;
                 self._onResize();
+            }
+
+            updateWorkspace(){
+                var self = this;
+                let currChildren = Polymer.FlattenedNodesObserver
+                    .getFlattenedNodes(this.$.chartNav)
+                    .filter(n=>n.nodeType===Node.ELEMENT_NODE);
+
+                currChildren.forEach(function(elem){
+                    if("EPIVIZ-GENES-TRACK"!=elem.nodeName){
+                        elem.remove();
+                    }
+                });
+                self.loadWorkspace();
             }
 
             /**
