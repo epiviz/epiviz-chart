@@ -27500,8 +27500,8 @@ window.ShadyCSS&&void 0!==window.ShadyCSS.nativeCss?r=window.ShadyCSS.nativeCss:
                 }
 
                 // var dataManagerElem = document.querySelector("epiviz-app").shadowRoot.querySelectorAll('epiviz-data-source');
-                var dataManagerElem = document.querySelectorAll('epiviz-data-source');
-
+                // var dataManagerElem = document.querySelectorAll('epiviz-data-source');
+                var dataManagerElem = document.querySelector("#" + self.id).parentNode.querySelectorAll('epiviz-data-source');
                 if (dataManagerElem && dataManagerElem.length > 0) {
 
                     dataManagerElem.forEach(function(ds) {
