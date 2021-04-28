@@ -849,6 +849,7 @@
                         }
 
                         if (self.nodeName == "EPIVIZ-MULTISTACKED-LINE-TRACK") {
+                            self.fixedAxis = self.chartSettings.autoScale;
                             self._initializeShowTracksDialog();
                             self._chartFixedAxisChanged();
                             self._initializeFixedAxisDialog();
