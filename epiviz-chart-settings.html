@@ -463,11 +463,16 @@ All charts implement the `epiviz.ChartSettingsBehavior` that manages this elemen
                         bm = orderedMeasurements.indexOf(b.id);
                     return am-bm;
                 });
-
+                var concat_names = [];
                 newMeasurements.forEach(function(m) {
                     m.name = self.vals[m.id];
+                    concat_names.push(m.id);
                     delete self.vals[m.id];
                 });
+
+                if (this.vals["showTracks"] && this.vals["showTracks"] != "default") {
+                    this.vals["showTracks"] = concat_names.join(",");
+                }
 
                 this.callback(this.vals, newMeasurements, this.showTooltip);
                 this.closeSettings();
