@@ -1614,7 +1614,7 @@
         this.setProperties({
           chr: selected.chr,
           start: Math.max(0, newStart),
-          end: Math.min(newEnd, this.seqInfo[this.chr].max)
+          end: Math.min(newEnd, self.seqInfo[selected.chr].max)
         })
         // this.start = Math.max(0, newStart);
         // this.end = Math.min(newEnd, this.seqInfo[this.chr].max);
