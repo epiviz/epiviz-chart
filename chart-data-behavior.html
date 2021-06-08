@@ -13,7 +13,7 @@
 
                 var settingsMap = {
                     configType: 'default',
-                    dataProviders: [],  
+                    dataProviders: [],
                     workspacesDataProvider: sprintf(
                         "epiviz.data.EmptyResponseDataProvider",
                         "empty",
@@ -29,7 +29,7 @@
 
                 if (dataManagerElem && dataManagerElem.length > 0) {
 
-                    dataManagerElem.forEach(function(ds) {
+                    dataManagerElem.forEach(function (ds) {
                         settingsMap.dataProviders.push([ds.providerType, ds.providerId, ds.providerUrl]);
                     });
 
@@ -44,10 +44,10 @@
                         if (measurements) {
                             var mArray = measurements;
                             var measurementsObj = {}
-                            mArray.forEach(function(m) {
+                            mArray.forEach(function (m) {
                                 measurementsObj[m.id] = m
                             });
-                        
+
                             self.measurementSet = measurementsObj;
                             self.measurementAll = result;
                         }
@@ -379,8 +379,8 @@
                         chartMeasMap[id] = mSet;
 
                         self.dataManager.getData(currentChild.range, chartMeasMap, function (id, data) {
-                            
-                            if(data.measurements().length > 0) {
+
+                            if (data.measurements().length > 0) {
                                 var nItems = data.firstSeries().globalEndIndex() - data.firstSeries().globalStartIndex();
 
                                 // if (nItems == 0) {
@@ -394,82 +394,75 @@
                                 var dataChartElem = pDom.querySelector('[plot-id$="' + id + '"]') || Polymer.dom(pDom).querySelector('[plot-id$="' + id + '"]');
                                 if (dataChartElem) {
                                     var tdata = pDom.transformFunc(data);
-                                    if (["gwas_pip", "gwas", "blocks", "stacked-blocks"].includes(dataChartElem.chartType.chartHtmlAttributeName())) {
-                                        data.foreach(function(m, series, i) {
+                                    if (["interaction", "gwas_pip", "gwas", "blocks", "stacked-blocks"].includes(dataChartElem.chartType.chartHtmlAttributeName())) {
+                                        var msFlag = false;
+                                        data.foreach(function (m, series, i) {
                                             if (series.getRow(0)) {
                                                 var metadataFromData = Object.keys(series.getRow(0).rowMetadata());
                                                 var ms = dataChartElem.chart._properties.visConfigSelection.measurements.get(i)
                                                 ms._metadata = metadataFromData;
+                                                msFlag = true;
                                             }
                                         });
-                                
-                                        dataChartElem.chart._properties.customSettingsDefs = dataChartElem.chartType.customSettingsDefs();
-                                        dataChartElem.chart._customSettingsValues = {};
-                                        for (var i = 0; i < dataChartElem.chart._properties.customSettingsDefs.length; ++i) {
-                                            var setting = dataChartElem.chart._properties.customSettingsDefs[i];
-                                            var val = dataChartElem.chart._properties.customSettingsValues[setting.id];
-                                            switch (setting.type) {
-                                            case epiviz.ui.charts.CustomSetting.Type.BOOLEAN:
-                                                dataChartElem.chart._customSettingsValues[setting.id] =
-                                                val === false || val ? val : setting.defaultValue;
-                                                break;
-                                            case epiviz.ui.charts.CustomSetting.Type.NUMBER:
-                                                dataChartElem.chart._customSettingsValues[setting.id] =
-                                                val === 0 || val ? val : setting.defaultValue;
-                                                break;
-                                            case epiviz.ui.charts.CustomSetting.Type.STRING:
-                                                dataChartElem.chart._customSettingsValues[setting.id] =
-                                                val === "" || val ? val : setting.defaultValue;
-                                                break;
-                                            case epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA:
-                                                var possibleValues = {};
-                                                dataChartElem.chart._properties.visConfigSelection.measurements.foreach(function(m) {
-                                                m.metadata().forEach(function(metadataCol) {
-                                                    possibleValues[metadataCol] = metadataCol;
-                                                });
-                                                });
-                                                setting.possibleValues = Object.keys(possibleValues);
-                                                setting.possibleValues.sort();
-                                                val = val || setting.defaultValue;
-                                                dataChartElem.chart._customSettingsValues[setting.id] =
-                                                val in possibleValues
-                                                    ? val
-                                                    : setting.possibleValues.length
-                                                    ? setting.possibleValues[0]
-                                                    : "";
-                                                break;
-                                            case epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION:
-                                                var possibleValues = { name: "name" };
-                                                dataChartElem.chart._properties.visConfigSelection.measurements.foreach(function(m) {
-                                                var anno = m.annotation();
-                                                if (!anno) {
-                                                    return;
+
+                                        if (msFlag) {
+                                            dataChartElem.chart._properties.customSettingsDefs = dataChartElem.chartType.customSettingsDefs();
+                                            // dataChartElem.chart._customSettingsValues = {};
+                                            for (var i = 0; i < dataChartElem.chart._properties.customSettingsDefs.length; ++i) {
+                                                var setting = dataChartElem.chart._properties.customSettingsDefs[i];
+                                                var val = dataChartElem.chart._properties.customSettingsValues[setting.id];
+                                                switch (setting.type) {
+                                                    case epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA:
+                                                        var possibleValues = {};
+                                                        dataChartElem.chart._properties.visConfigSelection.measurements.foreach(function (m) {
+                                                            m.metadata().forEach(function (metadataCol) {
+                                                                possibleValues[metadataCol] = metadataCol;
+                                                            });
+                                                        });
+                                                        setting.possibleValues = Object.keys(possibleValues);
+                                                        setting.possibleValues.sort();
+                                                        val = val || setting.defaultValue;
+                                                        dataChartElem.chart._customSettingsValues[setting.id] =
+                                                            val in possibleValues
+                                                                ? val
+                                                                : setting.possibleValues.length
+                                                                    ? setting.possibleValues[0]
+                                                                    : "";
+                                                        break;
+                                                    case epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_ANNOTATION:
+                                                        var possibleValues = { name: "name" };
+                                                        dataChartElem.chart._properties.visConfigSelection.measurements.foreach(function (m) {
+                                                            var anno = m.annotation();
+                                                            if (!anno) {
+                                                                return;
+                                                            }
+                                                            Object.keys(anno).forEach(function (key) {
+                                                                possibleValues[key] = key;
+                                                            });
+                                                        });
+                                                        setting.possibleValues = Object.keys(possibleValues);
+                                                        setting.possibleValues.sort();
+                                                        val = val || setting.defaultValue;
+                                                        dataChartElem.chart._customSettingsValues[setting.id] =
+                                                            val in possibleValues
+                                                                ? val
+                                                                : setting.possibleValues.length
+                                                                    ? setting.possibleValues[0]
+                                                                    : "";
+                                                        break;
+                                                    default:
+                                                        dataChartElem.chart._customSettingsValues[setting.id] = val != null || val != undefined ? val : setting.defaultValue;
+                                                        break;
                                                 }
-                                                Object.keys(anno).forEach(function(key) {
-                                                    possibleValues[key] = key;
-                                                });
-                                                });
-                                                setting.possibleValues = Object.keys(possibleValues);
-                                                setting.possibleValues.sort();
-                                                val = val || setting.defaultValue;
-                                                dataChartElem.chart._customSettingsValues[setting.id] =
-                                                val in possibleValues
-                                                    ? val
-                                                    : setting.possibleValues.length
-                                                    ? setting.possibleValues[0]
-                                                    : "";
-                                                break;
-                                            default:
-                                                dataChartElem.chart._customSettingsValues[setting.id] = val || setting.defaultValue;
-                                                break;
                                             }
                                         }
-                                        }
+
+                                    }
                                     // dataChartElem.data = pDom.transformFunc(data);
                                     dataChartElem.set("data", tdata);
                                 }
                                 dataChartElem._onResize();
-                            } 
+                            }
 
                         }, function (jqXHR, textStatus, errorThrown) {
                             // var toast = document.createElement("paper-toast");
@@ -515,14 +508,14 @@
 
                 var mlist = new epiviz.measurements.MeasurementSet();
                 for (var key in self.dataManager._cache._data) {
-                    
+
                     var tdata = self.dataManager._cache._data[key];
 
-                    if(tdata._values._size > 0) {
+                    if (tdata._values._size > 0) {
                         mlist.add(tdata._values._order[0].key);
                         delete self.dataManager._cache._data[tdata._values._order[0].key._datasourceGroup];
                     }
-                    
+
                     // if(tdata._rowData._measurement._id == "computed") {
                     //     tdata._rowData._measurement._type = "feature";
                     //     mlist.add(tdata._rowData._measurement);
@@ -534,10 +527,10 @@
                 chartMeasMap[self.plotId] = mlist;
 
                 self.dataManager.getData(self.range, chartMeasMap, function (id, data) {
-                        console.log("got data, do not have to assign to chart")
-                        console.log(data);
-                    }, function (jqXHR, textStatus, errorThrown) {
-                        console.log("error")
+                    console.log("got data, do not have to assign to chart")
+                    console.log(data);
+                }, function (jqXHR, textStatus, errorThrown) {
+                    console.log("error")
                 });
             }
 
