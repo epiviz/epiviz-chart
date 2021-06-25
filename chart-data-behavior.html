@@ -410,7 +410,7 @@
                                             // dataChartElem.chart._customSettingsValues = {};
                                             for (var i = 0; i < dataChartElem.chart._properties.customSettingsDefs.length; ++i) {
                                                 var setting = dataChartElem.chart._properties.customSettingsDefs[i];
-                                                var val = dataChartElem.chart._properties.customSettingsValues[setting.id];
+                                                var val = dataChartElem.chart._customSettingsValues[setting.id];
                                                 switch (setting.type) {
                                                     case epiviz.ui.charts.CustomSetting.Type.MEASUREMENTS_METADATA:
                                                         var possibleValues = {};
