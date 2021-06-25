@@ -668,6 +668,10 @@
                     // self.chartSettings.title = self.title;
                     self.set("chartSettings.title", self.title);
                 }
+
+                if(self._parentContainer) {
+                    self._parentContainer.saveWorkspace();
+                }
             }
 
             /**
@@ -680,6 +684,10 @@
                 if (self.chartSettings) {
                     // self.chartSettings["autoScale"] = self.fixedAxis;
                     self.set("chartSettings.autoScale", self.fixedAxis);
+                }
+
+                if(self._parentContainer) {
+                    self._parentContainer.saveWorkspace();
                 }
             }
 
@@ -704,6 +712,10 @@
                 var self = this;
                 if (self.chartWidth) {
                     self._setColumnSpan(self.chartWidth);
+                }
+
+                if(self._parentContainer) {
+                    self._parentContainer.saveWorkspace();
                 }
             }
 
